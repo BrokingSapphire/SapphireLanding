@@ -1,9 +1,8 @@
 "use client"
 import React from "react";
-import { FaChevronRight } from "react-icons/fa";
 
 const AboutInfo = () => {
-  const handleExplore = () => { };
+  // const handleExplore = () => { };
   return (
     <>
       <div className="py-20 bg-[#F5F7FA] ">

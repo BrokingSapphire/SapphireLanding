@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React from "react";
 import {
   MapPin,
@@ -8,8 +7,9 @@ import {
   Minimize2,
   Navigation,
 } from "lucide-react";
+import Image from "next/image";
 
-const ContactInfo = ({ icon, title, children }) => (
+const ContactInfo = ({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) => (
   <div className="flex gap-6 items-start mb-8">
     <div className="flex-shrink-0">{icon}</div>
     <div>
@@ -29,7 +29,7 @@ const GetInTouch = () => {
             Get in <span className="text-teal-700">Touch</span>
           </h2>
           <p className="text-gray-600 mb-12 max-w-lg">
-            We'd love to hear from you! Whether you have questions, need
+            We&apos;d love to hear from you! Whether you have questions, need
             personalized support, or want to explore our services, our friendly
             and dedicated team is always here to assist, guide, and provide the
             information you need.
@@ -94,7 +94,7 @@ const GetInTouch = () => {
 
             {/* Map Image Placeholder */}
             <div className="aspect-square w-full bg-gray-100">
-              <img
+              <Image
                 src="/api/placeholder/600/600"
                 alt="Location Map"
                 className="w-full h-full object-cover"

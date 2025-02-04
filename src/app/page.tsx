@@ -1,4 +1,3 @@
-import Footer from "@/components/Footer";
 import Calculator from "@/components/landing/Caculator";
 import FAQ from "@/components/landing/FAQ";
 import Gateway from "@/components/landing/Gateway";

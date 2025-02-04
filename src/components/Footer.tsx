@@ -1,7 +1,15 @@
 import React, { memo } from "react";
 import Image from "next/image";
-import { ACCOUNT_LINKS, COMPANY_LINKS, EXCHANGES, INVESTOR_POINTS, LEGAL_SECTIONS, LinkSectionProps, SOCIAL_ICONS, SUPPORT_LINKS } from "@/constants/footer";
-
+import {
+  ACCOUNT_LINKS,
+  COMPANY_LINKS,
+  EXCHANGES,
+  INVESTOR_POINTS,
+  LEGAL_SECTIONS,
+  LinkSectionProps,
+  SOCIAL_ICONS,
+  SUPPORT_LINKS,
+} from "@/constants/footer";
 
 const LinkSection = memo(({ title, links }: LinkSectionProps) => (
   <div className="col-span-1">
@@ -17,6 +25,7 @@ const LinkSection = memo(({ title, links }: LinkSectionProps) => (
     </ul>
   </div>
 ));
+LinkSection.displayName = "LinkSection";
 
 const SocialLinks = memo(() => (
   <div className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-7 gap-4 mb-6">
@@ -33,6 +42,7 @@ const SocialLinks = memo(() => (
     ))}
   </div>
 ));
+SocialLinks.displayName = "SocialLinks";
 
 const LegalSection = memo(() => (
   <div className="text-sm space-y-4 border-t border-teal-800 pt-6">
@@ -53,8 +63,9 @@ const LegalSection = memo(() => (
       </div>
 
       <p>
-        <strong>ODR Portal:</strong> Resolve disputes efficiently using SEBI's
-        Online Dispute Resolution Portal: [https://smartodr.in/login].
+        <strong>ODR Portal:</strong> Resolve disputes efficiently using
+        SEBI&apos;s Online Dispute Resolution Portal:
+        [https://smartodr.in/login].
       </p>
     </div>
 
@@ -73,6 +84,7 @@ const LegalSection = memo(() => (
     </div>
   </div>
 ));
+LegalSection.displayName = "LegalSection";
 
 const Footer = () => {
   return (
@@ -141,4 +153,7 @@ const Footer = () => {
   );
 };
 
-export default memo(Footer);
+const MemoizedFooter = memo(Footer);
+MemoizedFooter.displayName = "Footer";
+
+export default MemoizedFooter;

@@ -1,15 +1,13 @@
 "use client";
 import { PRODUCTS } from "@/constants/products";
-import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { ProductCard } from "./ProductCard";
-import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+
 
 const Product = () => {
-  const router = useRouter();
-  const handleExplore = useCallback(() => {
-    window.scrollBy({ top: window.innerHeight, behavior: "smooth" });
-  }, []);
+  // const router = useRouter();
+  // const handleExplore = useCallback(() => {
+  //   window.scrollBy({ top: window.innerHeight, behavior: "smooth" });
+  // }, []);
 
   return (
     <div className="bg-white">

@@ -38,15 +38,15 @@ const Nakul = () => {
 
               <p>
                 With years of experience in the financial markets, we understand
-                the challenges that investors face—whether it's navigating
+                the challenges that investors face—whether it&apos;s navigating
                 complex information, building trust, or making confident
-                decisions. That's why we've built a platform designed not just
-                to meet these challenges but to redefine how you experience the
-                world of investing.
+                decisions. That&apos;s why we&apos;ve built a platform designed
+                not just to meet these challenges but to redefine how you
+                experience the world of investing.
               </p>
 
               <p>
-                At Sapphire, we're committed to innovation, integrity, and
+                At Sapphire, we&apos;re committed to innovation, integrity, and
                 excellence. Our team works tirelessly to bring you cutting-edge
                 tools, personalized insights, and seamless support to help you
                 achieve your financial goals.
@@ -54,7 +54,7 @@ const Nakul = () => {
 
               <p>
                 Thank you for trusting us as your partner in this journey.
-                Together, let's shape a future of wealth and opportunity.
+                Together, let&apos;s shape a future of wealth and opportunity.
               </p>
             </div>
           </div>

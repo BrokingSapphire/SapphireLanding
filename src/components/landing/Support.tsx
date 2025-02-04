@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 
@@ -7,7 +8,7 @@ const Support = () => {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <div className="w-32 sm:w-40">
-            <img
+            <Image
               src="/service.svg"
               alt="Support icon"
               className="w-full h-full object-contain"
@@ -18,8 +19,8 @@ const Support = () => {
               Get Support Anytime, Anywhere
             </h2>
             <p className="text-gray-600 text-sm sm:text-base">
-              We're just a call, email, or message away to help you with your
-              trading journey.
+              We&apos;re just a call, email, or message away to help you with
+              your trading journey.
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <p className="text-black font-semibold">Have any queries?</p>
@@ -43,7 +44,7 @@ const Support = () => {
           </div>
         </div>
         <button className="bg-[#152F46] text-base sm:text-lg text-white px-5 sm:px-7 py-2 sm:py-3 rounded-full hover:bg-[#1A3B59] transition-colors duration-200 w-full sm:w-auto">
-          Let's Connect
+          Let&apos;s Connect
         </button>
       </div>
     </div>

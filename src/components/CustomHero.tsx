@@ -14,7 +14,7 @@ const CustomHero = ({
   return (
     <section className="relative w-full min-h-screen" aria-label="Hero section">
       <div className="absolute w-full">
-        <img
+        <Image
           src={img}
           alt="line"
           className="w-full object-contain"

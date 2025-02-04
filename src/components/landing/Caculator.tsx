@@ -58,7 +58,7 @@ const Calculator: React.FC = () => {
         </div>
 
         <div className="w-full lg:w-auto px-4 sm:px-8 lg:px-12 mt-4 lg:mt-0">
-          <img
+          <Image
             src="/creditscore.svg"
             alt="Investment Calculator Illustration"
             className="max-w-full h-auto mx-auto lg:mx-0"

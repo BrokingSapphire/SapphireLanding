@@ -1,8 +1,19 @@
-//@ts-nocheck
+
 import Image from "next/image";
 import React from "react";
 
-const SupportCard = ({ title, imagePath, links }) => (
+interface SupportLink {
+  title: string;
+  description: string;
+}
+
+interface SupportCardProps {
+  title: string;
+  imagePath: string;
+  links: SupportLink[];
+}
+
+const SupportCard = ({ title, imagePath, links }: SupportCardProps) => (
   <div className="p-6 rounded-3xl border border-black flex flex-col gap-4">
     <div className="flex items-center gap-3 mb-2">
       <Image src={imagePath} width={50} height={50} alt="Heading icons" />

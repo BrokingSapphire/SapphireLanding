@@ -39,7 +39,7 @@ const Hero = () => {
               <li>
                 Experience intuitive trading with advanced tools, real-time
                 insights, and unparalleled support designed to maximize your
-                portfolio's growth potential effortlessly.
+                portfolio&apos;s growth potential effortlessly.
               </li>
             </h3>
           </div>

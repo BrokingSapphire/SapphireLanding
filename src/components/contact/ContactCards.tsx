@@ -1,8 +1,15 @@
-//@ts-nocheck
 import React from "react";
 import { Phone, Users, UserPlus, Building } from "lucide-react";
 
-const ContactCard = ({ title, icon, hours, satHours, phone }) => (
+interface ContactCardProps {
+  title: string;
+  icon: React.ReactNode;
+  hours: string;
+  satHours: string;
+  phone: string;
+}
+
+const ContactCard = ({ title, icon, hours, satHours, phone }: ContactCardProps) => (
   <div className="relative bg-white rounded-lg p-6 border-2 border-dashed border-teal-100">
     <div className="absolute -top-8 left-1/2 -translate-x-1/2">
       <div className="bg-teal-100 rounded-full p-4">{icon}</div>

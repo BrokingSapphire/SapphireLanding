@@ -1,14 +1,16 @@
+import Image from 'next/image';
 import React from 'react'
 
 const SupportHero = () => {
   return (
     <section className="relative min-h-screen" aria-label="Hero section">
       <div className="absolute inset-0">
-        <img
+        <Image
           src="support-line.svg"
           alt="line"
           className="w-full h-[90%] object-cover"
           aria-hidden="true"
+          
         />
       </div>
 

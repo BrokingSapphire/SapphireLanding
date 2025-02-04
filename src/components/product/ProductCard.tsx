@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { FaChevronRight } from "react-icons/fa";
 
 interface ProductCardProps {
@@ -23,9 +24,7 @@ export const ProductCard = ({
   >
     <div className="w-full md:w-1/2 space-y-4">
       <h2 className="sm:text-5xl font-bold">{title}</h2>
-      <p className="text-gray-600 text-lg">
-        "{description}"
-      </p>
+      <p className="text-gray-600 text-lg">&quot;{description}&quot;</p>
       <a
         href={`#${title.toLowerCase()}`}
         className="text-blue-600 hover:text-blue-700 inline-flex items-center"
@@ -36,11 +35,11 @@ export const ProductCard = ({
     </div>
     <div className="w-full md:w-1/2">
       <div className="bg-white rounded-lg p-4 sm:p-8">
-        <img
+        <Image
           src={image}
           alt={`${title} interface`}
           className="w-full h-auto"
-          loading="lazy"
+         
         />
       </div>
     </div>
