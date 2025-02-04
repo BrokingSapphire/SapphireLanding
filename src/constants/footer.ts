@@ -1,0 +1,89 @@
+import {
+  FaWhatsapp,
+  FaFacebook,
+  FaLinkedin,
+  FaTelegram,
+  FaInstagram,
+  FaYoutube,
+  FaTwitter,
+} from "react-icons/fa";
+
+
+export const COMPANY_LINKS = [
+  { title: "About Us", href: "#" },
+  { title: "Company Info", href: "#" },
+  { title: "Pricing", href: "#" },
+  { title: "Referral Programme", href: "#" },
+  { title: "Become a Partner", href: "#" },
+  { title: "Careers", href: "#" },
+];
+
+export const SUPPORT_LINKS = [
+  { title: "Contact Us", href: "#" },
+  { title: "Support Portal", href: "#" },
+  { title: "Blog", href: "#" },
+  { title: "Charges & Pricing", href: "#" },
+  { title: "Downloads", href: "#" },
+  { title: "Videos", href: "#" },
+  { title: "How to raise a Complaint?", href: "#" },
+];
+
+export const ACCOUNT_LINKS = [
+  { title: "Open an Account", href: "#" },
+  { title: "Bank Details", href: "#" },
+  { title: "Account Closure", href: "#" },
+  { title: "Collateral Haircut", href: "#" },
+  { title: "Risk Disclosure", href: "#" },
+];
+
+export const SOCIAL_ICONS = [
+  { Icon: FaWhatsapp, href: "https://wa.me/yourwhatsappnumber" },
+  { Icon: FaFacebook, href: "https://facebook.com/youraccount" },
+  { Icon: FaLinkedin, href: "https://linkedin.com/company/yourcompany" },
+  { Icon: FaTelegram, href: "https://t.me/youraccount" },
+  { Icon: FaInstagram, href: "https://instagram.com/youraccount" },
+  { Icon: FaYoutube, href: "https://youtube.com/c/yourchannel" },
+  { Icon: FaTwitter, href: "https://twitter.com/youraccount" },
+];
+
+export const LEGAL_SECTIONS = [
+  {
+    title: "Legal Name",
+    content:
+      "[Legal Name](Trading as Sapphire Broking): Registered Office: [Registered Address], CIN: [CIN], SEBI Registration No.: [SEBI Registration No.] – Member of NSE, BSE, MCX, and NCDEX. Depository Participant: CDSL Registration No.: [DP Registration No.]. Compliance Officer: [Name of Compliance Officer], Tel: [Phone Number], Email: compliance@sapphirebroking.com.",
+  },
+  {
+    title: "Grievance Redressal",
+    content:
+      "For complaints related to broking services, email us at support@sapphirebroking.com. For depository-related issues, email dpo@sapphirebroking.com. To escalate unresolved issues, contact our Grievance Redressal Officer: [Name], Mobile: [Mobile Number]. Alternatively, file complaints on the SEBI SCORES portal by registering with mandatory details like Name, PAN, Address, Mobile Number, and Email ID.",
+  },
+  {
+    title: "Cybersecurity Issues",
+    content:
+      "Report cybersecurity concerns to support@sapphirebroking.com or call us at [Cybersecurity Contact Number].",
+  },
+  {
+    title: "Regulatory Compliance",
+    content:
+      "Investments in the securities market are subject to market risks. Please read all related documents carefully before investing. Brokerage will not exceed the SEBI-prescribed limit.",
+  },
+  {
+    title: "Communication Policy",
+    content:
+      "By sharing your contact details, you consent to receive communication from us via Call/SMS/Email for a period of 12 months, even if registered under DND. We use your information for legitimate business purposes only and do not sell or rent your contact details to third parties.",
+  },
+];
+
+export const INVESTOR_POINTS = [
+  "Always update your mobile number and email ID with your broker and depository participant to receive OTPs and alerts directly from the depository.",
+  "Check your securities/mutual funds/bonds in the monthly Consolidated Account Statement issued by CDSL.",
+  "Prevent unauthorized transactions in your trading and demat accounts by safeguarding your credentials and being vigilant against unsolicited tips or schemes.",
+  "For IPO applications, use ASBA for payment, eliminating the need for cheques.",
+];
+
+export const EXCHANGES = ["NSE", "BSE", "MCX", "NCDEX"];
+
+export interface LinkSectionProps {
+  title: string;
+  links: Array<{ title: string; href: string }>;
+}
