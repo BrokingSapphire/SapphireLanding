@@ -1,12 +1,7 @@
 "use client";
-
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { ChevronUp, ChevronDown } from "lucide-react";
-import Navbar from "../Navbar";
-
 import type {
   PaymentMethodType,
   BankLinkMethodType,
@@ -15,6 +10,8 @@ import type {
 } from "../../constants/types/signup-types/form";
 import MobileVerification from "./form-components/MobileVerification";
 import EmailVerification from "./form-components/EmailVerification";
+import ProgressBar from "./general/ProgressBar";
+import PageNavigation from "./general/PageNavigation";
 
 interface StepConfig {
   [key: number]: PageData;
@@ -22,19 +19,6 @@ interface StepConfig {
 
 interface FormDataType {
   [key: string]: FormBaseData & Record<string, any>;
-}
-
-// Component Types
-interface ProgressBarProps {
-  currentStep: number;
-  totalSteps: number;
-}
-
-interface PageNavigationProps {
-  currentStep: number;
-  canMoveNext: boolean;
-  canMovePrev: boolean;
-  onNavigate: (direction: number) => void;
 }
 
 // Constants
@@ -75,55 +59,8 @@ const ANIMATIONS = {
   },
 };
 
-const ProgressBar: React.FC<ProgressBarProps> = ({
-  currentStep,
-  totalSteps,
-}) => (
-  <div className="w-full h-2 bg-gray-200">
-    <motion.div
-      className="h-full bg-[#FFD600]"
-      initial={{ width: 0 }}
-      animate={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-    />
-  </div>
-);
 
-const PageNavigation: React.FC<PageNavigationProps> = ({
-  currentStep,
-  canMoveNext,
-  canMovePrev,
-  onNavigate,
-}) => (
-  <div className="fixed bottom-8 right-8 flex flex-col items-end space-y-2">
-    <div className="flex flex-row">
-      {[
-        { direction: -1, Icon: ChevronUp, disabled: !canMovePrev },
-        { direction: 1, Icon: ChevronDown, disabled: !canMoveNext },
-      ].map(({ direction, Icon, disabled }) => (
-        <button
-          key={direction}
-          onClick={() => onNavigate(direction)}
-          disabled={disabled}
-          className={`
-            w-10 h-10 flex items-center justify-center border border-white
-            ${direction < 0 ? "rounded-s-md" : "rounded-e-md"}
-            ${
-              disabled
-                ? "bg-teal-800 text-gray-400 cursor-not-allowed"
-                : "bg-teal-800 text-white hover:bg-teal-700"
-            }
-          `}
-        >
-          <Icon size={24} />
-        </button>
-      ))}
-    </div>
-  </div>
-);
-
-const Signup: React.FC = () => {
-  const router = useRouter();
+const Signup = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [direction, setDirection] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(null);
@@ -250,7 +187,7 @@ const [formData, setFormData] = useState<FormDataType>({
   return (
     <div className="flex flex-col min-h-screen">
       {/* {currentStep <= 3 ? <Navbar /> : <Focus_Navbar />} */}
-      <Navbar />
+
       <ProgressBar
         currentStep={currentStep}
         totalSteps={Object.keys(STEP_CONFIG).length}
