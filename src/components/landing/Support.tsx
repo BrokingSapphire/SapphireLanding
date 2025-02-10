@@ -12,6 +12,8 @@ const Support = () => {
               src="/service.svg"
               alt="Support icon"
               className="w-full h-full object-contain"
+              width={1000}
+              height={1000}
             />
           </div>
           <div className="space-y-2 px-4 sm:px-20 text-center sm:text-left">

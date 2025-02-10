@@ -62,6 +62,8 @@ const Calculator: React.FC = () => {
             src="/creditscore.svg"
             alt="Investment Calculator Illustration"
             className="max-w-full h-auto mx-auto lg:mx-0"
+            width={1000}
+            height={1000}
           />
         </div>
       </div>

@@ -59,8 +59,10 @@ const PricingCard = ({
             )}
           </div>
           <Image
-            src={`/price/${icon}`}
+            src={`price/${icon}`}
             alt={`${type} icon`}
+            width={1000}
+            height={1000}
             className="w-10 sm:w-14 h-10 sm:h-14"
           />
         </div>
