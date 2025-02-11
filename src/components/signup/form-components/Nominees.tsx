@@ -15,7 +15,7 @@ interface NomineesFormData {
 }
 
 interface NomineesManagementProps {
-  formData?: NomineesFormData; // Make formData optional
+  formData: NomineesFormData;
   updateFormData: (data: Partial<NomineesFormData>) => void;
   onNextStep: () => void;
 }
@@ -28,15 +28,7 @@ const initialNominee: Nominee = {
   share: 0,
 };
 
-const NomineesManagement: React.FC<NomineesManagementProps> = ({
-  formData = {
-    nominees: [], // Ensure nominees is always an array
-    currentNominee: null,
-    isAddingNominee: false,
-  }, // Initialize formData with default values
-  updateFormData,
-  onNextStep,
-}) => {
+const NomineesManagement: React.FC<NomineesManagementProps> = ({ formData, updateFormData, onNextStep }) => {
   const handleAddNominee = () => {
     updateFormData({
       isAddingNominee: true,
@@ -57,13 +49,8 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({
   const handleSaveNominee = () => {
     if (!formData.currentNominee) return;
 
-    // Ensure nominees is always an array
-    const updatedNominees = Array.isArray(formData.nominees)
-      ? [...formData.nominees, formData.currentNominee]
-      : [formData.currentNominee];
-
     updateFormData({
-      nominees: updatedNominees,
+      nominees: [...formData.nominees, formData.currentNominee],
       currentNominee: null,
       isAddingNominee: false,
     });
@@ -114,7 +101,7 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({
         onClick={onNextStep}
         disabled={formData.nominees.length === 0}
         className={`w-full bg-teal-800 text-white py-3 rounded mt-6 ${
-          formData.nominees.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-teal-700"
+          formData.nominees.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-teal-700'
         }`}
       >
         Continue
@@ -193,7 +180,7 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({
           type="submit"
           className="w-full bg-teal-800 text-white py-3 rounded hover:bg-teal-700"
         >
-          Save Nominee
+          Continue
         </button>
       </form>
     </div>

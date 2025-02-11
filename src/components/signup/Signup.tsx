@@ -19,6 +19,9 @@ import InvestmentSegment from "./form-components/InvestmentSegment";
 import TradingAccountDetails from "./form-components/TradingAccountDetail";
 import TradingPreferences from "./form-components/TradingPreference";
 import BankLink from "./form-components/LinkBank";
+import TradingAccountDetails2 from "./form-components/TradingAccountDetails2";
+import NomineesManagement from "./form-components/Nominees";
+
 interface StepConfig {
   [key: number]: PageData;
 }
@@ -74,7 +77,17 @@ const STEP_CONFIG: StepConfig = {
   9: {
     title: "Link Bank Account",
     description: "Link your bank account to proceed with the registration.",
+    component: TradingAccountDetails2,
+  },
+  10: {
+    title: "Link Bank Account",
+    description: "Link your bank account to proceed with the registration.",
     component: BankLink,
+  },
+  11:{
+    title: "Nominate",
+    description: "Please verify your email to continue with the registration.",
+    component: NomineesManagement,
   },
   
   // ... Add other steps
