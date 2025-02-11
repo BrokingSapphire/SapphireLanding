@@ -53,7 +53,10 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
     }
   };
 
-  const handleBackspace = (index, e) => {
+  const handleBackspace = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === "Backspace") {
       const newOtp = [...formData.otp];
 
@@ -71,7 +74,7 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
     }
   };
 
-  const handleMobileNumberChange = (e) => {
+  const handleMobileNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     updateFormData({
       mobileNumber: value,
@@ -81,21 +84,7 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
     });
   };
 
-  const handleGetOtp = () => {
-    if (formData.mobileNumber.length === 10) {
-      updateFormData({
-        otpVisible: true,
-        otpSent: true,
-        mobileError: false,
-      });
-    } else {
-      updateFormData({
-        mobileError: true,
-      });
-    }
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.isValid || isSubmitting) return;
@@ -118,6 +107,21 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
       setIsSubmitting(false);
     }
   };
+
+  const handleGetOtp = () => {
+    if (formData.mobileNumber.length === 10) {
+      updateFormData({
+        otpVisible: true,
+        otpSent: true,
+        mobileError: false,
+      });
+    } else {
+      updateFormData({
+        mobileError: true,
+      });
+    }
+  };
+
 
   return (
     <div className="w-full">

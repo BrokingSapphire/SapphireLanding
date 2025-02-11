@@ -112,7 +112,7 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({
       {formData.nominees.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-gray-600 mb-4">
-            You haven't added any nominees yet.
+            You haven&apos;t added any nominees yet.
           </p>
           <p className="text-gray-600">
             Click the Add Nominee button to get started.

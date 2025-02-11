@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 const CustomHero = ({
   img,
@@ -13,11 +14,13 @@ const CustomHero = ({
   return (
     <section className="relative w-full min-h-screen" aria-label="Hero section">
       <div className="absolute w-full">
-        <img
+        <Image
           src={img}
           alt="line"
           className="w-full object-contain"
           aria-hidden="true"
+          width={1000}
+          height={1000}
         />
       </div>
 

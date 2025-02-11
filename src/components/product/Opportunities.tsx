@@ -12,11 +12,13 @@ const Opportunities = () => {
       aria-label="Call to action"
     >
       <div className="absolute right-0 top-0 w-1/4 sm:w-1/3">
-        <img
+        <Image
           src="/products/arrows.svg"
           alt="Arrows pointing right"
           className="ml-auto object-cover"
           aria-hidden="true"
+          width={1000}
+          height={1000}
         />
       </div>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">

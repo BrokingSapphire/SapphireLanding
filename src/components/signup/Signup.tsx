@@ -150,7 +150,7 @@ const Signup = () => {
         BankComponent && (
           <BankComponent
             onBack={() => setBankLinkMethod(null)}
-            onComplete={(details: any) => {
+            onComplete={() => {
               setBankLinkMethod(null);
               setCurrentStep(13);
             }}

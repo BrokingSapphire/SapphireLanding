@@ -101,7 +101,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm">Father's Name</label>
+          <label className="block text-sm">Father&apos;s Name</label>
           <input
             type="text"
             name="fatherName"
@@ -114,7 +114,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm">Mother's Name</label>
+          <label className="block text-sm">Mother&apos;s Name</label>
           <input
             type="text"
             name="motherName"
