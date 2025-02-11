@@ -14,7 +14,8 @@ import CardVerification from "./form-components/CardVerification";
 import ProgressBar from "./general/ProgressBar";
 import PageNavigation from "./general/PageNavigation";
 import PanVerification from "./form-components/PanVerification";
-
+import AdharVerification from "./form-components/AdharVerification";
+import InvestmentSegment from "./form-components/InvestmentSegment";
 interface StepConfig {
   [key: number]: PageData;
 }
@@ -46,6 +47,16 @@ const STEP_CONFIG: StepConfig = {
     title: "Verify PAN Details",
     description: "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
     component: PanVerification,
+  },
+  5: {
+    title: "Adhar Verification (DigiLocker)",
+    description: "Verify your Adhar details securely using DigiLocker to proceed with the registration.",
+    component: AdharVerification,
+  },
+  6: {
+    title: "Choose Investment Segments",
+    description: "Select the investment segments you're interested in.",
+    component: InvestmentSegment,
   },
   
   // ... Add other steps
@@ -105,6 +116,13 @@ const [formData, setFormData] = useState<FormDataType>({
     cvv: "",
     isValid: false,
     cardError: false,
+  },
+  page4: {
+    panNumber: "",
+    dob: "",
+    isValid: false,
+    panError: false,
+    dobError: false,
   },
 });
 
