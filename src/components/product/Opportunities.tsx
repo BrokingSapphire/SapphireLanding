@@ -12,7 +12,7 @@ const Opportunities = () => {
       aria-label="Call to action"
     >
       <div className="absolute right-0 top-0 w-1/4 sm:w-1/3">
-        <Image
+        <img
           src="/products/arrows.svg"
           alt="Arrows pointing right"
           className="ml-auto object-cover"

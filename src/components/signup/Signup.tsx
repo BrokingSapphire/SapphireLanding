@@ -10,8 +10,10 @@ import type {
 } from "../../constants/types/signup-types/form";
 import MobileVerification from "./form-components/MobileVerification";
 import EmailVerification from "./form-components/EmailVerification";
+import CardVerification from "./form-components/CardVerification";
 import ProgressBar from "./general/ProgressBar";
 import PageNavigation from "./general/PageNavigation";
+import PanVerification from "./form-components/PanVerification";
 
 interface StepConfig {
   [key: number]: PageData;
@@ -19,6 +21,7 @@ interface StepConfig {
 
 interface FormDataType {
   [key: string]: FormBaseData & Record<string, any>;
+  // page3: CardFormData
 }
 
 // Constants
@@ -34,6 +37,17 @@ const STEP_CONFIG: StepConfig = {
     description: "Please verify your email to continue with the registration.",
     component: EmailVerification,
   },
+  3:{
+    title: "Verify Card Details",
+    description: "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
+    component: CardVerification,
+  },
+  4:{
+    title: "Verify PAN Details",
+    description: "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
+    component: PanVerification,
+  },
+  
   // ... Add other steps
 };
 
@@ -83,7 +97,16 @@ const [formData, setFormData] = useState<FormDataType>({
     emailError: "",
     isValid: false,
   },
-}); 
+  page3: {
+    cardNumber: "",
+    cardName: "",
+    expiryMonth: "",
+    expiryYear: "",
+    cvv: "",
+    isValid: false,
+    cardError: false,
+  },
+});
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
