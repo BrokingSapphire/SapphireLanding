@@ -1,57 +1,73 @@
-import React from "react";
-
-interface InvestmentFormData {
-  selectedSegments: string[];
-  isValid: boolean;
-}
+import React, { useState } from "react";
 
 interface InvestmentSegmentProps {
-  formData: InvestmentFormData;
-  updateFormData: (data: Partial<InvestmentFormData>) => void;
   onNextStep: () => void;
 }
 
 const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
-  formData,
-  updateFormData,
   onNextStep,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    selectedSegments: [] as string[],
+    isValid: false,
+  });
+
   const segments = [
-    { id: 'cash-mutual', label: 'Cash/Mutual Funds' },
-    { id: 'fno', label: 'F&O' },
-    { id: 'debt', label: 'Debt' },
-    { id: 'currency', label: 'Currency' },
-    { id: 'commodity', label: 'Commodity Derivatives' }
+    { id: "cash-mutual", label: "Cash/Mutual Funds" },
+    { id: "fno", label: "F&O" },
+    { id: "debt", label: "Debt" },
+    { id: "currency", label: "Currency" },
+    { id: "commodity", label: "Commodity Derivatives" },
   ];
 
+  const updateFormData = (data: Partial<typeof formData>): void => {
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }));
+  };
+
   const handleSegmentToggle = (segmentId: string) => {
-    const currentSegments = formData?.selectedSegments || [];
+    if (isSubmitting) return;
+
+    const currentSegments = formData.selectedSegments;
     let newSegments: string[];
 
     if (currentSegments.includes(segmentId)) {
-      newSegments = currentSegments.filter(id => id !== segmentId);
+      newSegments = currentSegments.filter((id) => id !== segmentId);
     } else {
       newSegments = [...currentSegments, segmentId];
     }
 
     updateFormData({
       selectedSegments: newSegments,
-      isValid: newSegments.length > 0
+      isValid: newSegments.length > 0,
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted', formData); // Add this for debugging
-    if (formData?.isValid) {
+    if (!formData.isValid || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
       onNextStep();
+    } catch (error) {
+      console.error("Error during submission:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="w-full">
-        <h1 className="text-2xl font-semibold mb-4">Choose your investment segment</h1>
+        <h1 className="text-2xl font-semibold mb-4">
+          Choose your investment segment
+        </h1>
         <p className="text-gray-600 mb-6">Step 4 of 9</p>
 
         <form onSubmit={handleSubmit}>
@@ -62,18 +78,22 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
                   key={segment.id}
                   type="button"
                   onClick={() => handleSegmentToggle(segment.id)}
+                  disabled={isSubmitting}
                   className={`p-4 border-2 rounded-lg text-left transition-colors
-                    ${formData?.selectedSegments?.includes(segment.id)
-                      ? 'border-teal-600 bg-teal-50'
-                      : 'border-gray-200 hover:border-teal-600'
-                    }`}
+                    ${
+                      formData.selectedSegments.includes(segment.id)
+                        ? "border-teal-600 bg-teal-50"
+                        : "border-gray-200 hover:border-teal-600"
+                    }
+                    ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
+                  `}
                 >
                   <span className="font-medium">{segment.label}</span>
                 </button>
               ))}
             </div>
 
-            {formData?.selectedSegments?.length === 0 && (
+            {formData.selectedSegments.length === 0 && (
               <p className="text-red-500 mt-2">
                 Please select at least one investment segment.
               </p>
@@ -82,10 +102,14 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
             <button
               type="submit"
               className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 mt-6
-                ${formData?.isValid ? "" : "opacity-50 cursor-not-allowed"}`}
-              disabled={!formData?.isValid}
+                ${
+                  formData.isValid && !isSubmitting
+                    ? ""
+                    : "opacity-50 cursor-not-allowed"
+                }`}
+              disabled={!formData.isValid || isSubmitting}
             >
-              Next
+              {isSubmitting ? "Please wait..." : "Next"}
             </button>
           </div>
         </form>

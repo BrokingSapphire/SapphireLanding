@@ -1,31 +1,35 @@
-import React from "react";
-
-interface TradingAccountFormData {
-  maritalStatus: string;
-  fatherName: string;
-  motherName: string;
-  isValid: boolean;
-}
+import React, { useState } from "react";
 
 interface TradingAccountDetailsProps {
-  formData: TradingAccountFormData;
-  updateFormData: (data: Partial<TradingAccountFormData>) => void;
   onNextStep: () => void;
 }
 
 const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
-  formData,
-  updateFormData,
   onNextStep,
 }) => {
-  const validateForm = (updatedData: Partial<TradingAccountFormData>) => {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    maritalStatus: "",
+    fatherName: "",
+    motherName: "",
+    isValid: false,
+  });
+
+  const validateForm = (updatedData: Partial<typeof formData>) => {
     const currentData = { ...formData, ...updatedData };
     return {
-      isValid: 
-        currentData.maritalStatus?.length > 0 &&
-        currentData.fatherName?.length > 0 &&
-        currentData.motherName?.length > 0
+      isValid:
+        currentData.maritalStatus.length > 0 &&
+        currentData.fatherName.length > 0 &&
+        currentData.motherName.length > 0,
     };
+  };
+
+  const updateFormData = (data: Partial<typeof formData>): void => {
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,17 +37,36 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     const updates = {
       [name]: value,
     };
-    
+
     updateFormData({
       ...updates,
       ...validateForm(updates),
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleMaritalStatusChange = (status: string) => {
+    if (isSubmitting) return;
+
+    const updates = { maritalStatus: status };
+    updateFormData({
+      ...updates,
+      ...validateForm(updates),
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData?.isValid) {
+    if (!formData.isValid || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
       onNextStep();
+    } catch (error) {
+      console.error("Error during submission:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -56,19 +79,20 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         <div className="space-y-2">
           <label className="block text-sm">Marital Status</label>
           <div className="flex gap-2">
-            {['Single', 'Married', 'Divorced'].map((status) => (
+            {["Single", "Married", "Divorced"].map((status) => (
               <button
                 key={status}
                 type="button"
-                onClick={() => updateFormData({
-                  maritalStatus: status,
-                  ...validateForm({ maritalStatus: status })
-                })}
-                className={`px-4 py-1 text-sm border rounded
-                  ${formData?.maritalStatus === status 
-                    ? 'bg-teal-600 text-white ' 
-                    : 'border-gray-300 bg-white hover:border-gray-400'
-                  }`}
+                onClick={() => handleMaritalStatusChange(status)}
+                disabled={isSubmitting}
+                className={`px-4 py-1 text-sm border rounded transition-colors
+                  ${
+                    formData.maritalStatus === status
+                      ? "bg-teal-600 text-white"
+                      : "border-gray-300 bg-white hover:border-gray-400"
+                  }
+                  ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
+                `}
               >
                 {status}
               </button>
@@ -81,9 +105,11 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           <input
             type="text"
             name="fatherName"
-            value={formData?.fatherName || ''}
+            value={formData.fatherName}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-teal-600"
+            disabled={isSubmitting}
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-teal-600
+              disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -92,19 +118,25 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           <input
             type="text"
             name="motherName"
-            value={formData?.motherName || ''}
+            value={formData.motherName}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-teal-600"
+            disabled={isSubmitting}
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-teal-600
+              disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
         <button
           type="submit"
-          className={`w-full py-2 mt-4 text-white bg-teal-800 rounded
-            ${formData?.isValid ? 'hover:bg-teal-700' : 'opacity-50 cursor-not-allowed'}`}
-          disabled={!formData?.isValid}
+          className={`w-full py-2 mt-4 text-white bg-teal-800 rounded transition-colors
+            ${
+              formData.isValid && !isSubmitting
+                ? "hover:bg-teal-700"
+                : "opacity-50 cursor-not-allowed"
+            }`}
+          disabled={!formData.isValid || isSubmitting}
         >
-          Continue
+          {isSubmitting ? "Please wait..." : "Continue"}
         </button>
       </form>
     </div>

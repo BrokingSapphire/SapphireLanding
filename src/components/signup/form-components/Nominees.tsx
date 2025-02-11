@@ -1,4 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
+
+interface NomineesManagementProps {
+  onNextStep: () => void;
+}
 
 interface Nominee {
   id: number;
@@ -6,18 +10,6 @@ interface Nominee {
   panNumber: string;
   relationship: string;
   share: number;
-}
-
-interface NomineesFormData {
-  nominees: Nominee[];
-  currentNominee: Nominee | null;
-  isAddingNominee: boolean;
-}
-
-interface NomineesManagementProps {
-  formData: NomineesFormData;
-  updateFormData: (data: Partial<NomineesFormData>) => void;
-  onNextStep: () => void;
 }
 
 const initialNominee: Nominee = {
@@ -28,16 +20,38 @@ const initialNominee: Nominee = {
   share: 0,
 };
 
-const NomineesManagement: React.FC<NomineesManagementProps> = ({ formData, updateFormData, onNextStep }) => {
+const NomineesManagement: React.FC<NomineesManagementProps> = ({
+  onNextStep,
+}) => {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    nominees: [] as Nominee[],
+    currentNominee: null as Nominee | null,
+    isAddingNominee: false,
+  });
+
+  const updateFormData = (data: Partial<typeof formData>): void => {
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }));
+  };
+
   const handleAddNominee = () => {
+    if (isSubmitting) return;
+
     updateFormData({
       isAddingNominee: true,
       currentNominee: { ...initialNominee, id: formData.nominees.length + 1 },
     });
   };
 
-  const handleNomineeChange = (field: keyof Nominee, value: string | number) => {
-    if (!formData.currentNominee) return;
+  const handleNomineeChange = (
+    field: keyof Nominee,
+    value: string | number
+  ) => {
+    if (!formData.currentNominee || isSubmitting) return;
+
     updateFormData({
       currentNominee: {
         ...formData.currentNominee,
@@ -46,14 +60,39 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({ formData, updat
     });
   };
 
-  const handleSaveNominee = () => {
-    if (!formData.currentNominee) return;
+  const handleSaveNominee = async () => {
+    if (!formData.currentNominee || isSubmitting) return;
 
-    updateFormData({
-      nominees: [...formData.nominees, formData.currentNominee],
-      currentNominee: null,
-      isAddingNominee: false,
-    });
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      updateFormData({
+        nominees: [...formData.nominees, formData.currentNominee],
+        currentNominee: null,
+        isAddingNominee: false,
+      });
+    } catch (error) {
+      console.error("Error saving nominee:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.nominees.length === 0 || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      onNextStep();
+    } catch (error) {
+      console.error("Error during submission:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const NomineesListPage = () => (
@@ -65,7 +104,13 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({ formData, updat
         </div>
         <button
           onClick={handleAddNominee}
-          className="text-teal-800 border border-teal-800 px-4 py-2 rounded"
+          disabled={isSubmitting}
+          className={`text-teal-800 border border-teal-800 px-4 py-2 rounded transition-colors
+            ${
+              isSubmitting
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-teal-50"
+            }`}
         >
           + Add Nominee
         </button>
@@ -73,8 +118,12 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({ formData, updat
 
       {formData.nominees.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-600 mb-4">You haven't added any nominees yet.</p>
-          <p className="text-gray-600">Click the Add Nominee button to get started.</p>
+          <p className="text-gray-600 mb-4">
+            You haven't added any nominees yet.
+          </p>
+          <p className="text-gray-600">
+            Click the Add Nominee button to get started.
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -86,7 +135,9 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({ formData, updat
               <div>
                 <h3 className="font-medium">Nominee {nominee.id}</h3>
                 <p className="text-gray-600">{nominee.name}</p>
-                <p className="text-gray-600">Relationship: {nominee.relationship}</p>
+                <p className="text-gray-600">
+                  Relationship: {nominee.relationship}
+                </p>
               </div>
               <div className="text-right">
                 <p className="font-medium">{nominee.share}%</p>
@@ -98,13 +149,16 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({ formData, updat
       )}
 
       <button
-        onClick={onNextStep}
-        disabled={formData.nominees.length === 0}
-        className={`w-full bg-teal-800 text-white py-3 rounded mt-6 ${
-          formData.nominees.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-teal-700'
-        }`}
+        onClick={handleSubmit}
+        disabled={formData.nominees.length === 0 || isSubmitting}
+        className={`w-full bg-teal-800 text-white py-3 rounded mt-6 transition-colors
+          ${
+            formData.nominees.length === 0 || isSubmitting
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-teal-700"
+          }`}
       >
-        Continue
+        {isSubmitting ? "Please wait..." : "Continue"}
       </button>
     </div>
   );
@@ -135,26 +189,37 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({ formData, updat
                 className="w-full border rounded px-3 py-2"
                 value={formData.currentNominee?.name || ""}
                 onChange={(e) => handleNomineeChange("name", e.target.value)}
+                disabled={isSubmitting}
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Pan Number</label>
+              <label className="block text-sm text-gray-600 mb-1">
+                Pan Number
+              </label>
               <input
                 type="text"
                 className="w-full border rounded px-3 py-2"
                 value={formData.currentNominee?.panNumber || ""}
-                onChange={(e) => handleNomineeChange("panNumber", e.target.value)}
+                onChange={(e) =>
+                  handleNomineeChange("panNumber", e.target.value)
+                }
+                disabled={isSubmitting}
               />
             </div>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm text-gray-600 mb-1">Relationship</label>
+          <label className="block text-sm text-gray-600 mb-1">
+            Relationship
+          </label>
           <select
             className="w-full border rounded px-3 py-2"
             value={formData.currentNominee?.relationship || ""}
-            onChange={(e) => handleNomineeChange("relationship", e.target.value)}
+            onChange={(e) =>
+              handleNomineeChange("relationship", e.target.value)
+            }
+            disabled={isSubmitting}
           >
             <option value="">Select Relationship</option>
             <option value="Spouse">Spouse</option>
@@ -172,21 +237,34 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({ formData, updat
             min="0"
             max="100"
             value={formData.currentNominee?.share || ""}
-            onChange={(e) => handleNomineeChange("share", Number(e.target.value))}
+            onChange={(e) =>
+              handleNomineeChange("share", Number(e.target.value))
+            }
+            disabled={isSubmitting}
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-teal-800 text-white py-3 rounded hover:bg-teal-700"
+          disabled={isSubmitting}
+          className={`w-full bg-teal-800 text-white py-3 rounded transition-colors
+            ${
+              isSubmitting
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-teal-700"
+            }`}
         >
-          Continue
+          {isSubmitting ? "Please wait..." : "Save Nominee"}
         </button>
       </form>
     </div>
   );
 
-  return formData.isAddingNominee ? <NomineeDetailsPage /> : <NomineesListPage />;
+  return formData.isAddingNominee ? (
+    <NomineeDetailsPage />
+  ) : (
+    <NomineesListPage />
+  );
 };
 
 export default NomineesManagement;
