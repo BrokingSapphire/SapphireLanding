@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface PanFormData {
   panNumber: string;
@@ -8,29 +8,23 @@ interface PanFormData {
   dobError?: boolean;
 }
 
-const PanVerification: React.FC = () => {
-  // Initialize form data with default values
-  const [formData, setFormData] = useState<PanFormData>({
-    panNumber: "",
-    dob: "",
-    isValid: false,
-    panError: false,
-    dobError: false
-  });
+interface PanVerificationProps {
+  formData: PanFormData;
+  updateFormData: (data: Partial<PanFormData>) => void;
+  onNextStep: () => void;
+}
 
-  const updateFormData = (updates: Partial<PanFormData>) => {
-    setFormData(prevData => ({
-      ...prevData,
-      ...updates
-    }));
-  };
-
+const PanVerification: React.FC<PanVerificationProps> = ({
+  formData,
+  updateFormData,
+  onNextStep,
+}) => {
   const validateForm = (updatedData: Partial<PanFormData>) => {
     const currentData = { ...formData, ...updatedData };
-    
+
     // PAN validation: 10 characters, alphanumeric
     const isPanValid = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(currentData.panNumber);
-    
+
     // DOB validation: should be a valid date and person should be at least 18 years old
     const isValidDate = (dateString: string) => {
       const today = new Date();
@@ -46,7 +40,7 @@ const PanVerification: React.FC = () => {
     return {
       isValid: isPanValid && isValidDate(currentData.dob),
       panError: currentData.panNumber.length > 0 && !isPanValid,
-      dobError: currentData.dob.length > 0 && !isValidDate(currentData.dob)
+      dobError: currentData.dob.length > 0 && !isValidDate(currentData.dob),
     };
   };
 
@@ -72,12 +66,6 @@ const PanVerification: React.FC = () => {
     });
   };
 
-  const handleNextStep = () => {
-    // Here you can add your logic for what happens after form submission
-    console.log("Form submitted with data:", formData);
-    // Example: navigate to next step, submit to API, etc.
-  };
-
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="w-full">
@@ -87,7 +75,7 @@ const PanVerification: React.FC = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (formData.isValid) handleNextStep();
+            if (formData.isValid) onNextStep();
           }}
         >
           <div className="space-y-6">
@@ -119,7 +107,7 @@ const PanVerification: React.FC = () => {
                 placeholder="DD/MM/YYYY"
                 value={formData.dob}
                 onChange={handleDobChange}
-                max={new Date().toISOString().split('T')[0]}
+                max={new Date().toISOString().split("T")[0]}
               />
               {formData.dobError && (
                 <p className="text-red-500 mt-2">
