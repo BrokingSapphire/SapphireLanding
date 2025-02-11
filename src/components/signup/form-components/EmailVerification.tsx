@@ -1,27 +1,31 @@
-import React, { ChangeEvent, KeyboardEvent, FormEvent } from "react";
-
-interface EmailFormData {
-  email: string;
-  otp: string[];
-  otpVisible: boolean;
-  otpSent: boolean;
-  emailError: string;
-  isValid: boolean;
-}
+import React, { ChangeEvent, KeyboardEvent, FormEvent, useState } from "react";
 
 interface EmailVerificationProps {
-  formData: EmailFormData;
-  updateFormData: (data: Partial<EmailFormData>) => void;
-  onNextStep: (method?: string) => void;
+  onNextStep: () => void;
 }
 
 const EmailVerification: React.FC<EmailVerificationProps> = ({
-  formData,
-  updateFormData,
   onNextStep,
 }) => {
+  const [formData, setFormData] = useState({
+    email: "",
+    otp: ["", "", "", "", "", ""],
+    otpVisible: false,
+    otpSent: false,
+    emailError: "",
+    isValid: false,
+  });
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const validateEmail = (email: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const updateFormData = (data: Partial<typeof formData>): void => {
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }));
   };
 
   const handleOtpChange = (index: number, value: string): void => {
@@ -100,10 +104,26 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
     }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    if (formData.isValid) {
-      onNextStep();
+
+    if (!formData.isValid || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
+      if (formData.isValid) {
+        onNextStep();
+      }
+    } catch (error) {
+      console.error("Error during submission:", error);
+      updateFormData({
+        emailError: "An error occurred during submission. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -127,6 +147,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
             placeholder="Your email address"
             value={formData.email}
             onChange={handleEmailChange}
+            disabled={isSubmitting}
           />
           {formData.emailError && (
             <p className="text-red-500 text-sm mt-2">{formData.emailError}</p>
@@ -134,16 +155,18 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           <div className="flex justify-end space-x-4 mt-2">
             <button
               type="button"
-              className="text-blue-500 hover:text-blue-600"
+              className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleGetOtp}
+              disabled={isSubmitting}
             >
               Get OTP →
             </button>
             {formData.otpSent && (
               <button
                 type="button"
-                className="text-blue-500 hover:text-blue-600"
+                className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleGetOtp}
+                disabled={isSubmitting}
               >
                 Resend
               </button>
@@ -167,6 +190,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleBackspace(index, e)}
                   onInput={handleInputFilter}
+                  disabled={isSubmitting}
                 />
               ))}
             </div>
@@ -176,11 +200,13 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
         <button
           type="submit"
           className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 mb-8 ${
-            formData.isValid ? "" : "opacity-50 cursor-not-allowed"
+            formData.isValid && !isSubmitting
+              ? ""
+              : "opacity-50 cursor-not-allowed"
           }`}
-          disabled={!formData.isValid}
+          disabled={!formData.isValid || isSubmitting}
         >
-          Continue
+          {isSubmitting ? "Please wait..." : "Continue"}
         </button>
 
         <div className="space-y-4 text-sm text-gray-600">
@@ -192,7 +218,11 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           <p>
             If you are looking to open a HUF, Corporate, Partnership, or NRI
             account, you have to{" "}
-            <button type="button" className="text-blue-500 hover:text-blue-600">
+            <button
+              type="button"
+              className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
+            >
               click here
             </button>
             .

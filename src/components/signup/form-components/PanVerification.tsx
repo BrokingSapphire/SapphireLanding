@@ -1,25 +1,20 @@
-import React from "react";
-
-interface PanFormData {
-  panNumber: string;
-  dob: string;
-  isValid: boolean;
-  panError?: boolean;
-  dobError?: boolean;
-}
+import React, { useState } from "react";
 
 interface PanVerificationProps {
-  formData: PanFormData;
-  updateFormData: (data: Partial<PanFormData>) => void;
   onNextStep: () => void;
 }
 
-const PanVerification: React.FC<PanVerificationProps> = ({
-  formData,
-  updateFormData,
-  onNextStep,
-}) => {
-  const validateForm = (updatedData: Partial<PanFormData>) => {
+const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    panNumber: "",
+    dob: "",
+    isValid: false,
+    panError: false,
+    dobError: false,
+  });
+
+  const validateForm = (updatedData: Partial<typeof formData>) => {
     const currentData = { ...formData, ...updatedData };
 
     // PAN validation: 10 characters, alphanumeric
@@ -31,7 +26,10 @@ const PanVerification: React.FC<PanVerificationProps> = ({
       const birthDate = new Date(dateString);
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
         age--;
       }
       return age >= 18;
@@ -42,6 +40,13 @@ const PanVerification: React.FC<PanVerificationProps> = ({
       panError: currentData.panNumber.length > 0 && !isPanValid,
       dobError: currentData.dob.length > 0 && !isValidDate(currentData.dob),
     };
+  };
+
+  const updateFormData = (data: Partial<typeof formData>): void => {
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }));
   };
 
   const handlePanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,18 +71,34 @@ const PanVerification: React.FC<PanVerificationProps> = ({
     });
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.isValid || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      onNextStep();
+    } catch (error) {
+      console.error("Error during submission:", error);
+      updateFormData({
+        panError: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="w-full">
-        <h1 className="text-2xl font-semibold mb-4">Enter your PAN to Continue</h1>
+        <h1 className="text-2xl font-semibold mb-4">
+          Enter your PAN to Continue
+        </h1>
         <p className="text-gray-600 mb-2">Step 1 of 9</p>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (formData.isValid) onNextStep();
-          }}
-        >
+        <form onSubmit={handleSubmit}>
           <div className="space-y-6">
             <div>
               <label className="block text-gray-700 mb-2">PAN Number</label>
@@ -91,6 +112,7 @@ const PanVerification: React.FC<PanVerificationProps> = ({
                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
                   e.currentTarget.value = e.currentTarget.value.toUpperCase();
                 }}
+                disabled={isSubmitting}
               />
               {formData.panError && (
                 <p className="text-red-500 mt-2">
@@ -108,6 +130,7 @@ const PanVerification: React.FC<PanVerificationProps> = ({
                 value={formData.dob}
                 onChange={handleDobChange}
                 max={new Date().toISOString().split("T")[0]}
+                disabled={isSubmitting}
               />
               {formData.dobError && (
                 <p className="text-red-500 mt-2">
@@ -119,11 +142,13 @@ const PanVerification: React.FC<PanVerificationProps> = ({
             <button
               type="submit"
               className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 ${
-                formData.isValid ? "" : "opacity-50 cursor-not-allowed"
+                formData.isValid && !isSubmitting
+                  ? ""
+                  : "opacity-50 cursor-not-allowed"
               }`}
-              disabled={!formData.isValid}
+              disabled={!formData.isValid || isSubmitting}
             >
-              Continue
+              {isSubmitting ? "Please wait..." : "Continue"}
             </button>
           </div>
         </form>

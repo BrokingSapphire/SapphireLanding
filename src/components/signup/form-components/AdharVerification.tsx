@@ -1,23 +1,20 @@
-import React from "react";
-
-interface AdharFormData {
-  adharNumber: string;
-  isValid: boolean;
-  adharError?: boolean;
-}
+import React, { useState } from "react";
 
 interface AdharVerificationProps {
-  formData: AdharFormData;
-  updateFormData: (data: Partial<AdharFormData>) => void;
   onNextStep: () => void;
 }
 
 const AdharVerification: React.FC<AdharVerificationProps> = ({
-  formData,
-  updateFormData,
   onNextStep,
 }) => {
-  const validateForm = (updatedData: Partial<AdharFormData>) => {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    adharNumber: "",
+    isValid: false,
+    adharError: false,
+  });
+
+  const validateForm = (updatedData: Partial<typeof formData>) => {
     const currentData = { ...formData, ...updatedData };
 
     // Adhar validation: exactly 12 digits
@@ -29,8 +26,15 @@ const AdharVerification: React.FC<AdharVerificationProps> = ({
     };
   };
 
+  const updateFormData = (data: Partial<typeof formData>): void => {
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }));
+  };
+
   const handleAdharNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+    const value = e.target.value.replace(/\D/g, ""); // Only allow digits
     const updates = {
       adharNumber: value,
     };
@@ -40,18 +44,34 @@ const AdharVerification: React.FC<AdharVerificationProps> = ({
     });
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.isValid || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      onNextStep();
+    } catch (error) {
+      console.error("Error during submission:", error);
+      updateFormData({
+        adharError: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="w-full">
-        <h1 className="text-2xl font-semibold mb-4">Enter your Aadhaar to Continue</h1>
+        <h1 className="text-2xl font-semibold mb-4">
+          Enter your Aadhaar to Continue
+        </h1>
         <p className="text-gray-600 mb-2">Step 2 of 9</p>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (formData.isValid) onNextStep();
-          }}
-        >
+        <form onSubmit={handleSubmit}>
           <div className="space-y-6">
             <div>
               <label className="block text-gray-700 mb-2">Aadhaar Number</label>
@@ -59,11 +79,12 @@ const AdharVerification: React.FC<AdharVerificationProps> = ({
                 type="text"
                 className="w-full border rounded-md px-4 py-2"
                 placeholder="Enter your 12-digit Aadhaar number"
-                value={formData?.adharNumber || ''}
+                value={formData.adharNumber}
                 onChange={handleAdharNumberChange}
                 maxLength={12}
+                disabled={isSubmitting}
               />
-              {formData?.adharError && (
+              {formData.adharError && (
                 <p className="text-red-500 mt-2">
                   Please enter a valid 12-digit Aadhaar number.
                 </p>
@@ -73,11 +94,13 @@ const AdharVerification: React.FC<AdharVerificationProps> = ({
             <button
               type="submit"
               className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 ${
-                formData?.isValid ? "" : "opacity-50 cursor-not-allowed"
+                formData.isValid && !isSubmitting
+                  ? ""
+                  : "opacity-50 cursor-not-allowed"
               }`}
-              disabled={!formData?.isValid}
+              disabled={!formData.isValid || isSubmitting}
             >
-              Continue
+              {isSubmitting ? "Please wait..." : "Continue"}
             </button>
           </div>
         </form>

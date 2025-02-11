@@ -6,7 +6,6 @@ import type {
   PaymentMethodType,
   BankLinkMethodType,
   PageData,
-  FormBaseData,
 } from "../../constants/types/signup-types/form";
 import MobileVerification from "./form-components/MobileVerification";
 import EmailVerification from "./form-components/EmailVerification";
@@ -26,12 +25,6 @@ interface StepConfig {
   [key: number]: PageData;
 }
 
-interface FormDataType {
-  [key: string]: FormBaseData & Record<string, any>;
-  // page3: CardFormData
-}
-
-// Constants
 const STEP_CONFIG: StepConfig = {
   1: {
     title: "Verify Your Mobile Number",
@@ -44,19 +37,22 @@ const STEP_CONFIG: StepConfig = {
     description: "Please verify your email to continue with the registration.",
     component: EmailVerification,
   },
-  3:{
+  3: {
     title: "Verify Card Details",
-    description: "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
+    description:
+      "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
     component: CardVerification,
   },
-  4:{
+  4: {
     title: "Verify PAN Details",
-    description: "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
+    description:
+      "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
     component: PanVerification,
   },
   5: {
     title: "Adhar Verification (DigiLocker)",
-    description: "Verify your Adhar details securely using DigiLocker to proceed with the registration.",
+    description:
+      "Verify your Adhar details securely using DigiLocker to proceed with the registration.",
     component: AdharVerification,
   },
   6: {
@@ -65,12 +61,12 @@ const STEP_CONFIG: StepConfig = {
     component: InvestmentSegment,
   },
   7: {
-    title: "Trading Account Deatails",
+    title: "Trading Account Details",
     description: "Select the investment segments you're interested in.",
     component: TradingAccountDetails,
   },
   8: {
-    title: "Trading Account Deatails",
+    title: "Trading Account Details",
     description: "Select the investment segments you're interested in.",
     component: TradingPreferences,
   },
@@ -84,13 +80,11 @@ const STEP_CONFIG: StepConfig = {
     description: "Link your bank account to proceed with the registration.",
     component: BankLink,
   },
-  11:{
+  11: {
     title: "Nominate",
     description: "Please verify your email to continue with the registration.",
     component: NomineesManagement,
   },
-  
-  // ... Add other steps
 };
 
 const ANIMATIONS = {
@@ -115,61 +109,12 @@ const ANIMATIONS = {
   },
 };
 
-
 const Signup = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [direction, setDirection] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(null);
   const [bankLinkMethod, setBankLinkMethod] =
     useState<BankLinkMethodType>(null);
-const [formData, setFormData] = useState<FormDataType>({
-  page1: {
-    mobileNumber: "",
-    otp: ["", "", "", "", "", ""],
-    otpVisible: false,
-    otpSent: false,
-    mobileError: false,
-    isValid: false,
-  },
-  page2: {
-    email: "",
-    otp: ["", "", "", "", "", ""],
-    otpVisible: false,
-    otpSent: false,
-    emailError: "",
-    isValid: false,
-  },
-  page3: {
-    cardNumber: "",
-    cardName: "",
-    expiryMonth: "",
-    expiryYear: "",
-    cvv: "",
-    isValid: false,
-    cardError: false,
-  },
-  page4: {
-    panNumber: "",
-    dob: "",
-    isValid: false,
-    panError: false,
-    dobError: false,
-  },
-  page5: {
-    bankAccountNumber: "", // Ensure this is initialized
-    ifscCode: "", // Ensure this is initialized
-    isValid: false,
-    bankAccountError: false,
-    ifscError: false,
-  },
-  page6: {
-    bankAccountNumber: "", // Ensure this is initialized
-    ifscCode: "", // Ensure this is initialized
-    isValid: false,
-    bankAccountError: false,
-    ifscError: false,
-  },
-});
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -177,19 +122,6 @@ const [formData, setFormData] = useState<FormDataType>({
       document.body.style.overflow = "auto";
     };
   }, [currentStep]);
-
-  const updateFormData = (
-    pageNumber: number,
-    newData: Partial<FormDataType[string]>
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [`page${pageNumber}`]: {
-        ...prev[`page${pageNumber}`],
-        ...newData,
-      },
-    }));
-  };
 
   const handleNextStep = (method?: string) => {
     setDirection(1);
@@ -200,7 +132,14 @@ const [formData, setFormData] = useState<FormDataType>({
         setPaymentMethod(method as PaymentMethodType);
       }
     } else if (currentStep < Object.keys(STEP_CONFIG).length) {
-      setTimeout(() => setCurrentStep((prev) => prev + 1), 0);
+      setCurrentStep((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevStep = () => {
+    setDirection(-1);
+    if (currentStep > 1) {
+      setCurrentStep((prev) => prev - 1);
     }
   };
 
@@ -212,7 +151,6 @@ const [formData, setFormData] = useState<FormDataType>({
           <BankComponent
             onBack={() => setBankLinkMethod(null)}
             onComplete={(details: any) => {
-              updateFormData(13, { bankDetails: details, isValid: true });
               setBankLinkMethod(null);
               setCurrentStep(13);
             }}
@@ -237,43 +175,13 @@ const [formData, setFormData] = useState<FormDataType>({
     }
 
     const StepComponent = STEP_CONFIG[currentStep]?.component;
-    return (
-      StepComponent && (
-        <StepComponent
-          formData={formData[`page${currentStep}`]}
-          updateFormData={(data: any) => updateFormData(currentStep, data)}
-          onNextStep={handleNextStep}
-        />
-      )
-    );
-  };
-
-  const canNavigateNext = (): boolean => {
-    const pageData = formData[`page${currentStep}`];
-    if (currentStep === 14) {
-      return pageData?.photoTaken || pageData?.isValid;
-    }
-    return pageData?.isValid && currentStep < Object.keys(STEP_CONFIG).length;
-  };
-
-  const canNavigatePrev = (): boolean => {
-    return currentStep > 1;
-  };
-
-  const handleNavigation = (direction: number) => {
-    const nextStep = currentStep + direction;
-    if (nextStep >= 1 && nextStep <= Object.keys(STEP_CONFIG).length) {
-      setDirection(direction);
-      setCurrentStep(nextStep);
-    }
+    return StepComponent && <StepComponent onNextStep={handleNextStep} />;
   };
 
   const { title, description } = STEP_CONFIG[currentStep] || {};
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* {currentStep <= 3 ? <Navbar /> : <Focus_Navbar />} */}
-
       <ProgressBar
         currentStep={currentStep}
         totalSteps={Object.keys(STEP_CONFIG).length}
@@ -326,11 +234,12 @@ const [formData, setFormData] = useState<FormDataType>({
         {!paymentMethod &&
           !bankLinkMethod &&
           currentStep <= Object.keys(STEP_CONFIG).length && (
+
             <PageNavigation
               currentStep={currentStep}
-              canMoveNext={canNavigateNext()}
-              canMovePrev={canNavigatePrev()}
-              onNavigate={handleNavigation}
+              onPrev={handlePrevStep}
+              onNext={handleNextStep}
+              totalSteps={Object.keys(STEP_CONFIG).length}
             />
           )}
       </div>

@@ -1,28 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 
-interface MobileFormData {
-  mobileNumber: string;
-  otp: string[];
-  otpVisible: boolean;
-  otpSent: boolean;
-  mobileError: boolean;
-  isValid: boolean;
-}
+const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
+  const [formData, setFormData] = useState({
+    mobileNumber: "",
+    otp: ["", "", "", "", "", ""],
+    otpVisible: false,
+    otpSent: false,
+    mobileError: false,
+    isValid: false,
+  });
 
-interface MobileVerificationProps {
-  formData: MobileFormData;
-  updateFormData: (data: Partial<MobileFormData>) => void;
-  onNextStep: (method?: string) => void;
-}
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-const MobileVerification: React.FC<MobileVerificationProps> = ({
-  formData,
-  updateFormData,
-  onNextStep,
-}) => {
-  const handleOtpChange = (index: number, value: string) => {
+  interface FormData {
+    mobileNumber: string;
+    otp: string[];
+    otpVisible: boolean;
+    otpSent: boolean;
+    mobileError: boolean;
+    isValid: boolean;
+  }
+
+  interface FormDataUpdate extends Partial<FormData> {}
+
+  const updateFormData = (data: FormDataUpdate): void => {
+    setFormData((prev: FormData) => ({
+      ...prev,
+      ...data,
+    }));
+  };
+
+  interface OtpChangeParams {
+    index: number;
+    value: string;
+  }
+
+  const handleOtpChange = ({ index, value }: OtpChangeParams): void => {
     if (/^[0-9]{0,1}$/.test(value)) {
-      const newOtp = [...formData.otp];
+      const newOtp: string[] = [...formData.otp];
       newOtp[index] = value;
 
       updateFormData({
@@ -38,10 +53,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({
     }
   };
 
-  const handleBackspace = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
+  const handleBackspace = (index, e) => {
     if (e.key === "Backspace") {
       const newOtp = [...formData.otp];
 
@@ -59,7 +71,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({
     }
   };
 
-  const handleMobileNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMobileNumberChange = (e) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     updateFormData({
       mobileNumber: value,
@@ -83,6 +95,30 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.isValid || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
+      // Only proceed if both mobile number and OTP are valid
+      if (
+        formData.mobileNumber.length === 10 &&
+        formData.otp.every((digit) => digit !== "")
+      ) {
+        onNextStep();
+      }
+    } catch (error) {
+      console.error("Error during submission:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="w-full">
       <h1 className="text-4xl font-bold mb-4">Hi, Welcome to Sapphire!</h1>
@@ -90,12 +126,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({
         Get started in just a few easy steps!
       </p>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (formData.isValid) onNextStep();
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <div className="mb-6">
           <label className="block text-gray-700 mb-2">Mobile Number</label>
           <div className="flex w-full">
@@ -108,7 +139,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({
               onChange={handleMobileNumberChange}
               maxLength={10}
               pattern="[0-9]{10}"
-              onInput={(e: React.FormEvent<HTMLInputElement>) => {
+              onInput={(e) => {
                 e.currentTarget.value = e.currentTarget.value.replace(
                   /[^0-9]/g,
                   ""
@@ -154,9 +185,11 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({
                   className="w-14 h-14 border rounded-md text-center text-lg"
                   maxLength={1}
                   value={digit}
-                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleOtpChange({ index, value: e.target.value })
+                  }
                   onKeyDown={(e) => handleBackspace(index, e)}
-                  onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                  onInput={(e) => {
                     e.currentTarget.value = e.currentTarget.value.replace(
                       /[^0-9]/g,
                       ""
@@ -171,11 +204,13 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({
         <button
           type="submit"
           className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 mb-8 ${
-            formData.isValid ? "" : "opacity-50 cursor-not-allowed"
+            formData.isValid && !isSubmitting
+              ? ""
+              : "opacity-50 cursor-not-allowed"
           }`}
-          disabled={!formData.isValid}
+          disabled={!formData.isValid || isSubmitting}
         >
-          Continue
+          {isSubmitting ? "Please wait..." : "Continue"}
         </button>
 
         <div className="space-y-4 text-sm text-gray-600">

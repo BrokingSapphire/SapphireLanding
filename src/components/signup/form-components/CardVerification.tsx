@@ -1,27 +1,22 @@
-import React from "react";
-
-interface CardFormData {
-  cardNumber: string;
-  cardName: string;
-  expiryMonth: string;
-  expiryYear: string;
-  cvv: string;
-  isValid: boolean;
-  cardError?: boolean;
-}
+import React, { useState } from "react";
 
 interface CardVerificationProps {
-  formData: CardFormData;
-  updateFormData: (data: Partial<CardFormData>) => void;
   onNextStep: () => void;
 }
 
-const CardVerification: React.FC<CardVerificationProps> = ({
-  formData,
-  updateFormData,
-  onNextStep,
-}) => {
-  const validateForm = (updatedData: Partial<CardFormData>) => {
+const CardVerification: React.FC<CardVerificationProps> = ({ onNextStep }) => {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    cardNumber: "",
+    cardName: "",
+    expiryMonth: "",
+    expiryYear: "",
+    cvv: "",
+    isValid: false,
+    cardError: false,
+  });
+
+  const validateForm = (updatedData: Partial<typeof formData>) => {
     const currentData = { ...formData, ...updatedData };
     return {
       isValid:
@@ -31,6 +26,13 @@ const CardVerification: React.FC<CardVerificationProps> = ({
         currentData.expiryYear !== "" &&
         currentData.cvv.length === 3,
     };
+  };
+
+  const updateFormData = (data: Partial<typeof formData>): void => {
+    setFormData((prev) => ({
+      ...prev,
+      ...data,
+    }));
   };
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,23 +79,39 @@ const CardVerification: React.FC<CardVerificationProps> = ({
     });
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.isValid || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      onNextStep();
+    } catch (error) {
+      console.error("Error during submission:", error);
+      updateFormData({
+        cardError: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => currentYear + i);
 
   return (
     <div className="max-w-2xl mx-auto mb-24 p-4">
       <div className="w-full">
-        <h1 className="text-4xl font-bold mb-4">Get Started with a One-Time Fee</h1>
+        <h1 className="text-4xl font-bold mb-4">
+          Get Started with a One-Time Fee
+        </h1>
         <p className="text-gray-600 mb-8">
           Complete Your Card Details Today and Access Exclusive Features!
         </p>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (formData.isValid) onNextStep();
-          }}
-        >
+        <form onSubmit={handleSubmit}>
           <div className="space-y-6">
             <div>
               <label className="block text-gray-700 mb-2">Card Number</label>
@@ -110,6 +128,7 @@ const CardVerification: React.FC<CardVerificationProps> = ({
                     ""
                   );
                 }}
+                disabled={isSubmitting}
               />
               {formData.cardError && (
                 <p className="text-red-500 mt-2">
@@ -126,17 +145,21 @@ const CardVerification: React.FC<CardVerificationProps> = ({
                 placeholder="Enter cardholder name"
                 value={formData.cardName}
                 onChange={handleCardNameChange}
+                disabled={isSubmitting}
               />
             </div>
 
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="block text-gray-700 mb-2">Expiry Month & Year</label>
+                <label className="block text-gray-700 mb-2">
+                  Expiry Month & Year
+                </label>
                 <div className="flex gap-2">
                   <select
                     className="flex-1 border rounded-md px-4 py-2"
                     value={formData.expiryMonth}
                     onChange={(e) => handleExpiryChange("month", e)}
+                    disabled={isSubmitting}
                   >
                     <option value="">Month</option>
                     {Array.from({ length: 12 }, (_, i) => {
@@ -152,6 +175,7 @@ const CardVerification: React.FC<CardVerificationProps> = ({
                     className="flex-1 border rounded-md px-4 py-2"
                     value={formData.expiryYear}
                     onChange={(e) => handleExpiryChange("year", e)}
+                    disabled={isSubmitting}
                   >
                     <option value="">Year</option>
                     {years.map((year) => (
@@ -178,6 +202,7 @@ const CardVerification: React.FC<CardVerificationProps> = ({
                       ""
                     );
                   }}
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -185,11 +210,13 @@ const CardVerification: React.FC<CardVerificationProps> = ({
             <button
               type="submit"
               className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 ${
-                formData.isValid ? "" : "opacity-50 cursor-not-allowed"
+                formData.isValid && !isSubmitting
+                  ? ""
+                  : "opacity-50 cursor-not-allowed"
               }`}
-              disabled={!formData.isValid}
+              disabled={!formData.isValid || isSubmitting}
             >
-              Continue
+              {isSubmitting ? "Please wait..." : "Continue"}
             </button>
           </div>
         </form>
