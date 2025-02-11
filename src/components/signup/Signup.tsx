@@ -16,6 +16,9 @@ import PageNavigation from "./general/PageNavigation";
 import PanVerification from "./form-components/PanVerification";
 import AdharVerification from "./form-components/AdharVerification";
 import InvestmentSegment from "./form-components/InvestmentSegment";
+import TradingAccountDetails from "./form-components/TradingAccountDetail";
+import TradingPreferences from "./form-components/TradingPreference";
+import BankLink from "./form-components/LinkBank";
 interface StepConfig {
   [key: number]: PageData;
 }
@@ -57,6 +60,21 @@ const STEP_CONFIG: StepConfig = {
     title: "Choose Investment Segments",
     description: "Select the investment segments you're interested in.",
     component: InvestmentSegment,
+  },
+  7: {
+    title: "Trading Account Deatails",
+    description: "Select the investment segments you're interested in.",
+    component: TradingAccountDetails,
+  },
+  8: {
+    title: "Trading Account Deatails",
+    description: "Select the investment segments you're interested in.",
+    component: TradingPreferences,
+  },
+  9: {
+    title: "Link Bank Account",
+    description: "Link your bank account to proceed with the registration.",
+    component: BankLink,
   },
   
   // ... Add other steps
@@ -123,6 +141,20 @@ const [formData, setFormData] = useState<FormDataType>({
     isValid: false,
     panError: false,
     dobError: false,
+  },
+  page5: {
+    bankAccountNumber: "", // Ensure this is initialized
+    ifscCode: "", // Ensure this is initialized
+    isValid: false,
+    bankAccountError: false,
+    ifscError: false,
+  },
+  page6: {
+    bankAccountNumber: "", // Ensure this is initialized
+    ifscCode: "", // Ensure this is initialized
+    isValid: false,
+    bankAccountError: false,
+    ifscError: false,
   },
 });
 
