@@ -1,3 +1,5 @@
+import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
+import Link from "next/link";
 import React, { ChangeEvent, KeyboardEvent, FormEvent, useState } from "react";
 
 interface EmailVerificationProps {
@@ -197,8 +199,9 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           </div>
         )}
 
-        <button
+        <AnimatedSubscribeButton
           type="submit"
+          subscribeStatus={isSubmitting}
           className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 mb-8 ${
             formData.isValid && !isSubmitting
               ? ""
@@ -206,8 +209,9 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           }`}
           disabled={!formData.isValid || isSubmitting}
         >
-          {isSubmitting ? "Please wait..." : "Continue"}
-        </button>
+          <span>Continue</span>
+          <span>Please wait...</span>
+        </AnimatedSubscribeButton>
 
         <div className="space-y-4 text-sm text-gray-600">
           <p className="leading-relaxed">
@@ -218,13 +222,9 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
           <p>
             If you are looking to open a HUF, Corporate, Partnership, or NRI
             account, you have to{" "}
-            <button
-              type="button"
-              className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isSubmitting}
-            >
+            <Link href="/" className="text-blue-500 hover:text-blue-600">
               click here
-            </button>
+            </Link>
             .
           </p>
         </div>

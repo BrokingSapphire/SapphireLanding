@@ -1,3 +1,5 @@
+import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
@@ -92,7 +94,7 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       // Only proceed if both mobile number and OTP are valid
       if (
@@ -205,8 +207,11 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
           </div>
         )}
 
-        <button
+        
+
+        <AnimatedSubscribeButton
           type="submit"
+          subscribeStatus={isSubmitting}
           className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 mb-8 ${
             formData.isValid && !isSubmitting
               ? ""
@@ -214,8 +219,9 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
           }`}
           disabled={!formData.isValid || isSubmitting}
         >
-          {isSubmitting ? "Please wait..." : "Continue"}
-        </button>
+          <span>Continue</span>
+          <span>Please wait...</span>
+        </AnimatedSubscribeButton>
 
         <div className="space-y-4 text-sm text-gray-600">
           <p className="leading-relaxed">
@@ -226,9 +232,9 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
           <p>
             If you are looking to open a HUF, Corporate, Partnership, or NRI
             account, you have to{" "}
-            <button type="button" className="text-blue-500 hover:text-blue-600">
+            <Link href="/" className="text-blue-500 hover:text-blue-600">
               click here
-            </button>
+            </Link>
             .
           </p>
         </div>
