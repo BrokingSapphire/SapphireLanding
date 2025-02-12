@@ -37,7 +37,7 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
           <h3 className="text-2xl sm:text-4xl font-semibold text-white">
             {title}
           </h3>
-          <button className="px-4 sm:px-6 py-2 sm:py-3 border border-gray-900 rounded-full bg-white text-gray-900 text-sm sm:text-base hover:bg-gray-900 hover:text-white transition-colors duration-300">
+          <button className="px-4 sm:px-6 py-2 sm:py-3 border rounded-full bg-white text-gray-900 text-sm sm:text-base hover:bg-gray-900 hover:text-white transition-colors duration-300">
             Learn more
           </button>
         </div>
