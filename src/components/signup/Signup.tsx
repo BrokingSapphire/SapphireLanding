@@ -20,6 +20,8 @@ import TradingPreferences from "./form-components/TradingPreference";
 import BankLink from "./form-components/LinkBank";
 import TradingAccountDetails2 from "./form-components/TradingAccountDetails2";
 import NomineesManagement from "./form-components/Nominees";
+import BankSelection from "./form-components/BankSelection";
+import LinkBankAccount from "./form-components/LinkBankAccount";
 
 interface StepConfig {
   [key: number]: PageData;
@@ -85,6 +87,24 @@ const STEP_CONFIG: StepConfig = {
     description: "Please verify your email to continue with the registration.",
     component: NomineesManagement,
   },
+    
+  // new pages
+  
+  
+  // 12:{
+  //   title: "Verify Card Details",
+  //   description:
+  //     "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
+  //   component: BankSelection,
+  // },
+
+  // 13:{
+  //   title: "Verify Bank Account Details",
+  //   description:
+  //     "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
+  //   component: LinkBankAccount,
+  // },
+
 };
 
 const ANIMATIONS = {
