@@ -5,25 +5,27 @@ import { FaChevronRight } from "react-icons/fa";
 
 interface CalculatorButtonProps {
   label: string;
+  imageSrc: string;
   onClick?: () => void;
 }
 
-const CalculatorButton: React.FC<CalculatorButtonProps> = ({
-  label,
-  onClick,
-}) => (
+const CalculatorButton: React.FC<CalculatorButtonProps> = ({ label, imageSrc, onClick }) => (
   <button
     onClick={onClick}
-    className="px-6 flex justify-center items-center gap-3 sm:px-8 py-2 sm:py-3 bg-white border-2 text-base sm:text-base font-semibold border-black rounded-full hover:bg-[#152F46] hover:text-white transition"
+    className="w-full flex justify-between items-center px-6 py-4 bg-white border-[1px] border-gray-300 rounded-lg hover:bg-gray-100 transition"
   >
-    {label} <FaChevronRight />
+    <div className="flex items-center gap-4 text-[#5B5B5B] text-lg font-medium">
+      <Image src={imageSrc} alt={label} width={40} height={40} /> {/* Increased image size */}
+      {label}
+    </div>
+    <FaChevronRight className="text-gray-500 text-xl" /> {/* Keep arrow at the extreme right */}
   </button>
 );
 
 const calculatorTypes = [
-  { label: "SIP Calculator", id: "sip" },
-  { label: "Margin Calculator", id: "margin" },
-  { label: "Brokerage Calculator", id: "brokerage" },
+  { label: "SIP Calculator", id: "sip", imageSrc: "/main/image_24.png" },
+  { label: "Margin Calculator", id: "margin", imageSrc: "/main/image_25.png" },
+  { label: "Brokerage Calculator", id: "brokerage", imageSrc: "/main/image_26.png" },
 ];
 
 const Calculator: React.FC = () => {
@@ -32,38 +34,34 @@ const Calculator: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#DAEAEB] py-8">
-      <div className="max-w-7xl flex flex-col lg:flex-row justify-between items-center mx-auto">
-        <div className="flex flex-col items-center lg:items-start w-full lg:w-auto">
-          <h1 className="text-xl sm:text-3xl text-black font-bold text-center lg:text-left px-4 sm:px-8 lg:px-12 mt-4 lg:mt-8 mb-4">
+    <section className="bg-[#F5F7FA] py-12">
+      <div className="max-w-7xl flex flex-col lg:flex-row justify-between items-center mx-auto px-6 lg:px-12">
+        {/* Text & Buttons Section */}
+        <div className="w-full lg:w-1/2">
+          <h1 className="text-3xl font-bold text-black mb-6">
             Simplify your investments with our smart calculators!
           </h1>
 
-          <div className="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-6 lg:gap-8 mt-4 px-4 sm:px-8 lg:px-12 mb-6">
+          <div className="space-y-4">
             {calculatorTypes.map((calc) => (
               <CalculatorButton
                 key={calc.id}
                 label={calc.label}
+                imageSrc={calc.imageSrc}
                 onClick={() => handleCalculatorClick(calc.id)}
               />
             ))}
           </div>
-
-          <a
-            href="#calculators"
-            className="text-blue-500 flex items-center justify-center gap-2 font-semibold text-center lg:text-left px-4 sm:px-8 lg:px-12 mt-2 mb-4 hover:text-blue-700 cursor-pointer"
-          >
-            EXPLORE CALCULATORS <FaChevronRight />
-          </a>
         </div>
 
-        <div className="w-full lg:w-auto px-4 sm:px-8 lg:px-12 mt-4 lg:mt-0">
+        {/* Illustration Image (right side) */}
+        <div className="w-full lg:w-auto mt-8 lg:mt-0">
           <Image
-            src="/creditscore.svg"
+            src="/Calc.png"
             alt="Investment Calculator Illustration"
-            className="max-w-full h-auto mx-auto lg:mx-0"
-            width={1000}
-            height={1000}
+            className="max-w-xs mx-auto lg:mx-0"
+            width={180}
+            height={180}
           />
         </div>
       </div>
