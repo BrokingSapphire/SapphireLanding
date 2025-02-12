@@ -114,7 +114,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       if (formData.isValid) {
         onNextStep();

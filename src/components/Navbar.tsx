@@ -12,7 +12,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed w-full top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
-      <div className="max-w-7xl mx-auto flex items-center justify-between py-4 px-6 lg:px-8">
+      <div className="max-w-[1450px] mx-auto flex items-center justify-between py-4 px-6 lg:px-8">
         <Link
           href="/"
           className="transition-transform duration-200 hover:scale-105"
@@ -35,7 +35,7 @@ const Navbar = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-black font-semibold hover:font-bold relative group py-2 transition-all duration-300"
+                className="text-black hover:font-bold relative group py-2 transition-all duration-300"
               >
                 {link.label}
                 <span className="absolute bottom-0 left-0 w-0 h-[3px] bg-black transition-all duration-300 group-hover:w-full"></span>
