@@ -4,6 +4,7 @@ import { Poppins, Lobster_Two } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import Footer from "@/components/Footer";
+import { Analytics } from "@vercel/analytics/react";
 
 // Import Google Fonts with Next.js font optimization.
 const geistSans = Geist({
@@ -48,9 +49,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${lobsterTwo.variable}  font-poppins bg-white text-black antialiased`}
       >
-        <Navbar />
-        {children}
-        <Footer />
+        <Analytics />
+          <Navbar />
+          {children}
+          <Footer />
       </body>
     </html>
   );
