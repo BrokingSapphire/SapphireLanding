@@ -71,7 +71,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md p-4 -mt-20">
+    <div className="w-full max-w-md p-4 ">
       <h2 className="text-xl font-medium mb-5">Trading account details</h2>
       <p className="text-sm text-gray-600 mb-5">Step 5 of 9</p>
 
@@ -88,7 +88,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
                 className={`px-4 py-1 text-sm border rounded transition-colors
                   ${
                     formData.maritalStatus === status
-                      ? "bg-teal-600 text-white"
+                      ? "border-teal-600 bg-teal-50 "
                       : "border-gray-300 bg-white hover:border-gray-400"
                   }
                   ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}

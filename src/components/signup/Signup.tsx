@@ -8,6 +8,8 @@ import type {
   PageData,
 } from "../../constants/types/signup-types/form";
 import MobileVerification from "./form-components/MobileVerification";
+import BankSelection from './form-components/BankSelection'
+import LinkBankAccount from "./form-components/LinkBankAccount";
 import EmailVerification from "./form-components/EmailVerification";
 import CardVerification from "./form-components/CardVerification";
 import ProgressBar from "./general/ProgressBar";
@@ -67,7 +69,7 @@ const STEP_CONFIG: StepConfig = {
     component: TradingAccountDetails,
   },
   8: {
-    title: "Trading Account Details",
+    title: "Trading Preferences",
     description: "Select the investment segments you're interested in.",
     component: TradingPreferences,
   },
@@ -86,23 +88,12 @@ const STEP_CONFIG: StepConfig = {
     description: "Please verify your email to continue with the registration.",
     component: NomineesManagement,
   },
-    
-  // new pages
-  
-  
-  // 12:{
-  //   title: "Verify Card Details",
-  //   description:
-  //     "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
-  //   component: BankSelection,
-  // },
-
-  // 13:{
-  //   title: "Verify Bank Account Details",
-  //   description:
-  //     "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
-  //   component: LinkBankAccount,
-  // },
+  12:{
+    title: "Verify Bank Account Details",
+    description:
+      "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
+    component: LinkBankAccount,
+  },
 
 };
 
@@ -132,8 +123,7 @@ const Signup = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [direction, setDirection] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(null);
-  const [bankLinkMethod, setBankLinkMethod] =
-    useState<BankLinkMethodType>(null);
+  const [bankLinkMethod, setBankLinkMethod] =useState<BankLinkMethodType>(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";

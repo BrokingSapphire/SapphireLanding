@@ -10,6 +10,10 @@ const IMAGES = {
 // Define types for the form data
 interface FormData {
   linkingMethod?: "upi" | "bank";
+  ifscCode?: string;
+  micrCode?: string;
+  accountNumber?: string;
+  reAccountNumber?: string;
   isValid: boolean;
 }
 
@@ -55,25 +59,146 @@ const MethodButton: React.FC<MethodButtonProps> = ({
   </button>
 );
 
+const BankDetailsForm: React.FC<{
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  onBack: () => void;
+  onNextStep: () => void;
+}> = ({ formData, setFormData, onBack, onNextStep }) => {
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      // Validate form
+      const isValid = Boolean(
+        newData.ifscCode &&
+        newData.accountNumber &&
+        newData.reAccountNumber &&
+        newData.accountNumber === newData.reAccountNumber
+      );
+      return { ...newData, isValid };
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center space-x-4">
+        <button 
+          onClick={onBack}
+          className="text-teal-800 hover:text-teal-700"
+        >
+          ← Back
+        </button>
+        <h2 className="text-4xl font-bold">Link bank account</h2>
+      </div>
+      <p className="text-gray-600">Step 6 of 9</p>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            IFSC Code*
+          </label>
+          <input
+            type="text"
+            value={formData.ifscCode || ''}
+            onChange={(e) => handleInputChange('ifscCode', e.target.value)}
+            className="w-full p-2 border rounded focus:ring-teal-800 focus:border-teal-800"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            MICR Code*
+          </label>
+          <input
+            type="text"
+            value={formData.micrCode || ''}
+            onChange={(e) => handleInputChange('micrCode', e.target.value)}
+            className="w-full p-2 border rounded focus:ring-teal-800 focus:border-teal-800"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            A/C Number*
+          </label>
+          <input
+            type="text"
+            value={formData.accountNumber || ''}
+            onChange={(e) => handleInputChange('accountNumber', e.target.value)}
+            className="w-full p-2 border rounded focus:ring-teal-800 focus:border-teal-800"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Re-enter A/C Number*
+          </label>
+          <input
+            type="text"
+            value={formData.reAccountNumber || ''}
+            onChange={(e) => handleInputChange('reAccountNumber', e.target.value)}
+            className="w-full p-2 border rounded focus:ring-teal-800 focus:border-teal-800"
+          />
+        </div>
+      </div>
+
+      <div>
+        <button
+          onClick={onNextStep}
+          disabled={!formData.isValid}
+          className={`w-full py-3 rounded transition-colors ${
+            formData.isValid
+              ? "bg-teal-800 text-white hover:bg-teal-700"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const LinkBankAccount: React.FC<LinkBankAccountProps> = ({ onNextStep }) => {
-  // Initialize form data with default values
   const [formData, setFormData] = useState<FormData>({
     linkingMethod: undefined,
     isValid: false
   });
+
+  const [showBankForm, setShowBankForm] = useState(false);
 
   const handleMethodSelect = (method: "upi" | "bank"): void => {
     setFormData({
       linkingMethod: method,
       isValid: true,
     });
-  };
-
-  const handleContinue = (): void => {
-    if (formData.linkingMethod && formData.isValid) {
+    
+    if (method === "bank") {
+      setShowBankForm(true);
+    } else if (method === "upi") {
+      // Handle UPI selection (to be implemented)
       onNextStep();
     }
   };
+
+  const handleBack = () => {
+    setShowBankForm(false);
+    setFormData({
+      linkingMethod: undefined,
+      isValid: false
+    });
+  };
+
+  if (showBankForm) {
+    return (
+      <BankDetailsForm
+        formData={formData}
+        setFormData={setFormData}
+        onBack={handleBack}
+        onNextStep={onNextStep}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -100,18 +225,6 @@ const LinkBankAccount: React.FC<LinkBankAccountProps> = ({ onNextStep }) => {
           title="Enter bank details manually"
         />
       </div>
-
-      <button
-        onClick={handleContinue}
-        disabled={!formData.isValid}
-        className={`w-full py-3 rounded transition-colors ${
-          formData.isValid
-            ? "bg-teal-800 text-white hover:bg-teal-700"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-        }`}
-      >
-        Continue
-      </button>
     </div>
   );
 };

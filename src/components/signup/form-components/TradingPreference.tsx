@@ -85,9 +85,9 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md -mt-28 p-4">
+    <div className="w-full max-w-md -mt-4 p-4">
       <h2 className="text-5xl mb-2 whitespace-nowrap -ml-4">Trading account details</h2>
-      <p className="text-sm text-gray-600 mb-6">Step 5 of 9</p>
+      <p className="text-sm text-gray-600 mb-1">Step 5 of 9</p>
 
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
@@ -100,10 +100,10 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
                   type="button"
                   onClick={() => handleSelection("annualIncome", range.id)}
                   disabled={isSubmitting}
-                  className={`px-3 py-1 text-sm text-gray-600 border rounded transition-colors
+                  className={`px-5 py-3 text-sm text-gray-600 border rounded transition-colors
                     ${
                       formData.annualIncome === range.id
-                        ? "bg-teal-800 text-white"
+                        ? "border-teal-600 bg-teal-50 "
                         : "border-gray-300 bg-white hover:border-gray-400"
                     }
                     ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
@@ -124,10 +124,10 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
                   type="button"
                   onClick={() => handleSelection("tradingExperience", range.id)}
                   disabled={isSubmitting}
-                  className={`px-3 py-1 text-gray-600 text-sm border rounded transition-colors
+                  className={`px-5 py-3 text-gray-600 text-sm border rounded transition-colors
                     ${
                       formData.tradingExperience === range.id
-                        ? "bg-teal-800 text-white"
+                        ? "border-teal-600 bg-teal-50 "
                         : "border-gray-300 bg-white hover:border-gray-400"
                     }
                     ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
@@ -152,10 +152,10 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
                     handleSelection("settlementPreference", option.id)
                   }
                   disabled={isSubmitting}
-                  className={`px-3 text-gray-600 py-1 text-sm border rounded transition-colors
+                  className={`px-5 text-gray-600 py-3 text-sm border rounded transition-colors
                     ${
                       formData.settlementPreference === option.id
-                        ? "bg-teal-800 text-white"
+                        ? "border-teal-600 bg-teal-50 "
                         : "border-gray-300 bg-white hover:border-gray-400"
                     }
                     ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
