@@ -71,14 +71,14 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md p-4">
-      <h2 className="text-xl font-medium mb-6">Trading account details</h2>
-      <p className="text-sm text-gray-600 mb-6">Step 5 of 9</p>
+    <div className="w-full max-w-md p-4 -mt-20">
+      <h2 className="text-xl font-medium mb-5">Trading account details</h2>
+      <p className="text-sm text-gray-600 mb-5">Step 5 of 9</p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <label className="block text-sm">Marital Status</label>
-          <div className="flex gap-2">
+          <label className="block  text-md ">Marital Status</label>
+          <div className="text-gray-700 flex gap-2">
             {["Single", "Married", "Divorced"].map((status) => (
               <button
                 key={status}
@@ -101,7 +101,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm">Father&apos;s Name</label>
+          <label className="block text-md">Father&apos;s Name</label>
           <input
             type="text"
             name="fatherName"
@@ -114,7 +114,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm">Mother&apos;s Name</label>
+          <label className="block text-md">Mother&apos;s Name</label>
           <input
             type="text"
             name="motherName"

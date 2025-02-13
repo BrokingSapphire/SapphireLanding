@@ -85,14 +85,14 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md p-4">
-      <h2 className="text-xl font-medium mb-2">Trading account details</h2>
+    <div className="w-full max-w-md -mt-28 p-4">
+      <h2 className="text-5xl mb-2 whitespace-nowrap -ml-4">Trading account details</h2>
       <p className="text-sm text-gray-600 mb-6">Step 5 of 9</p>
 
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           <div className="space-y-2">
-            <label className="block text-sm">Annual Income*</label>
+            <label className="block text-md">Annual Income*</label>
             <div className="grid grid-cols-3 gap-2">
               {incomeRanges.map((range) => (
                 <button
@@ -100,7 +100,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
                   type="button"
                   onClick={() => handleSelection("annualIncome", range.id)}
                   disabled={isSubmitting}
-                  className={`px-3 py-1 text-sm border rounded transition-colors
+                  className={`px-3 py-1 text-sm text-gray-600 border rounded transition-colors
                     ${
                       formData.annualIncome === range.id
                         ? "bg-teal-800 text-white"
@@ -116,7 +116,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm">Trading Experience*</label>
+            <label className="block text-md">Trading Experience*</label>
             <div className="flex flex-wrap gap-2">
               {experienceRanges.map((range) => (
                 <button
@@ -124,7 +124,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
                   type="button"
                   onClick={() => handleSelection("tradingExperience", range.id)}
                   disabled={isSubmitting}
-                  className={`px-3 py-1 text-sm border rounded transition-colors
+                  className={`px-3 py-1 text-gray-600 text-sm border rounded transition-colors
                     ${
                       formData.tradingExperience === range.id
                         ? "bg-teal-800 text-white"
@@ -140,7 +140,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm">
+            <label className="block text-md ">
               Preference for running account settlement*
             </label>
             <div className="flex gap-2">
@@ -152,7 +152,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
                     handleSelection("settlementPreference", option.id)
                   }
                   disabled={isSubmitting}
-                  className={`px-3 py-1 text-sm border rounded transition-colors
+                  className={`px-3 text-gray-600 py-1 text-sm border rounded transition-colors
                     ${
                       formData.settlementPreference === option.id
                         ? "bg-teal-800 text-white"
