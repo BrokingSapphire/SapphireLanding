@@ -14,9 +14,8 @@ export interface FormPageWithDataProps<T> extends FormPageBaseProps {
 export interface FormBaseData {
   isValid: boolean;
 }
-
 export interface PageData {
   title: string;
   description: string;
-  component: React.ComponentType<any>;
+  component: React.ComponentType<FormPageBaseProps & Record<string, unknown>>;
 }

@@ -20,8 +20,7 @@ import TradingPreferences from "./form-components/TradingPreference";
 import BankLink from "./form-components/LinkBank";
 import TradingAccountDetails2 from "./form-components/TradingAccountDetails2";
 import NomineesManagement from "./form-components/Nominees";
-import BankSelection from "./form-components/BankSelection";
-import LinkBankAccount from "./form-components/LinkBankAccount";
+
 
 interface StepConfig {
   [key: number]: PageData;
@@ -170,6 +169,7 @@ const Signup = () => {
         BankComponent && (
           <BankComponent
             onBack={() => setBankLinkMethod(null)}
+            onNextStep={() => console.log("Completed")}
             onComplete={() => {
               setBankLinkMethod(null);
               setCurrentStep(13);
@@ -184,6 +184,7 @@ const Signup = () => {
       return (
         PaymentComponent && (
           <PaymentComponent
+            onNextStep={() => console.log("Completed")}
             onBack={() => setPaymentMethod(null)}
             onComplete={() => {
               setCurrentStep(4);

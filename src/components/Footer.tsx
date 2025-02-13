@@ -10,6 +10,7 @@ import {
   SOCIAL_ICONS,
   SUPPORT_LINKS,
 } from "@/constants/footer";
+import Link from "next/link";
 
 const LinkSection = memo(({ title, links }: LinkSectionProps) => (
   <div className="col-span-1">
@@ -66,6 +67,12 @@ const LegalSection = memo(() => (
         <strong>ODR Portal:</strong> Resolve disputes efficiently using
         SEBI&apos;s Online Dispute Resolution Portal:
         [https://smartodr.in/login].
+      </p>
+      <p>
+        <strong>Charts are powered by:</strong>{" "}
+        <Link href="https://www.tradingview.com">
+          <span className="underline">TradingView</span>
+        </Link>
       </p>
     </div>
 
