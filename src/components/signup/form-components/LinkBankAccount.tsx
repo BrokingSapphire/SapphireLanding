@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 
 // Define image paths
@@ -44,7 +45,7 @@ const MethodButton: React.FC<MethodButtonProps> = ({
         : "border-gray-300 hover:border-teal-800"
     }`}
   >
-    <img src={imageSrc} alt={imageAlt} className="h-12 w-auto" />
+    <Image src={imageSrc} alt={imageAlt} width={1000} height={1000} className="h-12 w-auto" />
     <div className={`${subtitle ? 'text-2xl' : 'text-sm'} font-bold`}>
       {title}
     </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AnimatedSubscribeButton } from "@/components/magicui/animated-subscribe-button";
+import Image from "next/image";
 
 // Define image paths
 const IMAGES = {
@@ -46,18 +47,22 @@ const PaymentOption: React.FC<PaymentOptionProps> = ({
     <span className="text-xl flex-grow">{label}</span>
     <div className="flex items-center gap-2">
       {cardLogos?.map((logo, index) => (
-        <img
+        <Image
           key={index}
           src={logo}
           alt={`${label} logo`}
           className="h-6 object-contain"
+          width={1000}
+          height={1000}
         />
       ))}
       {icon && (
-        <img
+        <Image 
           src={icon}
           alt={`${label} icon`}
           className="h-6 w-6 object-contain"
+          width={1000}
+          height={1000}
         />
       )}
     </div>
@@ -65,7 +70,6 @@ const PaymentOption: React.FC<PaymentOptionProps> = ({
 );
 
 const BankSelection: React.FC<BankSelectionProps> = ({
-  formData,
   updateFormData,
   onNextStep,
 }) => {

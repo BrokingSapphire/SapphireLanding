@@ -23,9 +23,7 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
     isValid: boolean;
   }
 
-  interface FormDataUpdate extends Partial<FormData> {}
-
-  const updateFormData = (data: FormDataUpdate): void => {
+  const updateFormData = (data: Partial<FormData>): void => {
     setFormData((prev: FormData) => ({
       ...prev,
       ...data,
@@ -124,7 +122,6 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
     }
   };
 
-
   return (
     <div className="w-full">
       <h1 className="text-4xl font-bold mb-4">Hi, Welcome to Sapphire!</h1>
@@ -206,8 +203,6 @@ const MobileVerification = ({ onNextStep }: { onNextStep: () => void }) => {
             </div>
           </div>
         )}
-
-        
 
         <AnimatedSubscribeButton
           type="submit"

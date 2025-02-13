@@ -86,7 +86,7 @@ const CardVerification: React.FC<CardVerificationProps> = ({ onNextStep }) => {
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       onNextStep();
     } catch (error) {
       console.error("Error during submission:", error);
