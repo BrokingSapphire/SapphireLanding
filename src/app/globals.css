@@ -71,3 +71,21 @@ body {
   }
 }
 
+/* globals.css */
+
+:root {
+  --font-poppins: 'Poppins', sans-serif;
+  --font-lobster-two: 'Lobster Two', cursive;
+}
+
+body {
+  font-family: var(--font-poppins);
+}
+
+.font-poppins {
+  font-family: var(--font-poppins);
+}
+
+.font-lobster-two {
+  font-family: var(--font-lobster-two);
+}
