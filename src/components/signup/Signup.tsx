@@ -22,6 +22,7 @@ import TradingPreferences from "./form-components/TradingPreference";
 import BankLink from "./form-components/LinkBank";
 import TradingAccountDetails2 from "./form-components/TradingAccountDetails2";
 import NomineesManagement from "./form-components/Nominees";
+import IPVVerification from "./form-components/IPV";
 
 
 interface StepConfig {
@@ -94,6 +95,11 @@ const STEP_CONFIG: StepConfig = {
       "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
     component: LinkBankAccount,
   },
+  13:{
+    title: "Verify Bank Account Details",
+    description:"Veirfy Your image",
+    component: IPVVerification,
+  },
 
 };
 
@@ -135,7 +141,7 @@ const Signup = () => {
   const handleNextStep = (method?: string) => {
     setDirection(1);
     if (method) {
-      if (currentStep === 12) {
+      if (currentStep === 14) {
         setBankLinkMethod(method as BankLinkMethodType);
       } else {
         setPaymentMethod(method as PaymentMethodType);
@@ -162,7 +168,7 @@ const Signup = () => {
             onNextStep={() => console.log("Completed")}
             onComplete={() => {
               setBankLinkMethod(null);
-              setCurrentStep(13);
+              setCurrentStep(15);
             }}
           />
         )
