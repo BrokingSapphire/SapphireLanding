@@ -32,24 +32,7 @@ const TradingCharges = () => {
           ))}
         </div>
 
-        {/* Market News Section */}
-        <div className="mt-16 flex flex-col sm:flex-row items-center gap-8">
-          <div className="sm:w-1/2">
-            <h2 className="text-3xl font-medium">
-              Smarter Trades, Bigger Gains: <br /> <span className="">Your Edge in the Market</span>
-            </h2>
-            <h3 className="mt-12">
-              Market News & Updates 
-            </h3>
-            <p className="text-gray-600 mt-2">
-              Stay informed with real-time market news, economic trends, and financial insights, all in one place. Get timely
-              updates on stock movements, corporate actions, and global events that impact your investments.
-            </p>
-          </div>
-          <div className="sm:w-1/2">
-            <Image src="/market-news.png" alt="Market News" width={500} height={300} className="rounded-lg shadow-lg" />
-          </div>
-        </div>
+ 
       </div>
     </div>
   );

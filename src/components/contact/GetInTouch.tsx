@@ -98,6 +98,8 @@ const GetInTouch = () => {
                 src="/api/placeholder/600/600"
                 alt="Location Map"
                 className="w-full h-full object-cover"
+                width={1000}
+                height={1000}
               />
             </div>
 

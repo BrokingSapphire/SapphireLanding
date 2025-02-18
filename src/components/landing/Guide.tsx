@@ -31,7 +31,7 @@ const Guide = () => {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {guides.map((guide) => (
-            <div key={guide.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={guide.id} className="bg-white rounded-2xl shadow-md overflow-hidden">
               <div className="relative">
                 <Image
                   src={guide.image}
