@@ -114,7 +114,7 @@ const Prices = () => {
           <div className="flex flex-col space-y-4 justify-between">
             <h1 className="text-2xl sm:text-4xl font-bold leading-tight">
               Transparent Pricing <br /> With{" "}
-              <span className="text-[#064D51]">No Hidden Charges</span>
+              <span className="text-green-heading">No Hidden Charges</span>
             </h1>
 
             <p className="text-sm sm:text-base text-gray-700 ">

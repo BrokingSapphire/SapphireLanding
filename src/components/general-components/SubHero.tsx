@@ -20,7 +20,7 @@ const SubHero = ({ chipText, titleText, gradientText, description }: SubHeroProp
       />
 
       <div className="w-full space-y-5 text-center">
-        <span className="bg-[#E4FFEE] text-[#064D51] px-4 py-2 rounded-3xl">
+        <span className="bg-[#E4FFEE] text-green-heading px-4 py-2 rounded-3xl">
           {chipText}
         </span>
         <div className="text-center font-semibold leading-tight text-6xl w-full">
@@ -30,7 +30,9 @@ const SubHero = ({ chipText, titleText, gradientText, description }: SubHeroProp
           </span>{" "}
           <span>{titleText[1]}</span>
         </div>
-        <div className="text-xl text-gray-heading max-w-4xl mx-auto ">{description}</div>
+        <div className="text-xl text-gray-heading max-w-4xl mx-auto ">
+          {description}
+        </div>
       </div>
     </div>
   );
