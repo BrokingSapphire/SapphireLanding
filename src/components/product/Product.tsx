@@ -19,7 +19,6 @@ const Product = () => {
           <ProductCard
             key={product.title}
             {...product}
-            isReverse={index % 2 !== 0}
             index={index}
           />
         ))}

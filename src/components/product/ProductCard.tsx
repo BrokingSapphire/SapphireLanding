@@ -5,7 +5,6 @@ interface ProductCardProps {
   title: string;
   description: string;
   image: string;
-  isReverse: boolean;
   index: number;
 }
 
@@ -13,13 +12,12 @@ export const ProductCard = ({
   title,
   description,
   image,
-  isReverse,
   index,
 }: ProductCardProps) => (
   <div
-    className={`flex flex-col ${
-      isReverse ? "md:flex-row-reverse" : "md:flex-row"
-    } items-center justify-between gap-8 md:gap-12`}
+    className={`flex flex-col
+      md:flex-row
+    items-center justify-between gap-8 md:gap-12`}
     data-testid={`product-${index}`}
   >
     <div className="w-full md:w-1/2 space-y-4">
@@ -39,6 +37,8 @@ export const ProductCard = ({
           src={image}
           alt={`${title} interface`}
           className="w-full h-auto"
+          width={1000}
+          height={1000}
          
         />
       </div>
