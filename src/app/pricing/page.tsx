@@ -1,8 +1,6 @@
 
   import Charges from '@/components/pricing/Charges'
   import React from 'react'
-  import CustomTable from '@/components/pricing/CustomTable'
-import { accountData, mtfData, nonTradeChargesData, sapphireChargesData } from '@/constants/pricing'
 import ChargesTable  from '@/components/pricing/BigCustomTable'
 import Opportunities from '@/components/product/Opportunities'
 import Image from 'next/image'
@@ -28,7 +26,9 @@ import Image from 'next/image'
                  </div>
                </div>
              </div>
+        <div className='py-12 bg-[#F5F7FA]'>
         <Charges />
+        </div>
         <ChargesTable/>
         {/* <BigCustomTable heading="Sapphire Charges" data={sapphireChargesData} />
         <div className="flex flex-col space-y-16 mt-16 mb-16">
