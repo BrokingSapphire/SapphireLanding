@@ -1,8 +1,17 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const Navbar = () => {
+  const pathname = usePathname();
+  const [activeLink, setActiveLink] = useState(pathname);
+  
+  useEffect(() => {
+    setActiveLink(pathname);
+  }, [pathname]);
   const navLinks = [
     { href: "/about", label: "About" },
     { href: "/product", label: "Product" },
@@ -32,16 +41,24 @@ const Navbar = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-black hover:font-bold relative group py-2 transition-all duration-300"
+                className={`text-black relative py-2 transition-all duration-300 ${
+                  activeLink === link.href ? "text-green-heading" : ""
+                }`}
+                onClick={() => setActiveLink(link.href)}
               >
                 {link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-[3px] bg-black transition-all duration-300 group-hover:w-full"></span>
-                <span className="absolute bottom-0 left-0 w-0 h-[3px] bg-black/50 transition-all duration-500 delay-75 group-hover:w-full"></span>
+                <span 
+                  className={`absolute bottom-0 left-0 h-[3px] bg-green-heading transition-all duration-300 ${
+                    activeLink === link.href ? "w-full" : "w-0"
+                  } group-hover:w-full`}
+                ></span>
+                {/* For hover effect */}
+                <span className="absolute bottom-0 left-0 w-0 h-[3px] bg-green-heading transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
           </div>
         </div>
-
+  
         <div className="space-x-8">
           <Link href="/login">
             <Button variant="outline">

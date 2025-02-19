@@ -28,7 +28,9 @@ import Image from 'next/image'
                  </div>
                </div>
              </div>
+        <div className='py-12 bg-[#F5F7FA]'>
         <Charges />
+        </div>
         <ChargesTable/>
         {/* <BigCustomTable heading="Sapphire Charges" data={sapphireChargesData} />
         <div className="flex flex-col space-y-16 mt-16 mb-16">

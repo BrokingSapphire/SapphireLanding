@@ -17,7 +17,7 @@ const ChargesCard: React.FC<ChargesCardProps> = ({
   icon: Icon,
 }) => {
   return (
-    <div className="rounded-2xl p-5 bg-gradient-to-t from-[#EAFBF099] to-white shadow-[0_2px_7px_6px_rgba(76,77,88,0.04)] w-[378px]">
+    <div className="rounded-2xl h-[360px] p-5 bg-gradient-to-t from-[#EAFBF099] to-white shadow-[0_2px_7px_6px_rgba(76,77,88,0.04)] w-[360px]">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start rounded-md bg-[#EAFBF0] p-3 gap-3">
@@ -77,7 +77,7 @@ const Charges: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16">
+    <div className="max-w-7xl ] mx-auto px-4 py-16">
       <div className="flex justify-center gap-8">
         {chargesData.map((card, index) => (
           <ChargesCard key={index} {...card} />
