@@ -1,0 +1,83 @@
+import React from "react";
+
+const Glimpses = () => {
+  const images = [
+    {
+      id: 1,
+      src: "/about/glimpses.svg",
+      alt: "Team discussion at Zomato office",
+      className: "col-span-2 row-span-2",
+    },
+    {
+      id: 2,
+      src: "/about/glimpses.svg",
+      alt: "Team meeting view 1",
+    },
+    {
+      id: 3,
+      src: "/about/glimpses.svg",
+      alt: "Team meeting view 2",
+    },
+    {
+      id: 4,
+      src: "/about/glimpses.svg",
+      alt: "Team meeting view 3",
+    },
+    {
+      id: 5,
+      src: "/about/glimpses.svg",
+      alt: "Team meeting view 4",
+    },
+    {
+      id: 6,
+      src: "/about/glimpses.svg",
+      alt: "Full team discussion",
+    },
+    {
+      id: 6,
+      src: "/about/glimpses.svg",
+      alt: "Full team discussion",
+    },
+    {
+        id: 7,
+        src: "/about/glimpses.svg",
+        alt: "Full team discussion",
+        className: "col-span-2 row-span-2",
+    },
+    {
+      id: 6,
+      src: "/about/glimpses.svg",
+      alt: "Full team discussion",
+    },
+    {
+      id: 6,
+      src: "/about/glimpses.svg",
+      alt: "Full team discussion",
+    },
+  ];
+
+  return (
+    <div className="container text-center w-full mx-auto px-4">
+      <h1 className="text-2xl sm:text-4xl font-semibold mb-8">
+        Glimpses at Sapphire
+      </h1>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {images.map((image) => (
+          <div
+            key={image.id}
+            className={`overflow-hidden rounded-lg ${image.className || ""}`}
+          >
+            <img
+              src={image.src}
+              alt={image.alt}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Glimpses;

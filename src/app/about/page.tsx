@@ -1,30 +1,34 @@
-
-import AboutInfo from '@/components/about/AboutInfo'
-import Nakul from '@/components/about/Nakul'
-import CustomHero from '@/components/CustomHero'
-import Opportunities from '@/components/product/Opportunities'
-import React from 'react'
+import AboutInfo from "@/components/about/AboutInfo";
+import Glimpses from "@/components/about/Glimpses";
+import MeetOurTeam from "@/components/about/MeetOurTeam";
+import Nakul from "@/components/about/Nakul";
+import SapphireJourney from "@/components/about/SapphireJourney";
+import CustomHero from "@/components/CustomHero";
+import SubHero from "@/components/general-components/SubHero";
+import Opportunities from "@/components/product/Opportunities";
+import React from "react";
 
 const Home = () => {
   return (
-    <div>
-      <CustomHero
-        title="Empowering Your Financial Journey: Trade <br /> Smart,Invest
-              Smarter!"
-        description="At Sapphire, we blend innovation with expertise to simplify
-              investing and trading. From seamless stock broking to curated
-              mutual fund solutions, we're here to help you achieve your
-              financial goals with confidence and clarity."
-        img="about-line.svg"
-      />
-      <AboutInfo />
-      <div className="mt-14">
-        <Nakul />
+    <>
+      <div className="w-full max-w-7xl mx-auto">
+        <SubHero
+          chipText="About"
+          titleText={["Define and deliver way that", ""]}
+          gradientText="Brighter Future"
+          description="Empowering smarter investments with secure tools and expert guidance."
+        />
+        <div className="space-y-20">
+          <AboutInfo />
+          <Nakul />
+          <MeetOurTeam />
+          {/* <SapphireJourney /> */}
+          <Glimpses />
+        </div>
       </div>
-
       <Opportunities />
-    </div>
+    </>
   );
-}
+};
 
-export default Home 
+export default Home;

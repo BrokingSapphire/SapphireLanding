@@ -1,28 +1,26 @@
-
-import CustomHero from '@/components/CustomHero';
-import Opportunities from '@/components/product/Opportunities'
-import Product from '@/components/product/Product'
-import React from 'react'
+import CustomHero from "@/components/CustomHero";
+import SubHero from "@/components/general-components/SubHero";
+import Opportunities from "@/components/product/Opportunities";
+import Product from "@/components/product/Product";
+import React from "react";
 
 const Home = () => {
   return (
     <>
-      <CustomHero
-        title="Revolutionize Your Trading and Investment <br /> Journey with
-        Cutting-Edge Platforms"
-        description="Discover advanced tools, expert-driven insights, and cutting-edge
-        platforms designed to revolutionize your workflow, maximize
-        efficiency, boost performance, and empower you to achieve
-        unparalleled success in today's fast-paced, ever-evolving world of
-        possibilities."
-        img="product-line.svg"
+      {/* Full width on laptop screens, max-w-7xl on wider screens */}
+      <div className="w-full 2xl:max-w-7xl mx-auto">
+        <SubHero
+          chipText="Product"
+          titleText={["Define and deliver way that", "love"]}
+          gradientText="traders"
+          description="Unlock seamless trading with powerful tools, real-time market insights, and a secure platform designed to help you invest smarter and grow your wealth effortlessly."
         />
-        <div className="max-w-7xl mx-auto">
-      <Product />
-    </div>
-      <Opportunities />
-        </>
-  );
-}
+        <Product />
+      </div>
 
-export default Home
+      <Opportunities />
+    </>
+  );
+};
+
+export default Home;
