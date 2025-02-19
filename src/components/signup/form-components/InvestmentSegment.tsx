@@ -63,7 +63,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto -mt-20 p-4">
       <div className="w-full">
         <h1 className="text-2xl font-semibold mb-4">
           Choose your investment segment
@@ -79,7 +79,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
                   type="button"
                   onClick={() => handleSegmentToggle(segment.id)}
                   disabled={isSubmitting}
-                  className={`p-4 border-2 rounded-lg text-left transition-colors
+                  className={`p-4 border-2 rounded-lg text-left transition-colors flex  items-center gap-3
                     ${
                       formData.selectedSegments.includes(segment.id)
                         ? "border-teal-600 bg-teal-50"
@@ -88,6 +88,13 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
                     ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
                   `}
                 >
+                  <input
+                    type="checkbox"
+                    checked={formData.selectedSegments.includes(segment.id)}
+                    onChange={() => handleSegmentToggle(segment.id)}
+                    className="h-5 w-5 text-teal-600 border-gray-300 rounded"
+                    disabled={isSubmitting}
+                  />
                   <span className="font-medium">{segment.label}</span>
                 </button>
               ))}
@@ -104,7 +111,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
               className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 mt-6
                 ${
                   formData.isValid && !isSubmitting
-                    ? ""
+                    ? ""  
                     : "opacity-50 cursor-not-allowed"
                 }`}
               disabled={!formData.isValid || isSubmitting}

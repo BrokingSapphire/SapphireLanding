@@ -3,22 +3,34 @@
   import React from 'react'
   import CustomTable from '@/components/pricing/CustomTable'
 import { accountData, mtfData, nonTradeChargesData, sapphireChargesData } from '@/constants/pricing'
-import { BigCustomTable } from '@/components/pricing/BigCustomTable'
+import ChargesTable  from '@/components/pricing/BigCustomTable'
 import Opportunities from '@/components/product/Opportunities'
-import CustomHero from '@/components/CustomHero'
-
+import Image from 'next/image'
   const Home = () => {
     return (
       <div>
-        <CustomHero
-          title="Smart Investments, Transparent Pricing: Your <br /> Journey to
-              Financial Freedom Starts Here"
-          description="Streamline costs effortlessly, gain clarity in financial planning, and make smarter decisions with simplified tools designed to optimize budgets, enhance savings, and empower you to achieve long-term financial success with confidence."
-          img="pricing-line.svg"
-        />
-
+             <div className="relative h-[400px] mt-10 w-full flex flex-col items-center justify-center mx-auto px-8">
+               <Image 
+                 src="/bg-image.png" 
+                 alt="Decorative Image"
+                 width={300} 
+                 height={300} 
+                 className="absolute top-8 left-0 " 
+               />
+       
+               <div className="w-full space-y-5 text-center">
+                 <span className="bg-[#E4FFEE] text-[#064D51] px-4 py-2 rounded-3xl">Pricing</span>
+                 <div className="text-center font-semibold leading-tight text-6xl w-full">
+                  Transparent Charges for  <br/> <span className="font-lobster-two pr-2 italic text-transparent bg-clip-text font-[400] bg-gradient-to-r from-[#14A5AD] to-[#21B906]">Hassle-Free</span> <span>Trading</span>
+                 </div>
+                 <div className="text-xl text-gray-heading w-full">
+                 Transparent pricing designed for your success—no hidden fees, just growth.
+                 </div>
+               </div>
+             </div>
         <Charges />
-        <BigCustomTable heading="Sapphire Charges" data={sapphireChargesData} />
+        <ChargesTable/>
+        {/* <BigCustomTable heading="Sapphire Charges" data={sapphireChargesData} />
         <div className="flex flex-col space-y-16 mt-16 mb-16">
           <CustomTable heading="Account Opening Changes" data={accountData} />
           <CustomTable heading="Non Trade Charges" data={nonTradeChargesData} />
@@ -48,7 +60,7 @@ import CustomHero from '@/components/CustomHero'
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
         <Opportunities />
       </div>
     );

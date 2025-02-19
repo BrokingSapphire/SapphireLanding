@@ -1,53 +1,38 @@
 import Image from "next/image";
 import React from "react";
-
+import { IoIosArrowRoundForward } from "react-icons/io";
 
 const Support = () => {
   return (
-    <div className="bg-gradient-to-b from-white to-teal-600/70 p-4 sm:p-6">
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <div className="w-32 sm:w-40">
-            <Image
-              src="/service.svg"
-              alt="Support icon"
-              className="w-full h-full object-contain"
-              width={1000}
-              height={1000}
-            />
+    <div className="bg-[#064D51] border-y-2 p-4 sm:p-6 flex items-center justify-center min-h-[250px] sm:min-h-[300px]">
+      <div className="max-w-6xl mx-auto flex flex-row items-center justify-between w-full">
+        
+        {/* Centered Text and Button */}
+        <div className="ml-48 flex flex-col items-center justify-center text-center flex-1">
+          <div className="text-white text-2xl sm:text-6xl font-semibold leading-tight">
+            Ready to unlock new <br />
+            <span className="bg-gradient-to-r from-green-400 via-teal-300 to-yellow-400 bg-clip-text text-transparent">
+              revenue opportunities?
+            </span>
           </div>
-          <div className="space-y-2 px-4 sm:px-20 text-center sm:text-left">
-            <h2 className="text-2xl sm:text-4xl font-semibold">
-              Get Support Anytime, Anywhere
-            </h2>
-            <p className="text-gray-600 text-sm sm:text-base">
-              We&apos;re just a call, email, or message away to help you with
-              your trading journey.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center gap-2">
-              <p className="text-black font-semibold">Have any queries?</p>
-              <a
-                href="#"
-                className="text-blue-500 hover:text-blue-600 flex items-center gap-1"
-              >
-                Contact Support
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-4 h-4 inline-block"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M9 12h6M15 9l3 3-3 3" />
-                </svg>
-              </a>
-            </div>
-          </div>
+          <button className="bg-white flex items-center text-black sm:text-lg px-7 sm:px-12 py-2 sm:py-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-12 sm:w-auto mt-12 group">
+            <span className="mx-auto">Sign Up</span>
+            <IoIosArrowRoundForward className="w-8 h-8 ml-4 -mr-2 transition-all duration-300 group-hover:ml-7" />
+          </button>
+
+
         </div>
-        <button className="bg-[#152F46] text-base sm:text-lg text-white px-5 sm:px-7 py-2 sm:py-3 rounded-full hover:bg-[#1A3B59] transition-colors duration-200 w-full sm:w-auto">
-          Let&apos;s Connect
-        </button>
+
+        {/* Arrow Group Image on the Extreme Right */}
+        <div className="w-40 sm:w-56 -mr-8 scale-125">
+          <Image
+            src="/main/ArrowGroup.svg"
+            alt="Arrow Group"
+            className="w-full h-full object-contain"
+            width={1000}
+            height={1000}
+          />
+        </div>
       </div>
     </div>
   );

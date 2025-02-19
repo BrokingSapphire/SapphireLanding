@@ -51,13 +51,41 @@ const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
 
   const handlePanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase();
-    const updates = {
-      panNumber: value,
-    };
-    updateFormData({
-      ...updates,
-      ...validateForm(updates),
-    });
+    const currentLength = value.length;
+    
+    // Validate each character based on position
+    if (currentLength <= 5) {
+      // First 5 characters should be letters
+      if (/^[A-Z]*$/.test(value)) {
+        updateFormData({
+          panNumber: value,
+          ...validateForm({ panNumber: value }),
+        });
+      }
+    } else if (currentLength <= 9) {
+      // Next 4 characters should be numbers
+      const firstPart = value.slice(0, 5);
+      const middlePart = value.slice(5, currentLength);
+      if (/^[A-Z]{5}$/.test(firstPart) && /^[0-9]*$/.test(middlePart)) {
+        updateFormData({
+          panNumber: value,
+          ...validateForm({ panNumber: value }),
+        });
+      }
+    } else if (currentLength <= 10) {
+      // Last character should be a letter
+      const lastChar = value.slice(9);
+      const restOfPan = value.slice(0, 9);
+      if (
+        /^[A-Z]{5}[0-9]{4}$/.test(restOfPan) &&
+        /^[A-Z]?$/.test(lastChar)
+      ) {
+        updateFormData({
+          panNumber: value,
+          ...validateForm({ panNumber: value }),
+        });
+      }
+    }
   };
 
   const handleDobChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +119,7 @@ const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto -mt-40 p-4">
       <div className="w-full">
         <h1 className="text-2xl font-semibold mb-4">
           Enter your PAN to Continue
@@ -105,7 +133,7 @@ const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
               <input
                 type="text"
                 className="w-full border rounded-md px-4 py-2"
-                placeholder="Enter your PAN number"
+                placeholder="AAAAA1234A"
                 value={formData.panNumber}
                 onChange={handlePanChange}
                 maxLength={10}

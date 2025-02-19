@@ -34,7 +34,7 @@ const Calculator: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#F5F7FA] py-12">
+    <section className="bg-[#F5F7FA] h-[600px] py-12">
       <div className="max-w-7xl flex flex-col lg:flex-row justify-between items-center mx-auto px-6 lg:px-12">
         {/* Text & Buttons Section */}
         <div className="w-full lg:w-1/2">

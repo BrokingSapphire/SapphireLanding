@@ -132,7 +132,7 @@ const Footer = () => {
               <SocialLinks />
 
               <h3 className="font-bold mb-4">Download Our App</h3>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
                 <Image
                   src="/apple.svg"
                   alt="App Store"
@@ -143,11 +143,12 @@ const Footer = () => {
                 <Image
                   src="/google.png"
                   alt="Google Play"
-                  width={160}
+                  width={120}
                   height={40}
                   className="h-10 w-auto"
                 />
               </div>
+
             </div>
           </div>
           <LegalSection />

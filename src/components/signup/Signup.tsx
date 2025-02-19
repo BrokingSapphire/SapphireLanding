@@ -8,6 +8,8 @@ import type {
   PageData,
 } from "../../constants/types/signup-types/form";
 import MobileVerification from "./form-components/MobileVerification";
+import BankSelection from './form-components/BankSelection'
+import LinkBankAccount from "./form-components/LinkBankAccount";
 import EmailVerification from "./form-components/EmailVerification";
 import CardVerification from "./form-components/CardVerification";
 import ProgressBar from "./general/ProgressBar";
@@ -20,6 +22,7 @@ import TradingPreferences from "./form-components/TradingPreference";
 import BankLink from "./form-components/LinkBank";
 import TradingAccountDetails2 from "./form-components/TradingAccountDetails2";
 import NomineesManagement from "./form-components/Nominees";
+import IPVVerification from "./form-components/IPV";
 
 
 interface StepConfig {
@@ -67,7 +70,7 @@ const STEP_CONFIG: StepConfig = {
     component: TradingAccountDetails,
   },
   8: {
-    title: "Trading Account Details",
+    title: "Trading Preferences",
     description: "Select the investment segments you're interested in.",
     component: TradingPreferences,
   },
@@ -86,23 +89,17 @@ const STEP_CONFIG: StepConfig = {
     description: "Please verify your email to continue with the registration.",
     component: NomineesManagement,
   },
-    
-  // new pages
-  
-  
-  // 12:{
-  //   title: "Verify Card Details",
-  //   description:
-  //     "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
-  //   component: BankSelection,
-  // },
-
-  // 13:{
-  //   title: "Verify Bank Account Details",
-  //   description:
-  //     "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
-  //   component: LinkBankAccount,
-  // },
+  12:{
+    title: "Verify Bank Account Details",
+    description:
+      "Easily create and manage a personalized business profile that streamlines your operations and connects you to success.",
+    component: LinkBankAccount,
+  },
+  13:{
+    title: "Verify Bank Account Details",
+    description:"Veirfy Your image",
+    component: IPVVerification,
+  },
 
 };
 
@@ -132,8 +129,7 @@ const Signup = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [direction, setDirection] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(null);
-  const [bankLinkMethod, setBankLinkMethod] =
-    useState<BankLinkMethodType>(null);
+  const [bankLinkMethod, setBankLinkMethod] =useState<BankLinkMethodType>(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -145,7 +141,7 @@ const Signup = () => {
   const handleNextStep = (method?: string) => {
     setDirection(1);
     if (method) {
-      if (currentStep === 12) {
+      if (currentStep === 14) {
         setBankLinkMethod(method as BankLinkMethodType);
       } else {
         setPaymentMethod(method as PaymentMethodType);
@@ -172,7 +168,7 @@ const Signup = () => {
             onNextStep={() => console.log("Completed")}
             onComplete={() => {
               setBankLinkMethod(null);
-              setCurrentStep(13);
+              setCurrentStep(15);
             }}
           />
         )

@@ -1,73 +1,84 @@
 import React from "react";
+import { Wallet, Binary, Coins } from "lucide-react";
 
-
-
-const ChargesCard = ({
-  charge,
-  title,
-  description,
-}: {
+interface ChargesCardProps {
   charge: string;
   title: string;
+  subtitle: string;
   description: string;
+  icon: React.ElementType;
+}
+
+const ChargesCard: React.FC<ChargesCardProps> = ({
+  charge,
+  title,
+  subtitle,
+  description,
+  icon: Icon,
 }) => {
   return (
-    <div className="flex flex-col items-center text-center p-6">
-      <div className="relative flex items-end mb-4">
-        <span className="text-yellow-400 mr-2 text-2xl font-bold mb-1">₹</span>
-        <span className="text-8xl font-bold text-yellow-400 leading-none -ml-1">
-          {charge}
-        </span>
-        {charge === "20" && (
-          <span className="text-4xl text-yellow-400 absolute -right-4 top-0">
-            *
+    <div className="rounded-2xl p-5 bg-gradient-to-t from-[#EAFBF099] to-white shadow-[0_2px_7px_6px_rgba(76,77,88,0.04)] w-[378px]">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-start rounded-md bg-[#EAFBF0] p-3 gap-3">
+          <div className="mt-1">
+            <Icon className="w-5 h-5 text-green-600" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-xl text-[#1F6B12] font-medium">{title}</h3>
+            <p className="text-sm text-gray-600 leading-snug">{subtitle}</p>
+          </div>
+        </div>
+
+        {/* Price */}
+        <div className="flex items-start">
+          <span className="text-2xl text-gray-900 font-normal mt-1.5">₹</span>
+          <span className="text-6xl font-bold text-gray-900 leading-none ml-0.5">
+            {charge}
           </span>
-        )}
+          {charge === "20" && (
+            <span className="text-3xl text-gray-900 font-bold mt-1">*</span>
+          )}
+        </div>
+
+        {/* Description */}
+        <p className="text-base text-gray-800 leading-relaxed">{description}</p>
       </div>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-600 text-sm">{description}</p>
     </div>
   );
 };
 
-const Charges = () => {
+const Charges: React.FC = () => {
   const chargesData = [
     {
       charge: "20",
       title: "Equity Delivery",
+      subtitle: "Transparent Pricing for Long-Term Investments",
       description:
         "0.03% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Equity Delivery across NSE and BSE.",
+      icon: Wallet,
     },
     {
       charge: "20",
       title: "F&O and Intraday",
+      subtitle: "Competitive Brokerage for Active Traders",
       description:
         "0.03% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on intraday trades across segments. Flat ₹20 per executed on all options trade.",
+      icon: Binary
     },
     {
       charge: "20",
       title: "Commodity and Currency",
+      subtitle: "Affordable Rates for Diversified Trading",
       description:
         "0.03% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Commodity and Currency Futures. Flat ₹20 per executed on all options trade.",
+      icon: Coins
     },
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-16">
-      <section className="header flex flex-col items-center justify-center mb-16 text-center">
-        <h1 className="text-2xl sm:text-4xl font-bold mb-4">
-          Simplified Charges for{" "}
-          <span className="text-[#152F46]">Hassle-Free</span> Trading
-        </h1>
-        <h3 className="text-gray-600 text-sm sm:text-base">
-
-            Real-time trading, insightful analytics, and unmatched support—your
-            portfolio deserves it.
-
-        </h3>
-      </section>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="flex justify-center gap-8">
         {chargesData.map((card, index) => (
           <ChargesCard key={index} {...card} />
         ))}
