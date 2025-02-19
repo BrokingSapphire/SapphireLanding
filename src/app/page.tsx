@@ -12,7 +12,7 @@ const Home = () => {
   return (
     <>
       <Hero />
-      <TradingCharges />
+      <TradingCharges />``
       <SmartTrades />
       <Calculator />
       <div className="max-w-7xl mx-auto">
