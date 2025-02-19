@@ -13,29 +13,29 @@ const TableCell: React.FC<TableHeaderProps> = ({ children }) => (
 );
 
 const ChargesTable: React.FC = () => {
-  const equityData = [
-    {
-      type: "Equity Delivery",
-      brokerage: "₹0 brokerage upto ₹500 free; ₹2.40 or 0.1% per executed order, minimum ₹1",
-      transactionCharges: "NSE: 0.00275% BSE*: As Per The Stock Group",
-      stt: "0.1%",
-      ipft: "NSE: 0.0001%",
-      gst: "18%",
-      stampDuty: "0.015%",
-      sebiCharges: "₹10 / crore"
-    },
-    {
-      type: "Equity Intraday",
-      brokerage: "₹0 brokerage upto ₹500 free; ₹2.40 or F&O or 0.1% 0.03%",
-      transactionCharges: "NSE: 0.00275% BSE*: As Per The Stock Group",
-      stt: "0.025%",
-      ipft: "NSE: 0.0001%",
-      gst: "18%",
-      stampDuty: "0.003%",
-      sebiCharges: "₹10 / crore"
-    },
-    // Add other columns as needed
-  ];
+  // const equityData = [
+  //   {
+  //     type: "Equity Delivery",
+  //     brokerage: "₹0 brokerage upto ₹500 free; ₹2.40 or 0.1% per executed order, minimum ₹1",
+  //     transactionCharges: "NSE: 0.00275% BSE*: As Per The Stock Group",
+  //     stt: "0.1%",
+  //     ipft: "NSE: 0.0001%",
+  //     gst: "18%",
+  //     stampDuty: "0.015%",
+  //     sebiCharges: "₹10 / crore"
+  //   },
+  //   {
+  //     type: "Equity Intraday",
+  //     brokerage: "₹0 brokerage upto ₹500 free; ₹2.40 or F&O or 0.1% 0.03%",
+  //     transactionCharges: "NSE: 0.00275% BSE*: As Per The Stock Group",
+  //     stt: "0.025%",
+  //     ipft: "NSE: 0.0001%",
+  //     gst: "18%",
+  //     stampDuty: "0.003%",
+  //     sebiCharges: "₹10 / crore"
+  //   },
+  //   // Add other columns as needed
+  // ];
 
   const accountOpeningData = [
     { type: "Individual Account", charges: "₹99/-" },

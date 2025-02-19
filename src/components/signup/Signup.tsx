@@ -8,7 +8,7 @@ import type {
   PageData,
 } from "../../constants/types/signup-types/form";
 import MobileVerification from "./form-components/MobileVerification";
-import BankSelection from './form-components/BankSelection'
+// import BankSelection from './form-components/BankSelection'
 import LinkBankAccount from "./form-components/LinkBankAccount";
 import EmailVerification from "./form-components/EmailVerification";
 import CardVerification from "./form-components/CardVerification";
