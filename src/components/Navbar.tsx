@@ -21,7 +21,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed font-poppins w-full top-0 z-50 bg-white backdrop-blur-md shadow-sm">
-      <div className="max-w-[1450px] mx-auto flex items-center justify-between py-4 px-6 lg:px-8">
+      <div className="xl:max-w-7xl mx-auto flex items-center justify-between py-4 px-6 lg:px-8">
         <Link href="/">
           <div className="items-center flex">
             <Image
@@ -58,8 +58,8 @@ const Navbar = () => {
             ))}
           </div>
         </div>
-  
-        <div className="space-x-8">
+
+        <div className="space-x-4">
           <Link href="/login">
             <Button variant="outline">
               Login
