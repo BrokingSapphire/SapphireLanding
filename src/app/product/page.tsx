@@ -1,4 +1,3 @@
-import CustomHero from "@/components/CustomHero";
 import SubHero from "@/components/general-components/SubHero";
 import Opportunities from "@/components/product/Opportunities";
 import Product from "@/components/product/Product";

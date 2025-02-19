@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 const Glimpses = () => {
@@ -68,10 +69,12 @@ const Glimpses = () => {
             key={image.id}
             className={`overflow-hidden rounded-lg ${image.className || ""}`}
           >
-            <img
+            <Image
               src={image.src}
               alt={image.alt}
               className="w-full h-full object-cover"
+              width={100}
+              height={100}
             />
           </div>
         ))}

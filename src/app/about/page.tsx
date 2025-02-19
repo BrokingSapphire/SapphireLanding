@@ -2,8 +2,6 @@ import AboutInfo from "@/components/about/AboutInfo";
 import Glimpses from "@/components/about/Glimpses";
 import MeetOurTeam from "@/components/about/MeetOurTeam";
 import Nakul from "@/components/about/Nakul";
-import SapphireJourney from "@/components/about/SapphireJourney";
-import CustomHero from "@/components/CustomHero";
 import SubHero from "@/components/general-components/SubHero";
 import Opportunities from "@/components/product/Opportunities";
 import React from "react";

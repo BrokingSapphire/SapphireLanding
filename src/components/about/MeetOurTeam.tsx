@@ -1,9 +1,9 @@
-import Image from 'next/image';
+
 import React from 'react'
 
 const MeetOurTeam = () => {
   return (
-    <div className="text-center mb-10 mt-10 sm:mt-20 mb-8 sm:mb-12">
+    <div className="text-center mb-10 mt-10 sm:mt-20 sm:mb-12">
       <h1 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
         Meet Our Team
       </h1>
