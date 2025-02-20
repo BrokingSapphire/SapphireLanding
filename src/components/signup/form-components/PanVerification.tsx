@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { CalendarIcon } from "lucide-react";
 
 interface PanVerificationProps {
   onNextStep: () => void;
@@ -13,6 +16,15 @@ const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
     panError: false,
     dobError: false,
   });
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  // Calculate the max date (18 years ago from today)
+  const today = new Date();
+  const maxDate = new Date(
+    today.getFullYear() - 18,
+    today.getMonth(),
+    today.getDate()
+  );
 
   const validateForm = (updatedData: Partial<typeof formData>) => {
     const currentData = { ...formData, ...updatedData };
@@ -22,6 +34,7 @@ const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
 
     // DOB validation: should be a valid date and person should be at least 18 years old
     const isValidDate = (dateString: string) => {
+      if (!dateString) return false;
       const today = new Date();
       const birthDate = new Date(dateString);
       let age = today.getFullYear() - birthDate.getFullYear();
@@ -88,11 +101,15 @@ const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
     }
   };
 
-  const handleDobChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handleDateChange = (date: Date | null) => {
+    if (!date) return;
+    setSelectedDate(date);
+    
+    const dateString = date.toISOString().split('T')[0];
     const updates = {
-      dob: value,
+      dob: dateString,
     };
+    
     updateFormData({
       ...updates,
       ...validateForm(updates),
@@ -118,8 +135,68 @@ const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
     }
   };
 
+  // Custom styles to match your design system
+  const customDatePickerStyles = `
+    .react-datepicker {
+      font-family: inherit;
+      border-radius: 0.5rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .react-datepicker__header {
+      background-color: #f3f4f6;
+      border-bottom: 1px solid #e2e8f0;
+      border-top-left-radius: 0.5rem;
+      border-top-right-radius: 0.5rem;
+      padding-top: 0.75rem;
+    }
+    .react-datepicker__month {
+      margin: 0.5rem;
+    }
+    .react-datepicker__day-name, .react-datepicker__day {
+      width: 2rem;
+      line-height: 2rem;
+      margin: 0.2rem;
+    }
+    .react-datepicker__day--selected {
+      background-color: #115e59;
+      border-radius: 0.3rem;
+    }
+    .react-datepicker__day--selected:hover {
+      background-color: #134e4a;
+    }
+    .react-datepicker__day:hover {
+      background-color: #e6fffa;
+    }
+    .react-datepicker__day--disabled {
+      color: #cbd5e0;
+    }
+    .react-datepicker__navigation {
+      top: 0.75rem;
+    }
+    .react-datepicker__year-dropdown-container,
+    .react-datepicker__month-dropdown-container {
+      margin: 0 0.5rem;
+    }
+    .react-datepicker__year-dropdown,
+    .react-datepicker__month-dropdown {
+      background-color: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.25rem;
+    }
+    .react-datepicker__year-option,
+    .react-datepicker__month-option {
+      padding: 0.5rem;
+    }
+    .react-datepicker__year-option:hover,
+    .react-datepicker__month-option:hover {
+      background-color: #f3f4f6;
+    }
+  `;
+
   return (
     <div className="max-w-2xl mx-auto -mt-40 p-4">
+      <style>{customDatePickerStyles}</style>
       <div className="w-full">
         <h1 className="text-2xl font-semibold mb-4">
           Enter your PAN to Continue
@@ -150,16 +227,34 @@ const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
             </div>
 
             <div>
-              <label className="block text-gray-700 mb-2">DOB</label>
-              <input
-                type="date"
-                className="w-full border rounded-md px-4 py-2"
-                placeholder="DD/MM/YYYY"
-                value={formData.dob}
-                onChange={handleDobChange}
-                max={new Date().toISOString().split("T")[0]}
-                disabled={isSubmitting}
-              />
+              <label className="block text-gray-700 mb-2">Date of Birth</label>
+              <div className="relative">
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  maxDate={maxDate}
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  yearDropdownItemNumber={70}
+                  scrollableYearDropdown
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="Select your date of birth"
+                  className="w-full border rounded-md px-4 py-2 cursor-pointer"
+                  disabled={isSubmitting}
+                  customInput={
+                    <div className="relative w-full">
+                      <input
+                        className="w-full  pr-10"
+                        readOnly
+                        placeholder="Select your date of birth"
+                        value={selectedDate ? selectedDate.toLocaleDateString('en-GB') : ''}
+                      />
+                      <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+                    </div>
+                  }
+                />
+              </div>
               {formData.dobError && (
                 <p className="text-red-500 mt-2">
                   You must be at least 18 years old to continue.

@@ -71,8 +71,8 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md p-4 ">
-      <h2 className="text-xl font-medium mb-5">Trading account details</h2>
+    <div className="-mt-14 w-full max-w-md p-4 ">
+      <h2 className="text-4xl font-medium mb-5">Trading account details</h2>
       <p className="text-sm text-gray-600 mb-5">Step 5 of 9</p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -85,7 +85,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
                 type="button"
                 onClick={() => handleMaritalStatusChange(status)}
                 disabled={isSubmitting}
-                className={`px-4 py-1 text-sm border rounded transition-colors
+                className={`px-6 py-3 text-sm border rounded transition-colors
                   ${
                     formData.maritalStatus === status
                       ? "border-teal-600 bg-teal-50 "
