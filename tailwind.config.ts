@@ -9,6 +9,7 @@ export default {
   ],
   theme: {
     extend: {
+      maxWidth: { '7xl': '2000px' },
       colors: {
         "gray-heading": "#616161",
         "green-heading": "#064D51",
