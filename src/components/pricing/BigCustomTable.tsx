@@ -13,29 +13,57 @@ const TableCell: React.FC<TableHeaderProps> = ({ children }) => (
 );
 
 const ChargesTable: React.FC = () => {
-  // const equityData = [
-  //   {
-  //     type: "Equity Delivery",
-  //     brokerage: "₹0 brokerage upto ₹500 free; ₹2.40 or 0.1% per executed order, minimum ₹1",
-  //     transactionCharges: "NSE: 0.00275% BSE*: As Per The Stock Group",
-  //     stt: "0.1%",
-  //     ipft: "NSE: 0.0001%",
-  //     gst: "18%",
-  //     stampDuty: "0.015%",
-  //     sebiCharges: "₹10 / crore"
-  //   },
-  //   {
-  //     type: "Equity Intraday",
-  //     brokerage: "₹0 brokerage upto ₹500 free; ₹2.40 or F&O or 0.1% 0.03%",
-  //     transactionCharges: "NSE: 0.00275% BSE*: As Per The Stock Group",
-  //     stt: "0.025%",
-  //     ipft: "NSE: 0.0001%",
-  //     gst: "18%",
-  //     stampDuty: "0.003%",
-  //     sebiCharges: "₹10 / crore"
-  //   },
-  //   // Add other columns as needed
-  // ];
+  const equityData = [
+    {
+      type: "Brokerage",
+      equityDelivery: "₹0 brokerage upto ₹500 for first 30 days*\nThen lower of ₹20 or 0.1% per executed order, minimum ₹1",
+      equityIntraday: "₹0 brokerage upto ₹500 for first 30 days*\nThen lower of ₹20 or 0.03%",
+      equityFutures: "₹0 brokerage upto ₹500 for first 30 days*\nThen, ₹20 per executed order",
+      equityOptions: "₹0 brokerage upto ₹500 for first 30 days*\nThen, ₹20 per executed order"
+    },
+    {
+      type: "Transaction Charges",
+      equityDelivery: "NSE: 0.00325%\nBSE: As Per The Stock Group",
+      equityIntraday: "NSE: 0.00325%\nBSE: As Per The Stock Group",
+      equityFutures: "NSE: 0.00171%\nBSE: 0",
+      equityOptions: "NSE: \nIndex: ₹0/₹tick options 0.0005%\nStock: Index options 0.0345%"
+    },
+    {
+      type: "Security Transaction Tax",
+      equityDelivery: "0.1%",
+      equityIntraday: "0.025%",
+      equityFutures: "NSE: 0.01%\nBSE: 0.01%",
+      equityOptions: "NSE: 0.1%\nBSE: 0.1%"
+    },
+    {
+      type: "IPFT",
+      equityDelivery: "NSE: 0.0001%",
+      equityIntraday: "NSE: 0.0001%",
+      equityFutures: "NSE: 0.0001%",
+      equityOptions: "NSE: 0.0001%"
+    },
+    {
+      type: "GST",
+      equityDelivery: "18%",
+      equityIntraday: "18%",
+      equityFutures: "18%",
+      equityOptions: "18%"
+    },
+    {
+      type: "Stamp Duty Charges",
+      equityDelivery: "0.015%",
+      equityIntraday: "0.003%",
+      equityFutures: "NSE: 0.01%\nBSE: 0.01%",
+      equityOptions: "NSE: 0.005%\nBSE: 0.005%"
+    },
+    {
+      type: "SEBI Charges",
+      equityDelivery: "₹ 10 / crore",
+      equityIntraday: "₹ 10 / crore",
+      equityFutures: "₹ 10 / crore",
+      equityOptions: "₹ 10 / crore"
+    }
+  ];
 
   const accountOpeningData = [
     { type: "Individual Account", charges: "₹99/-" },
@@ -50,7 +78,7 @@ const ChargesTable: React.FC = () => {
   const nonTradeCharges = [
     {
       title: "Account Maintenance charges (free for first 3 months)",
-      charges: "For BSDA (Basic Services Demat Account) Clients:\n• Value of holding in Demat account upto Rs 1 Lakh - NIL\n• Value of holdings in Demat account between Rs. 1 Lakh and above - Rs. 25 + GST / Month\n\nFor non-BSDA clients:\n₹50 + GST per month"
+      charges: "For BSDA (Basic Services Demat Account) Clients:\n• Value of holding in Demat account upto Rs. 1 Lakh - NIL\n• Value of holdings in Demat account between Rs. 1 Lakh and above - Rs. 25 + GST / Month\n\nFor non-BSDA clients:\n₹50 + GST per month"
     },
     {
       title: "Cash collateral charges",
@@ -71,84 +99,127 @@ const ChargesTable: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto p-8 space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8">
+      {/* Navigation Bar */}
+      <div className="flex border-b">
+        <div className="px-6 py-4 font-semibold text-teal-800 border-b-2 border-teal-800">Equity</div>
+        <div className="px-6 py-4 font-semibold ">Currency</div>
+        <div className="px-6 py-4 font-semibold ">Commodity</div>
+      </div>
+
       {/* Trading Charges Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse border">
+      <div className="overflow-x-auto px-8">
+        <table className="w-full border-collapse">
           <thead>
-            <tr>
-              <th className="bg-gray-100 px-4 py-2 text-left font-medium text-gray-700">Brokerage</th>
-              <th className="bg-gray-100 px-4 py-2 text-left font-medium text-gray-700">Equity Delivery</th>
-              <th className="bg-gray-100 px-4 py-2 text-left font-medium text-gray-700">Equity Intraday</th>
-              <th className="bg-gray-100 px-4 py-2 text-left font-medium text-gray-700">Equity Futures</th>
-              <th className="bg-gray-100 px-4 py-2 text-left font-medium text-gray-700">Equity Options</th>
+            <tr className="bg-gray-100">
+              <th className="py-3 px-4 text-left font-semibold text-gray-700"></th>
+              <th className="py-3 px-4 text-left font-semibold text-gray-700">Equity Delivery</th>
+              <th className="py-3 px-4 text-left font-semibold text-gray-700">Equity Intraday</th>
+              <th className="py-3 px-4 text-left font-semibold text-gray-700">Equity Futures</th>
+              <th className="py-3 px-4 text-left font-semibold text-gray-700">Equity Options</th>
             </tr>
           </thead>
           <tbody>
-            {/* Add rows for each charge type */}
+            {equityData.map((row, index) => (
+              <tr key={index} className="border-b border-gray-200">
+                <td className="py-3 px-4 font-medium text-gray-700 flex items-center">
+                  {row.type}
+                  {index < 7 && (
+                    <span className="ml-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="8"></line>
+                      </svg>
+                    </span>
+                  )}
+                </td>
+                <td className="py-3 px-4 text-gray-600 whitespace-pre-line">{row.equityDelivery}</td>
+                <td className="py-3 px-4 text-gray-600 whitespace-pre-line">{row.equityIntraday}</td>
+                <td className="py-3 px-4 text-gray-600 whitespace-pre-line">{row.equityFutures}</td>
+                <td className="py-3 px-4 text-gray-600 whitespace-pre-line">{row.equityOptions}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
 
       {/* Account Opening Charges */}
-      <div className="bg-white rounded-lg overflow-hidden border">
-        <div className="flex items-center px-4 py-2 bg-blue-500 text-white">
-          <h2 className="font-medium">Account Opening Charges</h2>
-          <span className="ml-2 px-2 py-1 bg-blue-400 rounded text-sm">₹440 + 79$</span>
-        </div>
-        <table className="w-full">
-          <thead>
-            <tr>
-              <TableHeader>Account Type</TableHeader>
-              <TableHeader>Opening Charges</TableHeader>
-            </tr>
-          </thead>
-          <tbody>
-            {accountOpeningData.map((item, index) => (
-              <tr key={index} className="border-t">
-                <TableCell>{item.type}</TableCell>
-                <TableCell>{item.charges}</TableCell>
+      <div className="border-t">
+        <div className="px-8 py-4 font-semibold text-gray-800">Account Opening Charges</div>
+        <div className="px-8">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="py-3 px-4 text-left font-semibold text-gray-700 w-1/2">Account Type</th>
+                <th className="py-3 px-4 text-left font-semibold text-gray-700 w-1/2">Opening Charges</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {accountOpeningData.map((item, index) => (
+                <tr key={index} className="border-b border-gray-200">
+                  <td className="py-3 px-4 text-gray-600">{item.type}</td>
+                  <td className="py-3 px-4 text-gray-600">{item.charges}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Non Trade Charges */}
-      <div className="bg-white rounded-lg overflow-hidden border">
-        <h2 className="px-4 py-2 bg-gray-100 font-medium">Non Trade Charges</h2>
-        <table className="w-full">
-          <tbody>
-            {nonTradeCharges.map((item, index) => (
-              <tr key={index} className="border-t">
-                <TableCell>{item.title}</TableCell>
-                <td className="px-4 py-2 text-gray-600 whitespace-pre-line">{item.charges}</td>
+      <div className="border-t">
+        <div className="px-8 py-4 font-semibold text-gray-800">Non Trade Charges</div>
+        <div className="px-8">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="py-3 px-4 text-left font-semibold text-gray-700 w-1/2">Charges</th>
+                <th className="py-3 px-4 text-left font-semibold text-gray-700 w-1/2">Charges</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {nonTradeCharges.map((item, index) => (
+                <tr key={index} className="border-b border-gray-200">
+                  <td className="py-3 px-4 text-gray-600">{item.title}</td>
+                  <td className="py-3 px-4 text-gray-600 whitespace-pre-line">{item.charges}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* MTF Charges */}
-      <div className="bg-white rounded-lg overflow-hidden border">
-        <h2 className="px-4 py-2 bg-gray-100 font-medium">MTF Charges</h2>
-        <table className="w-full">
-          <tbody>
-            {mtfCharges.map((item, index) => (
-              <tr key={index} className="border-t">
-                <TableCell>{item.title}</TableCell>
-                <TableCell>{item.charges}</TableCell>
+      <div className="border-t">
+        <div className="px-8 py-4 font-semibold text-gray-800">MTF Charges</div>
+        <div className="px-8">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="py-3 px-4 text-left font-semibold text-gray-700">Charges</th>
+                <th className="py-3 px-4 text-left font-semibold text-gray-700">Charges</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {mtfCharges.map((item, index) => (
+                <tr key={index} className="border-b border-gray-200">
+                  <td className="py-3 px-4 text-gray-600">{item.title}</td>
+                  <td className="py-3 px-4 text-gray-600">{item.charges}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Disclaimer */}
-      <div className="text-sm text-gray-600 mt-4">
+      <div className="px-8 py-6 text-sm bg-[#F5F5F5] text-gray-600 border-t">
+        <span className="text-2xl text-black ">Disclaimer</span>
         <p className="leading-relaxed">
-          For Delivery based trades, a minimum of ₹2.5 will be charged per contract note. Client offers to receive physical contract notes will be charged ₹50 per contract note plus courier charges. In case of new account opening fee is ₹200 each for NRI, Partnership, Minor and HUF accounts. • Statutory and regulatory charges will be levied as actuals. Brokerage is also charged on expired, exercised and assigned options contracts. • *BSE charges on A Group shares is 0.00325%, B Group shares is 0.37%, Z Group shares is 0, Bond Price is 0.0002%. • 1 paisa per Lakh (minimum is ₹25 on delivery per scrip) is levied for transactions in physically settled contracts. • BSE transaction charges on F&O trade @ 0.0019% (minimum is ₹1.9 on F&O per lot). Delayed payment charges @ 0.05% per day for shortage/delay in pay-in. • All charges are exclusive of applicable GST.
+          For Delivery based trades, a minimum of ₹2.5 will be charged per contract note. Clients who opt to receive physical contract notes will be charged ₹50 per contract note plus courier charges. Brokerage will not exceed the rates specified by SEBI and the exchanges. All statutory and regulatory charges will be levied as actuals. Brokerage is also charged on expired, exercised and assigned options contracts. Free investments are available only for our retail individual clients. Companies, Partnerships, Trusts, and HUF would pay ₹15 + ₹3 (minimum of ₹1 per trade (except delivery)). Additional charges for investors who opt for physical delivery of payout of securities, where physical delivery happens. For renewal of packages for continued where physical delivery happens is ₹199 per month.
         </p>
+
       </div>
     </div>
   );
