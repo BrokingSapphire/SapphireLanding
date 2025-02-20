@@ -7,7 +7,7 @@ const TradingCharges = () => {
       <div className="max-w-6xl mx-auto px-6">
         {/* Simplified Charges Section */}
         <h2 className="text-center text-5xl font-semibold mb-8">
-          Simplified Charges for <span className="text-[#064D51]">Hassle-Free</span> Trading
+          Simplified Charges for <span className="text-green-heading">Hassle-Free</span> Trading
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
           {[

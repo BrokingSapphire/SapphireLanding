@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Camera } from 'lucide-react';
+import Image from 'next/image';
 
 interface IPVVerificationProps {
   onNextStep: () => void;
@@ -54,10 +55,12 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({ onNextStep }) => {
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
           {imageFile ? (
             <div className="space-y-4">
-              <img 
+              <Image 
                 src={URL.createObjectURL(imageFile)} 
                 alt="Preview" 
                 className="max-w-full h-auto mx-auto rounded"
+                width={1000}
+                height={1000}
               />
               <button
                 onClick={() => setImageFile(null)}

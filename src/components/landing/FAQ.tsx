@@ -11,7 +11,7 @@ import { faqs } from "@/constants/landing";
 export default function FAQ() {
   return (
     <div className="max-w-4xl flex flex-col space-y-4 items-center justify-center mx-auto px-4 py-6 sm:p-8">
-      <h1 className="text-[#064D51] text-2xl sm:text-4xl font-bold text-center">
+      <h1 className="text-green-heading text-2xl sm:text-4xl font-bold text-center">
         Frequently Asked Questions (FAQs)
       </h1>
         <p className="text-sm sm:text-base text-center text-gray-500">
