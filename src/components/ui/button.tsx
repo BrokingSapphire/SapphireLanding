@@ -20,6 +20,7 @@ const buttonVariants = cva(
         ghost:
           "text-white bg-green-heading hover:bg-white border-2 border-green-heading hover:text-white hover:text-green-heading",
         link: "text-primary underline-offset-4 hover:underline",
+        signUp: "rounded-full bg-teal-800 text-white flex items-center justify-between hover:bg-teal-900 py-4 px-6 w-24"
       },
       size: {
         default: "h-9 px-4 py-2",
