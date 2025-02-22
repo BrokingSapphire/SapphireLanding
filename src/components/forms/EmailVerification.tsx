@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 
 const EmailVerification = ({ onNext }: { onNext: () => void }) => {
-  const [mobileNumber, setMobileNumber] = useState("");
+    const [mobileNumber, setMobileNumber] = useState("");
+      const handleEmailOTP = () => {
+        //TODO: add otp logic with try catch
+        alert("OTP sent to your email");
+        onNext();
+      };
+
 
   return (
     <div className="max-w-md mx-auto">
@@ -30,7 +36,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
       </div>
 
       <button
-        onClick={onNext}
+        onClick={handleEmailOTP}
         className="w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors"
       >
         Continue

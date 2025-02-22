@@ -2,6 +2,12 @@ import React, { useState } from "react";
 
 const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [mobileNumber, setMobileNumber] = useState("");
+  const handleMobileOTP = () => { 
+    //TODO: add otp logic with try catch
+    alert("OTP sent to your mobile number");
+    onNext();
+  }
+
 
   return (
     <div className="max-w-md mx-auto">
@@ -32,7 +38,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
       </div>
 
       <button
-        onClick={onNext}
+        onClick={handleMobileOTP}
         className="w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors"
       >
         Continue
