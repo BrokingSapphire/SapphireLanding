@@ -4,10 +4,11 @@ import LeftPanel from "./LeftPanel";
 import MobileVerification from "../forms/MobileVerification";
 import EmailVerification from "../forms/EmailVerification";
 import CardVerification from "../forms/CardVerification";
-import PanVerification from "./PanVerification";
-import AadhaarVerification from "./AadharVerification";
-import TradingAccountDetails from "./TradingAccountDetails";
-import PaymentSelection from "./PaymentSelection";
+
+import AadhaarVerification from "../forms/AadharVerification";
+import TradingAccountDetails from "../forms/TradingAccountDetails";
+import PaymentSelection from "../forms/PaymentSelection";
+import PanVerification from "../forms/Panverification";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
