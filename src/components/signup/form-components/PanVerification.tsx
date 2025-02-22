@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
 interface PanVerificationProps {
-  onNextStep: () => void;
+  onNext: () => void;
 }
 
-const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
+const PanVerification: React.FC<PanVerificationProps> = ({ onNext }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     panNumber: "",
@@ -107,7 +107,7 @@ const PanVerification: React.FC<PanVerificationProps> = ({ onNextStep }) => {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      onNextStep();
+      onNext();
     } catch (error) {
       console.error("Error during submission:", error);
       updateFormData({

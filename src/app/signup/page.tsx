@@ -1,6 +1,6 @@
-import Signup from '@/components/signup/Signup'
-import { Metadata } from 'next';
-import React from 'react'
+import OnboardingCarousel from "@/components/new-signup/OnboardingCarousel";
+import { Metadata } from "next";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Signup | Sapphire Broking: Smarter Trading, Expert Insights",
@@ -18,12 +18,6 @@ export const metadata: Metadata = {
   },
 };
 
-const Home = () => {
-  return (
-      <div>
-          <Signup />
-    </div>
-  )
+export default function Home() {
+  return <OnboardingCarousel />;
 }
-
-export default Home
