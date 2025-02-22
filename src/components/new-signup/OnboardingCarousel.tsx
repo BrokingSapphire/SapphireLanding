@@ -1,23 +1,27 @@
-"use client"
-// src/components/OnboardingCarousel.jsx
+"use client";
 import React, { useState, useEffect } from "react";
 import LeftPanel from "./LeftPanel";
 import MobileVerification from "../forms/MobileVerification";
 import EmailVerification from "../forms/EmailVerification";
-import PanVerification from "../signup/form-components/PanVerification";
-
+import CardVerification from "../forms/CardVerification";
+import PanVerification from "./PanVerification";
+import AadhaarVerification from "./AadharVerification";
+import TradingAccountDetails from "./TradingAccountDetails";
+import PaymentSelection from "./PaymentSelection";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const TOTAL_STEPS = 6;
+
   const handleNext = () => {
     if (isAnimating) return;
     setDirection(1);
     setIsAnimating(true);
     setTimeout(() => {
-      setCurrentStep((prev) => (prev + 1) % 3);
+      setCurrentStep((prev) => (prev + 1) % TOTAL_STEPS);
       setTimeout(() => {
         setIsAnimating(false);
       }, 100);
@@ -29,7 +33,7 @@ const OnboardingCarousel = () => {
     setDirection(-1);
     setIsAnimating(true);
     setTimeout(() => {
-      setCurrentStep((prev) => (prev - 1 + 3) % 3);
+      setCurrentStep((prev) => (prev - 1 + TOTAL_STEPS) % TOTAL_STEPS);
       setTimeout(() => {
         setIsAnimating(false);
       }, 100);
@@ -39,9 +43,9 @@ const OnboardingCarousel = () => {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent): void => {
       if (e.key === "ArrowUp") {
-      handlePrevious();
+        handlePrevious();
       } else if (e.key === "ArrowDown") {
-      handleNext();
+        handleNext();
       }
     };
 
@@ -50,9 +54,13 @@ const OnboardingCarousel = () => {
   }, [isAnimating]);
 
   const components = [
-      <MobileVerification onNext={handleNext} />,
+    <MobileVerification onNext={handleNext} />,
     <EmailVerification onNext={handleNext} />,
-      <PanVerification onNext={handleNext} />,
+    <PaymentSelection onNext={handleNext} />,
+    <PanVerification onNext={handleNext} />,
+    <AadhaarVerification onNext={handleNext} />,
+    <CardVerification onNext={handleNext} />,
+    <TradingAccountDetails onNext={handleNext} />,
   ];
 
   const getAnimationStyles = () => {
@@ -75,48 +83,52 @@ const OnboardingCarousel = () => {
   return (
     <div className="flex min-h-screen">
       {/* Static Left Panel */}
-      <LeftPanel step={currentStep} />
+      <div className="bg-green-heading w-1/2 flex items-center justify-center">
+        <LeftPanel step={currentStep} />
+      </div>
 
       {/* Animated Right Panel */}
-      <div className="w-1/2 ml-auto relative bg-white">
-        <div className="p-12 h-screen overflow-y-auto">
-          {/* Previous Screen */}
-          {direction === 1 && (
-            <div
-              className="absolute inset-0 p-12"
-              style={{
-                transform: "translateY(-50%)",
-                opacity: 0,
-                transition: "none",
-              }}
-            >
-              {components[(currentStep - 1 + 3) % 3]}
-            </div>
-          )}
+      <div className="w-1/2 bg-white">
+        <div className="h-screen flex items-center">
+          <div className="p-12 max-w-2xl flex mx-auto relative">
+            {/* Previous Screen */}
+            {direction === 1 && (
+              <div
+                className="absolute inset-0 p-12"
+                style={{
+                  transform: "translateY(-50%)",
+                  opacity: 0,
+                  transition: "none",
+                }}
+              >
+                {components[(currentStep - 1 + TOTAL_STEPS) % TOTAL_STEPS]}
+              </div>
+            )}
 
-          {/* Next Screen */}
-          {direction === -1 && (
-            <div
-              className="absolute inset-0 p-12"
-              style={{
-                transform: "translateY(50%)",
-                opacity: 0,
-                transition: "none",
-              }}
-            >
-              {components[(currentStep + 1) % 3]}
-            </div>
-          )}
+            {/* Next Screen */}
+            {direction === -1 && (
+              <div
+                className="absolute inset-0 p-12"
+                style={{
+                  transform: "translateY(50%)",
+                  opacity: 0,
+                  transition: "none",
+                }}
+              >
+                {components[(currentStep + 1) % TOTAL_STEPS]}
+              </div>
+            )}
 
-          {/* Current Screen */}
-          <div className="relative" style={getAnimationStyles()}>
-            {components[currentStep]}
+            {/* Current Screen */}
+            <div className="w-full relative" style={getAnimationStyles()}>
+              {components[currentStep]}
+            </div>
           </div>
         </div>
 
         {/* Progress Indicator */}
         <div className="fixed top-6 right-6 flex gap-2">
-          {[0, 1, 2].map((step) => (
+          {[...Array(TOTAL_STEPS)].map((_, step) => (
             <div
               key={step}
               className={`w-2 h-2 rounded-full transition-colors duration-300 ${

@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
-  return <OnboardingCarousel />;
+export default function Page() {
+  return (
+    <div className="mx-auto h-screen">
+      <OnboardingCarousel />;
+    </div>
+  );
 }

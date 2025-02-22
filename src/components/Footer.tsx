@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React from "react";
 import Image from "next/image";
 import {
   ACCOUNT_LINKS,
@@ -12,7 +12,7 @@ import {
 } from "@/constants/footer";
 import Link from "next/link";
 
-const LinkSection = memo(({ title, links }: LinkSectionProps) => (
+const LinkSection = ({ title, links }: LinkSectionProps) => (
   <div className="col-span-1">
     <h3 className="font-bold mb-4">{title}</h3>
     <ul className="space-y-2">
@@ -25,10 +25,9 @@ const LinkSection = memo(({ title, links }: LinkSectionProps) => (
       ))}
     </ul>
   </div>
-));
-LinkSection.displayName = "LinkSection";
+);
 
-const SocialLinks = memo(() => (
+const SocialLinks = () => (
   <div className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-7 gap-4 mb-6">
     {SOCIAL_ICONS.map(({ Icon, href }) => (
       <a
@@ -42,10 +41,9 @@ const SocialLinks = memo(() => (
       </a>
     ))}
   </div>
-));
-SocialLinks.displayName = "SocialLinks";
+);
 
-const LegalSection = memo(() => (
+const LegalSection = () => (
   <div className="text-sm space-y-4 border-t border-teal-800 pt-6">
     <div className="grid gap-4">
       {LEGAL_SECTIONS.map((section) => (
@@ -90,8 +88,7 @@ const LegalSection = memo(() => (
       ))}
     </div>
   </div>
-));
-LegalSection.displayName = "LegalSection";
+);
 
 const Footer = () => {
   return (
@@ -148,7 +145,6 @@ const Footer = () => {
                   className="h-10 w-auto"
                 />
               </div>
-
             </div>
           </div>
           <LegalSection />
@@ -161,7 +157,4 @@ const Footer = () => {
   );
 };
 
-const MemoizedFooter = memo(Footer);
-MemoizedFooter.displayName = "Footer";
-
-export default MemoizedFooter;
+export default Footer;
