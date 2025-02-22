@@ -28,11 +28,11 @@ export const metadata: Metadata = {
 const Home = () => {
   return (
     <>
+      <div className="max-w-7xl mx-auto">
       <Hero />
       <TradingCharges />``
       <SmartTrades />
       <Calculator />
-      <div className="max-w-7xl mx-auto">
         <Gateway />
       </div>
       <div>
