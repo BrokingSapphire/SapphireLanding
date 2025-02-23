@@ -33,6 +33,18 @@ const content: Record<number, StepContent> = {
     title: "Trading Account Details",
     subtitle: "Complete your trading profile to start investing.",
   },
+  6: {
+    title: "Trading Account Details",
+    subtitle: "Complete your trading profile to start investing.",
+  },
+  7: {
+    title: "Trading Account Details",
+    subtitle: "Complete your trading profile to start investing.",
+  },
+  8: {
+    title: "Trading Account Details",
+    subtitle: "Complete your trading profile to start investing.",
+  },
 };
 
 const LeftPanel = ({ step }: LeftPanelProps) => {

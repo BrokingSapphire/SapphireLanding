@@ -9,13 +9,14 @@ import AadhaarVerification from "../forms/AadharVerification";
 import TradingAccountDetails from "../forms/TradingAccountDetails";
 import PaymentSelection from "../forms/PaymentSelection";
 import PanVerification from "../forms/Panverification";
+import TradingAccountDetails2 from "../forms/TradingAccountDetails2";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const TOTAL_STEPS = 6;
+  const TOTAL_STEPS = 9;
 
   const handleNext = () => {
     if (isAnimating) return;
@@ -57,11 +58,13 @@ const OnboardingCarousel = () => {
   const components = [
     <MobileVerification onNext={handleNext} />,
     <EmailVerification onNext={handleNext} />,
-    <PaymentSelection onNext={handleNext} />,
+    // <PaymentSelection onNext={handleNext} />,
     <PanVerification onNext={handleNext} />,
     <AadhaarVerification onNext={handleNext} />,
     <CardVerification onNext={handleNext} />,
     <TradingAccountDetails onNext={handleNext} />,
+    <TradingAccountDetails2 onNext={handleNext} />,
+
   ];
 
   const getAnimationStyles = () => {
