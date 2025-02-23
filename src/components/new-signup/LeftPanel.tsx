@@ -42,6 +42,14 @@ const content: Record<number, StepContent> = {
     subtitle: "Complete your trading profile to start investing.",
   },
   8: {
+    title: "8 on left panel",
+    subtitle: "Complete your trading profile to start investing.",
+  },
+  9: {
+    title: "9 on left panel",
+    subtitle: "Complete your trading profile to start investing.",
+  },
+  10: {
     title: "Trading Account Details",
     subtitle: "Complete your trading profile to start investing.",
   },

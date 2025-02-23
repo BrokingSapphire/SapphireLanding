@@ -10,6 +10,7 @@ import TradingAccountDetails from "../forms/TradingAccountDetails";
 import PaymentSelection from "../forms/PaymentSelection";
 import PanVerification from "../forms/Panverification";
 import TradingAccountDetails2 from "../forms/TradingAccountDetails2";
+import IPVVerification from "../forms/IPV";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -64,7 +65,7 @@ const OnboardingCarousel = () => {
     <CardVerification onNext={handleNext} />,
     <TradingAccountDetails onNext={handleNext} />,
     <TradingAccountDetails2 onNext={handleNext} />,
-
+    <IPVVerification onNext={handleNext} />,
   ];
 
   const getAnimationStyles = () => {
