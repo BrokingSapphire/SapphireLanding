@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
 interface TradingAccountDetailsProps {
-  onNextStep: () => void;
+  onNext: () => void;
 }
 
 const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
-  onNextStep,
+  onNext,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [formData, setFormData] = useState({
@@ -62,7 +62,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      onNextStep();
+      onNext();
     } catch (error) {
       console.error("Error during submission:", error);
     } finally {
