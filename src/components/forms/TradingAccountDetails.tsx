@@ -71,8 +71,8 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
       try {
         await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
         onNext();
-      } catch (error) {
-        console.error("Error during submission:", error);
+      } catch (err) {
+        console.error("Error during submission:", err);
       } finally {
         setIsSubmitting(false);
       }
@@ -118,35 +118,35 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
 
         <div className="mb-6">
           <label className="block mb-2">
-            Father's Name<span className="text-red-500">*</span>
+            Father&apos;s Name<span className="text-red-500">*</span>
           </label>
           <input
             type="text"
-            placeholder="Enter your father's full name"
+            placeholder="Enter your father&apos;s full name"
             value={formData.fatherName}
             onChange={(e) => handleInputChange("fatherName", e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
           {errors.fatherName && (
-            <p className="text-red-500 text-sm mt-1">Please enter your father's name</p>
+            <p className="text-red-500 text-sm mt-1">Please enter your father&apos;s name</p>
           )}
         </div>
 
         <div className="mb-6">
           <label className="block mb-2">
-            Mother's Name<span className="text-red-500">*</span>
+            Mother&apos;s Name<span className="text-red-500">*</span>
           </label>
           <input
             type="text"
-            placeholder="Enter your mother's full name"
+            placeholder="Enter your mother&apos;s full name"
             value={formData.motherName}
             onChange={(e) => handleInputChange("motherName", e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
           {errors.motherName && (
-            <p className="text-red-500 text-sm mt-1">Please enter your mother's name</p>
+            <p className="text-red-500 text-sm mt-1">Please enter your mother&apos;s name</p>
           )}
         </div>
 

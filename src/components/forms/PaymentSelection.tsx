@@ -69,14 +69,16 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
                 <span>{option.label}</span>
                 <div className="flex items-center gap-2">
                   {option.icon && (
-                    <img src={option.icon} alt={option.label} className="h-6" />
+                    <Image src={option.icon} alt={option.label} className="h-6" width={50} height={50} />
                   )}
                   {option.additionalIcons?.map((icon, index) => (
-                    <img
+                    <Image
                       key={index}
                       src={icon}
                       alt="payment method"
                       className="h-6"
+                      width={50} 
+                      height={50}
                     />
                   ))}
                 </div>
