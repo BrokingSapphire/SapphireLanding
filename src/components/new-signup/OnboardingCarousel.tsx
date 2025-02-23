@@ -1,13 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import LeftPanel from "./LeftPanel";
 import MobileVerification from "../forms/MobileVerification";
 import EmailVerification from "../forms/EmailVerification";
 import CardVerification from "../forms/CardVerification";
-
 import AadhaarVerification from "../forms/AadharVerification";
 import TradingAccountDetails from "../forms/TradingAccountDetails";
-import PaymentSelection from "../forms/PaymentSelection";
 import PanVerification from "../forms/Panverification";
 import TradingAccountDetails2 from "../forms/TradingAccountDetails2";
 import IPVVerification from "../forms/IPV";
@@ -17,9 +15,10 @@ const OnboardingCarousel = () => {
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const TOTAL_STEPS = 9;
+  const TOTAL_STEPS = 8; // Updated to match actual number of components
 
-  const handleNext = () => {
+  // Wrap handlers in useCallback to maintain referential equality
+  const handleNext = useCallback(() => {
     if (isAnimating) return;
     setDirection(1);
     setIsAnimating(true);
@@ -29,9 +28,9 @@ const OnboardingCarousel = () => {
         setIsAnimating(false);
       }, 100);
     }, 400);
-  };
+  }, [isAnimating, TOTAL_STEPS]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (isAnimating) return;
     setDirection(-1);
     setIsAnimating(true);
@@ -41,8 +40,21 @@ const OnboardingCarousel = () => {
         setIsAnimating(false);
       }, 100);
     }, 400);
-  };
+  }, [isAnimating, TOTAL_STEPS]);
 
+  // Define components with stable keys
+  const components = [
+    { id: 'mobile', component: <MobileVerification onNext={handleNext} /> },
+    { id: 'email', component: <EmailVerification onNext={handleNext} /> },
+    { id: 'pan', component: <PanVerification onNext={handleNext} /> },
+    { id: 'aadhaar', component: <AadhaarVerification onNext={handleNext} /> },
+    { id: 'card', component: <CardVerification onNext={handleNext} /> },
+    { id: 'trading', component: <TradingAccountDetails onNext={handleNext} /> },
+    { id: 'trading2', component: <TradingAccountDetails2 onNext={handleNext} /> },
+    { id: 'ipv', component: <IPVVerification onNext={handleNext} /> }
+  ];
+
+  // Update useEffect with proper dependencies
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent): void => {
       if (e.key === "ArrowUp") {
@@ -54,19 +66,7 @@ const OnboardingCarousel = () => {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [isAnimating]);
-
-  const components = [
-    <MobileVerification onNext={handleNext} />,
-    <EmailVerification onNext={handleNext} />,
-    // <PaymentSelection onNext={handleNext} />,
-    <PanVerification onNext={handleNext} />,
-    <AadhaarVerification onNext={handleNext} />,
-    <CardVerification onNext={handleNext} />,
-    <TradingAccountDetails onNext={handleNext} />,
-    <TradingAccountDetails2 onNext={handleNext} />,
-    <IPVVerification onNext={handleNext} />,
-  ];
+  }, [handleNext, handlePrevious]); // Include stable function references
 
   const getAnimationStyles = () => {
     if (!isAnimating) {
@@ -80,8 +80,7 @@ const OnboardingCarousel = () => {
     return {
       transform: `translateY(${direction * -50}%)`,
       opacity: 0,
-      transition:
-        "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out",
+      transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out",
     };
   };
 
@@ -99,6 +98,7 @@ const OnboardingCarousel = () => {
             {/* Previous Screen */}
             {direction === 1 && (
               <div
+                key={`prev-${currentStep}`}
                 className="absolute inset-0 p-12"
                 style={{
                   transform: "translateY(-50%)",
@@ -106,13 +106,14 @@ const OnboardingCarousel = () => {
                   transition: "none",
                 }}
               >
-                {components[(currentStep - 1 + TOTAL_STEPS) % TOTAL_STEPS]}
+                {components[(currentStep - 1 + TOTAL_STEPS) % TOTAL_STEPS].component}
               </div>
             )}
 
             {/* Next Screen */}
             {direction === -1 && (
               <div
+                key={`next-${currentStep}`}
                 className="absolute inset-0 p-12"
                 style={{
                   transform: "translateY(50%)",
@@ -120,24 +121,28 @@ const OnboardingCarousel = () => {
                   transition: "none",
                 }}
               >
-                {components[(currentStep + 1) % TOTAL_STEPS]}
+                {components[(currentStep + 1) % TOTAL_STEPS].component}
               </div>
             )}
 
             {/* Current Screen */}
-            <div className="w-full relative" style={getAnimationStyles()}>
-              {components[currentStep]}
+            <div 
+              key={`current-${currentStep}`}
+              className="w-full relative" 
+              style={getAnimationStyles()}
+            >
+              {components[currentStep].component}
             </div>
           </div>
         </div>
 
         {/* Progress Indicator */}
         <div className="fixed top-6 right-6 flex gap-2">
-          {[...Array(TOTAL_STEPS)].map((_, step) => (
+          {components.map((_, index) => (
             <div
-              key={step}
+              key={`indicator-${index}`}
               className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                step === currentStep ? "bg-teal-600" : "bg-gray-300"
+                index === currentStep ? "bg-teal-600" : "bg-gray-300"
               }`}
             />
           ))}

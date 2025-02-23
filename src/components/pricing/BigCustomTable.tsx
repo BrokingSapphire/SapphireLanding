@@ -1,16 +1,16 @@
 import React from "react";
 
-interface TableHeaderProps {
-  children: React.ReactNode;
-}
+// interface TableHeaderProps {
+//   children: React.ReactNode;
+// }
 
-const TableHeader: React.FC<TableHeaderProps> = ({ children }) => (
-  <th className="bg-gray-100 px-4 py-2 text-left font-medium text-gray-700">{children}</th>
-);
+// const TableHeader: React.FC<TableHeaderProps> = ({ children }) => (
+//   <th className="bg-gray-100 px-4 py-2 text-left font-medium text-gray-700">{children}</th>
+// );
 
-const TableCell: React.FC<TableHeaderProps> = ({ children }) => (
-  <td className="px-4 py-2 text-gray-600">{children}</td>
-);
+// const TableCell: React.FC<TableHeaderProps> = ({ children }) => (
+//   <td className="px-4 py-2 text-gray-600">{children}</td>
+// );
 
 const ChargesTable: React.FC = () => {
   const equityData = [

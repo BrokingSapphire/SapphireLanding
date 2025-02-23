@@ -1,26 +1,58 @@
+
+// MobileVerification.tsx
 import React, { useState, useRef } from "react";
 
 const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const handleMobileOTP = () => {
+  const validateMobile = (number: string) => {
+    return /^[0-9]{10}$/.test(number);
+  };
+
+  const handleMobileOTP = async () => {
+    if (!otp.every(digit => digit !== "")) {
+      setError("Please enter the complete OTP");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
     try {
       // TODO: Implement actual OTP verification logic here
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
       onNext();
-    } catch (error) {
-      alert("Error verifying OTP. Please try again.");
+    } catch (err) {
+      setError("Error verifying OTP. Please try again.");
+      console.error("Verification error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleSendOTP = () => {
-    if (mobileNumber.length === 10) {
+  const handleSendOTP = async () => {
+    if (!validateMobile(mobileNumber)) {
+      setError("Please enter a valid 10-digit mobile number");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // TODO: Implement actual send OTP logic here
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
       setShowOTP(true);
-      // alert("OTP sent to your mobile number");
-    } else {
-      alert("Please enter a valid 10-digit mobile number");
+    } catch (err) {
+      setError("Failed to send OTP. Please try again.");
+      console.error("Send OTP error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -29,8 +61,8 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
       const newOTP = [...otp];
       newOTP[index] = value;
       setOtp(newOTP);
+      setError(null);
 
-      // Move to next input if value is entered
       if (value !== "" && index < 5) {
         inputRefs.current[index + 1]?.focus();
       }
@@ -42,7 +74,6 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      // Move to previous input on backspace if current input is empty
       inputRefs.current[index - 1]?.focus();
     }
   };
@@ -65,15 +96,20 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
             placeholder="Your 10 digit mobile number"
             className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
             value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
+            onChange={(e) => {
+              setMobileNumber(e.target.value.replace(/\D/g, ""));
+              setError(null);
+            }}
             maxLength={10}
             pattern="[0-9]{10}"
+            disabled={isLoading}
           />
           <button
             onClick={handleSendOTP}
-            className="text-blue-500 hover:text-blue-600 whitespace-nowrap"
+            disabled={isLoading || !mobileNumber}
+            className="text-blue-500 hover:text-blue-600 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Get OTP →
+            {isLoading ? "Sending..." : "Get OTP →"}
           </button>
         </div>
       </div>
@@ -94,11 +130,16 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
                 onChange={(e) => handleOTPChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 className="w-12 h-12 text-center border-2 border-gray-300 rounded focus:outline-none focus:border-teal-500 text-xl"
+                disabled={isLoading}
               />
             ))}
           </div>
           <div className="flex justify-between text-sm">
-            <button className="text-blue-500 hover:text-blue-600">
+            <button 
+              className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleSendOTP}
+              disabled={isLoading}
+            >
               Resend OTP
             </button>
             <span className="text-gray-500">OTP valid for 10:00 mins</span>
@@ -106,11 +147,21 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
         </div>
       )}
 
+      {error && (
+        <div className="mb-4 p-2 bg-red-50 rounded">
+          <p className="text-red-600 text-sm">{error}</p>
+        </div>
+      )}
+
       <button
         onClick={handleMobileOTP}
-        className="w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors"
+        disabled={isLoading || !showOTP || !otp.every(digit => digit !== "")}
+        className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors
+          ${isLoading || !showOTP || !otp.every(digit => digit !== "") 
+            ? "opacity-50 cursor-not-allowed" 
+            : "hover:bg-teal-700"}`}
       >
-        Continue
+        {isLoading ? "Verifying..." : "Continue"}
       </button>
 
       <div className="mt-6 text-sm text-gray-600">

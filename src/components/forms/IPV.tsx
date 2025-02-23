@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Camera } from 'lucide-react';
-import Image from 'next/image'
+import Image from 'next/image';
+
 const IPVVerification = ({ onNext }: { onNext: () => void }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,22 +21,20 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
         }
       };
       input.click();
-    } catch (error) {
-      setError('Camera access failed. Please try again or use file upload.');
+    } catch (err) {
+        console.error('Camera access error:', err); // Log the error
+        setError('Camera access failed. Please try again or use file upload.');
     }
   };
 
   const validateAndSetImage = (file: File) => {
-    // Reset error state
     setError(null);
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       setError('Please upload a valid image file');
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError('Image size should be less than 5MB');
       return;
@@ -62,8 +61,10 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
       // Simulated API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       onNext();
-    } catch (error) {
+    } catch (err) {
       setError('Verification failed. Please try again.');
+      // Log the error for debugging
+      console.error('Verification error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -76,19 +77,25 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
         Complete your verification by taking a clear photo
       </p>
 
-      <div className="mb-6  ">
+      <div className="mb-6">
         <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg p-8">
           {imageFile ? (
             <div className="space-y-4">
-              <Image
-                src={URL.createObjectURL(imageFile)}
-                alt="Preview"
-                className="max-w-full h-auto mx-auto rounded"
-                width={400}
-                height={400}
-              />
+              <div className="relative w-full h-64">
+                <Image
+                  src={URL.createObjectURL(imageFile)}
+                  alt="Preview"
+                  className="object-contain rounded"
+                  fill
+                  sizes="(max-width: 400px) 100vw, 400px"
+                  priority
+                />
+              </div>
               <button
-                onClick={() => setImageFile(null)}
+                onClick={() => {
+                  setImageFile(null);
+                  setError(null);
+                }}
                 className="text-teal-800 hover:text-teal-700 block mx-auto"
               >
                 Remove image
@@ -109,7 +116,9 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
         </div>
 
         {error && (
-          <p className="text-red-500 text-sm mt-2">{error}</p>
+          <div className="mt-2 p-2 bg-red-50 rounded">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
         )}
 
         <div className="flex justify-center gap-4 mt-4">
