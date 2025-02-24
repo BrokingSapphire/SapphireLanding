@@ -5,7 +5,7 @@ import MobileVerification from "../forms/MobileVerification";
 import EmailVerification from "../forms/EmailVerification";
 import AadhaarVerification from "../forms/AadharVerification";
 import TradingAccountDetails from "../forms/TradingAccountDetails";
-import PanVerification from "../forms/Panverification";
+import PANVerify from "../forms/PANVerify";
 import TradingAccountDetails2 from "../forms/TradingAccountDetails2";
 import IPVVerification from "../forms/IPV";
 import NomineeSelection from "../forms/NomineeSelection";
@@ -48,23 +48,38 @@ const OnboardingCarousel = () => {
 
   // Define components with stable keys
   const components = [
-    { id: 'mobile', component: <MobileVerification onNext={handleNext} /> },
-    { id: 'email', component: <EmailVerification onNext={handleNext} /> },
-    { id: 'payment selection', component: <PaymentSelection onNext={handleNext} />},
+    { id: "mobile", component: <MobileVerification onNext={handleNext} /> },
+    { id: "email", component: <EmailVerification onNext={handleNext} /> },
+    {
+      id: "payment selection",
+      component: <PaymentSelection onNext={handleNext} />,
+    },
     // { id: 'card', component: <CardVerification onNext={handleNext} /> },
-    { id: 'pan', component: <PanVerification onNext={handleNext} /> },
-    { id: 'aadhaar', component: <AadhaarVerification onNext={handleNext} /> },
-    { id: 'investment segment', component: <InvestmentSegment onNext={handleNext} />},
-    { id: 'trading', component: <TradingAccountDetails onNext={handleNext} /> },
-    { id: 'trading preference', component: <TradingPreferences onNext={handleNext} /> },
-    { id: 'trading2', component: <TradingAccountDetails2 onNext={handleNext} /> },
+    { id: "pan", component: <PANVerify onNext={handleNext} /> },
+    { id: "aadhaar", component: <AadhaarVerification onNext={handleNext} /> },
+    {
+      id: "investment segment",
+      component: <InvestmentSegment onNext={handleNext} />,
+    },
+    { id: "trading", component: <TradingAccountDetails onNext={handleNext} /> },
+    {
+      id: "trading preference",
+      component: <TradingPreferences onNext={handleNext} />,
+    },
+    {
+      id: "trading2",
+      component: <TradingAccountDetails2 onNext={handleNext} />,
+    },
 
     // divyansh bhaiya ki link bank account wale components
-    
-    { id: 'ipv', component: <IPVVerification onNext={handleNext} /> },
-    { id: 'nominee', component: <NomineeSelection onNext={handleNext} /> },
-    { id: 'Last Step', component: <LastStepPage onNext={handleNext} />},
-    { id: 'congratulations', component: <CongratulationsPage onNext={handleNext} />},
+
+    { id: "ipv", component: <IPVVerification onNext={handleNext} /> },
+    { id: "nominee", component: <NomineeSelection onNext={handleNext} /> },
+    { id: "Last Step", component: <LastStepPage onNext={handleNext} /> },
+    {
+      id: "congratulations",
+      component: <CongratulationsPage onNext={handleNext} />,
+    },
   ];
 
   useEffect(() => {

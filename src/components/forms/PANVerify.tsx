@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const PanVerification = ({ onNext }: { onNext: () => void }) => {
+const PANVerify = ({ onNext }: { onNext: () => void }) => {
   const [panNumber, setPanNumber] = useState("");
   const [dob, setDob] = useState("");
   const [errors, setErrors] = useState({
@@ -115,4 +115,4 @@ const PanVerification = ({ onNext }: { onNext: () => void }) => {
   );
 };
 
-export default PanVerification;
+export default PANVerify;
