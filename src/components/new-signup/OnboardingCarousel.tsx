@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import LeftPanel from "./LeftPanel";
 import MobileVerification from "../forms/MobileVerification";
 import EmailVerification from "../forms/EmailVerification";
-import CardVerification from "../forms/CardVerification";
 import AadhaarVerification from "../forms/AadharVerification";
 import TradingAccountDetails from "../forms/TradingAccountDetails";
 import PanVerification from "../forms/PanVerification";
