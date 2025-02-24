@@ -10,7 +10,7 @@ const Product = () => {
   // }, []);
 
   return (
-    <div className="bg-white">
+    <div className="bg-[#F5F7FA]">
       <section
         className=" mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20"
         aria-label="Products section"

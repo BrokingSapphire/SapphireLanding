@@ -10,7 +10,7 @@ interface SubHeroProps {
 
 const SubHero = ({ chipText, titleText, gradientText, description }: SubHeroProps) => {
   return (
-    <div className="relative h-[420px] pt-10 mt-10 w-full flex flex-col items-center justify-center mx-auto px-8">
+    <div className="relative h-[400px] mt-10 w-full flex flex-col items-center justify-center mx-auto px-8">
       <Image
         src="/bg-image.png"
         alt="Decorative Image"
