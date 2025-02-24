@@ -1,41 +1,68 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import UPIPaymentForm from "./paymentOptions/UPIPaymentForm";
+import NetbankingPaymentForm from "./paymentOptions/NetbankingPaymentForm";
+import CardPaymentForm from "./paymentOptions/CardPaymentForm";
+import { paymentOptions } from "@/constants/new-signup/constants";
 
-interface PaymentOption {
-  id: string;
-  label: string;
-  icon?: string;
-  additionalIcons?: string[];
-}
 
 const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
   const [selectedPayment, setSelectedPayment] = useState("upi");
-
-  const paymentOptions: PaymentOption[] = [
-    {
-      id: "card",
-      label: "Debit/Credit Card",
-      additionalIcons: [
-        "/new-signup/mastercard.svg",
-        "/new-signup/visa.svg",
-        "/new-signup/rupay.svg",
-      ],
-    },
-    {
-      id: "upi",
-      label: "UPI",
-      icon: "/new-signup/upi.svg",
-    },
-    {
-      id: "netbanking",
-      label: "Netbanking",
-      icon: "/new-signup/bank.svg",
-    },
-  ];
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const handlePaymentChange = (paymentId: string) => {
     setSelectedPayment(paymentId);
   };
+
+  const handleProceed = () => {
+    setShowPaymentForm(true);
+  };
+
+  const handleBack = () => {
+    setShowPaymentForm(false);
+  };
+
+  const handlePaymentSuccess = () => {
+    // After successful payment, continue with the onboarding flow
+    onNext();
+  };
+
+  const renderPaymentForm = () => {
+    switch (selectedPayment) {
+      case "card":
+        return (
+          <CardPaymentForm
+            onBack={handleBack}
+            onSuccess={handlePaymentSuccess}
+          />
+        );
+      case "upi":
+        return (
+          <UPIPaymentForm
+            onBack={handleBack}
+            onSuccess={handlePaymentSuccess}
+          />
+        );
+      case "netbanking":
+        return (
+          <NetbankingPaymentForm
+            onBack={handleBack}
+            onSuccess={handlePaymentSuccess}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  if (showPaymentForm) {
+    return (
+      <div className="mx-auto">
+        <h2 className="text-2xl font-bold mb-2">Complete Your Payment</h2>
+        {renderPaymentForm()}
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto">
@@ -45,7 +72,12 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
       </h2>
 
       <div className="mt-6">
-        <p className="text-gray-600 mb-4">Choose your Payment option</p>
+        <h2 className="text-2xl font-bold mb-2">
+          Get Started with a One-Time Fee
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Complete Your Signup Today and Access Exclusive Features!
+        </p>
 
         <div className="space-y-3">
           {paymentOptions.map((option) => (
@@ -69,7 +101,13 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
                 <span>{option.label}</span>
                 <div className="flex items-center gap-2">
                   {option.icon && (
-                    <Image src={option.icon} alt={option.label} className="h-6" width={50} height={50} />
+                    <Image
+                      src={option.icon}
+                      alt={option.label}
+                      className="h-6"
+                      width={50}
+                      height={50}
+                    />
                   )}
                   {option.additionalIcons?.map((icon, index) => (
                     <Image
@@ -77,7 +115,7 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
                       src={icon}
                       alt="payment method"
                       className="h-6"
-                      width={50} 
+                      width={50}
                       height={50}
                     />
                   ))}
@@ -88,7 +126,10 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
         </div>
       </div>
 
-      <button onClick={onNext} className="w-full mt-6 bg-teal-800 text-white py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors">
+      <button
+        onClick={handleProceed}
+        className="w-full mt-6 bg-teal-800 text-white py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors"
+      >
         Proceed to pay
       </button>
     </div>

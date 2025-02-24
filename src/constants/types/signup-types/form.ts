@@ -1,5 +1,4 @@
-export type PaymentMethodType = "card" | "upi" | "netbanking" | null;
-export type BankLinkMethodType = "upi" | "bank" | null;
+
 
 export interface FormPageBaseProps {
   onNextStep: (method?: string) => void;

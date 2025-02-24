@@ -6,7 +6,7 @@ import EmailVerification from "../forms/EmailVerification";
 import CardVerification from "../forms/CardVerification";
 import AadhaarVerification from "../forms/AadharVerification";
 import TradingAccountDetails from "../forms/TradingAccountDetails";
-import PanVerification from "../forms/Panverification";
+import PanVerification from "../forms/PanVerification";
 import TradingAccountDetails2 from "../forms/TradingAccountDetails2";
 import IPVVerification from "../forms/IPV";
 import NomineeSelection from "../forms/NomineeSelection";
@@ -21,7 +21,7 @@ const OnboardingCarousel = () => {
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const TOTAL_STEPS = 14; 
+  const TOTAL_STEPS = 13; 
 
   const handleNext = useCallback(() => {
     if (isAnimating) return;
@@ -52,7 +52,7 @@ const OnboardingCarousel = () => {
     { id: 'mobile', component: <MobileVerification onNext={handleNext} /> },
     { id: 'email', component: <EmailVerification onNext={handleNext} /> },
     { id: 'payment selection', component: <PaymentSelection onNext={handleNext} />},
-    { id: 'card', component: <CardVerification onNext={handleNext} /> },
+    // { id: 'card', component: <CardVerification onNext={handleNext} /> },
     { id: 'pan', component: <PanVerification onNext={handleNext} /> },
     { id: 'aadhaar', component: <AadhaarVerification onNext={handleNext} /> },
     { id: 'investment segment', component: <InvestmentSegment onNext={handleNext} />},
