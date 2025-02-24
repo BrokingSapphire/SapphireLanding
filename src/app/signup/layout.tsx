@@ -6,7 +6,6 @@ export default function SignupLayout({
   return (
     <div>
       {children}
-      {/* No footer here */}
     </div>
   );
 }

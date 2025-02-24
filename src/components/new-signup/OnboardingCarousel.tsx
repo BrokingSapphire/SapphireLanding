@@ -9,15 +9,20 @@ import TradingAccountDetails from "../forms/TradingAccountDetails";
 import PanVerification from "../forms/Panverification";
 import TradingAccountDetails2 from "../forms/TradingAccountDetails2";
 import IPVVerification from "../forms/IPV";
+import NomineeSelection from "../forms/NomineeSelection";
+import LastStepPage from "../forms/LastStepPage";
+import CongratulationsPage from "../forms/Congratulations";
+import InvestmentSegment from "../forms/InvestmentSegment.tsx";
+import PaymentSelection from "../forms/PaymentSelection";
+import TradingPreferences from "../forms/TradingPreferences";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const TOTAL_STEPS = 8; // Updated to match actual number of components
+  const TOTAL_STEPS = 14; 
 
-  // Wrap handlers in useCallback to maintain referential equality
   const handleNext = useCallback(() => {
     if (isAnimating) return;
     setDirection(1);
@@ -46,15 +51,23 @@ const OnboardingCarousel = () => {
   const components = [
     { id: 'mobile', component: <MobileVerification onNext={handleNext} /> },
     { id: 'email', component: <EmailVerification onNext={handleNext} /> },
+    { id: 'payment selection', component: <PaymentSelection onNext={handleNext} />},
+    { id: 'card', component: <CardVerification onNext={handleNext} /> },
     { id: 'pan', component: <PanVerification onNext={handleNext} /> },
     { id: 'aadhaar', component: <AadhaarVerification onNext={handleNext} /> },
-    { id: 'card', component: <CardVerification onNext={handleNext} /> },
+    { id: 'investment segment', component: <InvestmentSegment onNext={handleNext} />},
     { id: 'trading', component: <TradingAccountDetails onNext={handleNext} /> },
+    { id: 'trading preference', component: <TradingPreferences onNext={handleNext} /> },
     { id: 'trading2', component: <TradingAccountDetails2 onNext={handleNext} /> },
-    { id: 'ipv', component: <IPVVerification onNext={handleNext} /> }
+
+    // divyansh bhaiya ki link bank account wale components
+    
+    { id: 'ipv', component: <IPVVerification onNext={handleNext} /> },
+    { id: 'nominee', component: <NomineeSelection onNext={handleNext} /> },
+    { id: 'Last Step', component: <LastStepPage onNext={handleNext} />},
+    { id: 'congratulations', component: <CongratulationsPage onNext={handleNext} />},
   ];
 
-  // Update useEffect with proper dependencies
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent): void => {
       if (e.key === "ArrowUp") {
@@ -66,8 +79,7 @@ const OnboardingCarousel = () => {
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [handleNext, handlePrevious]); // Include stable function references
-
+  }, [handleNext, handlePrevious]); 
   const getAnimationStyles = () => {
     if (!isAnimating) {
       return {
@@ -87,12 +99,12 @@ const OnboardingCarousel = () => {
   return (
     <div className="flex min-h-screen">
       {/* Static Left Panel */}
-      <div className="bg-green-heading w-1/2 flex items-center justify-center">
+      <div className=" bg-green-heading w-2/5 flex items-center justify-center">
         <LeftPanel step={currentStep} />
       </div>
 
       {/* Animated Right Panel */}
-      <div className="w-1/2 bg-white">
+      <div className="w-3/5 bg-white">
         <div className="h-screen flex items-center">
           <div className="p-12 max-w-2xl flex mx-auto relative">
             {/* Previous Screen */}
