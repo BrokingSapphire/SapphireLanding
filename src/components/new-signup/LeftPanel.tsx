@@ -38,7 +38,7 @@ const content: Record<number, StepContent> = {
     subtitle: "Complete your trading profile to start investing.",
   },
   7: {
-    title: "Trading Account Details",
+    title: "7th on left bar",
     subtitle: "Complete your trading profile to start investing.",
   },
   8: {
@@ -51,6 +51,18 @@ const content: Record<number, StepContent> = {
   },
   10: {
     title: "Trading Account Details",
+    subtitle: "Complete your trading profile to start investing.",
+  },
+  11: {
+    title: "11th on left bar",
+    subtitle: "Complete your trading profile to start investing.",
+  },
+  12: {
+    title: "12th on left bar",
+    subtitle: "Complete your trading profile to start investing.",
+  },
+  13: {
+    title: "12th on left bar",
     subtitle: "Complete your trading profile to start investing.",
   },
 };
