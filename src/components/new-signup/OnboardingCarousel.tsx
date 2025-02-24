@@ -5,7 +5,7 @@ import MobileVerification from "../forms/MobileVerification";
 import EmailVerification from "../forms/EmailVerification";
 import AadhaarVerification from "../forms/AadharVerification";
 import TradingAccountDetails from "../forms/TradingAccountDetails";
-
+import PanVerification from "../forms/Panverification";
 import TradingAccountDetails2 from "../forms/TradingAccountDetails2";
 import IPVVerification from "../forms/IPV";
 import NomineeSelection from "../forms/NomineeSelection";
@@ -14,7 +14,6 @@ import CongratulationsPage from "../forms/Congratulations";
 import InvestmentSegment from "../forms/InvestmentSegment.tsx";
 import PaymentSelection from "../forms/PaymentSelection";
 import TradingPreferences from "../forms/TradingPreferences";
-import PanVerification from "../forms/PanVerification";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
