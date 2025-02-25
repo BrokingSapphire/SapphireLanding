@@ -103,11 +103,11 @@ const OnboardingCarousel = () => {
   ];
 
   useEffect(() => {
-    const handleKeyPress = (e: any) => {
+    const handleKeyPress = (e: KeyboardEvent): void => {
       if (e.key === "ArrowUp") {
-        handlePrevious();
+      handlePrevious();
       } else if (e.key === "ArrowDown") {
-        handleNext();
+      handleNext();
       }
     };
 
