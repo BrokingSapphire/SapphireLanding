@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
+import CustomButtonX from "../general-components/CustomButtonX";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -71,20 +72,17 @@ export default function Hero() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                className="flex items-center justify-between gap-1 rounded-full py-5 px-6 w-[150px] bg-teal-800 text-white"
-                variant="signUp"
-              >
-                <span>Sign up now</span>
-                <motion.div
-                  className="bg-white rounded-full p-1.5 ml-1 flex items-center justify-center"
-                  whileHover={{ rotate: 0 }}
-                  initial={{ rotate: -35 }}
-                >
-                  <FaArrowRightLong color="black" size={16} />
-                </motion.div>
-              </Button>
+            <motion.div>
+              <CustomButtonX
+                text="Get Started"
+                backgroundColor="#064D51"
+                textColor="#ffffff"
+                iconColor="#064D51"
+                iconBackgroundColor="#ffffff"
+                boxShadowColor="#99000099"
+                iconBoxShadowColor="#99000066"
+                icon={<FaArrowRightLong />}
+              />
             </motion.div>
           </motion.div>
         </motion.div>

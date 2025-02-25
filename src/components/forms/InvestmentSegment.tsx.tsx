@@ -88,7 +88,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
       </div>
 
       
-      <Button onClick={onNext} variant={"ghost"} className="mt-6 py-6">
+      <Button onClick={onNext} variant={"ghost"} className="mt-6 py-6 px-10">
         Next
       </Button>
 

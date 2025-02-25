@@ -97,6 +97,7 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
 
       <Button
         onClick={handleSubmit}
+        variant={"ghost"}
         className={`w-full py-6 ${
           !panNumber || !dob ? "opacity-50 cursor-not-allowed" : ""
         }`}

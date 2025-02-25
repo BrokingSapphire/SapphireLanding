@@ -7,32 +7,39 @@ const TradingCharges = () => {
       <div className="max-w-6xl mx-auto px-6">
         {/* Simplified Charges Section */}
         <h2 className="text-center text-5xl font-semibold mb-8">
-          Simplified Charges for <span className="text-green-heading">Hassle-Free</span> Trading
+          Simplified Charges for{" "}
+          <span className="text-green-heading">Hassle-Free</span> Trading
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
           {[
             {
-              title: "Equity Delivery & Intraday, F&O, Currencies & Commodities",
-              description: "Trade with confidence! Enjoy zero brokerage on all trades for the first 7 days after onboarding.",
+              title:
+                "Equity Delivery & Intraday, F&O, Currencies & Commodities",
+              description:
+                "Trade with confidence! Enjoy zero brokerage on all trades for the first 7 days after onboarding.",
             },
             {
               title: "Annual Maintenance Charges",
-              description: "No hidden fees! Get free annual maintenance charges (AMC) for the first 3 months from your onboarding date.",
+              description:
+                "No hidden fees! Get free annual maintenance charges (AMC) for the first 3 months from your onboarding date.",
             },
             {
               title: "Direct Mutual Funds",
-              description: "Maximize your returns! Invest in direct mutual funds with absolutely no charges, forever.",
+              description:
+                "Maximize your returns! Invest in direct mutual funds with absolutely no charges, forever.",
             },
           ].map((item, index) => (
             <div key={index} className=" p-6 ">
-              <h3 className="text-9xl font-bold text-[#FFAE00]">₹0*</h3>
+              <div className="flex relative justify-center ">
+                <h3 className="text-4xl absolute left-20 bottom-4 font-bold text-[#FFAE00]">₹</h3>
+                <h3 className="text-9xl font-bold text-[#FFAE00]">0</h3>
+                <h3 className="text-3xl font-bold text-[#FFAE00]">*</h3>
+              </div>
               <h4 className="text-2xl font-medium mt-2">{item.title}</h4>
               <p className=" text-gray-600 text-md mt-2 ">{item.description}</p>
             </div>
           ))}
         </div>
-
- 
       </div>
     </div>
   );

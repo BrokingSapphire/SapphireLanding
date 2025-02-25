@@ -21,7 +21,7 @@ const OnboardingCarousel = () => {
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const TOTAL_STEPS = 13; 
+  const TOTAL_STEPS = 13;
 
   const handleNext = useCallback(() => {
     if (isAnimating) return;
@@ -103,7 +103,7 @@ const OnboardingCarousel = () => {
   ];
 
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent): void => {
+    const handleKeyPress = (e: any) => {
       if (e.key === "ArrowUp") {
         handlePrevious();
       } else if (e.key === "ArrowDown") {
@@ -111,9 +111,16 @@ const OnboardingCarousel = () => {
       }
     };
 
+    // Prevent scrolling
+    document.body.style.overflow = "hidden";
+
     window.addEventListener("keydown", handleKeyPress);
-    return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [handleNext, handlePrevious]); 
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+      document.body.style.overflow = "";
+    };
+  }, [handleNext, handlePrevious]);
+
   const getAnimationStyles = () => {
     if (!isAnimating) {
       return {
@@ -126,20 +133,21 @@ const OnboardingCarousel = () => {
     return {
       transform: `translateY(${direction * -50}%)`,
       opacity: 0,
-      transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out",
+      transition:
+        "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out",
     };
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen max-h-screen overflow-hidden">
       {/* Static Left Panel */}
-      <div className=" w-2/5 flex items-center justify-center">
-        <LeftPanel />
+      <div className="w-2/5 h-full">
+        <LeftPanel currentStep={currentStep} />
       </div>
 
       {/* Animated Right Panel */}
-      <div className="w-3/5 bg-white">
-        <div className="h-screen flex items-center">
+      <div className="w-3/5 bg-white h-full">
+        <div className="h-full flex items-center">
           <div className="p-12 max-w-2xl flex mx-auto relative">
             {/* Previous Screen */}
             {direction === 1 && (
@@ -212,6 +220,17 @@ const OnboardingCarousel = () => {
           ))}
         </div>
       </div>
+
+      {/* Global style to prevent scrolling */}
+      <style jsx global>{`
+        html,
+        body {
+          overflow: hidden;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+      `}</style>
     </div>
   );
 };
