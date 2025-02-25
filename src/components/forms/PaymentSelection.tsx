@@ -4,6 +4,7 @@ import UPIPaymentForm from "./paymentOptions/UPIPaymentForm";
 import NetbankingPaymentForm from "./paymentOptions/NetbankingPaymentForm";
 import CardPaymentForm from "./paymentOptions/CardPaymentForm";
 import { paymentOptions } from "@/constants/new-signup/constants";
+import { Button } from "../ui/button";
 
 
 const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
@@ -126,12 +127,13 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
         </div>
       </div>
 
-      <button
+      <Button
         onClick={handleProceed}
-        className="w-full mt-6 bg-teal-800 text-white py-3 px-4 rounded-lg hover:bg-teal-700 transition-colors"
+        variant={"ghost"}
+        className="mt-6 py-6"
       >
         Proceed to pay
-      </button>
+      </Button>
     </div>
   );
 };

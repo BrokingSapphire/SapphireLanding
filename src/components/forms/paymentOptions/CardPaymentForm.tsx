@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 
 const CardPaymentForm = ({
@@ -143,12 +144,13 @@ const CardPaymentForm = ({
             </div>
           </div>
 
-          <button
+          <Button
             type="submit"
-            className="w-full mt-6 bg-teal-800 text-white py-3 px-4 rounded-md hover:bg-teal-700 transition-colors"
+            className="w-full mt-6 py-6"
+            variant={"ghost"}
           >
             Continue
-          </button>
+          </Button>
         </form>
       </div>
     </div>

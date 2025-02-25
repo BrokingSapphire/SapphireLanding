@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 const UPIPaymentForm = ({
   onBack,
@@ -55,12 +56,7 @@ const UPIPaymentForm = ({
               placeholder="mobileNumber@upi"
               className="w-full px-3 py-2 border border-gray-300 rounded-md mb-3 focus:outline-none focus:ring-1 focus:ring-teal-500"
             />
-            <button
-              type="submit"
-              className="w-full bg-teal-800 text-white py-2 px-4 rounded-md hover:bg-teal-700"
-            >
-              Verify and pay
-            </button>
+            <Button className="w-full py-4" variant="ghost"> Verify and pay</Button>
           </form>
 
           <div className="mt-4 space-y-3">

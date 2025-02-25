@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button } from "../ui/button";
 
 const PANVerify = ({ onNext }: { onNext: () => void }) => {
   const [panNumber, setPanNumber] = useState("");
@@ -94,15 +95,15 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
         )}
       </div>
 
-      <button
+      <Button
         onClick={handleSubmit}
-        className={`w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors ${
+        className={`w-full py-6 ${
           !panNumber || !dob ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={!panNumber || !dob}
       >
         Continue
-      </button>
+      </Button>
 
       <div className="mt-6 text-sm text-gray-600">
         <p className="mb-4">

@@ -14,6 +14,7 @@ import CongratulationsPage from "../forms/Congratulations";
 import InvestmentSegment from "../forms/InvestmentSegment.tsx";
 import PaymentSelection from "../forms/PaymentSelection";
 import TradingPreferences from "../forms/TradingPreferences";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -45,6 +46,25 @@ const OnboardingCarousel = () => {
       }, 100);
     }, 400);
   }, [isAnimating, TOTAL_STEPS]);
+
+  const navigationButtons = [
+    {
+      icon: <ChevronUp size={24} />,
+      onClick: handlePrevious,
+      ariaLabel: "Previous step",
+      className: `p-3 transition-all duration-300 ease-in-out bg-green-heading hover:bg-white hover:text-green-heading border border-green-heading rounded-l-md text-white shadow-lg transition-colors ${
+        isAnimating ? "opacity-50 cursor-not-allowed" : ""
+      }`,
+    },
+    {
+      icon: <ChevronDown size={24} />,
+      onClick: handleNext,
+      ariaLabel: "Next step",
+      className: `p-3 bg-green-heading hover:bg-white hover:text-green-heading border border-green-heading rounded-r-md text-white shadow-lg transition-colors ${
+        isAnimating ? "opacity-50 cursor-not-allowed" : ""
+      }`,
+    },
+  ];
 
   // Define components with stable keys
   const components = [
@@ -113,8 +133,8 @@ const OnboardingCarousel = () => {
   return (
     <div className="flex min-h-screen">
       {/* Static Left Panel */}
-      <div className=" bg-green-heading w-2/5 flex items-center justify-center">
-        <LeftPanel step={currentStep} />
+      <div className=" w-2/5 flex items-center justify-center">
+        <LeftPanel />
       </div>
 
       {/* Animated Right Panel */}
@@ -132,7 +152,10 @@ const OnboardingCarousel = () => {
                   transition: "none",
                 }}
               >
-                {components[(currentStep - 1 + TOTAL_STEPS) % TOTAL_STEPS].component}
+                {
+                  components[(currentStep - 1 + TOTAL_STEPS) % TOTAL_STEPS]
+                    .component
+                }
               </div>
             )}
 
@@ -152,9 +175,9 @@ const OnboardingCarousel = () => {
             )}
 
             {/* Current Screen */}
-            <div 
+            <div
               key={`current-${currentStep}`}
-              className="w-full relative" 
+              className="w-full relative"
               style={getAnimationStyles()}
             >
               {components[currentStep].component}
@@ -175,27 +198,18 @@ const OnboardingCarousel = () => {
         </div>
 
         {/* Navigation Arrows */}
-        <div className="fixed bottom-6 right-6 flex flex-col gap-2">
-          <button
-            className={`p-3 bg-teal-700 hover:bg-teal-600 text-white rounded-lg shadow-lg transition-colors ${
-              isAnimating ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={handlePrevious}
-            disabled={isAnimating}
-            aria-label="Previous step"
-          >
-            ↑
-          </button>
-          <button
-            className={`p-3 bg-teal-700 hover:bg-teal-600 text-white rounded-lg shadow-lg transition-colors ${
-              isAnimating ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={handleNext}
-            disabled={isAnimating}
-            aria-label="Next step"
-          >
-            ↓
-          </button>
+        <div className="fixed bottom-6 rounded-md right-6 flex gap-1">
+          {navigationButtons.map((button, index) => (
+            <button
+              key={index}
+              className={button.className}
+              onClick={button.onClick}
+              disabled={isAnimating}
+              aria-label={button.ariaLabel}
+            >
+              {button.icon}
+            </button>
+          ))}
         </div>
       </div>
     </div>

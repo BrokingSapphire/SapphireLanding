@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import RiskDisclosureModal from "../new-signup/RiskDisclosure";
+import { Button } from "../ui/button";
 
 interface InvestmentSegmentProps {
   onNext: () => void;
@@ -59,12 +60,20 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
         {segments.map((segment) => (
           <button
             key={segment.id}
-            onClick={() => handleSegmentClick(segment.id, !!segment.requiresDisclosure)}
+            onClick={() =>
+              handleSegmentClick(segment.id, !!segment.requiresDisclosure)
+            }
             className={`px-4 py-2 border rounded flex items-center gap-2 transition-colors
-              ${segment.id === "cash-mutual" ? "cursor-default" : "cursor-pointer"}
-              ${selectedSegments.includes(segment.id) 
-                ? "border-teal-800 bg-teal-50" 
-                : "border-gray-300 hover:border-teal-800"}`}
+              ${
+                segment.id === "cash-mutual"
+                  ? "cursor-default"
+                  : "cursor-pointer"
+              }
+              ${
+                selectedSegments.includes(segment.id)
+                  ? "border-teal-800 bg-teal-50"
+                  : "border-gray-300 hover:border-teal-800"
+              }`}
           >
             <span className="whitespace-nowrap">{segment.label}</span>
             <input
@@ -78,12 +87,10 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
         ))}
       </div>
 
-      <button
-        onClick={onNext}
-        className="w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors"
-      >
+      
+      <Button onClick={onNext} variant={"ghost"} className="mt-6 py-6">
         Next
-      </button>
+      </Button>
 
       {showRiskModal && (
         <RiskDisclosureModal

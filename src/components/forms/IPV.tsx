@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Camera } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '../ui/button';
 
 const IPVVerification = ({ onNext }: { onNext: () => void }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -91,26 +92,31 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
                   priority
                 />
               </div>
-              <button
+
+              <Button
                 onClick={() => {
                   setImageFile(null);
                   setError(null);
                 }}
-                className="text-teal-800 hover:text-teal-700 block mx-auto"
+                variant={"ghost"}
+                className="mt-6 py-6"
               >
-                Remove image
-              </button>
+                Remove Image
+              </Button>
             </div>
           ) : (
             <div className="text-center space-y-4">
               <Camera className="w-16 h-16 mx-auto text-gray-400" />
-              <p className="text-gray-600">Turn on your camera or upload an image</p>
-              <button
+              <p className="text-gray-600">
+                Turn on your camera or upload an image
+              </p>
+              <Button
                 onClick={handleCameraCapture}
-                className="px-4 py-2 bg-teal-800 text-white rounded hover:bg-teal-700 transition-colors"
+                variant={"ghost"}
+                className="py-3"
               >
                 Allow Camera Access
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -142,15 +148,16 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
         </div>
       </div>
 
-      <button
+      <Button
         onClick={handleSubmit}
         disabled={!imageFile || isLoading}
-        className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors ${
-          !imageFile || isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-teal-700'
+        variant={"ghost"}
+        className={`w-full py-6 ${
+          !imageFile || isLoading ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
-        {isLoading ? 'Verifying...' : 'Continue'}
-      </button>
+        {isLoading ? "Verifying..." : "Continue"}
+      </Button>
     </div>
   );
 };

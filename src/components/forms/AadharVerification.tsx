@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button } from "../ui/button";
 
 const AadhaarVerification = ({ onNext }: { onNext: () => void }) => {
   const [aadhaarNumber, setAadhaarNumber] = useState("");
@@ -53,15 +54,16 @@ const AadhaarVerification = ({ onNext }: { onNext: () => void }) => {
         )}
       </div>
 
-      <button
+      <Button
         onClick={handleSubmit}
         className={`w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors ${
           aadhaarNumber.length !== 12 ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={aadhaarNumber.length !== 12}
+        variant={"ghost"}
       >
         Continue
-      </button>
+      </Button>
 
       <div className="mt-6 text-sm text-gray-600">
         <p className="mb-4">

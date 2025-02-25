@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button } from "../ui/button";
 
 interface TradingPreferencesProps {
   onNext: () => void;
@@ -143,16 +144,17 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({ onNext }) => {
         )}
 
         {/* Submit Button */}
-        <button
+        <Button
           type="submit"
+          variant={"ghost"}
           disabled={!isFormValid || isSubmitting}
-          className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors
+          className={`w-full
             ${(!isFormValid || isSubmitting)
               ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-teal-700"}`}
+              : ""}`}
         >
           {isSubmitting ? "Please wait..." : "Continue"}
-        </button>
+        </Button>
       </form>
     </div>
   );

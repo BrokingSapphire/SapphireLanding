@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 interface Bank {
   id: string;
@@ -56,8 +57,6 @@ const NetbankingPaymentForm = ({
       </button>
 
       <div>
-        
-
         <form onSubmit={handleSubmit}>
           <div className="space-y-2">
             {banks.map((bank) => (
@@ -96,17 +95,18 @@ const NetbankingPaymentForm = ({
             + View all banks
           </button>
 
-          <button
+          <Button
             type="submit"
             disabled={!selectedBank}
-            className={`w-full mt-6 py-3 px-4 rounded-lg text-white transition-colors ${
+            className={`w-full mt-6 py-3 ${
               selectedBank
-                ? "bg-teal-800 hover:bg-teal-700"
-                : "bg-gray-400 cursor-not-allowed"
+                ? ""
+                : "cursor-not-allowed"
             }`}
+            variant="ghost"
           >
             Continue
-          </button>
+          </Button>
         </form>
       </div>
     </div>

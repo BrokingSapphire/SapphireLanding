@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { Button } from "../ui/button";
 
 interface TradingAccountDetailsProps {
   onNext: () => void;
@@ -141,18 +142,19 @@ const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
           )}
         </div>
 
-        <button
+        <Button
+          variant={"ghost"}
           type="submit"
           disabled={!isFormValid || isSubmitting}
-          className={`w-full bg-teal-800 text-white py-3 rounded transition-colors
+          className={`w-full py-6
             ${
               isFormValid && !isSubmitting
-                ? "hover:bg-teal-700"
+                ? ""
                 : "opacity-50 cursor-not-allowed"
             }`}
         >
           {isSubmitting ? "Please wait..." : "Continue"}
-        </button>
+        </Button>
       </form>
     </div>
   );

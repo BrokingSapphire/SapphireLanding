@@ -1,5 +1,6 @@
 // EmailVerification.tsx
 import React, { useState, useRef } from "react";
+import { Button } from "../ui/button";
 
 const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   };
 
   const handleEmailOTP = async () => {
-    if (!otp.every(digit => digit !== "")) {
+    if (!otp.every((digit) => digit !== "")) {
       setError("Please enter the complete verification code");
       return;
     }
@@ -24,7 +25,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
     try {
       // TODO: Implement actual OTP verification logic here
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
       onNext();
     } catch (err) {
       setError("Error verifying OTP. Please try again.");
@@ -45,7 +46,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
     try {
       // TODO: Implement actual send OTP logic here
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
       setShowOTP(true);
     } catch (err) {
       setError("Failed to send verification code. Please try again.");
@@ -79,15 +80,15 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   };
 
   return (
-    <div className="mx-auto">
-      <h2 className="text-3xl font-bold mb-2">Verify Your Email</h2>
+    <div className="mx-auto pt-24">
+      <h2 className="text-3xl font-bold mb-3">Verify Your Email</h2>
       <p className="text-gray-600 mb-8">
         Please enter your email address to receive a verification code
       </p>
 
-      <div className="mb-6">
+      <div className="mb-8">
         <label className="block text-gray-700 mb-2">Email Address</label>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <input
             type="email"
             placeholder="Enter your email address"
@@ -102,7 +103,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
           <button
             onClick={handleSendOTP}
             disabled={isLoading || !email}
-            className="text-blue-500 hover:text-blue-600 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-blue-500 hover:text-blue-600 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed px-3"
           >
             {isLoading ? "Sending..." : "Get OTP →"}
           </button>
@@ -111,13 +112,10 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
       {showOTP && (
         <div className="mb-6">
-          <label className="block text-gray-700 mb-2">
+          <label className="block text-left text-gray-heading mb-3">
             Enter Verification Code
           </label>
-          <p className="text-sm text-gray-500 mb-4">
-            We&apos;ve sent a verification code to {email}
-          </p>
-          <div className="flex gap-2 justify-between mb-2">
+          <div className="flex justify-center gap-2 mb-4">
             {otp.map((digit, index) => (
               <input
                 key={index}
@@ -129,13 +127,20 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
                 value={digit}
                 onChange={(e) => handleOTPChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className="w-12 h-12 text-center border-2 border-gray-300 rounded focus:outline-none focus:border-teal-500 text-xl"
+                className={`w-12 h-12 text-center border-2 border-gray-300 focus:outline-none focus:border-teal-500 text-xl
+                  ${
+                    index === 0
+                      ? "rounded-md rounded-r-none"
+                      : index === 5
+                      ? "rounded-md rounded-l-none"
+                      : "rounded-none"
+                  }`}
                 disabled={isLoading}
               />
             ))}
           </div>
-          <div className="flex justify-between text-sm">
-            <button 
+          <div className="flex justify-between text-sm mb-2">
+            <button
               className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSendOTP}
               disabled={isLoading}
@@ -148,27 +153,33 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
       )}
 
       {error && (
-        <div className="mb-4 p-2 bg-red-50 rounded">
+        <div className="mb-4 p-3 bg-red-50 rounded">
           <p className="text-red-600 text-sm">{error}</p>
         </div>
       )}
 
-      <button
+      <Button
         onClick={handleEmailOTP}
-        disabled={isLoading || !showOTP || !otp.every(digit => digit !== "")}
-        className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors
-          ${isLoading || !showOTP || !otp.every(digit => digit !== "") 
-            ? "opacity-50 cursor-not-allowed" 
-            : "hover:bg-teal-700"}`}
+        disabled={isLoading || !showOTP || !otp.every((digit) => digit !== "")}
+        className={`w-full py-6 mb-6 ${
+          isLoading || !showOTP || !otp.every((digit) => digit !== "")
+            ? "opacity-50 cursor-not-allowed"
+            : ""
+        }`}
+        variant="ghost"
       >
-        {isLoading ? "Verifying..." : "Verify Email"}
-      </button>
+        {isLoading ? "Verifying..." : "Verify My Email"}
+      </Button>
 
-      <div className="mt-6 text-sm text-gray-600">
-        <p className="mb-4">
-          By continuing, you agree to receive important updates and
-          notifications via email. We&apos;ll never share your email address with
-          third parties.
+      <div className="text-center text-xs text-gray-600 mt-8 space-y-3">
+        <p>
+          I authorise Sapphire to fetch my KYC information from the C-KYC
+          registry with my PAN.
+        </p>
+        <p>
+          If you are looking to open a HUF, Corporate, Partnership,or NRI
+          account, you have to{" "}
+          <span className="text-blue-400">click here.</span>
         </p>
       </div>
     </div>

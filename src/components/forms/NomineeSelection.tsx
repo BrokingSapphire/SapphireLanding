@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import NomineeManagement from '../new-signup/NomineeManagement';
+import { Button } from '../ui/button';
 
 interface NomineeSelectionProps {
   onNext: () => void;
@@ -26,12 +27,13 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({ onNext }) => {
           </p>
 
           <div className="flex flex-col gap-4">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setShowNomineeForm(true)}
-              className="w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors"
+              className="w-full py-6"
             >
               Add nominee now (Recommended)
-            </button>
+            </Button>
             
             <button
               onClick={handleSkip}

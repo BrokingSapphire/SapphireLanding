@@ -1,4 +1,6 @@
 import React from 'react';
+import { Button } from '../ui/button';
+import { ChevronRight } from 'lucide-react';
 
 interface LastStepPageProps {
   onNext: () => void;
@@ -10,12 +12,13 @@ const LastStepPage: React.FC<LastStepPageProps> = ({ onNext }) => {
       <h1 className="text-2xl font-bold mb-1">Last step!</h1>
       <p className="text-gray-600 mb-8">Step 9 of 9</p>
 
-      <button
+      <Button
+        variant={"ghost"}
         onClick={onNext}
-        className="w-full bg-teal-800 text-white py-3 px-4 rounded font-medium hover:bg-teal-700 transition-colors"
+        className="py-6"
       >
-        Proceed to eSign
-      </button>
+        Proceed to eSign <ChevronRight />
+      </Button>
     </div>
   );
 };

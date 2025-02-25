@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '../ui/button';
 // import Image from 'next/image';
 
 interface CongratulationsPageProps {
@@ -38,12 +39,12 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
         </div>
       </div>
 
-      <button
+      <Button
         onClick={onNext}
-        className="w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors"
+        className="py-6"
       >
         Login to Terminal
-      </button>
+      </Button>
     </div>
   );
 };
