@@ -44,11 +44,11 @@ const Contact = () => {
           </div>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto">
         <ContactCards />
+      <div className="max-w-7xl mx-14">
         <EscalationMatrix />
-        <GetInTouch />
       </div>
+        <GetInTouch />
         <Support/>
     </>
   );
