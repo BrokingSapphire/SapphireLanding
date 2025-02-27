@@ -15,14 +15,17 @@ interface ContactOption {
 }
 
 const ContactCard: React.FC<ContactCardProps> = ({ title, hours, satHours, phone }) => (
-  <div className="rounded-lg p-6 h-full border-4 border-[#C4FDD866] shadow-[0_0_10px_rgba(196,253,216,0.4)]" style={{
-    background: 'linear-gradient(to bottom, #FDFEFF 0%, #EEF9F499 60%)'
-  }}>
+  <div
+    className="rounded-lg p-6 h-full border-4 border-[#C4FDD866] shadow-[0_4px_15px_rgba(196,253,216,0.6)]"
+    style={{
+      background: 'linear-gradient(to bottom, #FDFEFF 0%, #EEF9F499 60%)',
+    }}
+  >
     <div className="flex flex-col h-full">
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-teal-800 inline-block border-b-2 border-yellow-400">{title}</h3>
       </div>
-      
+
       <div className="space-y-2">
         <p className="text-gray-700">{phone}</p>
         <p className="text-gray-600">Mon-Fri: {hours}</p>
@@ -33,9 +36,12 @@ const ContactCard: React.FC<ContactCardProps> = ({ title, hours, satHours, phone
 );
 
 const HQCard: React.FC = () => (
-  <div className="rounded-lg p-6 h-full border border-[#C4FDD866] shadow-[0_0_10px_rgba(196,253,216,0.4)]" style={{
-    background: 'linear-gradient(to bottom, #FDFEFF 0%, #EEF9F499 60%)'
-  }}>
+  <div
+    className="rounded-lg p-6 h-full border border-[#C4FDD866] shadow-[0_4px_15px_rgba(196,253,216,0.6)]"
+    style={{
+      background: 'linear-gradient(to bottom, #FDFEFF 0%, #EEF9F499 60%)',
+    }}
+  >
     <div className="flex flex-col h-full">
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-teal-800 inline-block border-b-2 border-yellow-400">HQ</h3>

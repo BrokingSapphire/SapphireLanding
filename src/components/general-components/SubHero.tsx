@@ -25,7 +25,7 @@ const SubHero = ({ chipText, titleText, gradientText, description }: SubHeroProp
         </span>
         <div className="text-center font-semibold leading-tight text-6xl w-full">
           {titleText[0]} <br />{" "}
-          <span className="font-lobster-two pr-2 italic text-transparent bg-clip-text font-[400] bg-gradient-to-r from-[#14A5AD] to-[#21B906]">
+          <span className="font-lobster-two pr-2 italic text-transparent tracking-wider bg-clip-text font-[400] bg-gradient-to-r from-[#14A5AD] to-[#21B906]">
             {gradientText}
           </span>{" "}
           <span>{titleText[1]}</span>
