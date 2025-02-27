@@ -37,7 +37,7 @@ const CardPaymentForm = ({
   });
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="w-full mx-auto">
       <button
         onClick={onBack}
         className="flex items-center text-blue-500 mb-6 hover:text-blue-600"

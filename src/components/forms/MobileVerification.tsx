@@ -1,5 +1,5 @@
 // MobileVerification.tsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 
 const MobileVerification = ({ onNext }: { onNext: () => void }) => {
@@ -8,7 +8,48 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(600); // 10 minutes in seconds
+  const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // OTP timer for 10 minutes
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+
+    if (showOTP && otpTimer > 0) {
+      interval = setInterval(() => {
+        setOtpTimer((prev) => prev - 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [showOTP, otpTimer]);
+
+  // Resend OTP timer for 30 seconds
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [resendTimer]);
+
+  // Format time from seconds to MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
   const validateMobile = (number: string) => {
     return /^[0-9]{10}$/.test(number);
@@ -48,6 +89,8 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
       // TODO: Implement actual send OTP logic here
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
       setShowOTP(true);
+      setOtpTimer(600); // Reset OTP timer to 10 minutes
+      setResendTimer(30); // Set resend timer to 30 seconds
     } catch (err) {
       setError("Failed to send OTP. Please try again.");
       console.error("Send OTP error:", err);
@@ -104,13 +147,15 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
             pattern="[0-9]{10}"
             disabled={isLoading}
           />
-          <button
-            onClick={handleSendOTP}
-            disabled={isLoading || !mobileNumber}
-            className="text-blue-500 hover:text-blue-600 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed px-3"
-          >
-            {isLoading ? "Sending..." : "Get OTP →"}
-          </button>
+          {!showOTP && (
+            <button
+              onClick={handleSendOTP}
+              disabled={isLoading || !mobileNumber}
+              className="text-blue-500 hover:text-blue-600 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed px-3"
+            >
+              {isLoading ? "Sending..." : "Get OTP →"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -147,11 +192,13 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
             <button
               className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSendOTP}
-              disabled={isLoading}
+              disabled={isLoading || resendTimer > 0}
             >
-              Resend OTP
+              {resendTimer > 0 ? `Resend OTP (${resendTimer}s)` : "Resend OTP"}
             </button>
-            <span className="text-gray-500">OTP valid for 10:00 mins</span>
+            <span className="text-gray-500">
+              OTP valid for {formatTime(otpTimer)}
+            </span>
           </div>
         </div>
       )}
