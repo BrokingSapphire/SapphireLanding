@@ -53,13 +53,13 @@ const Gateway = () => {
         <h1 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
           Your Gateway to Smart Investing
         </h1>
-        <p className="text-sm sm:text-base text-gray-500 mt-3 px-4">
+        <p className="text-lg sm:text-base tracking-wider mt-3 px-4">
           Highlighted features that simplify and enhance the investing
           experience.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
         {gatewayItems.map((item, index) => (
           <GatewayCard key={index} {...item} />
         ))}

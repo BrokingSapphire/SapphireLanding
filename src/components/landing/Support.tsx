@@ -15,12 +15,10 @@ const Support = () => {
               revenue opportunities?
             </span>
           </div>
-          <button className="bg-white flex items-center text-black sm:text-lg px-7 sm:px-12 py-2 sm:py-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-12 sm:w-auto mt-12 group">
+          <button className="bg-white flex items-center text-black sm:text-lg px-7 sm:px-12 py-2 sm:py-3 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-auto sm:w-auto mt-12 group">
             <span className="mx-auto">Sign Up</span>
-            <IoIosArrowRoundForward className="w-8 h-8 ml-4 -mr-2 transition-all duration-300 group-hover:ml-7" />
+            <IoIosArrowRoundForward className="w-8 h-8 ml-4 transition-transform duration-300 group-hover:translate-x-2" />
           </button>
-
-
         </div>
 
         {/* Arrow Group Image on the Extreme Right */}

@@ -26,10 +26,10 @@ const Guide = () => {
   return (
     <div className="bg-gray-100 py-12">
       <div className="max-w-6xl mx-auto px-6">
-        <h2 className="text-center text-2xl font-semibold mb-8">
+        <h2 className="text-center text-4xl font-semibold mb-12">
           Guides for Financial Success
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {guides.map((guide) => (
             <div key={guide.id} className="bg-white rounded-2xl shadow-md overflow-hidden">
               <div className="relative">

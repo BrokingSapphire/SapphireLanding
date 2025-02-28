@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import Image from "next/image";
 import { FaChevronRight } from "react-icons/fa";
@@ -12,13 +12,13 @@ interface CalculatorButtonProps {
 const CalculatorButton: React.FC<CalculatorButtonProps> = ({ label, imageSrc, onClick }) => (
   <button
     onClick={onClick}
-    className="w-full flex justify-between items-center px-6 py-4 bg-white border-[1px] border-gray-300 rounded-lg hover:bg-gray-100 transition"
+    className="w-full flex justify-between items-center px-6 py-4 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition"
   >
     <div className="flex items-center gap-4 text-[#5B5B5B] text-lg font-medium">
-      <Image src={imageSrc} alt={label} width={40} height={40} /> {/* Increased image size */}
+      <Image src={imageSrc} alt={label} width={40} height={40} />
       {label}
     </div>
-    <FaChevronRight className="text-gray-500 text-xl" /> {/* Keep arrow at the extreme right */}
+    <FaChevronRight className="text-gray-500 text-xl" />
   </button>
 );
 
@@ -34,7 +34,7 @@ const Calculator: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#F5F7FA] h-[600px] py-12">
+    <section className="bg-[#F5F7FA] py-16">
       <div className="max-w-7xl flex flex-col lg:flex-row justify-between items-center mx-auto px-6 lg:px-12">
         {/* Text & Buttons Section */}
         <div className="w-full lg:w-1/2">
@@ -54,12 +54,12 @@ const Calculator: React.FC = () => {
           </div>
         </div>
 
-        {/* Illustration Image (right side) */}
-        <div className="w-full lg:w-auto mt-8 lg:mt-0">
+        {/* Illustration Image */}
+        <div className="w-full lg:w-auto mt-8 lg:mt-0 relative lg:left-[-130px]">
           <Image
             src="/Calc.png"
             alt="Investment Calculator Illustration"
-            className="max-w-xs mx-auto lg:mx-0"
+            className="max-w-xs lg:mx-0"
             width={180}
             height={180}
           />
