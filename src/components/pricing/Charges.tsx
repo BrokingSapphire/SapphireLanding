@@ -17,15 +17,15 @@ const ChargesCard: React.FC<ChargesCardProps> = ({
   icon: Icon,
 }) => {
   return (
-    <div className="rounded-2xl h-[360px] p-5 bg-gradient-to-t from-[#EAFBF099] to-white shadow-[0_2px_7px_6px_rgba(76,77,88,0.04)] w-[360px]">
+    <div className="rounded-2xl h-[360px] p-5 bg-gradient-to-t from-[#EAFBF099] to-white shadow-[0_4px_15px_rgba(196,253,216,0.6)] w-[360px] border-2 border-[#C4FDD866]">
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-start rounded-md bg-[#EAFBF0] p-3 gap-3">
+        <div className="flex items-start rounded-md bg-[#EAFBF0] p-3 gap-3 shadow-[0_4px_10px_rgba(196,253,216,0.5)]">
           <div className="mt-1">
             <Icon className="w-5 h-5 text-green-600" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-xl text-[#1F6B12] font-medium">{title}</h3>
+            <h3 className="text-xl text-[#1F6B12] font-bold">{title}</h3>
             <p className="text-sm text-gray-600 leading-snug">{subtitle}</p>
           </div>
         </div>

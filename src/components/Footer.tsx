@@ -94,7 +94,7 @@ const Footer = () => {
   return (
     <>
       <footer className="bg-[#064D51] text-white p-4 sm:p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
             <div className="col-span-1 sm:col-span-2 lg:col-span-1">
               <div className="flex items-center mb-4">
@@ -129,20 +129,20 @@ const Footer = () => {
               <SocialLinks />
 
               <h3 className="font-bold mb-4">Download Our App</h3>
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
+              <div className="flex  items-center justify-center sm:justify-start gap-4">
                 <Image
                   src="/apple.svg"
                   alt="App Store"
-                  width={120}
+                  width={100}
                   height={40}
                   className="h-10 w-auto"
                 />
                 <Image
                   src="/google.png"
                   alt="Google Play"
-                  width={120}
+                  width={100}
                   height={40}
-                  className="h-10 w-auto"
+                  className="h-10 -ml-3 w-auto"
                 />
               </div>
             </div>

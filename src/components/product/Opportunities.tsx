@@ -8,7 +8,7 @@ const Opportunities = () => {
     const router = useRouter()
   return (
     <section
-      className="relative bg-[#064D51] py-12 sm:py-16 overflow-hidden mt-12"
+      className="relative bg-[#064D51] py-12 sm:py-16 overflow-hidden "
       aria-label="Call to action"
     >
       <div className="absolute right-0 top-0 w-1/4 sm:w-1/3">

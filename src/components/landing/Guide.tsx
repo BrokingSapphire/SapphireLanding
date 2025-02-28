@@ -12,13 +12,13 @@ const guides = [
     id: 2,
     title: "Beginner’s Guide to Budgeting - Simple Steps to Take Control of Your Finances",
     author: "Nakul Thakur",
-    image:  "/nakul.svg",
+    image: "/nakul.svg",
   },
   {
     id: 3,
     title: "Beginner’s Guide to Budgeting - Simple Steps to Take Control of Your Finances",
     author: "Nakul Thakur",
-    image:  "/nakul.svg",
+    image: "/nakul.svg",
   },
 ];
 
@@ -38,13 +38,13 @@ const Guide = () => {
                   alt={guide.title}
                   width={300}
                   height={200}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 object-cover blur-sm transition-all duration-300 hover:blur-0"
                 />
               </div>
               <div className="p-4">
-                <h3 className="text-sm ">{guide.title}</h3>
-                <p className="text-gray-500 text-xs mt-1">{guide.author}</p>
-                <button className="mt-3  px-3  rounded-full bg-[#F2FFEF] text-[#19A800] py-1 text-sm hover:bg-green-400 hover:text-white transition">
+                <h3 className="text-md font-semibold text-slate-600">{guide.title}</h3>
+                <p className="text-gray-600 text-sm mt-3">{guide.author}</p>
+                <button className="mt-3 px-3 rounded-full bg-[#F2FFEF] text-[#19A800] py-1 text-sm transition">
                   Understand Budget
                 </button>
               </div>

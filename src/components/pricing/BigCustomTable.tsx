@@ -1,18 +1,10 @@
-import React from "react";
+'use client'
 
-// interface TableHeaderProps {
-//   children: React.ReactNode;
-// }
+import React, { useState } from "react";
 
-// const TableHeader: React.FC<TableHeaderProps> = ({ children }) => (
-//   <th className="bg-gray-100 px-4 py-2 text-left font-medium text-gray-700">{children}</th>
-// );
+const ChargesTable = () => {
+  const [activeTab, setActiveTab] = useState("Equity");
 
-// const TableCell: React.FC<TableHeaderProps> = ({ children }) => (
-//   <td className="px-4 py-2 text-gray-600">{children}</td>
-// );
-
-const ChargesTable: React.FC = () => {
   const equityData = [
     {
       type: "Brokerage",
@@ -99,12 +91,29 @@ const ChargesTable: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <>
+        <div className="max-w-7xl mx-14 space-y-8">
       {/* Navigation Bar */}
       <div className="flex border-b">
-        <div className="px-6 py-4 font-semibold text-teal-800 border-b-2 border-teal-800">Equity</div>
-        <div className="px-6 py-4 font-semibold ">Currency</div>
-        <div className="px-6 py-4 font-semibold ">Commodity</div>
+        {["Equity", "Currency", "Commodity"].map((tab) => (
+          <div
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-6 py-4 font-semibold cursor-pointer ${
+              activeTab === tab 
+                ? "text-[#064D51] border-b-2 border-[#064D51]" 
+                : "text-gray-700 hover:text-[]"
+            }`}
+            style={{
+              textDecoration: activeTab === tab ? "" : "none",
+              textDecorationColor: activeTab === tab ? "#0D9488" : "transparent",
+              textDecorationThickness: "2px",
+              textUnderlineOffset: "4px"
+            }}
+          >
+            {tab}
+          </div>
+        ))}
       </div>
 
       {/* Trading Charges Table */}
@@ -145,8 +154,8 @@ const ChargesTable: React.FC = () => {
       </div>
 
       {/* Account Opening Charges */}
-      <div className="border-t">
-        <div className="px-8 py-4 font-semibold text-gray-800">Account Opening Charges</div>
+      <div className="">
+        <div className="px-8 py-4 text-2xl font-semibold text-gray-800">Account Opening Charges</div>
         <div className="px-8">
           <table className="w-full border-collapse">
             <thead>
@@ -168,8 +177,8 @@ const ChargesTable: React.FC = () => {
       </div>
 
       {/* Non Trade Charges */}
-      <div className="border-t">
-        <div className="px-8 py-4 font-semibold text-gray-800">Non Trade Charges</div>
+      <div className="">
+        <div className="px-8 py-4  text-2xl font-semibold text-gray-800">Non Trade Charges</div>
         <div className="px-8">
           <table className="w-full border-collapse">
             <thead>
@@ -191,8 +200,8 @@ const ChargesTable: React.FC = () => {
       </div>
 
       {/* MTF Charges */}
-      <div className="border-t">
-        <div className="px-8 py-4 font-semibold text-gray-800">MTF Charges</div>
+      <div className="">
+        <div className="px-8 py-4 text-2xl font-semibold text-gray-800">MTF Charges</div>
         <div className="px-8">
           <table className="w-full border-collapse">
             <thead>
@@ -213,15 +222,16 @@ const ChargesTable: React.FC = () => {
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <div className="px-8 py-6 text-sm bg-[#F5F5F5] text-gray-600 border-t">
-        <span className="text-2xl text-black ">Disclaimer</span>
-        <p className="leading-relaxed">
+
+    </div>
+      <div className="p-16 text-sm  bg-gray-100 text-gray-600">
+        <span className="text-2xl  font-semibold text-black">Disclaimer</span>
+        <p className="mt-5 leading-relaxed">
           For Delivery based trades, a minimum of ₹2.5 will be charged per contract note. Clients who opt to receive physical contract notes will be charged ₹50 per contract note plus courier charges. Brokerage will not exceed the rates specified by SEBI and the exchanges. All statutory and regulatory charges will be levied as actuals. Brokerage is also charged on expired, exercised and assigned options contracts. Free investments are available only for our retail individual clients. Companies, Partnerships, Trusts, and HUF would pay ₹15 + ₹3 (minimum of ₹1 per trade (except delivery)). Additional charges for investors who opt for physical delivery of payout of securities, where physical delivery happens. For renewal of packages for continued where physical delivery happens is ₹199 per month.
         </p>
-
       </div>
-    </div>
+    </>
+
   );
 };
 

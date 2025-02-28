@@ -12,7 +12,7 @@ const TableRow: React.FC<TableRowProps> = ({ children, isHeader }) => (
 );
 
 const TableCell: React.FC<{ children: React.ReactNode; isHeader?: boolean }> = ({ children, isHeader }) => (
-  <td className={`px-3 py-4 ${isHeader ? "font-medium" : ""}`}>{children}</td>
+  <td className={`px-3 py-4 ${isHeader ? " font-medium text-xl" : ""}`}>{children}</td>
 );
 
 const ContactDetails: React.FC = () => {
@@ -89,7 +89,7 @@ const ContactDetails: React.FC = () => {
     <div className="max-w-7xl mx-auto p-4 space-y-12">
       {/* Other Contact Details */}
       <div>
-        <h2 className="text-xl font-medium mb-6">Other Contact Details</h2>
+        <h2 className="text-2xl font-semibold mt-5 mb-6">Other Contact Details</h2>
         <table className="w-full">
           <thead>
             <TableRow isHeader>
@@ -112,7 +112,7 @@ const ContactDetails: React.FC = () => {
 
       {/* Escalation Matrix */}
       <div>
-        <h2 className="text-xl font-medium mb-6">Escalation Matrix</h2>
+        <h2 className="text-2xl font-semibold   mb-6">Escalation Matrix</h2>
         <table className="w-full">
           <thead>
             <TableRow isHeader>
@@ -139,7 +139,7 @@ const ContactDetails: React.FC = () => {
 
       {/* Key Managerial Personnel Details */}
       <div>
-        <h2 className="text-xl font-medium mb-6">Key Managerial Personnel Details</h2>
+        <h2 className="text-2xl font-semibold mb-6">Key Managerial Personnel Details</h2>
         <table className="w-full">
           <thead>
             <TableRow isHeader>
