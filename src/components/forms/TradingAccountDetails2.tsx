@@ -64,7 +64,7 @@ const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
   const isFormValid = occupation !== "" && isPoliticallyExposed !== null;
 
   return (
-    <div className="max-w-md mx-auto mt-14 p-4">
+    <div className="mx-auto mt-14 p-4">
       <h1 className="text-2xl font-bold mb-1">Trading account details</h1>
       <p className="text-gray-600 mb-6">Step 5 of 9</p>
 

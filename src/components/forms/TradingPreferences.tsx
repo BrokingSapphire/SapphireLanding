@@ -148,7 +148,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({ onNext }) => {
           type="submit"
           variant={"ghost"}
           disabled={!isFormValid || isSubmitting}
-          className={`w-full
+          className={`w-full py-6
             ${(!isFormValid || isSubmitting)
               ? "opacity-50 cursor-not-allowed"
               : ""}`}

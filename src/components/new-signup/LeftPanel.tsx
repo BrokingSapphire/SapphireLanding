@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from "react";
+
 interface FeaturePoint {
   title: string;
   description: string;
@@ -10,24 +12,46 @@ interface StepItem {
   active: boolean;
 }
 
-const LeftPanel = ({ currentStep } : {currentStep : number}) => {
+const LeftPanel = ({ currentStep }: { currentStep: number }) => {
+  // Track previous step to detect changes
+  const [prevStep, setPrevStep] = useState(currentStep);
+  const [transitioningStep, setTransitioningStep] = useState<number | null>(
+    null
+  );
+
+  // Detect step changes to trigger animations
+  useEffect(() => {
+    if (currentStep !== prevStep) {
+      // Set the step that is transitioning
+      setTransitioningStep(currentStep);
+
+      // Clear the transitioning state after animation completes
+      const timer = setTimeout(() => {
+        setTransitioningStep(null);
+        setPrevStep(currentStep);
+      }, 800); // Match this with the animation duration
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, prevStep]);
+
   // Define all onboarding steps for the progress stepper
   const steps: StepItem[] = [
     {
       id: 0,
-      label: "Verify PAN",
+      label: "PAN Verification",
       completed: currentStep > 3,
       active: currentStep === 3,
     },
     {
       id: 1,
-      label: "Verify Aadhaar",
+      label: "Aadhar Verification",
       completed: currentStep > 4,
       active: currentStep === 4,
     },
     {
       id: 2,
-      label: "Select Trading Segment",
+      label: "Choose Segment",
       completed: currentStep > 5,
       active: currentStep === 5,
     },
@@ -39,13 +63,13 @@ const LeftPanel = ({ currentStep } : {currentStep : number}) => {
     },
     {
       id: 4,
-      label: "Link Bank Account",
+      label: "Bank Account Details",
       completed: currentStep > 8,
       active: currentStep === 8,
     },
     {
       id: 5,
-      label: "In person verification (IPV)",
+      label: "Complete Video Verification",
       completed: currentStep > 9,
       active: currentStep === 9,
     },
@@ -163,172 +187,111 @@ const LeftPanel = ({ currentStep } : {currentStep : number}) => {
           ) : (
             // Show progress steps for verification process
             <div className="relative animate-[fadeIn_0.5s_ease-out] space-y-6">
-              {steps.map((step, index) => (
-                <div key={step.id} className="flex items-center relative">
-                  {/* Step indicator */}
-                  <div className="flex-shrink-0 rounded-full flex items-center justify-center z-10">
-                    {step.active ? (
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 30 30"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="transform scale-90 rounded-full"
-                      >
-                        <g filter="url(#filter0_d_237_789)">
-                          <circle cx="15" cy="15" r="12" fill="white" />
-                          <circle
-                            cx="15"
-                            cy="15"
-                            r="11.75"
-                            stroke="#1DB954"
-                            strokeWidth="0.5"
-                          />
-                        </g>
-                        <circle cx="15" cy="15" r="5" fill="#1DB954" />
-                        <defs>
-                          <filter
-                            id="filter0_d_237_789"
-                            x="0"
-                            y="0"
-                            width="30"
-                            height="30"
-                            filterUnits="userSpaceOnUse"
-                            colorInterpolationFilters="sRGB"
-                          >
-                            <feFlood
-                              floodOpacity="0"
-                              result="BackgroundImageFix"
-                            />
-                            <feColorMatrix
-                              in="SourceAlpha"
-                              type="matrix"
-                              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                              result="hardAlpha"
-                            />
-                            <feMorphology
-                              radius="3"
-                              operator="dilate"
-                              in="SourceAlpha"
-                              result="effect1_dropShadow_237_789"
-                            />
-                            <feOffset />
-                            <feComposite in2="hardAlpha" operator="out" />
-                            <feColorMatrix
-                              type="matrix"
-                              values="0 0 0 0 0.113725 0 0 0 0 0.72549 0 0 0 0 0.329412 0 0 0 0.25 0"
-                            />
-                            <feBlend
-                              mode="normal"
-                              in2="BackgroundImageFix"
-                              result="effect1_dropShadow_237_789"
-                            />
-                            <feBlend
-                              mode="normal"
-                              in="SourceGraphic"
-                              in2="effect1_dropShadow_237_789"
-                              result="shape"
-                            />
-                          </filter>
-                        </defs>
-                      </svg>
-                    ) : step.completed ? (
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 30 30"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="transform scale-90 rounded-full"
-                      >
-                        <g filter="url(#filter0_d_237_789)">
-                          <circle cx="15" cy="15" r="12" fill="white" />
-                          <circle
-                            cx="15"
-                            cy="15"
-                            r="11.75"
-                            stroke="#1DB954"
-                            strokeWidth="0.5"
-                          />
-                        </g>
-                        <circle cx="15" cy="15" r="5" fill="#1DB954" />
-                        <defs>
-                          <filter
-                            id="filter0_d_237_789"
-                            x="0"
-                            y="0"
-                            width="30"
-                            height="30"
-                            filterUnits="userSpaceOnUse"
-                            colorInterpolationFilters="sRGB"
-                          >
-                            <feFlood
-                              floodOpacity="0"
-                              result="BackgroundImageFix"
-                            />
-                            <feColorMatrix
-                              in="SourceAlpha"
-                              type="matrix"
-                              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                              result="hardAlpha"
-                            />
-                            <feMorphology
-                              radius="3"
-                              operator="dilate"
-                              in="SourceAlpha"
-                              result="effect1_dropShadow_237_789"
-                            />
-                            <feOffset />
-                            <feComposite in2="hardAlpha" operator="out" />
-                            <feColorMatrix
-                              type="matrix"
-                              values="0 0 0 0 0.113725 0 0 0 0 0.72549 0 0 0 0 0.329412 0 0 0 0.25 0"
-                            />
-                            <feBlend
-                              mode="normal"
-                              in2="BackgroundImageFix"
-                              result="effect1_dropShadow_237_789"
-                            />
-                            <feBlend
-                              mode="normal"
-                              in="SourceGraphic"
-                              in2="effect1_dropShadow_237_789"
-                              result="shape"
-                            />
-                          </filter>
-                        </defs>
-                      </svg>
-                    ) : (
-                      <div className="w-5 h-5 rounded-full bg-gray-200/60"></div>
-                    )}
-                  </div>
+              {steps.map((step, index) => {
+                // Check if this step is transitioning (newly active)
+                const isTransitioning = step.id + 3 === transitioningStep;
 
-                  {/* Vertical line */}
-                  {index < steps.length - 1 && (
-                    <div className="absolute left-2.5 top-6 w-px h-10 bg-gray-200/50"></div>
-                  )}
-
-                  {/* Step label */}
+                return (
                   <div
-                    className={`ml-4 ${
-                      step.active
-                        ? "text-gray-900 font-medium"
-                        : step.completed
-                        ? "text-gray-700"
-                        : "text-gray-300"
+                    key={step.id}
+                    className={`flex items-center relative ${
+                      isTransitioning
+                        ? "animate-[smoothFadeIn_0.8s_ease-in-out]"
+                        : ""
                     }`}
                   >
-                    {step.label}
+                    {/* Step indicator with pulsing effect for active step */}
+                    <div className="flex-shrink-0 rounded-full flex items-center justify-center z-10">
+                      {step.active ? (
+                        <div className="relative w-6 h-6">
+                          {/* Pulsing animation for active step */}
+                          <div
+                            className="absolute inset-0 w-full h-full rounded-full"
+                            style={{
+                              animation: "smooth-pulse 2s ease-in-out infinite",
+                              opacity: 0.8,
+                            }}
+                          ></div>
+                          <div
+                            className="absolute inset-0 w-full h-full rounded-full"
+                            style={{
+                              animation:
+                                "smooth-pulse-delayed 2s ease-in-out infinite",
+                              animationDelay: "1s",
+                              opacity: 0.6,
+                            }}
+                          ></div>
+
+                          {/* Active step indicator */}
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 30 30"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-90 rounded-full z-10"
+                          >
+                            <circle cx="15" cy="15" r="12" fill="white" />
+                            <circle
+                              cx="15"
+                              cy="15"
+                              r="11.75"
+                              stroke="#1DB954"
+                              strokeWidth="0.5"
+                            />
+                            <circle cx="15" cy="15" r="5" fill="#1DB954" />
+                          </svg>
+                        </div>
+                      ) : step.completed ? (
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 30 30"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="transform scale-90 rounded-full"
+                        >
+                          <circle cx="15" cy="15" r="12" fill="white" />
+                          <circle
+                            cx="15"
+                            cy="15"
+                            r="11.75"
+                            stroke="#1DB954"
+                            strokeWidth="0.5"
+                          />
+                          <circle cx="15" cy="15" r="5" fill="#1DB954" />
+                        </svg>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full bg-gray-200/60"></div>
+                      )}
+                    </div>
+
+                    {/* Vertical line */}
+                    {index < steps.length - 1 && (
+                      <div className="absolute left-2.5 top-6 w-px h-10 bg-gray-200/50"></div>
+                    )}
+
+                    {/* Step label with transition animation */}
+                    <div
+                      className={`ml-4 ${
+                        step.active
+                          ? "text-gray-900 font-medium"
+                          : step.completed
+                          ? "text-gray-700"
+                          : "text-gray-300"
+                      } transition-colors duration-300 ease-in-out`}
+                    >
+                      {step.label}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </div>
 
-      <footer className="w-full pt-4 animate-[fadeIn_0.5s_ease-out_1.2s_both]">
+      <footer className="w-full pt-6 animate-[fadeIn_0.5s_ease-out_1.2s_both]">
         <div className="flex items-center justify-between text-sm text-gray-500">
           <div>© Sapphire Broking</div>
           <div className="flex items-center space-x-2">
@@ -359,6 +322,47 @@ const LeftPanel = ({ currentStep } : {currentStep : number}) => {
           }
           to {
             opacity: 1;
+          }
+        }
+
+        @keyframes smoothFadeIn {
+          0% {
+            opacity: 0.3;
+            transform: scale(0.98) translateX(-5px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateX(0);
+          }
+        }
+
+        @keyframes smooth-pulse {
+          0% {
+            box-shadow: 0 0 0 0 rgba(29, 185, 84, 0.4);
+            transform: scale(1);
+          }
+          50% {
+            box-shadow: 0 0 0 8px rgba(29, 185, 84, 0.2);
+            transform: scale(1.05);
+          }
+          100% {
+            box-shadow: 0 0 0 0 rgba(29, 185, 84, 0);
+            transform: scale(1);
+          }
+        }
+
+        @keyframes smooth-pulse-delayed {
+          0% {
+            box-shadow: 0 0 0 0 rgba(29, 185, 84, 0.3);
+            transform: scale(1);
+          }
+          50% {
+            box-shadow: 0 0 0 12px rgba(29, 185, 84, 0.1);
+            transform: scale(1.05);
+          }
+          100% {
+            box-shadow: 0 0 0 0 rgba(29, 185, 84, 0);
+            transform: scale(1);
           }
         }
       `}</style>
