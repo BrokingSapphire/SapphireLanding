@@ -22,7 +22,7 @@ const ChargesCard: React.FC<ChargesCardProps> = ({
         {/* Header */}
         <div className="flex items-start rounded-md bg-[#EAFBF0] p-3 gap-3 shadow-[0_4px_10px_rgba(196,253,216,0.5)]">
           <div className="mt-1">
-            <Icon className="w-5 h-5 text-green-600" />
+            <Icon className="w-5 h-5 text-[#1F6B12]" />
           </div>
           <div className="space-y-1">
             <h3 className="text-xl text-[#1F6B12] font-bold">{title}</h3>
