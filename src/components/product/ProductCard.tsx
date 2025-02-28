@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { FaChevronRight } from "react-icons/fa";
 
 interface ProductCardProps {
   title: string;
