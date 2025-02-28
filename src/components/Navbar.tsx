@@ -41,19 +41,17 @@ const Navbar = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-black relative py-2 transition-all duration-300 ${
-                  activeLink === link.href ? "text-green-heading" : ""
-                }`}
+                className="relative group text-black py-2 transition-all duration-300"
                 onClick={() => setActiveLink(link.href)}
               >
                 {link.label}
-                <span 
-                  className={`absolute bottom-0 left-0 h-[3px] bg-green-heading transition-all duration-300 ${
+
+                {/* Green underline animation (for both hover & active states) */}
+                <span
+                  className={`absolute bottom-0 left-0 h-[3px] bg-[#064D51] transition-all duration-300 ${
                     activeLink === link.href ? "w-full" : "w-0"
                   } group-hover:w-full`}
                 ></span>
-                {/* For hover effect */}
-                <span className="absolute bottom-0 left-0 w-0 h-[3px] bg-green-heading transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
           </div>
@@ -61,14 +59,10 @@ const Navbar = () => {
 
         <div className="space-x-4">
           <Link href="/login">
-            <Button variant="outline">
-              Login
-            </Button>
+            <Button variant="outline">Login</Button>
           </Link>
           <Link href="/signup">
-            <Button variant="ghost">
-              Signup
-            </Button>
+            <Button variant="ghost">Signup</Button>
           </Link>
         </div>
       </div>
