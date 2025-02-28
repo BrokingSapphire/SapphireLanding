@@ -154,8 +154,8 @@ const ChargesTable = () => {
       </div>
 
       {/* Account Opening Charges */}
-      <div className="border-t">
-        <div className="px-8 py-4 font-semibold text-gray-800">Account Opening Charges</div>
+      <div className="">
+        <div className="px-8 py-4 text-2xl font-semibold text-gray-800">Account Opening Charges</div>
         <div className="px-8">
           <table className="w-full border-collapse">
             <thead>
@@ -177,8 +177,8 @@ const ChargesTable = () => {
       </div>
 
       {/* Non Trade Charges */}
-      <div className="border-t">
-        <div className="px-8 py-4 font-semibold text-gray-800">Non Trade Charges</div>
+      <div className="">
+        <div className="px-8 py-4  text-2xl font-semibold text-gray-800">Non Trade Charges</div>
         <div className="px-8">
           <table className="w-full border-collapse">
             <thead>
@@ -200,8 +200,8 @@ const ChargesTable = () => {
       </div>
 
       {/* MTF Charges */}
-      <div className="border-t">
-        <div className="px-8 py-4 font-semibold text-gray-800">MTF Charges</div>
+      <div className="">
+        <div className="px-8 py-4 text-2xl font-semibold text-gray-800">MTF Charges</div>
         <div className="px-8">
           <table className="w-full border-collapse">
             <thead>
@@ -224,7 +224,7 @@ const ChargesTable = () => {
 
 
     </div>
-      <div className="p-16 text-sm  bg-gray-100 text-gray-600 border-t">
+      <div className="p-16 text-sm  bg-gray-100 text-gray-600">
         <span className="text-2xl  font-semibold text-black">Disclaimer</span>
         <p className="mt-5 leading-relaxed">
           For Delivery based trades, a minimum of ₹2.5 will be charged per contract note. Clients who opt to receive physical contract notes will be charged ₹50 per contract note plus courier charges. Brokerage will not exceed the rates specified by SEBI and the exchanges. All statutory and regulatory charges will be levied as actuals. Brokerage is also charged on expired, exercised and assigned options contracts. Free investments are available only for our retail individual clients. Companies, Partnerships, Trusts, and HUF would pay ₹15 + ₹3 (minimum of ₹1 per trade (except delivery)). Additional charges for investors who opt for physical delivery of payout of securities, where physical delivery happens. For renewal of packages for continued where physical delivery happens is ₹199 per month.
