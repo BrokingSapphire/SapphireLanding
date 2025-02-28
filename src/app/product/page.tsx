@@ -33,6 +33,7 @@ const Home = () => {
           description="Unlock seamless trading with powerful tools, real-time market insights, and a secure platform designed to help you invest smarter and grow your wealth effortlessly."
         />
         <Product />
+
       </div>
 
       <Opportunities />

@@ -1,7 +1,25 @@
-
-import React from 'react'
+import React from 'react';
+import Image from 'next/image';
 
 const MeetOurTeam = () => {
+  const teamMembers = [
+    {
+      name: 'Pratap Thakur',
+      role: 'Partner',
+      image: '/about/profile.png', 
+    },
+    {
+      name: 'Yash Katyari',
+      role: 'Partner',
+      image: '/about/profile.png', 
+    },
+    {
+      name: 'Prakash Katyari',
+      role: 'Partner',
+      image: '/about/profile.png',
+    },
+  ];
+  
   return (
     <div className="text-center mb-10 mt-10 sm:mt-20 sm:mb-12">
       <h1 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
@@ -9,36 +27,27 @@ const MeetOurTeam = () => {
       </h1>
       <p className="text-sm sm:text-base text-gray-500 mt-3 px-4 max-w-3xl mx-auto">
         Our philosophy is simple — hire a team of diverse, passionate people and
-        foster a culture that empowers you to do you best work.
+        foster a culture that empowers you to do your best work.
       </p>
-      <div className="flex mt-16 w-full mx-auto justify-between items-center">
-        <div className="space-y-3">
-          <div className="w-56 h-56 rounded-full bg-blue-200"></div>
-          <h1 className="text-xl sm:text-2xl font-semibold">Pratap Thakur</h1>
-
-          <p className="text-sm sm:text-base text-gray-500 max-w-3xl mx-auto">
-            Partner
-          </p>
-        </div>
-        <div className="space-y-3">
-          <div className="w-56 h-56 rounded-full bg-blue-200"></div>
-          <h1 className="text-xl sm:text-2xl font-semibold">Pratap Thakur</h1>
-
-          <p className="text-sm sm:text-base text-gray-500 max-w-3xl mx-auto">
-            Partner
-          </p>
-        </div>
-        <div className="space-y-3">
-          <div className="w-56 h-56 rounded-full bg-blue-200"></div>
-          <h1 className="text-xl sm:text-2xl font-semibold">Pratap Thakur</h1>
-
-          <p className="text-sm sm:text-base text-gray-500 max-w-3xl mx-auto">
-            Partner
-          </p>
-        </div>
+      <div className="flex flex-wrap justify-center gap-40 mt-16 w-full">
+        {teamMembers.map((member, index) => (
+          <div key={index} className="space-y-3 text-center">
+            <div className="w-56 h-56 relative">
+              <Image
+                src={member.image}
+                alt={member.name}
+                fill
+                className="rounded-full object-cover"
+              />
+            </div>
+            <h1 className="text-xl sm:text-3xl font-semibold">{member.name}</h1>
+            <p className="text-sm sm:text-xl text-gray-500">{member.role}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
-}
+};
 
-export default MeetOurTeam
+
+export default MeetOurTeam;

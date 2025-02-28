@@ -3,7 +3,7 @@ import React from "react";
 
 const Nakul = () => {
   return (
-    <div className="mt-14 mx-auto p-6">
+    <div className="mt-14 mx-10 p-6">
       <div className="flex items-start flex-col md:flex-row gap-12">
         {/* Content Section */}
         <div className="flex-1">
@@ -41,9 +41,9 @@ const Nakul = () => {
           </div>
         </div>
         {/* Profile Image - Centered */}
-        <div className="w-96 h-96 rounded-full overflow-hidden bg-pink-50 flex-shrink-0 self-center">
+        <div className="w-96 h-96 rounded-lg  overflow-hidden bg-pink-50 flex-shrink-0 self-center">
           <Image
-            src="/nakul.svg"
+            src="/about/about-logo.png"
             alt="Nakul Thakur"
             className="w-full h-full object-cover"
             width={384}
