@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface NomineeManagementProps {
   onNext: () => void;
@@ -15,114 +15,125 @@ interface NomineeData {
 const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
   const [nominees, setNominees] = useState<NomineeData[]>([]);
   const [currentNominee, setCurrentNominee] = useState<NomineeData>({
-    id: '1',
-    name: '',
-    panOrAadhar: '',
-    relationship: '',
-    sharePercentage: '',
+    id: "1",
+    name: "",
+    panOrAadhar: "",
+    relationship: "",
+    sharePercentage: "",
   });
   const [error, setError] = useState<string | null>(null);
 
   const relationships = [
-    'Spouse',
-    'Son',
-    'Daughter',
-    'Father',
-    'Mother',
-    'Brother',
-    'Sister',
-    'Other'
+    "Spouse",
+    "Son",
+    "Daughter",
+    "Father",
+    "Mother",
+    "Brother",
+    "Sister",
+    "Other",
   ];
 
   const handleInputChange = (field: keyof NomineeData, value: string) => {
     setError(null);
-    setCurrentNominee(prev => ({
+    setCurrentNominee((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const validateNominee = () => {
     if (!currentNominee.name.trim()) {
-      setError('Please enter nominee name');
+      setError("Please enter nominee name");
       return false;
     }
     if (!currentNominee.panOrAadhar.trim()) {
-      setError('Please enter PAN/Aadhar number');
+      setError("Please enter PAN/Aadhar number");
       return false;
     }
     if (!currentNominee.relationship) {
-      setError('Please select relationship');
+      setError("Please select relationship");
       return false;
     }
     if (!currentNominee.sharePercentage) {
-      setError('Please enter share percentage');
+      setError("Please enter share percentage");
       return false;
     }
-    
-    const newTotalShare = totalSharePercentage + parseFloat(currentNominee.sharePercentage);
+
+    const newTotalShare =
+      totalSharePercentage + parseFloat(currentNominee.sharePercentage);
     if (newTotalShare > 100) {
-      setError('Total share percentage cannot exceed 100%');
+      setError("Total share percentage cannot exceed 100%");
       return false;
     }
-    
+
     return true;
   };
 
   const handleAddNominee = () => {
     if (nominees.length >= 3) {
-      setError('Maximum 3 nominees allowed');
+      setError("Maximum 3 nominees allowed");
       return;
     }
 
     if (!validateNominee()) return;
 
-    setNominees(prev => [...prev, currentNominee]);
+    setNominees((prev) => [...prev, currentNominee]);
     setCurrentNominee({
       id: (nominees.length + 2).toString(),
-      name: '',
-      panOrAadhar: '',
-      relationship: '',
-      sharePercentage: '',
+      name: "",
+      panOrAadhar: "",
+      relationship: "",
+      sharePercentage: "",
     });
     setError(null);
   };
 
   const handleDeleteNominee = (id: string) => {
-    setNominees(prev => prev.filter(nominee => nominee.id !== id));
+    setNominees((prev) => prev.filter((nominee) => nominee.id !== id));
     // Adjust the IDs of remaining nominees
-    setNominees(prev => prev.map((nominee, index) => ({
-      ...nominee,
-      id: (index + 1).toString()
-    })));
+    setNominees((prev) =>
+      prev.map((nominee, index) => ({
+        ...nominee,
+        id: (index + 1).toString(),
+      }))
+    );
     // Update current nominee ID
-    setCurrentNominee(prev => ({
+    setCurrentNominee((prev) => ({
       ...prev,
-      id: (nominees.length).toString()
+      id: nominees.length.toString(),
     }));
   };
 
   const totalSharePercentage = nominees.reduce(
-    (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0), 
+    (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0),
     0
   );
 
-  const isCurrentNomineeComplete = currentNominee.name && 
-                                 currentNominee.panOrAadhar && 
-                                 currentNominee.relationship && 
-                                 currentNominee.sharePercentage;
+  // If current nominee's share is exactly 100% and no nominees yet, enable Continue
+  const currentNomineeShareIs100 =
+    nominees.length === 0 && parseFloat(currentNominee.sharePercentage) === 100;
+
+  const isCurrentNomineeComplete =
+    currentNominee.name &&
+    currentNominee.panOrAadhar &&
+    currentNominee.relationship &&
+    currentNominee.sharePercentage;
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="mx-auto">
       <h2 className="text-2xl font-bold mb-1">Enter your Nominee details</h2>
       <p className="text-gray-600 mb-8">Step 8 of 12</p>
 
       {/* List of existing nominees */}
       {nominees.map((nominee) => (
-        <div key={nominee.id} className="mb-8 bg-white rounded-lg p-4 border border-gray-200">
+        <div
+          key={nominee.id}
+          className="mb-8 bg-white rounded-lg p-4 border border-gray-200"
+        >
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-medium">Nominee {nominee.id}</h3>
-            <button 
+            <button
               onClick={() => handleDeleteNominee(nominee.id)}
               className="text-gray-600 hover:text-red-600"
             >
@@ -137,18 +148,26 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Pan/Aadhar card</label>
+              <label className="block text-sm text-gray-600 mb-1">
+                Pan/Aadhar card
+              </label>
               <div className="text-sm font-medium">{nominee.panOrAadhar}</div>
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Relationship</label>
+              <label className="block text-sm text-gray-600 mb-1">
+                Relationship
+              </label>
               <div className="text-sm font-medium">{nominee.relationship}</div>
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1">% Share</label>
-              <div className="text-sm font-medium">{nominee.sharePercentage}%</div>
+              <label className="block text-sm text-gray-600 mb-1">
+                % Share
+              </label>
+              <div className="text-sm font-medium">
+                {nominee.sharePercentage}%
+              </div>
             </div>
           </div>
         </div>
@@ -167,7 +186,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               <input
                 type="text"
                 value={currentNominee.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
+                onChange={(e) => handleInputChange("name", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
             </div>
@@ -177,7 +196,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               <input
                 type="text"
                 value={currentNominee.panOrAadhar}
-                onChange={(e) => handleInputChange('panOrAadhar', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("panOrAadhar", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
             </div>
@@ -186,12 +207,16 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               <label className="block text-sm mb-1">Relationship</label>
               <select
                 value={currentNominee.relationship}
-                onChange={(e) => handleInputChange('relationship', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("relationship", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
               >
                 <option value="">select</option>
-                {relationships.map(rel => (
-                  <option key={rel} value={rel}>{rel}</option>
+                {relationships.map((rel) => (
+                  <option key={rel} value={rel}>
+                    {rel}
+                  </option>
                 ))}
               </select>
             </div>
@@ -201,7 +226,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               <input
                 type="number"
                 value={currentNominee.sharePercentage}
-                onChange={(e) => handleInputChange('sharePercentage', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("sharePercentage", e.target.value)
+                }
                 min="0"
                 max={100 - totalSharePercentage}
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
@@ -209,15 +236,17 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
             </div>
           </div>
 
-          {error && (
-            <p className="text-red-500 text-sm mb-4">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
           <button
             onClick={handleAddNominee}
-            disabled={!isCurrentNomineeComplete}
+            disabled={!isCurrentNomineeComplete || currentNomineeShareIs100}
             className={`flex items-center text-blue-500 hover:text-blue-600 mb-6
-              ${!isCurrentNomineeComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+              ${
+                !isCurrentNomineeComplete || currentNomineeShareIs100
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
           >
             <PlusIcon className="w-5 h-5 mr-1" />
             Add Nominee
@@ -226,11 +255,20 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
       )}
 
       {/* Total share percentage indicator */}
-      {nominees.length > 0 && (
+      {(nominees.length > 0 || currentNomineeShareIs100) && (
         <div className="text-sm mb-6">
           <span className="text-gray-600">Total Share Percentage: </span>
-          <span className={totalSharePercentage > 100 ? 'text-red-600' : 'text-gray-900'}>
-            {totalSharePercentage}%
+          <span
+            className={
+              totalSharePercentage > 100 ||
+              parseFloat(currentNominee.sharePercentage) > 100
+                ? "text-red-600"
+                : totalSharePercentage === 100 || currentNomineeShareIs100
+                ? "text-green-600 font-medium"
+                : "text-gray-900"
+            }
+          >
+            {currentNomineeShareIs100 ? "100" : totalSharePercentage}%
           </span>
         </div>
       )}
@@ -238,11 +276,21 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
       {/* Continue Button - Always visible */}
       <button
         onClick={onNext}
-        disabled={nominees.length === 0 || totalSharePercentage !== 100}
+        disabled={
+          !(
+            (nominees.length > 0 && totalSharePercentage === 100) ||
+            currentNomineeShareIs100
+          )
+        }
         className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors
-          ${(nominees.length === 0 || totalSharePercentage !== 100)
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-teal-700'}`}
+          ${
+            !(
+              (nominees.length > 0 && totalSharePercentage === 100) ||
+              currentNomineeShareIs100
+            )
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-teal-700"
+          }`}
       >
         Continue
       </button>

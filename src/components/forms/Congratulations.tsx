@@ -9,10 +9,10 @@ interface CongratulationsPageProps {
 
 const CongratulationsPage: React.FC<CongratulationsPageProps> = ({ 
   onNext,
-  clientId = 'NT019245' // Default client ID if none provided
+  clientId = 'DEFAULT' // Default client ID if none provided
 }) => {
   return (
-    <div className=" max-w-md mx-auto text-center p-4">
+    <div className="w-full mx-auto text-center text-xl">
       <div className="mb-8">
         {/* <Image
           src="/congratulations-illustration.svg"
@@ -23,13 +23,11 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
         /> */}
       </div>
 
-      <h1 className="text-2xl font-bold mb-4">
-        Congratulations!
-      </h1>
+      <h1 className="text-4xl font-bold mb-4">Congratulations!</h1>
 
       <p className="text-gray-600 mb-8">
-        Your application is being reviewed. This could take up 
-        to 24 hours. We will email once processed.
+        Your application is being reviewed. This could take up to 24 hours. We
+        will email once processed.
       </p>
 
       <div className="mb-8">
@@ -39,10 +37,7 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
         </div>
       </div>
 
-      <Button
-        onClick={onNext}
-        className="py-6"
-      >
+      <Button variant={"ghost"} onClick={onNext} className="py-6">
         Login to Terminal
       </Button>
     </div>

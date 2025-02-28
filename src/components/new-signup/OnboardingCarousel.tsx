@@ -141,82 +141,86 @@ const OnboardingCarousel = () => {
   return (
     <div className="flex h-screen max-h-screen overflow-hidden">
       {/* Static Left Panel */}
-      <div className="w-2/5 h-full">
-        <LeftPanel currentStep={currentStep} />
-      </div>
+      {currentStep === components.length - 1 ? (
+        <></>
+      ) : (
+        <div className="w-[40%] h-full">
+          <LeftPanel currentStep={currentStep} />
+        </div>
+      )}
 
       {/* Animated Right Panel */}
-      <div className="w-3/5 bg-white h-full">
+      <div className={`${currentStep === components.length - 1 ? 'w-full' : 'w-[60%]'} bg-white h-full`}>
         <div className="h-full flex items-center">
           <div className="p-12 max-w-2xl flex mx-auto relative">
-            {/* Previous Screen */}
-            {direction === 1 && (
-              <div
-                key={`prev-${currentStep}`}
-                className="absolute inset-0 p-12"
-                style={{
-                  transform: "translateY(-50%)",
-                  opacity: 0,
-                  transition: "none",
-                }}
-              >
-                {
-                  components[(currentStep - 1 + TOTAL_STEPS) % TOTAL_STEPS]
-                    .component
-                }
-              </div>
-            )}
+        {/* Previous Screen */}
+        {direction === 1 && (
+          <div
+            key={`prev-${currentStep}`}
+            className="absolute inset-0 p-12"
+            style={{
+          transform: "translateY(-50%)",
+          opacity: 0,
+          transition: "none",
+            }}
+          >
+            {
+          components[(currentStep - 1 + TOTAL_STEPS) % TOTAL_STEPS]
+            .component
+            }
+          </div>
+        )}
 
-            {/* Next Screen */}
-            {direction === -1 && (
-              <div
-                key={`next-${currentStep}`}
-                className="absolute inset-0 p-12"
-                style={{
-                  transform: "translateY(50%)",
-                  opacity: 0,
-                  transition: "none",
-                }}
-              >
-                {components[(currentStep + 1) % TOTAL_STEPS].component}
-              </div>
-            )}
+        {/* Next Screen */}
+        {direction === -1 && (
+          <div
+            key={`next-${currentStep}`}
+            className="absolute inset-0 p-12"
+            style={{
+          transform: "translateY(50%)",
+          opacity: 0,
+          transition: "none",
+            }}
+          >
+            {components[(currentStep + 1) % TOTAL_STEPS].component}
+          </div>
+        )}
 
-            {/* Current Screen */}
-            <div
-              key={`current-${currentStep}`}
-              className="w-full relative"
-              style={getAnimationStyles()}
-            >
-              {components[currentStep].component}
-            </div>
+        {/* Current Screen */}
+        <div
+          key={`current-${currentStep}`}
+          className="w-full relative"
+          style={getAnimationStyles()}
+        >
+          {components[currentStep].component}
+        </div>
           </div>
         </div>
 
         {/* Progress Indicator */}
         <div className="fixed top-6 right-6 flex gap-2">
           {components.map((_, index) => (
-            <div
-              key={`indicator-${index}`}
-              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                index === currentStep ? "bg-teal-600" : "bg-gray-300"
-              }`}
-            />
+        <div
+          key={`indicator-${index}`}
+          className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+            index === currentStep ? "bg-teal-600" : "bg-gray-300"
+          }`}
+        />
           ))}
         </div>
 
         {/* Navigation Arrows */}
         <div className="fixed bottom-6 rounded-md right-6 flex gap-1">
           {navigationButtons.map((button, index) => (
-            <button
-              key={index}
-              className={button.className}
-              onClick={button.onClick}
-              disabled={isAnimating}
-              aria-label={button.ariaLabel}
-            >
-              {button.icon}
-            </button>
+        <button
+          key={index}
+          className={button.className}
+          onClick={button.onClick}
+          disabled={isAnimating}
+          aria-label={button.ariaLabel}
+        >
+          {button.icon}
+        </button>
           ))}
         </div>
       </div>

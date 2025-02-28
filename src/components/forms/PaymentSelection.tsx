@@ -58,7 +58,7 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
 
   if (showPaymentForm) {
     return (
-      <div className="mx-auto">
+      <div className="w-full mx-auto">
         <h2 className="text-2xl font-bold mb-2">Complete Your Payment</h2>
         {renderPaymentForm()}
       </div>
@@ -66,7 +66,7 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
   }
 
   return (
-    <div className="mx-auto">
+    <div className="w-full mx-auto">
       <h2 className="text-2xl font-bold mb-2">
         Unlock Your Trading Potential - Get Started for Just{" "}
         <span className="text-orange-500 font-bold">₹99/- only</span>
@@ -80,7 +80,7 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
           Complete Your Signup Today and Access Exclusive Features!
         </p>
 
-        <div className="space-y-3">
+        <div className="space-y-3 w-full">
           {paymentOptions.map((option) => (
             <div
               key={option.id}

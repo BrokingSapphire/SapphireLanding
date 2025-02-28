@@ -71,9 +71,9 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md p-4 ">
+    <div className="w-full">
       <h2 className="text-xl font-medium mb-5">Trading account details</h2>
-      <p className="text-sm text-gray-600 mb-5">Step 5 of 9</p>
+      <p className="text-sm text-gray-600 mb-5">Step 5 of 12</p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">

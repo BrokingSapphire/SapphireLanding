@@ -83,7 +83,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   const isFormValid = formData.maritalStatus && formData.fatherName.trim() && formData.motherName.trim();
 
   return (
-    <div className="max-w-md mx-auto p-4">
+    <div className="mx-auto ">
       <h1 className="text-2xl font-bold mb-1">Trading Account Details</h1>
       <p className="text-gray-600 mb-6">Step 6 of 9</p>
 

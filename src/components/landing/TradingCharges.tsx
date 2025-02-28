@@ -14,19 +14,19 @@ const TradingCharges = () => {
           {[
             {
               title:
-                "Equity Delivery & Intraday, F&O, Currencies & Commodities",
+                "Equity & Derivatives",
               description:
-                "Trade with confidence! Enjoy zero brokerage on all trades for the first 7 days after onboarding.",
+                "Enjoy zero brokerage on all trades for the first 7 days after onboarding. Trade with confidence and save on costs!",
             },
             {
-              title: "Annual Maintenance Charges",
+              title: "Account Maintenance",
               description:
                 "No hidden fees! Get free annual maintenance charges (AMC) for the first 3 months from your onboarding date.",
             },
             {
               title: "Direct Mutual Funds",
               description:
-                "Maximize your returns! Invest in direct mutual funds with absolutely no charges, forever.",
+                "Invest in direct mutual funds with absolutely no charges, forever. Maximize your returns with zero commission fees!",
             },
           ].map((item, index) => (
             <div key={index} className=" p-6 ">

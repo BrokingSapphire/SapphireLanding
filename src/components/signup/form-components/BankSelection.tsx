@@ -106,7 +106,7 @@ const BankSelection: React.FC<BankSelectionProps> = ({
         Just ₹99/- only
       </h2>
 
-      <div className="">
+      <div className="w-full">
         <h3 className="text-2xl font-medium mb-6">
           Choose your payment option
         </h3>
