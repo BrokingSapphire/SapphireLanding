@@ -3,7 +3,8 @@ import EscalationMatrix from "@/components/contact/EscalationMatrix";
 import GetInTouch from "@/components/contact/GetInTouch";
 import Support from "@/components/landing/Support";
 import { Metadata } from "next";
-import Image from 'next/image';
+import SubHero from "@/components/general-components/SubHero";
+// import Image from 'next/image';
 import React from "react";
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 const Contact = () => {
   return (
     <>
-      <div className="relative h-[400px] mt-10 w-full flex flex-col items-center justify-center mx-auto px-8">
+      {/* <div className="relative h-[400px] mt-10 w-full flex flex-col items-center justify-center mx-auto px-8">
         <Image 
           src="/bg-image.png" 
           alt="Decorative Image"
@@ -43,8 +44,17 @@ const Contact = () => {
             Contact us for account services, support, and trading assistance—we’re here to help.
           </div>
         </div>
+      </div> */}
+      <div className="max-w-7xl mx-auto">
+      <SubHero
+          chipText="Contact"
+          titleText={["We're Here to Assist You with any ", ""]}
+          gradientText="Query"
+          description="Contact us for account services, support, and trading assistance—we’re here to help."
+        />
       </div>
         <ContactCards />
+        
       <div className="max-w-7xl mx-14">
         <EscalationMatrix />
       </div>
