@@ -333,4 +333,4 @@ const PlusIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default NomineeManagement;
+export default NomineeManagement
