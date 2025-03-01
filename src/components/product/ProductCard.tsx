@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+// import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { FaGooglePlay } from "react-icons/fa";
