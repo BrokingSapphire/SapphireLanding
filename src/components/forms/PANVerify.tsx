@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import FormHeading from "../general-components/formHeading";
 
 // Custom calendar component
 const CustomCalendar = ({
@@ -273,11 +274,10 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
 
   return (
     <div className="mx-auto">
-      <h2 className="text-3xl font-bold mb-2">Enter your PAN Details</h2>
-      <p className="text-gray-600 mb-8">
-        Please provide your PAN number and date of birth to continue
-      </p>
-
+      <FormHeading
+        title={"Verify PAN to Continue"}
+        description={"Secure your identity with PAN verification."}
+      />
       <div className="mb-6">
         <label className="block text-gray-700 mb-2">PAN Number</label>
         <input
@@ -299,7 +299,6 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
           Format: ABCDE1234F (5 letters, 4 numbers, 1 letter)
         </p>
       </div>
-
       <div className="mb-6">
         <label className="block text-gray-700 mb-2">Date of Birth</label>
         <div className="relative">
@@ -336,7 +335,6 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
           </p>
         )}
       </div>
-
       <Button
         onClick={handleSubmit}
         variant="ghost"
@@ -347,9 +345,8 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
       >
         Continue
       </Button>
-
-      <div className="mt-6 text-sm text-gray-600">
-        <p className="mb-4">
+      <div className="mt-6 text-sm text-center text-gray-600">
+        <p className="mb-4 text-center">
           By continuing, you agree to verify your PAN details with the Income
           Tax Department. Your PAN will be used for KYC verification purposes
           only.

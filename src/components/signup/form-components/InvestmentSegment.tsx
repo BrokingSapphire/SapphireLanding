@@ -1,3 +1,4 @@
+import FormHeading from "@/components/general-components/formHeading";
 import React, { useState } from "react";
 
 interface InvestmentSegmentProps {
@@ -65,11 +66,10 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   return (
     <div className="max-w-2xl mx-auto -mt-20 p-4">
       <div className="w-full">
-        <h1 className="text-2xl font-semibold mb-4">
-          Choose your investment segment
-        </h1>
-        <p className="text-gray-600 mb-6">Step 4 of 9</p>
-
+        <FormHeading
+          title={"Choose your investment segment!"}
+          description={"Choose where you want to invest and trade."}
+        />
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
@@ -111,7 +111,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
               className={`w-full bg-teal-800 text-white py-3 rounded-md hover:bg-teal-700 mt-6
                 ${
                   formData.isValid && !isSubmitting
-                    ? ""  
+                    ? ""
                     : "opacity-50 cursor-not-allowed"
                 }`}
               disabled={!formData.isValid || isSubmitting}

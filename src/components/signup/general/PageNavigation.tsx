@@ -50,8 +50,8 @@ export default function PageNavigation({
               ${direction === "up" ? "rounded-s-md" : "rounded-e-md"}
               ${
                 disabled
-                  ? "bg-teal-800 text-gray-400 cursor-not-allowed opacity-50"
-                  : "bg-teal-800 text-white hover:bg-teal-700 transition-colors duration-200"
+                  ? "bg-green-heading text-gray-400 cursor-not-allowed opacity-50"
+                  : "bg-green-heading text-white hover:bg-teal-700 transition-colors duration-200"
               }
               ${isSubmitting ? "cursor-wait" : ""}
             `}

@@ -1,13 +1,14 @@
 import React from "react";
 import { Button } from "../ui/button";
+import FormHeading from "../general-components/formHeading";
 
 const DigiLockerVerification = ({ onNext }: { onNext: () => void }) => {
   return (
     <div className="mx-auto pt-24">
-      <h2 className="text-3xl font-bold mb-3">Verify with DigiLocker</h2>
-      <p className="text-gray-600 mb-8">
-        Complete your verification quickly and securely using DigiLocker
-      </p>
+      <FormHeading
+        title={"Verify Aadhaar (DigiLocker)"}
+        description={"Fast and easy Aadhaar-based verification."}
+      />
 
       <div className="bg-blue-50 p-6 rounded-lg mb-8">
         <div className="flex items-start mb-4">

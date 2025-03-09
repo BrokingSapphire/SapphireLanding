@@ -1,6 +1,7 @@
-// MobileVerification.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
+import FormHeading from "../general-components/formHeading";
+
 
 const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -11,6 +12,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [otpTimer, setOtpTimer] = useState(600); // 10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // OTP timer for 10 minutes
   useEffect(() => {
@@ -55,12 +57,23 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
     return /^[0-9]{10}$/.test(number);
   };
 
-  const handleMobileOTP = async () => {
-    if (!otp.every((digit) => digit !== "")) {
-      setError("Please enter the complete OTP");
+  const handleButtonClick = async () => {
+    // If button is disabled, don't proceed
+    if (isButtonDisabled()) {
       return;
     }
 
+    // If OTP is shown and filled, verify OTP
+    if (showOTP && otp.every((digit) => digit !== "")) {
+      await handleVerifyOTP();
+    }
+    // If OTP is not shown yet, send OTP
+    else if (!showOTP) {
+      await handleSendOTP();
+    }
+  };
+
+  const handleVerifyOTP = async () => {
     setIsLoading(true);
     setError(null);
 
@@ -91,6 +104,10 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds
+      // Focus on the first OTP input after showing OTP fields
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 100);
     } catch (err) {
       setError("Failed to send OTP. Please try again.");
       console.error("Send OTP error:", err);
@@ -108,6 +125,12 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
 
       if (value !== "" && index < 5) {
         inputRefs.current[index + 1]?.focus();
+      } else if (value !== "" && index === 5) {
+        // If the last digit is filled, try to submit automatically
+        if (otp.slice(0, 5).every((digit) => digit !== "")) {
+          // Only auto-submit if all previous digits are filled
+          setTimeout(() => handleButtonClick(), 300);
+        }
       }
     }
   };
@@ -118,15 +141,41 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      buttonRef.current?.click();
     }
+  };
+
+  // Handle Enter key press in mobile input
+  const handleMobileKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      buttonRef.current?.click();
+    }
+  };
+
+  // Get button text based on current state
+  const getButtonText = () => {
+    if (isLoading) {
+      return showOTP ? "Verifying..." : "Sending OTP...";
+    }
+    return showOTP ? "Verify My Mobile" : "Get OTP";
+  };
+
+  // Determine if button should be disabled
+  const isButtonDisabled = () => {
+    if (isLoading) return true;
+    if (!showOTP) return !validateMobile(mobileNumber);
+    return !otp.every((digit) => digit !== "");
   };
 
   return (
     <div className="mx-auto pt-24">
-      <h2 className="text-3xl font-bold mb-3">Hi, Welcome to Sapphire!</h2>
-      <p className="text-gray-600 mb-8">
-        Get started in just a few easy steps!
-      </p>
+      <FormHeading
+        title={"Hi, Welcome to Sapphire!"}
+        description={"Get started in just a few easy steps!"}
+      />
 
       <div className="mb-8">
         <label className="block text-gray-700 mb-2">Mobile Number</label>
@@ -140,22 +189,16 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
             className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
             value={mobileNumber}
             onChange={(e) => {
-              setMobileNumber(e.target.value.replace(/\D/g, ""));
+              let value = e.target.value.replace(/\D/g, "");
+              if (value.length > 0 && /^[1-5]/.test(value)) return; // Prevent numbers starting with 1-5
+              setMobileNumber(value);
               setError(null);
             }}
+            onKeyDown={handleMobileKeyDown}
             maxLength={10}
             pattern="[0-9]{10}"
-            disabled={isLoading}
+            disabled={isLoading || showOTP}
           />
-          {!showOTP && (
-            <button
-              onClick={handleSendOTP}
-              disabled={isLoading || !mobileNumber}
-              className="text-blue-500 hover:text-blue-600 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed px-3"
-            >
-              {isLoading ? "Sending..." : "Get OTP →"}
-            </button>
-          )}
         </div>
       </div>
 
@@ -210,17 +253,15 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
       )}
 
       <Button
-        onClick={handleMobileOTP}
-        disabled={isLoading || !showOTP || !otp.every((digit) => digit !== "")}
+        ref={buttonRef}
+        onClick={handleButtonClick}
+        disabled={isButtonDisabled()}
         variant="ghost"
-        className={`w-full py-6 rounded mb-6
-          ${
-            isLoading || !showOTP || !otp.every((digit) => digit !== "")
-              ? "opacity-50 cursor-not-allowed"
-              : ""
-          }`}
+        className={`w-full py-6 rounded mb-6 ${
+          isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
+        }`}
       >
-        {isLoading ? "Verifying..." : "Continue"}
+        {getButtonText()}
       </Button>
 
       <div className="text-center text-xs text-gray-600 mt-8 space-y-3">

@@ -1,3 +1,4 @@
+import FormHeading from "@/components/general-components/formHeading";
 import React, { useState } from "react";
 
 interface NomineesManagementProps {
@@ -165,10 +166,10 @@ const NomineesManagement: React.FC<NomineesManagementProps> = ({
 
   const NomineeDetailsPage = () => (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold">Enter your Nominee details</h1>
-        <p className="text-gray-600">Step 4 of 9</p>
-      </div>
+      <FormHeading
+        title={"Enter your Nominee details"}
+        description={"Secure your investments for your loved ones!"}
+      />
 
       <form
         className="space-y-6"

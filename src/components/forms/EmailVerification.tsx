@@ -1,4 +1,3 @@
-// EmailVerification.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 
@@ -11,6 +10,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   const [otpTimer, setOtpTimer] = useState(600); // 10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // OTP timer for 10 minutes
   useEffect(() => {
@@ -55,12 +55,23 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
     return email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
   };
 
-  const handleEmailOTP = async () => {
-    if (!otp.every((digit) => digit !== "")) {
-      setError("Please enter the complete verification code");
+  const handleButtonClick = async () => {
+    // If button is disabled, don't proceed
+    if (isButtonDisabled()) {
       return;
     }
 
+    // If OTP is shown and filled, verify OTP
+    if (showOTP && otp.every((digit) => digit !== "")) {
+      await handleVerifyOTP();
+    }
+    // If OTP is not shown yet, send OTP
+    else if (!showOTP) {
+      await handleSendOTP();
+    }
+  };
+
+  const handleVerifyOTP = async () => {
     setIsLoading(true);
     setError(null);
 
@@ -69,7 +80,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
       onNext();
     } catch (err) {
-      setError("Error verifying OTP. Please try again.");
+      setError("Error verifying code. Please try again.");
       console.error("Verification error:", err);
     } finally {
       setIsLoading(false);
@@ -91,6 +102,10 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds
+      // Focus on the first OTP input after showing OTP fields
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 100);
     } catch (err) {
       setError("Failed to send verification code. Please try again.");
       console.error("Send OTP error:", err);
@@ -109,6 +124,12 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
       // Move to next input if value is entered
       if (value !== "" && index < 5) {
         inputRefs.current[index + 1]?.focus();
+      } else if (value !== "" && index === 5) {
+        // If the last digit is filled, try to submit automatically
+        if (otp.slice(0, 5).every((digit) => digit !== "")) {
+          // Only auto-submit if all previous digits are filled
+          setTimeout(() => handleButtonClick(), 300);
+        }
       }
     }
   };
@@ -119,7 +140,33 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      buttonRef.current?.click();
     }
+  };
+
+  // Handle Enter key press in email input
+  const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      buttonRef.current?.click();
+    }
+  };
+
+  // Get button text based on current state
+  const getButtonText = () => {
+    if (isLoading) {
+      return showOTP ? "Verifying..." : "Sending Code...";
+    }
+    return showOTP ? "Verify My Email" : "Get OTP";
+  };
+
+  // Determine if button should be disabled
+  const isButtonDisabled = () => {
+    if (isLoading) return true;
+    if (!showOTP) return !validateEmail(email);
+    return !otp.every((digit) => digit !== "");
   };
 
   return (
@@ -141,24 +188,16 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
               setEmail(e.target.value);
               setError(null);
             }}
-            disabled={isLoading}
+            onKeyDown={handleEmailKeyDown}
+            disabled={isLoading || showOTP}
           />
-          {!showOTP && (
-            <button
-              onClick={handleSendOTP}
-              disabled={isLoading || !email}
-              className="text-blue-500 hover:text-blue-600 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed px-3"
-            >
-              {isLoading ? "Sending..." : "Get OTP →"}
-            </button>
-          )}
         </div>
       </div>
 
       {showOTP && (
         <div className="mb-6">
           <label className="block text-left text-gray-heading mb-3">
-            Enter Verification Code
+            Enter OTP
           </label>
           <div className="flex justify-center gap-2 mb-4">
             {otp.map((digit, index) => (
@@ -195,7 +234,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
                 : "Resend Code"}
             </button>
             <span className="text-gray-500">
-              Code valid for {formatTime(otpTimer)} mins
+              Code valid for {formatTime(otpTimer)}
             </span>
           </div>
         </div>
@@ -208,16 +247,15 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
       )}
 
       <Button
-        onClick={handleEmailOTP}
-        disabled={isLoading || !showOTP || !otp.every((digit) => digit !== "")}
+        ref={buttonRef}
+        onClick={handleButtonClick}
+        disabled={isButtonDisabled()}
         className={`w-full py-6 mb-6 ${
-          isLoading || !showOTP || !otp.every((digit) => digit !== "")
-            ? "opacity-50 cursor-not-allowed"
-            : ""
+          isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
         }`}
         variant="ghost"
       >
-        {isLoading ? "Verifying..." : "Verify My Email"}
+        {getButtonText()}
       </Button>
 
       <div className="text-center text-xs text-gray-600 mt-8 space-y-3">

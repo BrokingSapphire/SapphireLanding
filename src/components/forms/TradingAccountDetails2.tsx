@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Button } from "../ui/button";
+import FormHeading from "../general-components/formHeading";
 
 interface TradingAccountDetailsProps {
   onNext: () => void;
@@ -65,8 +66,10 @@ const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
 
   return (
     <div className="mx-auto mt-14 p-4">
-      <h1 className="text-2xl font-bold mb-1">Trading account details</h1>
-      <p className="text-gray-600 mb-6">Step 5 of 9</p>
+      <FormHeading
+        title={"Trading Account Details"}
+        description={"Set up your trading account in minutes."}
+      />
 
       <form ref={formRef} onSubmit={handleSubmit}>
         <div className="mb-6">

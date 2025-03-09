@@ -5,6 +5,7 @@ import NetbankingPaymentForm from "./paymentOptions/NetbankingPaymentForm";
 import CardPaymentForm from "./paymentOptions/CardPaymentForm";
 import { paymentOptions } from "@/constants/new-signup/constants";
 import { Button } from "../ui/button";
+import FormHeading from "../general-components/formHeading";
 
 
 const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
@@ -59,7 +60,10 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
   if (showPaymentForm) {
     return (
       <div className="w-full mx-auto">
-        <h2 className="text-2xl font-bold mb-2">Complete Your Payment</h2>
+        <FormHeading
+          title={"Get Started with a One-Time Fee"}
+          description={"Invest Smart. Pay Secure. Grow Confident."}
+        />
         {renderPaymentForm()}
       </div>
     );
@@ -73,11 +77,11 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
       </h2>
 
       <div className="mt-6">
-        <h2 className="text-2xl font-bold mb-2">
+        {/* <h2 className="text-gray-600 font-bold mb-2">
           Get Started with a One-Time Fee
-        </h2>
+        </h2> */}
         <p className="text-gray-600 mb-6">
-          Complete Your Signup Today and Access Exclusive Features!
+          Choose Your Payment Option
         </p>
 
         <div className="space-y-3 w-full">
@@ -127,11 +131,7 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
         </div>
       </div>
 
-      <Button
-        onClick={handleProceed}
-        variant={"ghost"}
-        className="mt-6 py-6"
-      >
+      <Button onClick={handleProceed} variant={"ghost"} className="mt-6 py-6">
         Proceed to pay
       </Button>
     </div>

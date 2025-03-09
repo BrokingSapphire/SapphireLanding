@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Camera } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '../ui/button';
+import FormHeading from '../general-components/formHeading';
 
 const IPVVerification = ({ onNext }: { onNext: () => void }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -73,11 +74,10 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
 
   return (
     <div className="mx-auto mt-16">
-      <h2 className="text-3xl font-bold mb-2">In-Person Verification (IPV)</h2>
-      <p className="text-gray-600 mb-8">
-        Complete your verification by taking a clear photo
-      </p>
-
+      <FormHeading
+        title={"Video Verification (IPV)"}
+        description={"A quick face-to-face verification for security."}
+      />
       <div className="mb-6">
         <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg p-8">
           {imageFile ? (
@@ -147,7 +147,6 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
           </label>
         </div>
       </div>
-
       <Button
         onClick={handleSubmit}
         disabled={!imageFile || isLoading}

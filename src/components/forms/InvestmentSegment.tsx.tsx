@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import RiskDisclosureModal from "../new-signup/RiskDisclosure";
 import { Button } from "../ui/button";
+import FormHeading from "../general-components/formHeading";
 
 interface InvestmentSegmentProps {
   onNext: () => void;
@@ -53,8 +54,10 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4">
-      <h2 className="text-xl font-bold mb-1">Choose your investment segment</h2>
-      <p className="text-gray-600 text-sm mb-6">Step 4 of 12</p>
+      <FormHeading
+        title={"Choose your investment segment"}
+        description={"Choose where you want to invest and trade."}
+      />
 
       <div className="flex flex-wrap gap-2 mb-6">
         {segments.map((segment) => (
@@ -87,7 +90,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
         ))}
       </div>
 
-      
       <Button onClick={onNext} variant={"ghost"} className="mt-6 py-6 px-10">
         Next
       </Button>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
+import FormHeading from "../general-components/formHeading";
 
 interface TradingAccountDetailsProps {
   onNext: () => void;
@@ -84,8 +85,10 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
 
   return (
     <div className="mx-auto ">
-      <h1 className="text-2xl font-bold mb-1">Trading Account Details</h1>
-      <p className="text-gray-600 mb-6">Step 6 of 9</p>
+      <FormHeading
+        title={"Trading Account Details"}
+        description={"Set up your trading account in minutes."}
+      />
 
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
@@ -113,7 +116,9 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
             ))}
           </div>
           {errors.maritalStatus && (
-            <p className="text-red-500 text-sm mt-1">Please select your marital status</p>
+            <p className="text-red-500 text-sm mt-1">
+              Please select your marital status
+            </p>
           )}
         </div>
 
@@ -123,14 +128,16 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           </label>
           <input
             type="text"
-            placeholder="Enter your father&apos;s full name"
+            placeholder="Enter your father's full name"
             value={formData.fatherName}
             onChange={(e) => handleInputChange("fatherName", e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
           {errors.fatherName && (
-            <p className="text-red-500 text-sm mt-1">Please enter your father&apos;s name</p>
+            <p className="text-red-500 text-sm mt-1">
+              Please enter your father&apos;s name
+            </p>
           )}
         </div>
 
@@ -140,14 +147,16 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           </label>
           <input
             type="text"
-            placeholder="Enter your mother&apos;s full name"
+            placeholder="Enter your mother's full name"
             value={formData.motherName}
             onChange={(e) => handleInputChange("motherName", e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
           {errors.motherName && (
-            <p className="text-red-500 text-sm mt-1">Please enter your mother&apos;s name</p>
+            <p className="text-red-500 text-sm mt-1">
+              Please enter your mother&apos;s name
+            </p>
           )}
         </div>
 
@@ -167,8 +176,8 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
 
         <div className="mt-6 text-sm text-gray-600">
           <p className="mb-4">
-            This information is required for KYC verification and will be kept confidential 
-            in accordance with our privacy policy.
+            This information is required for KYC verification and will be kept
+            confidential in accordance with our privacy policy.
           </p>
         </div>
       </form>

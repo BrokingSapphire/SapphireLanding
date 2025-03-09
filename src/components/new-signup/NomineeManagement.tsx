@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import FormHeading from "../general-components/formHeading";
 
 interface NomineeManagementProps {
   onNext: () => void;
@@ -122,9 +123,10 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
 
   return (
     <div className="mx-auto">
-      <h2 className="text-2xl font-bold mb-1">Enter your Nominee details</h2>
-      <p className="text-gray-600 mb-8">Step 8 of 12</p>
-
+      <FormHeading
+        title={"Nominees"}
+        description={"You can add up to 5 nominee(s) to your account. Adding nominees makes the claim process simple in case of unforeseen events."}
+      />
       {/* List of existing nominees */}
       {nominees.map((nominee) => (
         <div
@@ -172,7 +174,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
           </div>
         </div>
       ))}
-
       {/* Form for new nominee */}
       {nominees.length < 3 && (
         <div className="bg-white rounded-lg p-4 border border-gray-200 mb-6">
@@ -253,7 +254,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
           </button>
         </div>
       )}
-
       {/* Total share percentage indicator */}
       {(nominees.length > 0 || currentNomineeShareIs100) && (
         <div className="text-sm mb-6">
@@ -272,7 +272,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
           </span>
         </div>
       )}
-
       {/* Continue Button - Always visible */}
       <button
         onClick={onNext}

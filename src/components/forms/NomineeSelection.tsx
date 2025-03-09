@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import NomineeManagement from '../new-signup/NomineeManagement';
 import { Button } from '../ui/button';
+import FormHeading from '../general-components/formHeading';
 
 interface NomineeSelectionProps {
   onNext: () => void;
@@ -18,12 +19,16 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({ onNext }) => {
       {!showNomineeForm ? (
         // Initial Nominee Selection View
         <div>
-          <h2 className="text-2xl font-bold mb-1">Nominees</h2>
-          <p className="text-gray-600 mb-6">Step 8 of 9</p>
-          
+          <FormHeading
+            title={"Nominees"}
+            description={
+              "You can add up to 5 nominee(s) to your account. Adding nominees makes the claim process simple in case of unforeseen events."
+            }
+          />
+
           <p className="text-sm text-gray-600 mb-4">
-            You can add up to 3 nominees to your account. Adding nominees makes the process
-            of share transfer easy in case of unforeseen events.
+            You can add up to 3 nominees to your account. Adding nominees makes
+            the process of share transfer easy in case of unforeseen events.
           </p>
 
           <div className="flex flex-col gap-4">
@@ -34,7 +39,7 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({ onNext }) => {
             >
               Add nominee now (Recommended)
             </Button>
-            
+
             <button
               onClick={handleSkip}
               className="w-full border border-gray-300 text-gray-700 py-3 rounded font-medium hover:bg-gray-50 transition-colors"
