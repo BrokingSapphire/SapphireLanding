@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { Camera } from 'lucide-react';
-import Image from 'next/image';
-import { Button } from '../ui/button';
-import FormHeading from '../general-components/formHeading';
+import React, { useState, useRef } from "react";
+import { Camera } from "lucide-react";
+import Image from "next/image";
+import { Button } from "../ui/button";
+import FormHeading from "./FormHeading";
 
 const IPVVerification = ({ onNext }: { onNext: () => void }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -12,10 +12,10 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
 
   const handleCameraCapture = () => {
     try {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.capture = 'user';
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.capture = "user";
       input.onchange = (e) => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (file) {
@@ -24,21 +24,21 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
       };
       input.click();
     } catch (err) {
-        console.error('Camera access error:', err); // Log the error
-        setError('Camera access failed. Please try again or use file upload.');
+      console.error("Camera access error:", err); // Log the error
+      setError("Camera access failed. Please try again or use file upload.");
     }
   };
 
   const validateAndSetImage = (file: File) => {
     setError(null);
 
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload a valid image file');
+    if (!file.type.startsWith("image/")) {
+      setError("Please upload a valid image file");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      setError('Image size should be less than 5MB');
+      setError("Image size should be less than 5MB");
       return;
     }
 
@@ -61,12 +61,12 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
     try {
       // TODO: Implement actual image upload and verification logic here
       // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       onNext();
     } catch (err) {
-      setError('Verification failed. Please try again.');
+      setError("Verification failed. Please try again.");
       // Log the error for debugging
-      console.error('Verification error:', err);
+      console.error("Verification error:", err);
     } finally {
       setIsLoading(false);
     }

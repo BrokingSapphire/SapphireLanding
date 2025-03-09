@@ -2,7 +2,6 @@
 import Charges from "@/components/pricing/Charges";
 import React from "react";
 import ChargesTable from "@/components/pricing/BigCustomTable";
-import Opportunities from "@/components/product/Opportunities";
 import { Metadata } from "next";
 import SubHero from "@/components/general-components/SubHero";
 
@@ -35,7 +34,7 @@ const Home = () => {
         <Charges />
       </div>
       <ChargesTable />
-      <Opportunities />
+      {/* <Opportunities /> */}
     </div>
   );
 };

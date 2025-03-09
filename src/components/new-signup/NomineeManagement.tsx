@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FormHeading from "../general-components/formHeading";
+import FormHeading from "../forms/FormHeading";
 
 interface NomineeManagementProps {
   onNext: () => void;
@@ -125,7 +125,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
     <div className="mx-auto">
       <FormHeading
         title={"Nominees"}
-        description={"You can add up to 5 nominee(s) to your account. Adding nominees makes the claim process simple in case of unforeseen events."}
+        description={
+          "You can add up to 5 nominee(s) to your account. Adding nominees makes the claim process simple in case of unforeseen events."
+        }
       />
       {/* List of existing nominees */}
       {nominees.map((nominee) => (
@@ -332,4 +334,4 @@ const PlusIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default NomineeManagement
+export default NomineeManagement;

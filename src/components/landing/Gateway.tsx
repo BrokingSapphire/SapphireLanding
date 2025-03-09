@@ -8,7 +8,7 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
       <div className="absolute bottom-8 w-full h-36 bg-[#FFD62D] rounded-xl transform-gpu transition-transform duration-700 ease-in-out origin-top group-hover:-rotate-12" />
 
       <div className="relative -top-2">
-        <div className="bg-gray-100 rounded-xl p-6 sm:p-8 shadow-md h-full flex flex-col justify-between transform-gpu transition-all duration-700 ease-in-out group-hover:-translate-y-4">
+        <div className="bg-gray-100 rounded-xl p-6 sm:p-8 shadow-md h-full flex flex-col justify-between transform-gpu transition-all duration-300 ease-in-out group-hover:-translate-y-4">
           <div className="flex flex-col items-start space-y-2 sm:space-y-3">
             <Image
               src={icon}
@@ -20,13 +20,13 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
             <h3 className="text-lg sm:text-2xl font-semibold transition-all duration-300">
               {title}
             </h3>
-            <p className="text-gray-600 text-xs sm:text-sm opacity-100 group-hover:opacity-0 transition-opacity duration-200">
+            <p className="text-gray-600 text-xs sm:text-sm opacity-100 group-hover:opacity-0 transition-opacity duration-300">
               {description}
             </p>
           </div>
         </div>
 
-        <div className="absolute inset-0 bg-teal-800 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-700 flex flex-col items-start p-6 sm:p-8 space-y-2 sm:space-y-3 group-hover:-translate-y-4">
+        <div className="absolute inset-0 bg-teal-800 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-start p-6 sm:p-8 space-y-2 sm:space-y-3 group-hover:-translate-y-4">
           <Image
             src={icon}
             alt={title}

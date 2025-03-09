@@ -15,7 +15,6 @@ import InvestmentSegment from "../forms/InvestmentSegment.tsx";
 import PaymentSelection from "../forms/PaymentSelection";
 import TradingPreferences from "../forms/TradingPreferences";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { Button } from "../ui/button";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);

@@ -1,4 +1,4 @@
-import FormHeading from "@/components/general-components/formHeading";
+import FormHeading from "@/components/forms/FormHeading";
 import React, { useState } from "react";
 
 interface TradingAccountDetailsProps {

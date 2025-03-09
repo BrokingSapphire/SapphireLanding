@@ -2,7 +2,6 @@ import Calculator from "@/components/landing/Caculator";
 import FAQ from "@/components/landing/FAQ";
 import Gateway from "@/components/landing/Gateway";
 import Hero from "@/components/landing/Hero";
-import Support from "@/components/landing/Support";
 import Guide from "@/components/landing/Guide";
 import React from "react";
 import TradingCharges from "@/components/landing/TradingCharges";
@@ -39,7 +38,7 @@ const Home = () => {
         <Guide />
       </div>
       <FAQ />
-      <Support />
+      {/* <Support /> */}
     </>
   );
 };

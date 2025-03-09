@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import NomineeManagement from '../new-signup/NomineeManagement';
-import { Button } from '../ui/button';
-import FormHeading from '../general-components/formHeading';
+import React, { useState } from "react";
+import NomineeManagement from "../new-signup/NomineeManagement";
+import { Button } from "../ui/button";
+import FormHeading from "./FormHeading";
 
 interface NomineeSelectionProps {
   onNext: () => void;

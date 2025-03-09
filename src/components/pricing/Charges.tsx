@@ -55,7 +55,7 @@ const Charges: React.FC = () => {
       title: "Equity Delivery",
       subtitle: "Transparent Pricing for Long-Term Investments",
       description:
-        "0.03% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Equity Delivery across NSE and BSE.",
+        "0.05% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Equity Delivery across NSE and BSE.",
       icon: Wallet,
     },
     {
@@ -63,7 +63,7 @@ const Charges: React.FC = () => {
       title: "F&O and Intraday",
       subtitle: "Competitive Brokerage for Active Traders",
       description:
-        "0.03% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on intraday trades across segments. Flat ₹20 per executed on all options trade.",
+        "0.05% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on intraday trades across segments. Flat ₹20 per executed on all options trade.",
       icon: Binary
     },
     {
@@ -71,13 +71,13 @@ const Charges: React.FC = () => {
       title: "Commodity and Currency",
       subtitle: "Affordable Rates for Diversified Trading",
       description:
-        "0.03% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Commodity and Currency Futures. Flat ₹20 per executed on all options trade.",
+        "0.05% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Commodity and Currency Futures. Flat ₹20 per executed on all options trade.",
       icon: Coins
     },
   ];
 
   return (
-    <div className="max-w-7xl ] mx-auto px-4 py-16">
+    <div className="   mx-auto px-4 py-16">
       <div className="flex justify-center gap-8">
         {chargesData.map((card, index) => (
           <ChargesCard key={index} {...card} />

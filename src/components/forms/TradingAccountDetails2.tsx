@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Button } from "../ui/button";
-import FormHeading from "../general-components/formHeading";
+import FormHeading from "./FormHeading";
 
 interface TradingAccountDetailsProps {
   onNext: () => void;
@@ -21,7 +21,9 @@ const occupationOptions = [
 
 const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
   const [occupation, setOccupation] = useState("");
-  const [isPoliticallyExposed, setIsPoliticallyExposed] = useState<boolean | null>(null);
+  const [isPoliticallyExposed, setIsPoliticallyExposed] = useState<
+    boolean | null
+  >(null);
   const [showValidation, setShowValidation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -52,7 +54,7 @@ const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
       setIsSubmitting(true);
       try {
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         onNext();
       } catch (error) {
         console.error("Error during submission:", error);
@@ -97,7 +99,9 @@ const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
             ))}
           </div>
           {showValidation && !occupation && (
-            <p className="text-red-500 text-sm mt-1">Please select your occupation</p>
+            <p className="text-red-500 text-sm mt-1">
+              Please select your occupation
+            </p>
           )}
         </div>
 

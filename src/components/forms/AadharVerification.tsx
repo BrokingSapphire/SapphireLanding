@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "../ui/button";
-import FormHeading from "../general-components/formHeading";
+import FormHeading from "./FormHeading";
 
 const DigiLockerVerification = ({ onNext }: { onNext: () => void }) => {
   return (

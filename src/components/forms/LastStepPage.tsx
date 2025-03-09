@@ -1,7 +1,7 @@
-import React from 'react';
-import { Button } from '../ui/button';
-import { ChevronRight } from 'lucide-react';
-import FormHeading from '../general-components/formHeading';
+import React from "react";
+import { Button } from "../ui/button";
+import { ChevronRight } from "lucide-react";
+import FormHeading from "./FormHeading";
 
 interface LastStepPageProps {
   onNext: () => void;

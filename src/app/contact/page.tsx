@@ -46,20 +46,20 @@ const Contact = () => {
         </div>
       </div> */}
       <div className="max-w-7xl mx-auto">
-      <SubHero
+        <SubHero
           chipText="Contact"
           titleText={["We're Here to Assist You with any ", ""]}
           gradientText="Query"
           description="Contact us for account services, support, and trading assistance—we’re here to help."
         />
       </div>
-        <ContactCards />
-        
+      <ContactCards />
+
       <div className="max-w-7xl mx-14">
         <EscalationMatrix />
       </div>
-        <GetInTouch />
-        <Support/>
+      <GetInTouch />
+      <Support />
     </>
   );
 };

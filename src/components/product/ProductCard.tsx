@@ -30,7 +30,7 @@ export const ProductCard = ({
       <div className="flex gap-4">
         {/* App Store Button */}
         <button className="bg-white flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md` hover:bg-gray-100 transition">
-          <FaApple/>
+          <FaApple />
           <div className="flex items-center gap-1">
             <span>App store</span>
             <FaArrowRightLong />
@@ -38,22 +38,24 @@ export const ProductCard = ({
         </button>
 
         {/* Play Store Button */}
-        <button className="bg-white flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
-          <FaGooglePlay/>
-          <div className="flex items-center gap-1">
-            <span>Play store</span>
-            <FaArrowRightLong />
+        {title === "Trading Terminal" && (
+          <div className="flex gap-4">
+            <button className="bg-white flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+              <FaGooglePlay />
+              <div className="flex items-center gap-1">
+                <span>Play store</span>
+                <FaArrowRightLong />
+              </div>
+            </button>
+            <button className="bg-white flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+              <FaChrome />
+              <div className="flex items-center gap-1">
+                <span>Web app</span>
+                <FaArrowRightLong />
+              </div>
+            </button>
           </div>
-        </button>
-
-        {/* Web App Button */}
-        <button className="bg-white flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
-          <FaChrome/>
-          <div className="flex items-center gap-1">
-            <span>Web app</span>
-            <FaArrowRightLong />
-          </div>
-        </button>
+        )}
       </div>
     </div>
 

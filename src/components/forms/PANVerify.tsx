@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import FormHeading from "../general-components/formHeading";
+import FormHeading from "./FormHeading";
 
 // Custom calendar component
 const CustomCalendar = ({

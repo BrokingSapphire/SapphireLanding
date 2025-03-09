@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
-import FormHeading from "../general-components/formHeading";
-
+import FormHeading from "./FormHeading";
 
 const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -189,7 +188,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
             className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
             value={mobileNumber}
             onChange={(e) => {
-              let value = e.target.value.replace(/\D/g, "");
+              const value = e.target.value.replace(/\D/g, "");
               if (value.length > 0 && /^[1-5]/.test(value)) return; // Prevent numbers starting with 1-5
               setMobileNumber(value);
               setError(null);

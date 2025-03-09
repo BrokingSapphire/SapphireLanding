@@ -12,7 +12,7 @@ interface CalculatorButtonProps {
 const CalculatorButton: React.FC<CalculatorButtonProps> = ({ label, imageSrc, onClick }) => (
   <button
     onClick={onClick}
-    className="w-full flex justify-between items-center px-6 py-4 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+  className="w-full flex justify-between items-center px-6 py-4 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition"
   >
     <div className="flex items-center gap-4 text-[#5B5B5B] text-lg font-medium">
       <Image src={imageSrc} alt={label} width={40} height={40} />

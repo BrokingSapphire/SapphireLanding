@@ -5,12 +5,12 @@ export const PRODUCTS = [
       "To empower individuals and businesses to achieve financial freedom by providing accessible, reliable, and innovative investment solutions. We are dedicated to fostering trust and transparency, simplifying financial decisions, and building long-term wealth for our clients",
     image: "/products/trading-terminal.svg",
   },
-  {
-    title: "FundStation",
-    description:
-      "To empower individuals and businesses to achieve financial freedom by providing accessible, reliable, and innovative investment solutions. We are dedicated to fostering trust and transparency, simplifying financial decisions, and building long-term wealth for our clients",
-    image: "/products/fund-station.svg",
-  },
+  // {
+  //   title: "FundStation",
+  //   description:
+  //     "To empower individuals and businesses to achieve financial freedom by providing accessible, reliable, and innovative investment solutions. We are dedicated to fostering trust and transparency, simplifying financial decisions, and building long-term wealth for our clients",
+  //   image: "/products/fund-station.svg",
+  // },
   {
     title: "AdminOps",
     description:
@@ -18,7 +18,7 @@ export const PRODUCTS = [
     image: "/products/admin-ops.svg",
   },
   {
-    title: "Platform Partner",
+    title: " Partners Platform",
     description:
       "To empower individuals and businesses to achieve financial freedom by providing accessible, reliable, and innovative investment solutions. We are dedicated to fostering trust and transparency, simplifying financial decisions, and building long-term wealth for our clients",
     image: "/products/platform-partner.svg",

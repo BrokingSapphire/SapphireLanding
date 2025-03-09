@@ -182,7 +182,9 @@ const StyledWrapper = styled.div<StyledWrapperProps>`
 
   .cssbuttons-io-button:hover .icon svg {
     transform: ${(props) =>
-      props.$isIconLeft ? "translateX(-0.1em)" : "translateX(0.1em)"};
+      props.$isIconLeft
+        ? "translateX(-0.1em) rotate(-45deg)"
+        : "translateX(0.1em) rotate(-45deg)"};
   }
 
   .cssbuttons-io-button .icon img {

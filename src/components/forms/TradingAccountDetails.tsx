@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import FormHeading from "../general-components/formHeading";
+import FormHeading from "./FormHeading";
 
 interface TradingAccountDetailsProps {
   onNext: () => void;
@@ -35,7 +35,8 @@ const maritalStatusOptions = ["Single", "Married", "Divorced"];
 const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   onNext,
 }) => {
-  const [formData, setFormData] = useState<TradingAccountFormData>(initialFormData);
+  const [formData, setFormData] =
+    useState<TradingAccountFormData>(initialFormData);
   const [errors, setErrors] = useState<FormErrors>(initialErrors);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -45,22 +46,25 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
       fatherName: !formData.fatherName.trim(),
       motherName: !formData.motherName.trim(),
     };
-    
+
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error);
+    return !Object.values(newErrors).some((error) => error);
   };
 
-  const handleInputChange = (field: keyof TradingAccountFormData, value: string) => {
+  const handleInputChange = (
+    field: keyof TradingAccountFormData,
+    value: string
+  ) => {
     if (isSubmitting) return;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    
-    setErrors(prev => ({
+
+    setErrors((prev) => ({
       ...prev,
-      [field]: false
+      [field]: false,
     }));
   };
 
@@ -71,7 +75,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     if (validateForm()) {
       setIsSubmitting(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating API call
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulating API call
         onNext();
       } catch (err) {
         console.error("Error during submission:", err);
@@ -81,7 +85,10 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     }
   };
 
-  const isFormValid = formData.maritalStatus && formData.fatherName.trim() && formData.motherName.trim();
+  const isFormValid =
+    formData.maritalStatus &&
+    formData.fatherName.trim() &&
+    formData.motherName.trim();
 
   return (
     <div className="mx-auto ">

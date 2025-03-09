@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import RiskDisclosureModal from "../new-signup/RiskDisclosure";
 import { Button } from "../ui/button";
-import FormHeading from "../general-components/formHeading";
+import FormHeading from "./FormHeading";
 
 interface InvestmentSegmentProps {
   onNext: () => void;
 }
 
 const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
-  const [selectedSegments, setSelectedSegments] = useState<string[]>(["cash-mutual"]);
+  const [selectedSegments, setSelectedSegments] = useState<string[]>([
+    "cash-mutual",
+  ]);
   const [showRiskModal, setShowRiskModal] = useState(false);
   const [hasAcceptedRisk, setHasAcceptedRisk] = useState(false);
   const [pendingSegment, setPendingSegment] = useState<string>("");
@@ -18,10 +20,17 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
     { id: "fno", label: "F&O", requiresDisclosure: true },
     { id: "debt", label: "Debt" },
     { id: "currency", label: "Currency" },
-    { id: "commodity", label: "Commodity Derivatives", requiresDisclosure: true },
+    {
+      id: "commodity",
+      label: "Commodity Derivatives",
+      requiresDisclosure: true,
+    },
   ];
 
-  const handleSegmentClick = (segmentId: string, requiresDisclosure: boolean) => {
+  const handleSegmentClick = (
+    segmentId: string,
+    requiresDisclosure: boolean
+  ) => {
     // Can't unselect Cash/Mutual Funds
     if (segmentId === "cash-mutual") return;
 
@@ -35,9 +44,9 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
   };
 
   const toggleSegment = (segmentId: string) => {
-    setSelectedSegments(prev => {
+    setSelectedSegments((prev) => {
       if (prev.includes(segmentId)) {
-        return prev.filter(id => id !== segmentId);
+        return prev.filter((id) => id !== segmentId);
       }
       return [...prev, segmentId];
     });

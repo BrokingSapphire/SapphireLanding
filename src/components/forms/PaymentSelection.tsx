@@ -5,8 +5,7 @@ import NetbankingPaymentForm from "./paymentOptions/NetbankingPaymentForm";
 import CardPaymentForm from "./paymentOptions/CardPaymentForm";
 import { paymentOptions } from "@/constants/new-signup/constants";
 import { Button } from "../ui/button";
-import FormHeading from "../general-components/formHeading";
-
+import FormHeading from "./FormHeading";
 
 const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
   const [selectedPayment, setSelectedPayment] = useState("upi");
@@ -80,9 +79,7 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
         {/* <h2 className="text-gray-600 font-bold mb-2">
           Get Started with a One-Time Fee
         </h2> */}
-        <p className="text-gray-600 mb-6">
-          Choose Your Payment Option
-        </p>
+        <p className="text-gray-600 mb-6">Choose Your Payment Option</p>
 
         <div className="space-y-3 w-full">
           {paymentOptions.map((option) => (
