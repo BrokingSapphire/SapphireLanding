@@ -1,5 +1,4 @@
 import SubHero from "@/components/general-components/SubHero";
-import Opportunities from "@/components/product/Opportunities";
 import Product from "@/components/product/Product";
 import { Metadata } from "next";
 import React from "react";

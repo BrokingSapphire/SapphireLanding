@@ -4,7 +4,6 @@ import MeetOurTeam from "@/components/about/MeetOurTeam";
 import Nakul from "@/components/about/Nakul";
 import SapphireJourney from "@/components/about/SapphireJourney";
 import SubHero from "@/components/general-components/SubHero";
-import Opportunities from "@/components/product/Opportunities";
 import { Metadata } from "next";
 import React from "react";
 

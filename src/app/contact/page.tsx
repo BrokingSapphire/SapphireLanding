@@ -1,7 +1,6 @@
 import ContactCards from "@/components/contact/ContactCards";
 import EscalationMatrix from "@/components/contact/EscalationMatrix";
 import GetInTouch from "@/components/contact/GetInTouch";
-import Support from "@/components/landing/Support";
 import { Metadata } from "next";
 import SubHero from "@/components/general-components/SubHero";
 // import Image from 'next/image';
