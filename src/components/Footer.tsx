@@ -8,13 +8,13 @@ import {
   LEGAL_SECTIONS,
   LinkSectionProps,
   SOCIAL_ICONS,
-  SUPPORT_LINKS,
+  LEGAL_LINKS,
 } from "@/constants/footer";
 import Link from "next/link";
 
 const LinkSection = ({ title, links }: LinkSectionProps) => (
   <div className="col-span-1">
-    <h3 className="font-bold mb-4">{title}</h3>
+    <h3 className="font-bold mb-4 text-xl">{title}</h3>
     <ul className="space-y-2">
       {links.map((link) => (
         <li key={link.title}>
@@ -105,9 +105,9 @@ const Footer = () => {
                   height={32}
                   priority
                 />
-                <h3 className="font-bold text-base ml-2">Sapphire</h3>
+                <h3 className="font-bold ml-2 text-xl">Sapphire</h3>
               </div>
-              <address className="text-sm not-italic">
+              <address className="text-sm leading-loose not-italic">
                 Plot No. 33, Kotwal Nagar,
                 <br />
                 Khamla, Nagpur (MH)
@@ -121,14 +121,14 @@ const Footer = () => {
             </div>
 
             <LinkSection title="Company" links={COMPANY_LINKS} />
-            <LinkSection title="Support" links={SUPPORT_LINKS} />
+            <LinkSection title="Legal" links={LEGAL_LINKS} />
             <LinkSection title="Account" links={ACCOUNT_LINKS} />
 
             <div className="col-span-1">
-              <h3 className="font-bold mb-4">Follow us:</h3>
+              <h3 className="font-bold mb-4 text-xl">Follow us:</h3>
               <SocialLinks />
 
-              <h3 className="font-bold mb-4">Download Our App</h3>
+              <h3 className="font-bold mb-4 text-xl">Download Our App</h3>
               <div className="flex  items-center justify-center sm:justify-start gap-4">
                 <Image
                   src="/apple.svg"

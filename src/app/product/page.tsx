@@ -28,15 +28,12 @@ const Home = () => {
       <div className="w-full 2xl:max-w-7xl mx-auto">
         <SubHero
           chipText="Product"
-          titleText={["Define and deliver way that", "love"]}
-          gradientText="traders"
-          description="Unlock seamless trading with powerful tools, real-time market insights, and a secure platform designed to help you invest smarter and grow your wealth effortlessly."
+          titleText={["Delivering Products", "Love"]}
+          gradientText="Traders"
+          description="Seamless trading with real-time insights and a secure platform."
         />
         <Product />
-
       </div>
-
-      <Opportunities />
     </>
   );
 };

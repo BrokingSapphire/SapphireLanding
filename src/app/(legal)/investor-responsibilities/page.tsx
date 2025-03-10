@@ -468,37 +468,7 @@ const ResponsibilitiesOfInvestors: React.FC = () => {
 
       <div className="space-y-10">
         {/* Navigation Links */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <div>
-            <h3 className="text-xl font-semibold text-green-heading mb-2">
-              Related Documents
-            </h3>
-            <p className="text-gray-500">
-              Navigate to other important investor information
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              href="/investor-attention"
-              className="px-6 py-3 bg-green-heading text-white rounded-md hover:bg-green-700 transition-colors"
-            >
-              Investor Advisories
-            </Link>
-            <Link
-              href="/investor-rights
-"
-              className="px-6 py-3 border border-green-heading text-green-heading rounded-md hover:bg-green-50 transition-colors"
-            >
-              Rights of Investors
-            </Link>
-            <Link
-              href="/investor-dos-and-donts"
-              className="px-6 py-3 border border-green-heading text-green-heading rounded-md hover:bg-green-50 transition-colors"
-            >
-              Do's and Don'ts
-            </Link>
-          </div>
-        </div>
+
 
         {/* Quick Access Navigation */}
         <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
@@ -510,10 +480,10 @@ const ResponsibilitiesOfInvestors: React.FC = () => {
               <a
                 key={category.id}
                 href={`#${category.id}`}
-                className="p-3 bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center hover:bg-gray-50 transition-colors"
+                className="p-3 flex justify-center items-center bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center hover:bg-gray-50 transition-colors"
               >
                 <span className="text-green-heading font-medium text-sm">
-                  {category.title}
+                  {category.title.substring(2)}
                 </span>
               </a>
             ))}

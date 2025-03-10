@@ -5,8 +5,8 @@ const AboutInfo = () => {
   // const handleExplore = () => { };
   return (
     <>
-      <div className="py-20 bg-[#F5F7FA] ">
-        <div className="text-center mb-8 sm:mb-12">
+      <div className="py-11 bg-[#F5F7FA] ">
+        <div className="text-center">
           <h1 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
             Our Mission
           </h1>

@@ -48,9 +48,9 @@ const Contact = () => {
       <div className="max-w-7xl mx-auto">
         <SubHero
           chipText="Contact"
-          titleText={["We're Here to Assist You with any ", ""]}
-          gradientText="Query"
-          description="Contact us for account services, support, and trading assistance—we’re here to help."
+          titleText={["Let's Solve Your", "Together"]}
+          gradientText="Challenges"
+          description="Contact us for account services, support, and trading assistance—we're here to help."
         />
       </div>
       <ContactCards />

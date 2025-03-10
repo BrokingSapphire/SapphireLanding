@@ -27,24 +27,21 @@ export const metadata: Metadata = {
 
 const Home = () => {
   return (
-    <>
-      <div className="w-full max-w-7xl mx-auto">
-        <SubHero
-          chipText="About"
-          titleText={["Define and deliver way that", ""]}
-          gradientText="Brighter Future"
-          description="Empowering smarter investments with secure tools and expert guidance, helping investors make informed decisions and achieve their financial goals with confidence."
-        />
-        <div className="space-y-20 pb-20">
-          <AboutInfo />
-          <Nakul />
-          <MeetOurTeam />
-          <SapphireJourney />
-          <Glimpses />
-        </div>
+    <div className="w-full max-w-7xl mx-auto">
+      <SubHero
+        chipText="About"
+        titleText={["Where Investment", "Matters"]}
+        gradientText="Expertise"
+        description="Bridging the gap between market complexity and investor success."
+      />
+      <div className="space-y-20 pb-20">
+        <AboutInfo />
+        <Nakul />
+        <MeetOurTeam />
+        <SapphireJourney />
+        <Glimpses />
       </div>
-      {/* <Opportunities /> */}
-    </>
+    </div>
   );
 };
 

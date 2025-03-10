@@ -23,14 +23,14 @@ export const metadata: Metadata = {
 
 const Home = () => {
   return (
-    <div>
+    <div className="w-full max-w-7xl mx-auto">
       <SubHero
         chipText="Pricing"
-        titleText={["Transparent Charges for", "Trading"]}
-        gradientText="Hassle-Free"
+        titleText={["Honest Rates for", "Traders"]}
+        gradientText="Smart"
         description="Transparent pricing designed for your success—no hidden fees, just growth."
       />
-      <div className="py-12 bg-[#F5F7FA]">
+      <div className="py-11 bg-[#F5F7FA]">
         <Charges />
       </div>
       <ChargesTable />

@@ -16,31 +16,7 @@ const InvestorAttention: React.FC = () => {
       </p>
 
       <div className="space-y-10">
-        {/* Link to other sections */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <div>
-            <h3 className="text-xl font-semibold text-green-heading mb-2">
-              Additional Resources
-            </h3>
-            <p className="text-gray-500">
-              Please review these important documents for investors
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              href="/investor-charter"
-              className="px-6 py-3 bg-green-heading text-white rounded-md hover:bg-green-700 transition-colors"
-            >
-              Investor Charter
-            </Link>
-            <Link
-              href="/investor-dos-and-donts"
-              className="px-6 py-3 border border-green-heading text-green-heading rounded-md hover:bg-green-50 transition-colors"
-            >
-              Do's and Don'ts
-            </Link>
-          </div>
-        </div>
+
 
         {/* Advisories Section */}
         <div className="space-y-8">

@@ -77,7 +77,7 @@ const Charges: React.FC = () => {
   ];
 
   return (
-    <div className="   mx-auto px-4 py-16">
+    <div className="   mx-auto px-4 ">
       <div className="flex justify-center gap-8">
         {chargesData.map((card, index) => (
           <ChargesCard key={index} {...card} />

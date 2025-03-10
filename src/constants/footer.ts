@@ -2,7 +2,6 @@ import {
   FaWhatsapp,
   FaFacebook,
   FaLinkedin,
-  FaTelegram,
   FaInstagram,
   FaYoutube,
   FaTwitter,
@@ -14,19 +13,28 @@ export const COMPANY_LINKS = [
   { title: "About Us", href: "/about" },
   { title: "Company Info", href: "#" },
   { title: "Pricing", href: "/pricing" },
-  { title: "Referral Programme", href: "#" },
+  { title: "Contact Us", href: "/contact" },
+  { title: "Support Portal", href: "/contact" },
   { title: "Become a Partner", href: "#" },
   { title: "Careers", href: "#" },
 ];
 
-export const SUPPORT_LINKS = [
-  { title: "Contact Us", href: "/contact" },
-  { title: "Support Portal", href: "/contact" },
-  { title: "Blog", href: "#" },
-  { title: "Charges & Pricing", href: "/pricing" },
-  { title: "Downloads", href: "/product" },
-  { title: "Videos", href: "#" },
-  { title: "How to raise a Complaint?", href: "/contact" },
+export const LEGAL_LINKS = [
+  { title: "Terms and Conditions", href: "/terms-and-conditions" },
+  { title: "Risk Management Policy", href: "/risk-management-policy" },
+  { title: "Privacy Policy", href: "/privacy-policy" },
+  { title: "Investor Attention", href: "/investor-attention" },
+  { title: "Investor Charter", href: "/investor-charter" },
+  { title: "Do's and Don'ts of Investors", href: "/investor-dos-and-donts" },
+  { title: "Rights of Investors", href: "/investor-rights" },
+  {
+    title: "Responsibilities of Investors",
+    href: "/investor-responsibilities",
+  },
+  {
+    title: "Code of Conduct for Participants",
+    href: "/code-of-conduct-participants",
+  },
 ];
 
 export const ACCOUNT_LINKS = [
@@ -41,7 +49,6 @@ export const SOCIAL_ICONS = [
   { Icon: FaWhatsapp, href: "https://wa.me/9890336989" },
   { Icon: FaFacebook, href: "https://facebook.com/BrokingSapphire" },
   { Icon: FaLinkedin, href: "https://linkedin.com/company/BrokingSapphire" },
-  { Icon: FaTelegram, href: "https://t.me/BrokingSapphire" },
   { Icon: FaInstagram, href: "https://instagram.com/BrokingSapphire" },
   { Icon: FaYoutube, href: "https://youtube.com/c/@BrokingSapphire" },
   { Icon: FaTwitter, href: "https://twitter.com/BrokingSapphire" },
@@ -84,7 +91,7 @@ export const INVESTOR_POINTS = [
   "For IPO applications, use ASBA for payment, eliminating the need for cheques.",
 ];
 
-export const EXCHANGES = ["NSE", "BSE", "MCX", "NCDEX"];
+export const EXCHANGES = ["Terms", "BSE", "MCX", "NCDEX"];
 
 export interface LinkSectionProps {
   title: string;

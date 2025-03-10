@@ -84,7 +84,7 @@ const ContactCards: React.FC = () => {
   ];
 
   return (
-    <div className="bg-gray-50 py-28 px-8">
+    <div className="bg-[#F5F7FA] py-11 px-8">
       <div className="max-w-6xl mx-auto">
         {/* First row with 3 cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
