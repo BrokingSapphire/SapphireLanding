@@ -5,6 +5,7 @@ import Image from "next/image";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 import CustomButtonX from "../general-components/CustomButtonX";
+import Link from "next/link";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -72,6 +73,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.8 }}
           >
             <motion.div>
+              <Link href={"/signup"}>
               <CustomButtonX
                 text="Get Started"
                 backgroundColor="#064D51"
@@ -81,7 +83,8 @@ export default function Hero() {
                 boxShadowColor="#99000099"
                 iconBoxShadowColor="#99000066"
                 icon={<FaArrowRightLong />}
-              />
+                />
+                </Link>
             </motion.div>
           </motion.div>
         </motion.div>
