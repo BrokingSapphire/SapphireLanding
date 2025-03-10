@@ -109,18 +109,28 @@ export const gatewayItems: GatewayItem[] = [
 
 export const faqs = [
   {
-    question: "How do I open a trading and Demat account with your firm?",
+    question: "What is Sapphire Broking?",
     answer:
-      "To open a trading and Demat account, visit our website or branch, fill out the application form, and submit KYC documents (Identity, Address, and Income Proof).",
+      "Sapphire Broking is a stock brokerage firm offering trading and investment services in equities, derivatives, commodities, and mutual funds with advanced tools and a seamless user experience.",
   },
   {
-    question: "What services do you offer?",
+    question: "How do I open an account?",
     answer:
-      "We provide stock broking, mutual fund distribution, portfolio management, insurance solutions, and expert financial advisory.",
+      "You can open an account online by completing the e-KYC process with your PAN, Aadhaar, and bank details. The process is quick, paperless, and takes only a few minutes.",
   },
   {
-    question: "Are my investments safe with your firm?",
+    question: "What are the brokerage charges?",
     answer:
-      "Yes, your investments are safe with our firm, as we adhere to strict regulatory standards and employ robust security measures to protect your assets.",
+      "We offer competitive and transparent brokerage plans. Visit our pricing section for detailed information on brokerage charges and other fees.",
+  },
+  {
+    question: "Which stock exchanges can I trade on?",
+    answer:
+      "Sapphire Broking provides access to NSE, BSE, MCX, and NCDEX, enabling trading in equities, derivatives, commodities, and currencies.",
+  },
+  {
+    question: "How do I add funds to my trading account?",
+    answer:
+      "You can add funds via net banking, UPI, or bank transfers. Funds are credited instantly, allowing you to start trading without delays.",
   },
 ];

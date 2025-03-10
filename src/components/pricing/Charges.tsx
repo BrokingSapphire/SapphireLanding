@@ -60,7 +60,7 @@ const Charges: React.FC = () => {
     },
     {
       charge: "20",
-      title: "F&O and Intraday",
+      title: "F&O & Intraday",
       subtitle: "Competitive Brokerage for Active Traders",
       description:
         "0.05% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on intraday trades across segments. Flat ₹20 per executed on all options trade.",
@@ -68,7 +68,7 @@ const Charges: React.FC = () => {
     },
     {
       charge: "20",
-      title: "Commodity and Currency",
+      title: "Commodity & Currency",
       subtitle: "Affordable Rates for Diversified Trading",
       description:
         "0.05% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Commodity and Currency Futures. Flat ₹20 per executed on all options trade.",

@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { faqs } from "@/constants/landing";
+import Link from "next/link";
 
 export default function FAQ() {
   return (
@@ -35,9 +36,11 @@ export default function FAQ() {
         </Accordion>
 
         <div className="text-center">
-          <button className="px-8 mt-5 sm:px-10 py-3 sm:py-4 border border-black rounded-full text-gray-600 text-sm sm:text-base font-bold hover:bg-[#152F46] hover:text-white transition">
-            View More
+          <Link href={"/contact"}>
+          <button  className="px-8 mt-5 sm:px-10 py-3 sm:py-4 border border-black rounded-full text-gray-600 text-sm sm:text-base font-bold hover:bg-[#152F46] hover:text-white transition">
+            Contact Us
           </button>
+          </Link>
         </div>
       </div>
     </div>

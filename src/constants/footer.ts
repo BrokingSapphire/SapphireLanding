@@ -6,30 +6,31 @@ import {
   FaInstagram,
   FaYoutube,
   FaTwitter,
+  FaGithub,
 } from "react-icons/fa";
 
 
 export const COMPANY_LINKS = [
-  { title: "About Us", href: "#" },
+  { title: "About Us", href: "/about" },
   { title: "Company Info", href: "#" },
-  { title: "Pricing", href: "#" },
+  { title: "Pricing", href: "/pricing" },
   { title: "Referral Programme", href: "#" },
   { title: "Become a Partner", href: "#" },
   { title: "Careers", href: "#" },
 ];
 
 export const SUPPORT_LINKS = [
-  { title: "Contact Us", href: "#" },
-  { title: "Support Portal", href: "#" },
+  { title: "Contact Us", href: "/contact" },
+  { title: "Support Portal", href: "/contact" },
   { title: "Blog", href: "#" },
-  { title: "Charges & Pricing", href: "#" },
-  { title: "Downloads", href: "#" },
+  { title: "Charges & Pricing", href: "/pricing" },
+  { title: "Downloads", href: "/product" },
   { title: "Videos", href: "#" },
-  { title: "How to raise a Complaint?", href: "#" },
+  { title: "How to raise a Complaint?", href: "/contact" },
 ];
 
 export const ACCOUNT_LINKS = [
-  { title: "Open an Account", href: "#" },
+  { title: "Open an Account", href: "/signup" },
   { title: "Bank Details", href: "#" },
   { title: "Account Closure", href: "#" },
   { title: "Collateral Haircut", href: "#" },
@@ -37,14 +38,16 @@ export const ACCOUNT_LINKS = [
 ];
 
 export const SOCIAL_ICONS = [
-  { Icon: FaWhatsapp, href: "https://wa.me/yourwhatsappnumber" },
-  { Icon: FaFacebook, href: "https://facebook.com/youraccount" },
-  { Icon: FaLinkedin, href: "https://linkedin.com/company/yourcompany" },
-  { Icon: FaTelegram, href: "https://t.me/youraccount" },
-  { Icon: FaInstagram, href: "https://instagram.com/youraccount" },
-  { Icon: FaYoutube, href: "https://youtube.com/c/yourchannel" },
-  { Icon: FaTwitter, href: "https://twitter.com/youraccount" },
+  { Icon: FaWhatsapp, href: "https://wa.me/9890336989" },
+  { Icon: FaFacebook, href: "https://facebook.com/BrokingSapphire" },
+  { Icon: FaLinkedin, href: "https://linkedin.com/company/BrokingSapphire" },
+  { Icon: FaTelegram, href: "https://t.me/BrokingSapphire" },
+  { Icon: FaInstagram, href: "https://instagram.com/BrokingSapphire" },
+  { Icon: FaYoutube, href: "https://youtube.com/c/@BrokingSapphire" },
+  { Icon: FaTwitter, href: "https://twitter.com/BrokingSapphire" },
+  { Icon: FaGithub, href: "https://github.com/BrokingSapphire" },
 ];
+
 
 export const LEGAL_SECTIONS = [
   {
