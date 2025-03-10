@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const LocationSection = () => {
   return (
-    <div className="relative w-full bg-gray-50 py-12 px-6">
+    <div className="relative w-full bg-gray-50 py-12 pb-20 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Heading */}
         <h2 className="text-5xl font-bold  leading-tight">

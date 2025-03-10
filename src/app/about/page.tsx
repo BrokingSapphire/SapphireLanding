@@ -35,7 +35,7 @@ const Home = () => {
           gradientText="Brighter Future"
           description="Empowering smarter investments with secure tools and expert guidance, helping investors make informed decisions and achieve their financial goals with confidence."
         />
-        <div className="space-y-20">
+        <div className="space-y-20 pb-20">
           <AboutInfo />
           <Nakul />
           <MeetOurTeam />
@@ -43,7 +43,7 @@ const Home = () => {
           <Glimpses />
         </div>
       </div>
-      <Opportunities />
+      {/* <Opportunities /> */}
     </>
   );
 };
