@@ -20,11 +20,12 @@ const InvestorCharter: React.FC = () => {
         Investor Charter
       </h1>
 
-      <p className="text-gray-500 mb-14 text-center">SAPPHIRE BROKING</p>
+      <p className="text-gray-500 mb-14 text-center">
+        Know your rights, responsibilities, and protections as a market
+        participant.
+      </p>
 
       <div className="space-y-10">
-
-
         {/* Charter Content */}
         <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
           <h3 className="text-2xl font-semibold text-green-heading mb-4">

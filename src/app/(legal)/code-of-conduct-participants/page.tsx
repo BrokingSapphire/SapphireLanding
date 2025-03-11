@@ -469,10 +469,11 @@ const CodeOfConduct: React.FC = () => {
         Code of Conduct
       </h1>
 
-      <p className="text-gray-500 mb-14 text-center">SAPPHIRE BROKING</p>
+      <p className="text-gray-500 mb-14 text-center">
+        Adhere to ethical standards and rules set for all market participants.
+      </p>
 
       <div className="space-y-10">
-
         {/* Introduction */}
         <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
           <div className="space-y-4 text-gray-500">
@@ -500,10 +501,10 @@ const CodeOfConduct: React.FC = () => {
               <a
                 key={category.id}
                 href={`#${category.id}`}
-                className="p-3 bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center hover:bg-gray-50 transition-colors"
+                className="p-3 bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center hover:bg-gray-50 flex items-center justify-center transition-colors"
               >
                 <span className="text-green-heading font-medium text-sm">
-                  {category.title}
+                  {category.title.slice(2)}
                 </span>
               </a>
             ))}

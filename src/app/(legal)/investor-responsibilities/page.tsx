@@ -464,11 +464,13 @@ const ResponsibilitiesOfInvestors: React.FC = () => {
         Responsibilities of Investors
       </h1>
 
-      <p className="text-gray-500 mb-14 text-center">SAPPHIRE BROKING</p>
+      <p className="text-gray-500 mb-14 text-center">
+        Know your duties to maintain ethical, transparent, and responsible
+        investing practices.
+      </p>
 
       <div className="space-y-10">
         {/* Navigation Links */}
-
 
         {/* Quick Access Navigation */}
         <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">

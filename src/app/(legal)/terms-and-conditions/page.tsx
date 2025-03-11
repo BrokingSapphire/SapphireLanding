@@ -8,8 +8,8 @@ const Home = () => {
       </h1>
 
       <p className="text-gray-500 mb-14 text-center">
-        The following are terms of a legal agreement between you and Sapphire
-        Broking.
+        Understand our platform's terms, policies, and user responsibilities for
+        secure trading.
       </p>
 
       <div className="space-y-8">

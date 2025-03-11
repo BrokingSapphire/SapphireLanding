@@ -8,8 +8,8 @@ const RiskManagementPolicy = () => {
       </h1>
 
       <p className="text-gray-500 mb-14 text-center">
-        The following outlines Sapphire Broking's Risk Management Policy for all
-        trading activities.
+        Learn about trading risks, our management strategies, and how to invest
+        wisely.
       </p>
 
       <div className="space-y-8">

@@ -437,11 +437,12 @@ const RightsOfInvestors: React.FC = () => {
         Rights of Investors
       </h1>
 
-      <p className="text-gray-500 mb-14 text-center">SAPPHIRE BROKING</p>
+      <p className="text-gray-500 mb-14 text-center">
+        Understand your rights as an investor and how they protect your
+        interests.
+      </p>
 
       <div className="space-y-10">
-
-
         {/* Quick Access - Moved here from bottom */}
         <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
           <h2 className="text-2xl font-semibold text-green-heading mb-4">

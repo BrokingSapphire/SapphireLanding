@@ -37,7 +37,7 @@ const Home = () => {
         <AboutInfo />
         <Nakul />
         <MeetOurTeam />
-        <SapphireJourney />
+        {/* <SapphireJourney /> */}
         <Glimpses />
       </div>
     </div>

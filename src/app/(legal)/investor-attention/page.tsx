@@ -12,12 +12,11 @@ const InvestorAttention: React.FC = () => {
       </h1>
 
       <p className="text-gray-500 mb-14 text-center">
-        IMPORTANT ADVISORIES FOR INVESTORS
+        Stay informed with important updates, alerts, and notices for
+        investors.
       </p>
 
       <div className="space-y-10">
-
-
         {/* Advisories Section */}
         <div className="space-y-8">
           {advisoryData.map((advisory) => (

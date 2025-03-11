@@ -8,7 +8,8 @@ const PrivacyPolicy = () => {
       </h1>
 
       <p className="text-gray-500 mb-14 text-center">
-        Last Updated: April 1, 2025
+        Discover how we protect your personal data and ensure secure
+        transactions."
       </p>
 
       <div className="space-y-8">

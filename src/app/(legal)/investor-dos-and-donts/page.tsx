@@ -12,11 +12,11 @@ const DosAndDonts: React.FC = () => {
       </h1>
 
       <p className="text-gray-500 mb-14 text-center">
-        Important guidelines to follow while trading with Sapphire Broking
+        Follow essential guidelines to make informed, responsible, and ethical
+        investment decisions.
       </p>
 
       <div className="space-y-10">
-
         {/* Main Content */}
         <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
           <h2 className="text-2xl uppercase font-semibold text-green-heading mb-6">
