@@ -8,9 +8,7 @@ interface InvestmentSegmentProps {
 }
 
 const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
-  const [selectedSegments, setSelectedSegments] = useState<string[]>([
-    "cash-mutual",
-  ]);
+  const [selectedSegments, setSelectedSegments] = useState<string[]>(["cash-mutual"]);
   const [showRiskModal, setShowRiskModal] = useState(false);
   const [hasAcceptedRisk, setHasAcceptedRisk] = useState(false);
   const [pendingSegment, setPendingSegment] = useState<string>("");
@@ -20,18 +18,10 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
     { id: "fno", label: "F&O", requiresDisclosure: true },
     { id: "debt", label: "Debt" },
     { id: "currency", label: "Currency" },
-    {
-      id: "commodity",
-      label: "Commodity Derivatives",
-      requiresDisclosure: true,
-    },
+    { id: "commodity", label: "Commodity Derivatives", requiresDisclosure: true },
   ];
 
-  const handleSegmentClick = (
-    segmentId: string,
-    requiresDisclosure: boolean
-  ) => {
-    // Can't unselect Cash/Mutual Funds
+  const handleSegmentClick = (segmentId: string, requiresDisclosure: boolean) => {
     if (segmentId === "cash-mutual") return;
 
     if (requiresDisclosure && !hasAcceptedRisk) {
@@ -39,7 +29,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
       setShowRiskModal(true);
       return;
     }
-
     toggleSegment(segmentId);
   };
 
@@ -63,29 +52,16 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4">
-      <FormHeading
-        title={"Choose your investment segment"}
-        description={"Choose where you want to invest and trade."}
-      />
+      <FormHeading title={"Choose your investment segment"} description={"Choose where you want to invest and trade."} />
 
       <div className="flex flex-wrap gap-2 mb-6">
         {segments.map((segment) => (
           <button
             key={segment.id}
-            onClick={() =>
-              handleSegmentClick(segment.id, !!segment.requiresDisclosure)
-            }
+            onClick={() => handleSegmentClick(segment.id, !!segment.requiresDisclosure)}
             className={`px-4 py-2 border rounded flex items-center gap-2 transition-colors
-              ${
-                segment.id === "cash-mutual"
-                  ? "cursor-default"
-                  : "cursor-pointer"
-              }
-              ${
-                selectedSegments.includes(segment.id)
-                  ? "border-teal-800 bg-teal-50"
-                  : "border-gray-300 hover:border-teal-800"
-              }`}
+              ${segment.id === "cash-mutual" ? "cursor-default" : "cursor-pointer"}
+              ${selectedSegments.includes(segment.id) ? "border-teal-800 bg-teal-50" : "border-gray-300 hover:border-teal-800"}`}
           >
             <span className="whitespace-nowrap">{segment.label}</span>
             <input
