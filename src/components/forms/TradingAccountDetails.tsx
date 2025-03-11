@@ -91,7 +91,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     formData.motherName.trim();
 
   return (
-    <div className="mx-auto ">
+    <div className="mx-auto mt-14">
       <FormHeading
         title={"Trading Account Details"}
         description={"Set up your trading account in minutes."}
@@ -182,7 +182,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         </Button>
 
         <div className="mt-6 text-sm text-gray-600">
-          <p className="mb-4">
+          <p className="">
             This information is required for KYC verification and will be kept
             confidential in accordance with our privacy policy.
           </p>

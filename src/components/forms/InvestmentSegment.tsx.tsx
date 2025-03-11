@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import RiskDisclosureModal from "../new-signup/RiskDisclosure";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
+import { Check } from "lucide-react"; // Importing an icon for checkmark
 
 interface InvestmentSegmentProps {
   onNext: () => void;
@@ -59,18 +60,18 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
           <button
             key={segment.id}
             onClick={() => handleSegmentClick(segment.id, !!segment.requiresDisclosure)}
-            className={`px-4 py-2 border rounded flex items-center gap-2 transition-colors
+            className={`px-4 py-2 border rounded flex items-center gap-3 transition-colors
               ${segment.id === "cash-mutual" ? "cursor-default" : "cursor-pointer"}
-              ${selectedSegments.includes(segment.id) ? "border-teal-800 bg-teal-50" : "border-gray-300 hover:border-teal-800"}`}
+              ${selectedSegments.includes(segment.id) ? "border-green-600 bg-green-50" : "border-gray-300 hover:border-green-600"}`}
           >
             <span className="whitespace-nowrap">{segment.label}</span>
-            <input
-              type="checkbox"
-              checked={selectedSegments.includes(segment.id)}
-              onChange={() => {}}
-              className="h-4 w-4 text-teal-800 border-gray-300 rounded"
-              disabled={segment.id === "cash-mutual"}
-            />
+            <div
+              className={`h-6 w-6 flex items-center justify-center border-2 rounded-lg transition-colors
+                ${selectedSegments.includes(segment.id) ? "border-green-600 bg-white" : "border-gray-400"}
+              `}
+            >
+              {selectedSegments.includes(segment.id) && <Check className="h-4 w-4 text-green-600" />}
+            </div>
           </button>
         ))}
       </div>
