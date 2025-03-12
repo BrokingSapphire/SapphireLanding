@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import RiskDisclosureModal from "../new-signup/RiskDisclosure";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-import { Check } from "lucide-react"; // Importing an icon for checkmark
+import { Check } from "lucide-react"; 
 
 interface InvestmentSegmentProps {
   onNext: () => void;
