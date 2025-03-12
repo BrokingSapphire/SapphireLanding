@@ -20,7 +20,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({ onNext }) => {
       
       <div className="flex justify-center -mt-10">
         <div className="inline-block">
-          <Image src='./signup/e-sign.png' alt="Aadhar E-sign" className="max-w-full h-auto rotate-90" />
+          <Image width={100} height={80} src='/signup/e-sign.png' alt="Aadhar E-sign" className="max-w-full h-auto rotate-90" />
         </div>
       </div>
       
