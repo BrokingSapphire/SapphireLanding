@@ -139,7 +139,7 @@ const OnboardingCarousel = () => {
       {currentStep === components.length - 1 ? (
         <></>
       ) : (
-        <div className="w-[40%] h-full">
+        <div className="hidden sm:block w-[40%] h-full">
           <LeftPanel currentStep={currentStep} />
         </div>
       )}
