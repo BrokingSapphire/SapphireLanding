@@ -135,11 +135,6 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({ onNext }) => {
     }
   };
 
-  const handleBrowseClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
 
   if (showQrCode) {
     return <QrCodeVerification onBack={() => setShowQrCode(false)} onComplete={onNext} />;
@@ -189,13 +184,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({ onNext }) => {
                 >
                   Allow Camera Access
                 </Button>
-                <Button
-                  onClick={handleBrowseClick}
-                  variant="outline"
-                  className="py-3"
-                >
-                  Browse files
-                </Button>
+
                 <input
                   type="file"
                   accept="image/*"

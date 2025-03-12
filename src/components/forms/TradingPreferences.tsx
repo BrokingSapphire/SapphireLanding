@@ -54,12 +54,12 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
           <label className="block text-gray-900 font-medium mb-2">
             Annual Income<span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             <button
               type="button"
               onClick={() => handleIncomeSelect("< 1 Lakh")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedIncome === "< 1 Lakh" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedIncome === "< 1 Lakh" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               &lt; 1 Lakh
@@ -68,7 +68,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleIncomeSelect("1 - 5 Lacs")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedIncome === "1 - 5 Lacs" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedIncome === "1 - 5 Lacs" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               1 - 5 Lacs
@@ -77,7 +77,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleIncomeSelect("5 - 10 Lacs")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedIncome === "5 - 10 Lacs" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedIncome === "5 - 10 Lacs" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               5 - 10 Lacs
@@ -86,7 +86,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleIncomeSelect("10 - 25 Lacs")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedIncome === "10 - 25 Lacs" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedIncome === "10 - 25 Lacs" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               10 - 25 Lacs
@@ -95,7 +95,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleIncomeSelect("25 - 1 Cr")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedIncome === "25 - 1 Cr" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedIncome === "25 - 1 Cr" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               25 - 1 Cr
@@ -104,7 +104,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleIncomeSelect("> 1Cr")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedIncome === "> 1Cr" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedIncome === "> 1Cr" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               &gt; 1Cr
@@ -121,7 +121,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleExperienceSelect("No Experience")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedExperience === "No Experience" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedExperience === "No Experience" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               No Experience
@@ -130,7 +130,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleExperienceSelect("< 1 year")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedExperience === "< 1 year" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedExperience === "< 1 year" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               &lt; 1 year
@@ -139,7 +139,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleExperienceSelect("1 - 5 years")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedExperience === "1 - 5 years" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedExperience === "1 - 5 years" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               1 - 5 years
@@ -148,7 +148,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleExperienceSelect("5 - 10 years")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedExperience === "5 - 10 years" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedExperience === "5 - 10 years" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               5 - 10 years
@@ -157,7 +157,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleExperienceSelect("10+ years")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedExperience === "10+ years" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedExperience === "10+ years" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               10+ years
@@ -174,7 +174,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleSettlementSelect("Quaterly")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedSettlement === "Quaterly" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedSettlement === "Quaterly" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               Quaterly
@@ -183,7 +183,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
               type="button"
               onClick={() => handleSettlementSelect("Monthly")}
               className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
-                selectedSettlement === "Monthly" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300"
+                selectedSettlement === "Monthly" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
               Monthly

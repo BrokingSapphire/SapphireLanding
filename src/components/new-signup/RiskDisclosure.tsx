@@ -26,17 +26,12 @@ const RiskDisclosureModal: React.FC<RiskDisclosureModalProps> = ({ onAccept, onC
         </div>
         
         <div className="flex justify-end mt-6 gap-4">
-          <Button 
-            variant="outline" 
-            onClick={onClose}
-          >
-            Close
-          </Button>
+
           <Button 
             variant="outline" 
             onClick={onAccept}
           >
-            I Accept
+            Understood
           </Button>
         </div>
       </div>
