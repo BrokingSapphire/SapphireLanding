@@ -26,11 +26,6 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({ onNext }) => {
             }
           />
 
-          <p className="text-sm text-gray-600 mb-4">
-            You can add up to 3 nominees to your account. Adding nominees makes
-            the process of share transfer easy in case of unforeseen events.
-          </p>
-
           <div className="flex flex-col gap-4">
             <Button
               variant="ghost"
