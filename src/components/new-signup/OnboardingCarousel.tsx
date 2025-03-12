@@ -12,6 +12,7 @@ import NomineeSelection from "../forms/NomineeSelection";
 import LastStepPage from "../forms/LastStepPage";
 import CongratulationsPage from "../forms/Congratulations";
 import InvestmentSegment from "../forms/InvestmentSegment.tsx";
+// import CardVerification from "../forms/CardVerification";
 import PaymentSelection from "../forms/PaymentSelection";
 import TradingPreferences from "../forms/TradingPreferences";
 import { ChevronDown, ChevronUp } from "lucide-react";

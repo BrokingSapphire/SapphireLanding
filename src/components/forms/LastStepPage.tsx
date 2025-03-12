@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import {  Check } from "lucide-react";
 import FormHeading from "./FormHeading";
+import Image from "next/image";
 
 interface LastStepPageProps {
   onNext: () => void;
@@ -19,7 +20,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({ onNext }) => {
       
       <div className="flex justify-center -mt-10">
         <div className="inline-block">
-          <img src='./signup/e-sign.png' alt="Aadhar E-sign" className="max-w-full h-auto rotate-90" />
+          <Image src='./signup/e-sign.png' alt="Aadhar E-sign" className="max-w-full h-auto rotate-90" />
         </div>
       </div>
       
