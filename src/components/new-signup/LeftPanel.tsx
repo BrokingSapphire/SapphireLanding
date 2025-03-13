@@ -64,32 +64,32 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
     {
       id: 4,
       label: "Bank Account Details",
-      completed: currentStep > 8,
-      active: currentStep === 8,
-    },
-    {
-      id: 5,
-      label: "Complete Video Verification",
       completed: currentStep > 9,
       active: currentStep === 9,
     },
     {
-      id: 6,
-      label: "Draw Signature",
-      completed: currentStep > 9,
-      active: false,
-    },
-    {
-      id: 7,
-      label: "Add Nominee (Optional)",
+      id: 5,
+      label: "Complete Video Verification",
       completed: currentStep > 10,
       active: currentStep === 10,
     },
     {
-      id: 8,
-      label: "Digitally Sign Documents",
+      id: 6,
+      label: "Draw Signature",
       completed: currentStep > 11,
       active: currentStep === 11,
+    },
+    {
+      id: 8,
+      label: "Add Nominee (Optional)",
+      completed: currentStep > 12,
+      active: currentStep === 12,
+    },
+    {
+      id: 9,
+      label: "Digitally Sign Documents",
+      completed: currentStep > 13,
+      active: currentStep === 13,
     },
   ];
 
@@ -186,7 +186,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
             </div>
           ) : (
             // Show progress steps for verification process
-            <div className="relative animate-[fadeIn_0.5s_ease-out] space-y-6">
+            <div className="relative animate-[fadeIn_0.5s_ease-out] space-y-3">
               {steps.map((step, index) => {
                 // Check if this step is transitioning (newly active)
                 const isTransitioning = step.id + 3 === transitioningStep;
@@ -279,7 +279,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
                           : step.completed
                           ? "text-gray-700"
                           : "text-gray-300"
-                      } transition-colors duration-300 ease-in-out`}
+                      } transition-colors duration-1000 ease-in-out`}
                     >
                       {step.label}
                     </div>

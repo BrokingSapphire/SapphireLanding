@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '../ui/button';
+import Link from 'next/link';
 // import Image from 'next/image';
 
 interface CongratulationsPageProps {
@@ -37,9 +38,11 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
         </div>
       </div>
 
-      <Button variant={"ghost"} onClick={onNext} className="py-6">
+      <Link href={"https://terminal.sapphirebroking.com"}>
+      <Button variant={"ghost"}  className="py-6">
         Login to Terminal
       </Button>
+      </Link>
     </div>
   );
 };

@@ -16,13 +16,15 @@ import InvestmentSegment from "../forms/InvestmentSegment.tsx";
 import PaymentSelection from "../forms/PaymentSelection";
 import TradingPreferences from "../forms/TradingPreferences";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import BankAccountLinking from "../forms/BankAccountLinking";
+import SignatureComponent from "../forms/Signature";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const TOTAL_STEPS = 13;
+  const TOTAL_STEPS = 15;
 
   const handleNext = useCallback(() => {
     if (isAnimating) return;
@@ -86,10 +88,16 @@ const OnboardingCarousel = () => {
       id: "trading2",
       component: <TradingAccountDetails2 onNext={handleNext} />,
     },
-
+    {
+      id: "bankaccountdetails",
+      component: <BankAccountLinking onNext={handleNext} />,
+    },
+    
     // divyansh bhaiya ki link bank account wale components
 
     { id: "ipv", component: <IPVVerification onNext={handleNext} /> },
+    { id: "signature", component: <SignatureComponent onNext={handleNext} /> },
+
     { id: "nominee", component: <NomineeSelection onNext={handleNext} /> },
     { id: "Last Step", component: <LastStepPage onNext={handleNext} /> },
     {

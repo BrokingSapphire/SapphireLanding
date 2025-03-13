@@ -55,36 +55,40 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         title="Upload Income Proof"
         description="A small step for you, a big leap towards seamless trading!"
       />
-      
+
       <div className="mt-6">
         <div className="relative">
-          <div 
-            className="border rounded-md p-4 flex justify-between items-center cursor-pointer"
+          <div
+            className="border  rounded-md p-4 flex justify-between items-center cursor-pointer"
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
-            <span>{selectedOption}</span>
-            <ChevronDown className={`h-5 w-5 transition-transform ${dropdownOpen ? 'transform rotate-180' : ''}`} />
+            <span className="w-[90%]  text-center">{selectedOption}</span>
+            <ChevronDown
+              className={`h-5 w-5 transition-transform ${
+                dropdownOpen ? "transform rotate-180" : ""
+              }`}
+            />
           </div>
-          
+
           {dropdownOpen && (
-            <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg">
+            <div className="absolute z-10 mt-1  bg-white border rounded-md shadow-lg">
               {documentOptions.map((option, index) => (
-                <div 
+                <div
                   key={index}
-                  className="p-3 hover:bg-gray-100 cursor-pointer"
+                  className="p-3 w-[90%] text-center  hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
                     setSelectedOption(option);
                     setDropdownOpen(false);
                   }}
                 >
-                  {option}
+                  <span className="">{option}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
-        
-        <div 
+
+        <div
           className="mt-4 border-2 border-dashed border-gray-300 rounded-md p-6 text-center"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -92,15 +96,27 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
           {selectedFile ? (
             <div className="flex flex-col items-center">
               <div className="bg-green-100 text-green-800 rounded-full p-2 mb-2">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M20 6L9 17L4 12"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
               <p className="font-medium">{selectedFile.name}</p>
               <p className="text-sm text-gray-500">
                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
-              <button 
+              <button
                 onClick={() => setSelectedFile(null)}
                 className="mt-2 text-sm text-red-600 hover:text-red-800"
               >
@@ -111,7 +127,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
             <div className="flex flex-col items-center">
               <Upload className="h-8 w-8 text-gray-400 mb-2" />
               <p className="text-gray-600 mb-2">Drag and drop file here or</p>
-              <button 
+              <button
                 onClick={handleBrowseClick}
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
@@ -127,7 +143,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
             </div>
           )}
         </div>
-        
+
         <div className="mt-4">
           <button
             onClick={onSkip}
@@ -137,11 +153,12 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
           </button>
         </div>
       </div>
-      
+
       <Button
+        variant={"ghost"}
         onClick={onNext}
         disabled={!selectedFile}
-        className="w-full bg-teal-800 hover:bg-teal-900 text-white py-4 rounded mt-4"
+        className="w-full py-6 mb-6 mt-4"
       >
         Continue
       </Button>

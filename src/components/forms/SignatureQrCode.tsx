@@ -52,14 +52,7 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({ onBack, onComplete })
       </div>
       
       {/* Demo-only button to simulate completing the signature via QR code */}
-      <div className="mt-6 text-center opacity-50">
-        <button
-          onClick={onComplete}
-          className="text-xs text-gray-500 underline"
-        >
-          (Demo only: Complete signature)
-        </button>
-      </div>
+      
     </div>
   );
 };

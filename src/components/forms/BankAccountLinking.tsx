@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
@@ -33,7 +34,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
             onClick={() => setLinkingMethod("upi")}
           >
             <div className="flex items-center justify-center w-10 h-10 mb-2">
-              <Image src="/upi-logo.png" alt="UPI" className="w-8 h-8" />
+              <Image width={1000} height={1000} src="/upi-logo.png" alt="UPI" className="w-8 h-8" />
             </div>
             <div className="font-medium">Link with UPI</div>
             <div className="text-xs text-gray-500">(recommended)</div>

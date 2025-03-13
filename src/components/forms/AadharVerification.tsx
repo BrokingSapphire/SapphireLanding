@@ -74,7 +74,8 @@ const DigiLockerVerification = ({ onNext }: { onNext: () => void }) => {
 
       <Button
         onClick={onNext}
-        className="w-full py-6 mb-6 bg-blue-600 hover:bg-blue-700 text-white"
+        variant={"ghost"}
+        className="w-full py-6 mb-6 "
       >
         Proceed to DigiLocker
       </Button>
