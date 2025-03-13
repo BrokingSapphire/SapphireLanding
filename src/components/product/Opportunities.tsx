@@ -15,7 +15,7 @@ const Opportunities = () => {
         <Image
           src="/products/arrows.svg"
           alt="Arrows pointing right"
-          className="ml-auto object-cover"
+          className="ml-auto hidden sm:block  object-cover"
           aria-hidden="true"
           width={1000}
           height={1000}
@@ -39,7 +39,7 @@ const Opportunities = () => {
           </button>
         </div>
       </div>
-      <hr  className="mt-16 border-teal-800" />
+      <hr className="mt-16 border-teal-800" />
     </section>
   );
 }

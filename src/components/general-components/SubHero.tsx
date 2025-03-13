@@ -16,7 +16,7 @@ const SubHero = ({ chipText, titleText, gradientText, description }: SubHeroProp
         alt="Decorative Image"
         width={250}
         height={250}
-        className="absolute top-8 left-0 "
+        className="absolute top-8 w-24 sm:w-full left-0 "
       />
 
       <div className="w-full space-y-5 text-center">

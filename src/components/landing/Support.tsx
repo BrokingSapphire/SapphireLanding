@@ -26,7 +26,7 @@ const Support = () => {
           <Image
             src="/main/ArrowGroup.svg"
             alt="Arrow Group"
-            className="w-full h-full object-contain"
+            className="hidden sm:block w-full h-full object-contain"
             width={1000}
             height={1000}
           />
