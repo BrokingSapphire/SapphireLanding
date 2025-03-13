@@ -3,32 +3,95 @@ import { Camera } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
+import QrCodeVerification from "./QrCodeVerification";
 
-const IPVVerification = ({ onNext }: { onNext: () => void }) => {
+interface IPVVerificationProps {
+  onNext: () => void;
+}
+
+const IPVVerification: React.FC<IPVVerificationProps> = ({ onNext }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showQrCode, setShowQrCode] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleCameraCapture = () => {
+  const handleCameraCapture = async () => {
     try {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.capture = "user";
-      input.onchange = (e) => {
-        const file = (e.target as HTMLInputElement).files?.[0];
-        if (file) {
-          validateAndSetImage(file);
-        }
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const video = document.createElement("video");
+      video.srcObject = stream;
+      video.play();
+  
+      // Create a modal-like popup to show the camera feed
+      const overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100vw";
+      overlay.style.height = "100vh";
+      overlay.style.background = "rgba(0,0,0,0.8)";
+      overlay.style.display = "flex";
+      overlay.style.alignItems = "center";
+      overlay.style.justifyContent = "center";
+      overlay.style.zIndex = "1000";
+  
+      const captureButton = document.createElement("button");
+      captureButton.innerText = "Capture";
+      captureButton.style.position = "absolute";
+      captureButton.style.bottom = "20px";
+      captureButton.style.padding = "10px 20px";
+      captureButton.style.background = "#fff";
+      captureButton.style.border = "none";
+      captureButton.style.cursor = "pointer";
+  
+      const closeButton = document.createElement("button");
+      closeButton.innerText = "✕";
+      closeButton.style.position = "absolute";
+      closeButton.style.top = "20px";
+      closeButton.style.right = "20px";
+      closeButton.style.color = "#fff";
+      closeButton.style.background = "transparent";
+      closeButton.style.border = "none";
+      closeButton.style.fontSize = "24px";
+      closeButton.style.cursor = "pointer";
+  
+      const canvas = document.createElement("canvas");
+      overlay.appendChild(video);
+      overlay.appendChild(captureButton);
+      overlay.appendChild(closeButton);
+      document.body.appendChild(overlay);
+  
+      const cleanup = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        document.body.removeChild(overlay);
       };
-      input.click();
+  
+      captureButton.onclick = () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const capturedFile = new File([blob], "captured-image.jpg", {
+                type: "image/jpeg",
+              });
+              setImageFile(capturedFile);
+            }
+          }, "image/jpeg");
+        }
+        cleanup();
+      };
+  
+      closeButton.onclick = cleanup;
     } catch (err) {
-      console.error("Camera access error:", err); // Log the error
-      setError("Camera access failed. Please try again or use file upload.");
+      console.error("Camera access error:", err);
+      setError("Camera access failed. Please enable permissions.");
     }
   };
-
+  
   const validateAndSetImage = (file: File) => {
     setError(null);
 
@@ -72,16 +135,21 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
     }
   };
 
+
+  if (showQrCode) {
+    return <QrCodeVerification onBack={() => setShowQrCode(false)} onComplete={onNext} />;
+  }
+
   return (
     <div className="mx-auto mt-16">
       <FormHeading
-        title={"Video Verification (IPV)"}
-        description={"A quick face-to-face verification for security."}
+        title="Video Verification (IPV)"
+        description="A quick face-to-face verification for security."
       />
       <div className="mb-6">
-        <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg p-8">
+        <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center">
           {imageFile ? (
-            <div className="space-y-4">
+            <div className="space-y-4 w-full flex flex-col items-center">
               <div className="relative w-full h-64">
                 <Image
                   src={URL.createObjectURL(imageFile)}
@@ -98,25 +166,33 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
                   setImageFile(null);
                   setError(null);
                 }}
-                variant={"ghost"}
-                className="mt-6 py-6"
+                variant="ghost"
+                className="mt-4 py-4 w-40"
               >
-                Remove Image
+                Re-Capture
               </Button>
             </div>
           ) : (
             <div className="text-center space-y-4">
               <Camera className="w-16 h-16 mx-auto text-gray-400" />
-              <p className="text-gray-600">
-                Turn on your camera or upload an image
-              </p>
-              <Button
-                onClick={handleCameraCapture}
-                variant={"ghost"}
-                className="py-3"
-              >
-                Allow Camera Access
-              </Button>
+              <p className="text-gray-600">Turn on your camera or upload an image</p>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Button
+                  onClick={handleCameraCapture}
+                  variant="ghost"
+                  className="py-3"
+                >
+                  Allow Camera Access
+                </Button>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </div>
             </div>
           )}
         </div>
@@ -127,30 +203,21 @@ const IPVVerification = ({ onNext }: { onNext: () => void }) => {
           </div>
         )}
 
-        <div className="flex justify-center gap-4 mt-4">
-          <button
-            onClick={handleCameraCapture}
-            className="flex items-center px-4 py-2 border border-gray-300 rounded hover:border-gray-400 transition-colors"
+        {/* Added "Problems with Webcam? Click Here" with onClick handler */}
+        <div className="text-center mt-4">
+          <button 
+            onClick={() => setShowQrCode(true)} 
+            className="text-sm bg-transparent border-none cursor-pointer"
           >
-            <Camera className="w-5 h-5 mr-2" />
-            Re-Capture
+            Problems with Webcam? <span className="text-blue-500 underline font-medium">Click Here</span>
           </button>
-          <label className="flex items-center px-4 py-2 border border-gray-300 rounded hover:border-gray-400 transition-colors cursor-pointer">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-            Upload Image
-          </label>
         </div>
       </div>
+
       <Button
         onClick={handleSubmit}
         disabled={!imageFile || isLoading}
-        variant={"ghost"}
+        variant="ghost"
         className={`w-full py-6 ${
           !imageFile || isLoading ? "opacity-50 cursor-not-allowed" : ""
         }`}

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import RiskDisclosureModal from "../new-signup/RiskDisclosure";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import { Check } from "lucide-react"; 
+import RiskDisclosureModal from "../new-signup/RiskDisclosure";
+import UploadIncomeProof from "./UploadIncomeProof";
 
 interface InvestmentSegmentProps {
   onNext: () => void;
@@ -13,6 +14,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
   const [showRiskModal, setShowRiskModal] = useState(false);
   const [hasAcceptedRisk, setHasAcceptedRisk] = useState(false);
   const [pendingSegment, setPendingSegment] = useState<string>("");
+  const [showUploadIncome, setShowUploadIncome] = useState(false);
 
   const segments = [
     { id: "cash-mutual", label: "Cash/Mutual Funds" },
@@ -49,11 +51,24 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
       setPendingSegment("");
     }
     setShowRiskModal(false);
+    
+    // Show the Upload Income Proof component when user accepts risk disclosure
+    setShowUploadIncome(true);
   };
+
+  // If showing upload income proof, render that component
+  if (showUploadIncome) {
+    return (
+      <UploadIncomeProof 
+        onNext={onNext} 
+        onSkip={() => onNext()} 
+      />
+    );
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4">
-      <FormHeading title={"Choose your investment segment"} description={"Choose where you want to invest and trade."} />
+      <FormHeading title="Choose your investment segment" description="Choose where you want to invest and trade." />
 
       <div className="flex flex-wrap gap-2 mb-6">
         {segments.map((segment) => (
@@ -76,7 +91,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
         ))}
       </div>
 
-      <Button onClick={onNext} variant={"ghost"} className="mt-6 py-6 px-10">
+      <Button onClick={onNext} variant="ghost" className="mt-6 py-6 px-10">
         Next
       </Button>
 
