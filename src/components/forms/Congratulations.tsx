@@ -9,7 +9,6 @@ interface CongratulationsPageProps {
 }
 
 const CongratulationsPage: React.FC<CongratulationsPageProps> = ({ 
-  onNext,
   clientId = 'DEFAULT' // Default client ID if none provided
 }) => {
   return (

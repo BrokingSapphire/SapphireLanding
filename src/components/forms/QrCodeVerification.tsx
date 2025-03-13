@@ -9,8 +9,7 @@ interface QrCodeVerificationProps {
 
 const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
   onBack,
-  onComplete
-}) => {
+  }) => {
   const [timeRemaining, setTimeRemaining] = useState<number>(300); // 5 minutes in seconds
   
   useEffect(() => {

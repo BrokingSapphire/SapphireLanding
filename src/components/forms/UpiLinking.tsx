@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import { ArrowRight, Clock } from "lucide-react";
+import Image from "next/image";
 
 interface UpiLinkingProps {
   onNext: () => void;
@@ -30,7 +31,9 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({  onBack }) => {
         <div className="flex flex-col md:flex-row gap-6 mt-4">
           <div className="flex-1 flex justify-center">
             <div className="bg-white p-4 rounded-lg">
-              <img 
+              <Image 
+              width={100}  
+              height={100}  
                 src="/api/placeholder/200/200" 
                 alt="QR Code" 
                 className="w-48 h-48"

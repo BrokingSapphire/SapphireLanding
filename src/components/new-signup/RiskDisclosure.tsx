@@ -6,7 +6,7 @@ interface RiskDisclosureModalProps {
   onClose: () => void;
 }
 
-const RiskDisclosureModal: React.FC<RiskDisclosureModalProps> = ({ onAccept, onClose }) => {
+const RiskDisclosureModal: React.FC<RiskDisclosureModalProps> = ({ onAccept, }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="bg-white w-full h-full md:max-w-2xl md:h-auto md:rounded-lg p-6 shadow-lg">
