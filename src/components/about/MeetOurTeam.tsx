@@ -29,7 +29,7 @@ const MeetOurTeam = () => {
         Our philosophy is simple — hire a team of diverse, passionate people and
         foster a culture that empowers you to do your best work.
       </p>
-      <div className="flex flex-wrap justify-center gap-40 mt-16 w-full">
+      <div className="flex flex-wrap justify-center gap-10 sm:gap-40 mt-16 w-full">
         {teamMembers.map((member, index) => (
           <div key={index} className="space-y-3 text-center">
             <div className="w-56 h-56 relative">

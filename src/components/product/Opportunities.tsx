@@ -8,7 +8,7 @@ const Opportunities = () => {
     const router = useRouter()
   return (
     <section
-      className="relative bg-[#064D51] py-12 sm:py-16 overflow-hidden "
+      className="relative bg-[#064D51] py-12 pb-0 sm:py-16 overflow-hidden "
       aria-label="Call to action"
     >
       <div className="absolute right-0 top-0 w-1/4 sm:w-1/3">
@@ -23,10 +23,10 @@ const Opportunities = () => {
       </div>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-5xl font-bold text-white mb-2">
+          <h2 className="text-3xl sm:text-5xl font-bold text-white mb-2">
             Ready to unlock new
           </h2>
-          <h2 className="text-5xl font-bold text-transparent bg-clip-text mb-6 bg-gradient-to-r from-[#00E39F] via-[#FFC300] to-[#FFC300] from-[50%] via-[70%] to-[90%]">
+          <h2 className="text-3xl sm:text-5xl font-bold text-transparent bg-clip-text mb-6 bg-gradient-to-r from-[#00E39F] via-[#FFC300] to-[#FFC300] from-[50%] via-[70%] to-[90%]">
             revenue opportunities?
           </h2>
 

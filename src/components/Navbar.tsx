@@ -54,14 +54,14 @@ const Navbar = () => {
   return (
     <>
       <nav className="fixed font-poppins w-full top-0 z-50 bg-white backdrop-blur-md shadow-sm">
-        <div className="xl:max-w-7xl mx-auto flex items-center justify-between py-4 px-6 lg:px-8">
+        <div className="xl:max-w-7xl mx-auto flex items-center justify-between py-4 pl-4 px-6 lg:px-8">
           <Link href="/">
             <div className="items-center flex">
               <Image
                 src="/logo.svg"
                 alt="Sapphire Logo"
-                width={40}
-                height={40}
+                width={100}
+                height={100}
                 className="w-10 h-10"
               />
               <p className="font-semibold text-2xl text-black">Sapphire</p>
@@ -140,13 +140,13 @@ const Navbar = () => {
         }`}
       >
         <div className="flex flex-col h-full pt-20 pb-6 px-6">
-          <div className="absolute  backdrop-blur-md shadow-sm pb-2 top-5 right-6 flex items-center justify-between w-full">
+          <div className="absolute  backdrop-blur-md shadow-sm pb-3 top-5 right-6 flex items-center justify-between w-full">
             <div className="ml-10 items-center flex">
               <Image
                 src="/logo.svg"
                 alt="Sapphire Logo"
-                width={40}
-                height={40}
+                width={100}
+                height={100}
                 className="w-10 h-10"
               />
               <p className="font-semibold text-2xl text-black">Sapphire</p>
