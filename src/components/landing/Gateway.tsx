@@ -2,8 +2,16 @@ import React from "react";
 import Image from "next/image";
 import { GatewayItem, gatewayItems } from "@/constants/landing";
 
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
 const GatewayCard = ({ title, icon, description }: GatewayItem) => (
-  <div className="flex justify-center p-4">
+  <div className="flex justify-center p-4 h-full">
     <div className="relative w-[280px] max-w-xs sm:max-w-sm h-64 group">
       <div className="absolute bottom-8 w-full h-36 bg-[#FFD62D] rounded-xl transform-gpu transition-transform duration-700 ease-in-out origin-top group-hover:-rotate-12" />
 
@@ -59,7 +67,32 @@ const Gateway = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
+      {/* Mobile Carousel View */}
+      <div className="md:hidden">
+        <Carousel
+          opts={{
+            align: "center",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent>
+            {gatewayItems.map((item, index) => (
+              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                <GatewayCard {...item} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-0 bg-white/80" />
+          <CarouselNext className="right-0 bg-white/80" />
+        </Carousel>
+
+        {/* Carousel indicators - optional */}
+        
+      </div>
+
+      {/* Desktop Grid View */}
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
         {gatewayItems.map((item, index) => (
           <GatewayCard key={index} {...item} />
         ))}

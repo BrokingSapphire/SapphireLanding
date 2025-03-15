@@ -1,20 +1,18 @@
-
 import React from "react";
 
 const TradingCharges = () => {
   return (
-    <div className="bg-gray-100 py-12">
-      <div className="max-w-6xl mx-auto px-6">
+    <div className="bg-gray-100 py-8 md:py-12">
+      <div className="max-w-6xl mx-auto px-4 md:px-6">
         {/* Simplified Charges Section */}
-        <h2 className="text-center text-5xl font-semibold mb-8">
+        <h2 className="text-center text-3xl md:text-5xl font-semibold mb-6 md:mb-8">
           Simplified Charges for{" "}
           <span className="text-green-heading">Hassle-Free</span> Trading
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 text-center">
           {[
             {
-              title:
-                "Equity & Derivatives",
+              title: "Equity & Derivatives",
               description:
                 "Enjoy zero brokerage on all trades for the first 7 days after onboarding. Trade with confidence and save on costs!",
             },
@@ -29,14 +27,24 @@ const TradingCharges = () => {
                 "Invest in direct mutual funds with absolutely no charges, forever. Maximize your returns with zero commission fees!",
             },
           ].map((item, index) => (
-            <div key={index} className=" p-6 ">
-              <div className="flex relative justify-center ">
-                <h3 className="text-4xl absolute left-20 bottom-4 font-bold text-[#FFAE00]">₹</h3>
-                <h3 className="text-9xl font-bold text-[#FFAE00]">0</h3>
-                <h3 className="text-3xl font-bold text-[#FFAE00]">*</h3>
+            <div key={index} className="p-4 md:p-6">
+              <div className="flex relative justify-center">
+                <h3 className="text-3xl md:text-4xl absolute left-1/4 sm:left-1/3 md:left-20 bottom-4 font-bold text-[#FFAE00]">
+                  ₹
+                </h3>
+                <h3 className="text-7xl md:text-9xl font-bold text-[#FFAE00]">
+                  0
+                </h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-[#FFAE00]">
+                  *
+                </h3>
               </div>
-              <h4 className="text-2xl font-medium mt-2">{item.title}</h4>
-              <p className=" text-gray-600 text-md mt-2 ">{item.description}</p>
+              <h4 className="text-xl md:text-2xl font-medium mt-2">
+                {item.title}
+              </h4>
+              <p className="text-gray-600 text-sm md:text-md mt-2">
+                {item.description}
+              </p>
             </div>
           ))}
         </div>

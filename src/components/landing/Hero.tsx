@@ -17,7 +17,7 @@ export default function Hero() {
   return (
     <AnimatePresence mode="wait">
       <div
-        className="relative mt-32 w-full flex flex-col items-center justify-center mx-auto"
+        className="relative mt-24 md:mt-32 w-full flex flex-col items-center justify-center mx-auto px-4 md:px-0"
         style={{
           backgroundImage: "url('/main/Bg_Landing.png')",
           backgroundSize: "cover",
@@ -28,7 +28,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#A3F794]/10 to-[#FFDE55]/20 z-0" />
 
         <motion.div
-          className="relative z-10 max-w-2xl space-y-5 text-center"
+          className="relative z-10 max-w-2xl space-y-3 md:space-y-5 text-center"
           variants={fadeInUp}
           initial="initial"
           animate="animate"
@@ -36,7 +36,7 @@ export default function Hero() {
           transition={{ duration: 0.5 }}
         >
           <motion.div
-            className="text-center font-semibold leading-tight text-5xl"
+            className="text-center font-semibold leading-tight text-3xl md:text-5xl"
             variants={fadeInUp}
             initial="initial"
             animate="animate"
@@ -56,7 +56,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div
-            className="text-xl text-gray-heading"
+            className="text-base md:text-xl text-gray-heading px-2 md:px-0"
             variants={fadeInUp}
             initial="initial"
             animate="animate"
@@ -74,34 +74,35 @@ export default function Hero() {
           >
             <motion.div>
               <Link href={"/signup"}>
-              <CustomButtonX
-                text="Get Started"
-                backgroundColor="#064D51"
-                textColor="#ffffff"
-                iconColor="#064D51"
-                iconBackgroundColor="#ffffff"
-                boxShadowColor="#99000099"
-                iconBoxShadowColor="#99000066"
-                icon={<FaArrowRightLong />}
+                <CustomButtonX
+                  text="Get Started"
+                  backgroundColor="#064D51"
+                  textColor="#ffffff"
+                  iconColor="#064D51"
+                  iconBackgroundColor="#ffffff"
+                  boxShadowColor="#99000099"
+                  iconBoxShadowColor="#99000066"
+                  icon={<FaArrowRightLong />}
                 />
-                </Link>
+              </Link>
             </motion.div>
           </motion.div>
         </motion.div>
 
         <motion.div
-          className="relative z-10 mt-12"
+          className="relative z-10 mt-8 md:mt-12 w-full max-w-full overflow-hidden px-2 md:px-0"
           variants={fadeInUp}
           initial="initial"
           animate="animate"
           transition={{ duration: 0.5, delay: 1 }}
         >
           <Image
-            className="border-8 border-gray-100 rounded-md"
+            className="border-4 md:border-8 border-gray-100 rounded-md w-full h-auto"
             alt="Platform Photo"
             src="/hero.svg"
             width={1000}
             height={1000}
+            priority
           />
         </motion.div>
       </div>
