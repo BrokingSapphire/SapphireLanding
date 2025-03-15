@@ -1,4 +1,3 @@
-
 import Charges from "@/components/pricing/Charges";
 import React from "react";
 import ChargesTable from "@/components/pricing/BigCustomTable";
@@ -23,18 +22,22 @@ export const metadata: Metadata = {
 
 const Home = () => {
   return (
-    <div className="w-full max-w-7xl mx-auto">
-      <SubHero
-        chipText="Pricing"
-        titleText={["Honest Rates for", "Traders"]}
-        gradientText="Smart"
-        description="Transparent pricing designed for your success—no hidden fees, just growth."
-      />
-      <div className="py-11 bg-[#F5F7FA]">
-        <Charges />
+    <div className="w-full ">
+      <div className="max-w-7xl mx-auto">
+        <SubHero
+          chipText="Pricing"
+          titleText={["Honest Rates for", "Traders"]}
+          gradientText="Smart"
+          description="Transparent pricing designed for your success—no hidden fees, just growth."
+        />
+        <div className="py-8 sm:py-11 bg-[#F5F7FA] rounded-lg">
+          <Charges />
+        </div>
+        <div className="overflow-x-auto">
+          <ChargesTable />
+        </div>
+        {/* <Opportunities /> */}
       </div>
-      <ChargesTable />
-      {/* <Opportunities /> */}
     </div>
   );
 };

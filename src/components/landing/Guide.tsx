@@ -8,6 +8,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
+interface Guide {
+  id: number;
+  title: string;
+  author: string;
+  image: string;
+}
+
 const guides = [
   {
     id: 1,
@@ -32,7 +39,7 @@ const guides = [
   },
 ];
 
-const GuideCard = ({ guide }) => (
+const GuideCard = ({ guide } : { guide: Guide }) => (
   <div className="bg-white rounded-2xl shadow-md overflow-hidden h-full">
     <div className="relative">
       <Image

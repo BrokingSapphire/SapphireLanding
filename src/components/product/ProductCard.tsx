@@ -18,40 +18,41 @@ export const ProductCard = ({
   index,
 }: ProductCardProps) => (
   <div
-    className={`flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12`}
+    className={`flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 md:gap-12`}
     data-testid={`product-${index}`}
   >
-    <div className="w-full md:w-1/2 space-y-4">
-      <h2 className="sm:text-5xl font-bold">{title}</h2>
-      <p className="text-gray-600 text-lg">&quot;{description}&quot;</p>
+    <div className="w-full md:w-1/2 space-y-3 sm:space-y-4">
+      <h2 className="text-3xl sm:text-5xl font-bold">{title}</h2>
+      <p className="text-gray-600 text-base sm:text-lg">
+        &quot;{description}&quot;
+      </p>
 
       {/* Buttons Section */}
-
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-3 sm:gap-4 pt-2">
         {/* App Store Button */}
-        <button className="bg-white flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md` hover:bg-gray-100 transition">
+        <button className="bg-white flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition">
           <FaApple />
           <div className="flex items-center gap-1">
-            <span>App store</span>
-            <FaArrowRightLong />
+            <span className="text-sm sm:text-base">App store</span>
+            <FaArrowRightLong className="text-xs sm:text-sm" />
           </div>
         </button>
 
         {/* Play Store Button */}
         {title === "Trading Terminal" && (
-          <div className="flex gap-4">
-            <button className="bg-white flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+          <div className="flex flex-wrap gap-3 sm:gap-4">
+            <button className="bg-white flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
               <FaGooglePlay />
               <div className="flex items-center gap-1">
-                <span>Play store</span>
-                <FaArrowRightLong />
+                <span className="text-sm sm:text-base">Play store</span>
+                <FaArrowRightLong className="text-xs sm:text-sm" />
               </div>
             </button>
-            <button className="bg-white flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+            <button className="bg-white flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
               <FaChrome />
               <div className="flex items-center gap-1">
-                <span>Web app</span>
-                <FaArrowRightLong />
+                <span className="text-sm sm:text-base">Web app</span>
+                <FaArrowRightLong className="text-xs sm:text-sm" />
               </div>
             </button>
           </div>
@@ -59,14 +60,15 @@ export const ProductCard = ({
       </div>
     </div>
 
-    <div className="w-full md:w-1/2">
-      <div className="bg-white rounded-lg p-4 sm:p-8">
+    <div className="w-full md:w-1/2 mt-6 md:mt-0">
+      <div className="bg-white rounded-lg p-3 sm:p-4 md:p-8">
         <Image
           src={image}
           alt={`${title} interface`}
           className="w-full h-auto"
           width={1000}
           height={1000}
+          priority
         />
       </div>
     </div>
