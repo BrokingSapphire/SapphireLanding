@@ -55,7 +55,6 @@ const OnboardingCarousel = () => {
       icon: <ChevronUp size={18} />,
       onClick: handlePrevious,
       ariaLabel: "Previous step",
-
     },
     {
       icon: <ChevronDown size={18} />,
@@ -156,16 +155,16 @@ const OnboardingCarousel = () => {
       {/* Animated Right Panel */}
       <div
         className={`${
-          currentStep === components.length - 1 ? "w-full" : "w-[60%]"
+          currentStep === components.length - 1 ? "w-full" : "w-full sm:w-[60%] mx-4"
         } bg-white h-full`}
       >
         <div className="h-full flex items-center">
-          <div className="p-12 max-w-2xl flex mx-auto relative">
+          <div className="p-4 sm:p-12 w-full sm:max-w-2xl flex mx-auto relative">
             {/* Previous Screen */}
             {direction === 1 && (
               <div
                 key={`prev-${currentStep}`}
-                className="absolute inset-0 p-12"
+                className="absolute inset-0 p-4 sm:p-12"
                 style={{
                   transform: "translateY(-50%)",
                   opacity: 0,
@@ -183,7 +182,7 @@ const OnboardingCarousel = () => {
             {direction === -1 && (
               <div
                 key={`next-${currentStep}`}
-                className="absolute inset-0 p-12"
+                className="absolute inset-0 p-4 sm:p-12"
                 style={{
                   transform: "translateY(50%)",
                   opacity: 0,
@@ -205,24 +204,24 @@ const OnboardingCarousel = () => {
           </div>
         </div>
 
-        {/* Progress Indicator */}
-        <div className="fixed top-6 right-6 flex gap-2">
+        {/* Progress Indicator - Smaller on mobile */}
+        <div className="fixed top-2 sm:top-6 right-2 sm:right-6 flex gap-1 sm:gap-2 flex-wrap max-w-[80%] sm:max-w-none justify-end">
           {components.map((_, index) => (
             <div
               key={`indicator-${index}`}
-              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+              className={`w-1 sm:w-2 h-1 sm:h-2 rounded-full transition-colors duration-300 ${
                 index === currentStep ? "bg-teal-600" : "bg-gray-300"
               }`}
             />
           ))}
         </div>
 
-        {/* Navigation Arrows */}
-        <div className="w-10 h-10 fixed bottom-6 rounded-md right-20 flex gap-1">
+        {/* Navigation Arrows - Properly positioned for mobile */}
+        <div className="fixed bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 sm:left-auto sm:transform-none sm:right-6 flex gap-1">
           {navigationButtons.map((button, index) => (
             <button
               key={index}
-              className={`px-3 flex items-center justify-center bg-green-heading hover:bg-white hover:text-green-heading transition-all duration-300 ease-in-out border border-green-heading text-white shadow-lg ${
+              className={`px-3 py-2 flex items-center justify-center bg-green-heading hover:bg-white hover:text-green-heading transition-all duration-300 ease-in-out border border-green-heading text-white shadow-lg ${
                 index === 0 ? "rounded-l-md" : "rounded-r-md"
               } ${isAnimating ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={button.onClick}
