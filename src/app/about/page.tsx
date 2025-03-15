@@ -32,7 +32,7 @@ const Home = () => {
         gradientText="Expertise"
         description="Bridging the gap between market complexity and investor success."
       />
-      <div className="space-y-20 pb-20">
+      <div className="y-10 sm:space-y-20 pb-20">
         <AboutInfo />
         <Nakul />
         <MeetOurTeam />
