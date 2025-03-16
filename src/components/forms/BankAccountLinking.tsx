@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import ManualBankDetails from "./ManualBankDetails";
@@ -12,6 +12,32 @@ interface BankAccountLinkingProps {
 
 const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
   const [linkingMethod, setLinkingMethod] = useState<string | null>(null);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  // Check screen size on component mount and when window resizes
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 640);
+    };
+    
+    // Initial check
+    checkScreenSize();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('resize', checkScreenSize);
+    };
+  }, []);
+
+  // If on small screen and no method is selected yet, automatically select manual
+  useEffect(() => {
+    if (isSmallScreen && linkingMethod === null) {
+      setLinkingMethod("manual");
+    }
+  }, [isSmallScreen, linkingMethod]);
 
   const renderLinkingOption = () => {
     if (linkingMethod === "manual") {
@@ -19,30 +45,32 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
     } else if (linkingMethod === "upi") {
       return <UpiLinking onNext={onNext} onBack={() => setLinkingMethod(null)} />;
     }
-
+    
     return (
       <div className="w-full max-w-2xl mx-auto p-4">
         <FormHeading 
           title="Bank Account Details" 
           description="Seamlessly link your bank for smooth transactions." 
         />
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          {/* Only show UPI option on larger screens */}
+          {!isSmallScreen && (
+            <Button 
+              variant="outline" 
+              className="flex flex-col items-center justify-center h-32 border-2 hover:border-blue-500"
+              onClick={() => setLinkingMethod("upi")}
+            >
+              <div className="flex items-center justify-center w-10 h-10 mb-2">
+                <Image width={1000} height={1000} src="/upi-icon.png" alt="UPI" className="w-8 h-8" />
+              </div>
+              <div className="font-medium">Link with UPI</div>
+              <div className="text-xs text-gray-500">(recommended)</div>
+            </Button>
+          )}
+          
           <Button 
             variant="outline" 
-            className="flex flex-col items-center justify-center h-32 border-2 hover:border-blue-500"
-            onClick={() => setLinkingMethod("upi")}
-          >
-            <div className="flex items-center justify-center w-10 h-10 mb-2">
-              <Image width={1000} height={1000} src="/upi-logo.png" alt="UPI" className="w-8 h-8" />
-            </div>
-            <div className="font-medium">Link with UPI</div>
-            <div className="text-xs text-gray-500">(recommended)</div>
-          </Button>
-
-          <Button 
-            variant="outline" 
-            className="flex flex-col items-center justify-center h-32 border-2 hover:border-blue-500"
+            className={`flex flex-col items-center justify-center h-32 border-2 hover:border-blue-500 ${isSmallScreen ? "col-span-1" : ""}`}
             onClick={() => setLinkingMethod("manual")}
           >
             <div className="flex items-center justify-center space-x-1 mb-2">
@@ -63,7 +91,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
       </div>
     );
   };
-
+  
   return renderLinkingOption();
 };
 

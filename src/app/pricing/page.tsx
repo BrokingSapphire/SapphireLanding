@@ -30,7 +30,7 @@ const Home = () => {
           gradientText="Smart"
           description="Transparent pricing designed for your success—no hidden fees, just growth."
         />
-        <div className="py-8 sm:py-11 bg-[#F5F7FA] rounded-lg">
+        <div className="py-8 px-4 sm:py-11 bg-[#F5F7FA] rounded-lg">
           <Charges />
         </div>
         <div className="overflow-x-auto">

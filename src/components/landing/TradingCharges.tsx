@@ -29,13 +29,13 @@ const TradingCharges = () => {
           ].map((item, index) => (
             <div key={index} className="p-4 md:p-6">
               <div className="flex relative justify-center">
-                <h3 className="text-3xl md:text-4xl absolute left-1/4 sm:left-1/3 md:left-20 bottom-4 font-bold text-[#FFAE00]">
+                <h3 className="text-3xl md:text-4xl absolute bottom-4 font-bold text-[#FFAE00] left-[30%] sm:left-[30%] md:left-1/4 lg:left-1/3 xl:left-20">
                   ₹
                 </h3>
-                <h3 className="text-7xl md:text-9xl font-bold text-[#FFAE00]">
+                <h3 className="text-9xl md:text-9xl font-bold text-[#FFAE00]">
                   0
                 </h3>
-                <h3 className="text-2xl md:text-3xl font-bold text-[#FFAE00]">
+                <h3 className="text-4xl md:text-4xl font-bold text-[#FFAE00]">
                   *
                 </h3>
               </div>

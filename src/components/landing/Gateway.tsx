@@ -58,10 +58,10 @@ const Gateway = () => {
   return (
     <section className="max-w-7xl mt-4 mx-auto p-4 sm:p-8">
       <div className="text-center mb-8 sm:mb-12">
-        <h1 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
+        <h1 className="text-3xl sm:text-4xl font-semibold mb-3 sm:mb-4">
           Your Gateway to Smart Investing
         </h1>
-        <p className="text-lg sm:text-base tracking-wider mt-3 px-4">
+        <p className="text-xl text-gray-600 sm:text-base tracking-wider mt-3 px-4">
           Highlighted features that simplify and enhance the investing
           experience.
         </p>

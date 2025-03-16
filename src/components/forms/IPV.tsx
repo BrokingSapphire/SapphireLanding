@@ -204,7 +204,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({ onNext }) => {
         )}
 
         {/* Added "Problems with Webcam? Click Here" with onClick handler */}
-        <div className="text-center mt-4">
+        <div className="hidden sm:block text-center mt-4">
           <button 
             onClick={() => setShowQrCode(true)} 
             className="text-sm bg-transparent border-none cursor-pointer"

@@ -185,7 +185,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
           <input
             type="tel"
             placeholder="Your 10 digit mobile number"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 appearance-none"
             value={mobileNumber}
             onChange={(e) => {
               const value = e.target.value.replace(/\D/g, "");
@@ -206,7 +206,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
           <label className="block text-left text-gray-heading mb-3">
             Enter OTP
           </label>
-          <div className="flex justify-center gap-2 mb-4">
+          <div className="flex flex-wrap justify-center gap-2 mb-4">
             {otp.map((digit, index) => (
               <input
                 key={index}
@@ -214,11 +214,12 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
                   inputRefs.current[index] = el;
                 }}
                 type="text"
+                inputMode="numeric"
                 maxLength={1}
                 value={digit}
                 onChange={(e) => handleOTPChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className={`w-12 h-12 text-center border-2 border-gray-300 focus:outline-none focus:border-teal-500 text-xl
+                className={`w-10 sm:w-12 h-10 sm:h-12 text-center border-2 border-gray-300 focus:outline-none focus:border-teal-500 text-xl appearance-none
                   ${
                     index === 0
                       ? "rounded-md rounded-r-none"
@@ -230,7 +231,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
               />
             ))}
           </div>
-          <div className="flex justify-between text-sm mb-2">
+          <div className="flex flex-col sm:flex-row justify-between text-sm mb-2 gap-2">
             <button
               className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSendOTP}

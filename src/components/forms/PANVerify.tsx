@@ -118,7 +118,7 @@ const CustomCalendar = ({
   };
 
   return (
-    <div className="p-1 bg-white rounded-md shadow-md w-48 transition-all duration-200">
+    <div className="p-1 bg-white rounded-md shadow-md w-full sm:w-48 max-w-[calc(100vw-20px)] transition-all duration-200">
       <div className="flex items-center justify-between mb-1 relative">
         <button
           onClick={handlePrevMonth}
@@ -130,10 +130,10 @@ const CustomCalendar = ({
         
         <button 
           onClick={() => setShowYearSelector(!showYearSelector)}
-          className="font-medium hover:bg-gray-100 px-1 py-0.5 rounded-md flex items-center transition-colors text-xs"
+          className="font-medium hover:bg-gray-100 px-1 py-0.5 rounded-md flex items-center transition-colors text-xs overflow-hidden whitespace-nowrap"
         >
-          <span>{monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}</span>
-          <ChevronsUpDown size={12} className="ml-1 opacity-70" />
+          <span className="truncate">{monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}</span>
+          <ChevronsUpDown size={12} className="ml-1 opacity-70 flex-shrink-0" />
         </button>
         
         <button
@@ -366,7 +366,7 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
   };
 
   return (
-    <div className="mx-auto">
+    <div className="mx-auto max-w-full px-4">
       <FormHeading
         title={"Verify PAN to Continue"}
         description={"Secure your identity with PAN verification."}
@@ -422,7 +422,7 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
           
           {/* Calendar popup positioned below the input field */}
           {showCalendar && (
-            <div className="absolute top-full left-0 mt-1 z-10 calendar-container">
+            <div className="absolute left-0 right-0 sm:left-auto sm:right-auto mt-1 z-10 calendar-container">
               <CustomCalendar
                 selectedDate={dob}
                 onDateSelect={handleDateSelect}
