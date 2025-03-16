@@ -79,6 +79,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
     try {
       // OTP should be in string
       localStorage.setItem("email", email);
+      console.log("Email OTP:",otp)
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
         {
@@ -88,7 +89,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
         }
       );
       if (!response) {
-        setError("Failed to send verification code. Please try again.");
+        setError("Failed to verify your code. Please try again.");
         console.error("Send OTP error, Response :", response);
         return;
       }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { CalendarIcon, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react";
 import FormHeading from "./FormHeading";
-
+import axios from "axios"
 // Enhanced calendar component with reduced size
 const CustomCalendar = ({
   selectedDate,
@@ -345,9 +345,30 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validatePan(panNumber) && validateDob(dob)) {
-      onNext();
+      try {
+        
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+          {
+            step: "pan",
+            pan_number:panNumber
+          }
+        );
+        console.log("Response of pan verifivation:",response)
+        if (!response) {
+          //TODO: Error handling, preferably by a toast or inbox
+          // setError("Failed to send verification code. Please try again.");
+          console.error("Send OTP error, Response :", response);
+          return;
+        }
+        
+        onNext();
+      } catch (error) {
+        // setError("Error verifying code. Please try again.");
+        console.error("Verification error:", error);
+      }
     } else {
       setErrors({
         pan: !validatePan(panNumber),

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
+import { headers } from "next/headers";
 const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [showOTP, setShowOTP] = useState(false);
@@ -99,10 +100,35 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
           otp: otp.join(""),
         }
       );
+      const token = response.data.token;
+      console.log("OTP RESPONSE TOKEN:", token)
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${token}`;
+
+      //set this token as bearer header
       if (!response) {
-        setError("Failed to send verification code. Please try again.");
+        setError("Failed to verify your code. Please try again.");
         console.error("Send OTP error, Response :", response);
         return;
+      }
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "credentials",
+          email: email,
+          phone: mobileNumber,
+        },
+        {
+          headers: {
+            Authorization : `Bearer ${response.data.token}`
+          },
+        }
+      );
+      if (!res) {
+        setError("Failed to register you as a user. Please try again.");
+        console.error("Send Credential Error, Response:", response);
+        return; 
       }
       onNext();
     } catch (err) {
