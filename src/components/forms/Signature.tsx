@@ -150,7 +150,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({ onNext }) => {
           onTouchEnd={stopDrawing}
         />
         
-        <div className="mt-2 text-center">
+        <div className="hidden sm:block mt-2 text-center">
           <button 
             className=" text-sm"
             onClick={handleQrCodeClick}
