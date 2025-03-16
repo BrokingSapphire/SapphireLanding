@@ -54,11 +54,11 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
           <label className="block text-gray-900 font-medium mb-2">
             Annual Income<span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
             <button
               type="button"
               onClick={() => handleIncomeSelect("< 1 Lakh")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedIncome === "< 1 Lakh" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -67,7 +67,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleIncomeSelect("1 - 5 Lacs")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedIncome === "1 - 5 Lacs" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -76,7 +76,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleIncomeSelect("5 - 10 Lacs")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedIncome === "5 - 10 Lacs" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -85,7 +85,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleIncomeSelect("10 - 25 Lacs")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedIncome === "10 - 25 Lacs" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -94,7 +94,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleIncomeSelect("25 - 1 Cr")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedIncome === "25 - 1 Cr" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -103,7 +103,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleIncomeSelect("> 1Cr")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedIncome === "> 1Cr" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -116,11 +116,11 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
           <label className="block text-gray-900 font-medium mb-2">
             Trading Experience<span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             <button
               type="button"
               onClick={() => handleExperienceSelect("No Experience")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "No Experience" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -129,7 +129,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleExperienceSelect("< 1 year")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "< 1 year" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -138,7 +138,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleExperienceSelect("1 - 5 years")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "1 - 5 years" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -147,7 +147,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleExperienceSelect("5 - 10 years")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "5 - 10 years" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -156,7 +156,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleExperienceSelect("10+ years")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "10+ years" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -169,11 +169,11 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
           <label className="block text-gray-900 font-medium mb-2">
             Preference for running account settlement<span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => handleSettlementSelect("Quaterly")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedSettlement === "Quaterly" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -182,7 +182,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
             <button
               type="button"
               onClick={() => handleSettlementSelect("Monthly")}
-              className={`py-2 px-3 text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
                 selectedSettlement === "Monthly" ? "border-teal-800 bg-teal-50 text-teal-800" : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
@@ -195,7 +195,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
       <Button
         onClick={onNext}
         disabled={!isFormValid}
-        className="w-full bg-teal-800 hover:bg-teal-900 text-white py-4 rounded mt-8"
+        className="w-full bg-teal-800 hover:bg-teal-900 text-white py-3 sm:py-4 rounded mt-8"
       >
         Continue
       </Button>

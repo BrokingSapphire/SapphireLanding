@@ -4,7 +4,7 @@ import FormHeading from "./FormHeading";
 
 const DigiLockerVerification = ({ onNext }: { onNext: () => void }) => {
   return (
-    <div className="mx-auto pt-24">
+    <div className="mx-auto pt-20">
       <FormHeading
         title={"Verify Aadhaar (DigiLocker)"}
         description={"Fast and easy Aadhaar-based verification."}

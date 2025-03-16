@@ -11,7 +11,7 @@ export default function FAQ() {
   return (
     <div className="w-full bg-white px-4 sm:px-6 py-8 sm:p-12">
       <div className="max-w-6xl mx-auto flex flex-col space-y-4 sm:space-y-6 items-center justify-center">
-        <h1 className="text-green-heading text-2xl sm:text-4xl font-bold text-center">
+        <h1 className="text-green-heading text-3xl sm:text-4xl font-bold text-center">
           Frequently Asked Questions (FAQs)
         </h1>
         <p className="text-sm sm:text-base text-center text-gray-500 max-w-2xl">
@@ -39,13 +39,7 @@ export default function FAQ() {
           ))}
         </Accordion>
 
-        <div className="text-center mt-4 sm:mt-8">
-          <Link href={"/contact"}>
-            <button className="px-6 sm:px-8 md:px-10 py-2.5 sm:py-3 md:py-4 border border-black rounded-full text-gray-600 text-sm sm:text-base font-bold hover:bg-[#152F46] hover:text-white transition">
-              Contact Us
-            </button>
-          </Link>
-        </div>
+
       </div>
     </div>
   );

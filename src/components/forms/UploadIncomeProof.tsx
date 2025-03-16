@@ -50,7 +50,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto p-4">
+    <div className="w-full max-w-md mx-auto mt-10 ">
       <FormHeading
         title="Upload Income Proof"
         description="A small step for you, a big leap towards seamless trading!"
