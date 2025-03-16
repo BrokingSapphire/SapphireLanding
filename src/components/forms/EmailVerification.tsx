@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
+import axios from "axios";
 
 const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   const [email, setEmail] = useState("");
@@ -76,8 +77,21 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
     setError(null);
 
     try {
-      // TODO: Implement actual OTP verification logic here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
+      // OTP should be in string
+      localStorage.setItem("email", email);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
+        {
+          type: "email",
+          email: email,
+          otp: otp.join(""),
+        }
+      );
+      if (!response) {
+        setError("Failed to send verification code. Please try again.");
+        console.error("Send OTP error, Response :", response);
+        return;
+      }
       onNext();
     } catch (err) {
       setError("Error verifying code. Please try again.");
@@ -97,8 +111,19 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
     setError(null);
 
     try {
-      // TODO: Implement actual send OTP logic here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp`,
+        {
+          type: "email",
+          email: email,
+        }
+      );
+      if (!response) {
+        setError("Failed to send verification code. Please try again.");
+        console.error("Send OTP error, Response :", response);
+        return;
+      }
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds

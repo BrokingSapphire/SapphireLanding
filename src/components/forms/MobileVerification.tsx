@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-
+import axios from "axios";
 const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [showOTP, setShowOTP] = useState(false);
@@ -12,6 +12,13 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email") || "";
+    setEmail(storedEmail);
+  }, []); // Runs only once when the component mounts
+
 
   // OTP timer for 10 minutes
   useEffect(() => {
@@ -75,10 +82,28 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const handleVerifyOTP = async () => {
     setIsLoading(true);
     setError(null);
+        if (email === "") {
+          console.error("Verify your email first!");
+          alert("Verify Your Email First!");
+        }
 
     try {
       // TODO: Implement actual OTP verification logic here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
+      console.log(otp.join(""))
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
+        {
+          type: "phone",
+          phone: mobileNumber,
+          email: email,
+          otp: otp.join(""),
+        }
+      );
+      if (!response) {
+        setError("Failed to send verification code. Please try again.");
+        console.error("Send OTP error, Response :", response);
+        return;
+      }
       onNext();
     } catch (err) {
       setError("Error verifying OTP. Please try again.");
@@ -93,13 +118,28 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
       setError("Please enter a valid 10-digit mobile number");
       return;
     }
+        if (email === "") {
+          console.error("Verify your email first!");
+          alert("Verify Your Email First!");
+        }
 
     setIsLoading(true);
     setError(null);
 
     try {
-      // TODO: Implement actual send OTP logic here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp`,
+        {
+          type: "phone",
+          email: email,
+          phone: mobileNumber,
+        }
+      );
+      if (!response) {
+        setError("Failed to send verification code. Please try again.");
+        console.error("Send OTP error, Response :", response);
+        return;
+      }
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds
