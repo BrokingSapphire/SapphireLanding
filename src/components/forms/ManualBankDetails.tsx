@@ -150,7 +150,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({ onNext, onBack })
         </div>
 
         <div className="flex justify-between items-center mt-6">
-          <Button type="button" variant="link" onClick={onBack} className="text-blue-500 flex items-center">
+          <Button type="button" variant="link" onClick={onBack} className="hidden  text-blue-500 sm:flex items-center">
             Link via UPI <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
 
