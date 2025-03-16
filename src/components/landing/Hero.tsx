@@ -36,7 +36,7 @@ export default function Hero() {
           transition={{ duration: 0.5 }}
         >
           <motion.div
-            className="text-center font-semibold leading-tight text-4xl md:text-5xl"
+            className="-mx-8 text-center font-semibold leading-tight text-5xl sm:text-5xl md:text-5xl"
             variants={fadeInUp}
             initial="initial"
             animate="animate"
@@ -44,7 +44,7 @@ export default function Hero() {
           >
             Transform Your
             <motion.span
-              className="font-lobster-two  pr-2 italic text-transparent bg-clip-text font-[400] bg-gradient-to-r from-[#14A5AD] to-[#21B906]"
+              className="font-lobster-two pr-2 italic text-transparent bg-clip-text font-[400] bg-gradient-to-r from-[#14A5AD] to-[#21B906]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
@@ -56,7 +56,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div
-            className="text-base sm:text-lg md:text-xl text-gray-heading pt-6"
+            className="-mx-4 text-xl sm:text-xl md:text-xl text-gray-heading pt-6"
             variants={fadeInUp}
             initial="initial"
             animate="animate"

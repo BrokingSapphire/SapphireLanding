@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 interface FeaturePoint {
@@ -295,11 +296,11 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
         <div className="flex items-center justify-between text-sm text-gray-500">
           <div>© Sapphire Broking</div>
           <div className="flex items-center space-x-2">
-            <span>Privacy Policy</span>
-            <span>•</span>
-            <span>T&C</span>
-            <span>•</span>
-            <span>Contact Us</span>
+          <Link href="/privacy-policy">Privacy Policy</Link>
+          <span>•</span>
+          <Link href="/terms-and-conditions">T&C</Link>
+          <span>•</span>
+          <Link href="/contact">Contact Us</Link>
           </div>
         </div>
       </footer>

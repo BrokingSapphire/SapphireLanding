@@ -91,7 +91,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     formData.motherName.trim();
 
   return (
-    <div className="mx-auto mt-14">
+    <div className="mx-auto mt-10">
       <FormHeading
         title={"Trading Account Details"}
         description={"Set up your trading account in minutes."}

@@ -43,7 +43,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
   const isFormValid = selectedIncome && selectedExperience && selectedSettlement;
 
   return (
-    <div className="w-full mx-auto p-4">
+    <div className="w-full mx-auto mt-8 p-4">
       <FormHeading 
         title="Trading Account Details" 
         description="Set up your trading account in minutes." 
