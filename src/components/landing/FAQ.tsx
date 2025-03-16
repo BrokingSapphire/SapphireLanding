@@ -5,7 +5,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { faqs } from "@/constants/landing";
-import Link from "next/link";
 
 export default function FAQ() {
   return (
