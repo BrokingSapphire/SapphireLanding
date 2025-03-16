@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/carousel";
 
 const GatewayCard = ({ title, icon, description }: GatewayItem) => (
-  <div className="flex justify-center p-4 h-full">
+  <div className="flex justify-center p-4 h-full mt-10 sm:mt-0">
     <div className="relative w-[280px] max-w-xs sm:max-w-sm h-64 group">
-      <div className="absolute bottom-8 w-full h-36 bg-[#FFD62D] rounded-xl transform-gpu transition-transform duration-700 ease-in-out origin-top group-hover:-rotate-12" />
+      <div className="absolute bottom-20 sm:bottom-8 w-full h-36 bg-[#FFD62D] rounded-xl transform-gpu transition-transform duration-700 ease-in-out origin-top group-hover:-rotate-12" />
 
       <div className="relative -top-2">
         <div className="bg-gray-100 rounded-xl p-6 sm:p-8 shadow-md h-full flex flex-col justify-between transform-gpu transition-all duration-300 ease-in-out group-hover:-translate-y-4">

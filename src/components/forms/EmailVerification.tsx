@@ -80,6 +80,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
       // OTP should be in string
       localStorage.setItem("email", email);
       console.log("Email OTP:",otp)
+      console.log("Email:",email)
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
         {
