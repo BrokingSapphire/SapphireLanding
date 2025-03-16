@@ -273,4 +273,4 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   );
 };
 
-export default EmailVerification;
+export default EmailVerification
