@@ -22,7 +22,7 @@ const MeetOurTeam = () => {
   
   return (
     <div className="text-center mb-10 mt-10 sm:mt-20 sm:mb-12">
-      <h1 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
+      <h1 className="font-lexend text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
         Meet Our Team
       </h1>
       <p className="text-sm sm:text-base text-gray-500 mt-3 px-4 max-w-3xl mx-auto">
@@ -32,7 +32,7 @@ const MeetOurTeam = () => {
       <div className="flex flex-wrap justify-center gap-10 sm:gap-40 mt-16 w-full">
         {teamMembers.map((member, index) => (
           <div key={index} className="space-y-3 text-center">
-            <div className="w-56 h-56 relative">
+            <div className="w-40 h-40 relative">
               <Image
                 src={member.image}
                 alt={member.name}

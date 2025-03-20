@@ -3,13 +3,13 @@ import React from "react";
 
 const Nakul = () => {
   return (
-    <div className="mt-14 mx-10 p-6">
+    <div className="mt-14 mx-10 py-6 sm:px-20">
       <div className="flex items-start flex-col md:flex-row gap-12">
         {/* Content Section */}
         <div className="flex-1">
           <div className="text-left">
             {/* Name and Title */}
-            <h2 className="text-2xl sm:text-4xl font-semibold mb-3">Mr. Nakul Thakur</h2>
+            <h2 className="font-lexend text-2xl sm:text-4xl font-semibold mb-3">Mr. Nakul Thakur</h2>
             <h3 className="text-blue-600 text-base sm:text-xl font-medium mb-3">
              Managing Partner, Sapphire
             </h3>
@@ -41,7 +41,7 @@ const Nakul = () => {
           </div>
         </div>
         {/* Profile Image - Centered */}
-        <div className="w-96 h-96 rounded-lg  overflow-hidden bg-pink-50 flex-shrink-0 self-center">
+        <div className=" h-80 w-80 sm:w-96 sm:h-96 rounded-lg  overflow-hidden bg-pink-50 flex-shrink-0 self-center">
           <Image
             src="/about/about-logo.png"
             alt="Nakul Thakur"
