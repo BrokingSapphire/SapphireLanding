@@ -3,7 +3,7 @@ import React from "react";
 const TradingCharges = () => {
   return (
     <div className="bg-gray-100 py-8 md:py-12">
-      <div className="max-w-6xl mx-auto px-4 md:px-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-20">
         {/* Simplified Charges Section */}
         <h2 className="text-center text-3xl md:text-5xl font-semibold mb-6 md:mb-8">
           Simplified Charges for{" "}

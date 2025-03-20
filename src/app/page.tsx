@@ -38,7 +38,6 @@ const Home = () => {
         <Guide />
       </div>
       <FAQ />
-      {/* <Support /> */}
     </>
   );
 };

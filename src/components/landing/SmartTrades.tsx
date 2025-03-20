@@ -45,7 +45,7 @@ function SmartTrades() {
   }, []);
 
   return (
-    <div className="min-h-[500px] mt-8 md:mt-16 flex flex-col md:flex-row items-center justify-center text-left gap-6 md:gap-12 px-4 md:px-28 lg:pl-20 pb-16 md:pb-0">
+    <div className="min-h-[500px] mt-8 md:mt-16 flex flex-col md:flex-row items-center justify-center text-left gap-6 md:gap-12 px-10 md:px-32 lg:pl-20 pb-16 md:pb-0">
       <div className="md:h-[380px] md:-mt-28 w-full md:w-1/2 flex flex-col">
         <h2 className="font-lexend text-3xl text-center mx-auto md:text-3xl lg:text-4xl font-semibold leading-relaxed">
           {content[currentIndex].title}
