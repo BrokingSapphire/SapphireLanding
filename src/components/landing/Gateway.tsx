@@ -13,9 +13,9 @@ import {
 const GatewayCard = ({ title, icon, description }: GatewayItem) => (
   <div className="flex justify-center p-4 h-full mt-10 sm:mt-0">
     <div className="relative w-[280px] max-w-xs sm:max-w-sm h-64 group">
-      <div className="absolute bottom-20 sm:bottom-8 w-full h-36 bg-[#FFD62D] rounded-xl transform-gpu transition-transform duration-700 ease-in-out origin-top group-hover:-rotate-12" />
+      <div className="absolute bottom-20 sm:bottom-8 w-full h-36 bg-[#FFD62D] rounded-xl transform-gpu transition-transform duration-700 ease-in-out origin-top group-hover:-rotate-6" />
 
-      <div className="relative -top-2">
+      <div className="relative -top-0">
         <div className="bg-gray-100 rounded-xl p-6 sm:p-8 shadow-md h-full flex flex-col justify-between transform-gpu transition-all duration-300 ease-in-out group-hover:-translate-y-4">
           <div className="flex flex-col items-start space-y-2 sm:space-y-3">
             <Image
@@ -58,7 +58,7 @@ const Gateway = () => {
   return (
     <section className="max-w-7xl mt-4 mx-auto p-4 sm:p-8">
       <div className="text-center mb-8 sm:mb-12">
-        <h1 className="text-3xl sm:text-4xl font-semibold mb-3 sm:mb-4">
+        <h1 className="font-lexend text-3xl sm:text-4xl font-semibold mb-3 sm:mb-4">
           Your Gateway to Smart Investing
         </h1>
         <p className="text-xl text-gray-600 sm:text-base tracking-wider mt-3 px-4">

@@ -8,7 +8,7 @@ import { faqs } from "@/constants/landing";
 
 export default function FAQ() {
   return (
-    <div className="w-full bg-white px-4 sm:px-6 py-8 sm:p-12">
+    <div className="w-full mb-10 mt-2 px-14 sm:px-6 py-8 sm:p-12">
       <div className="max-w-6xl mx-auto flex flex-col space-y-4 sm:space-y-6 items-center justify-center">
         <h1 className="text-green-heading text-3xl sm:text-4xl font-bold text-center">
           Frequently Asked Questions (FAQs)
