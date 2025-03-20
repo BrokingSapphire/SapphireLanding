@@ -8,12 +8,12 @@ import { faqs } from "@/constants/landing";
 
 export default function FAQ() {
   return (
-    <div className="w-full bg-white px-4 sm:px-6 py-8 sm:p-12">
+    <div className="w-full mb-10 mt-2 px-14 sm:px-6 py-8 sm:p-12">
       <div className="max-w-6xl mx-auto flex flex-col space-y-4 sm:space-y-6 items-center justify-center">
-        <h1 className="text-green-heading text-3xl sm:text-4xl font-bold text-center">
+        <h1 className="font-lexend text-green-heading text-3xl sm:text-4xl font-bold text-center">
           Frequently Asked Questions (FAQs)
         </h1>
-        <p className="text-sm sm:text-base text-center text-gray-500 max-w-2xl">
+        <p className="font-lexend text-sm sm:text-base text-center text-gray-500 max-w-2xl">
           Your Guide to Understanding Our Stock Brokerage Services
         </p>
 
@@ -26,7 +26,7 @@ export default function FAQ() {
             <AccordionItem
               key={index}
               value={`item-${index + 1}`}
-              className="border-b border-black py-1 sm:py-2"
+              className="py-1 sm:py-2"
             >
               <AccordionTrigger className="text-sm sm:text-base md:text-xl font-semibold hover:no-underline text-left">
                 {faq.question}
@@ -37,8 +37,6 @@ export default function FAQ() {
             </AccordionItem>
           ))}
         </Accordion>
-
-
       </div>
     </div>
   );

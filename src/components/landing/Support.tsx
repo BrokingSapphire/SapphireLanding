@@ -22,13 +22,13 @@ const Support = () => {
         </div>
 
         {/* Arrow Group Image on the Extreme Right */}
-        <div className="w-40 sm:w-56 -mr-8 scale-125">
+        <div className="w-40 sm:w-56 -mr-8">
           <Image
             src="/main/ArrowGroup.svg"
             alt="Arrow Group"
             className="hidden sm:block w-full h-full object-contain"
-            width={1000}
-            height={1000}
+            width={900}
+            height={900}
           />
         </div>
       </div>

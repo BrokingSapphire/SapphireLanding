@@ -62,9 +62,9 @@ const GuideCard = ({ guide } : { guide: Guide }) => (
 
 const Guide = () => {
   return (
-    <div className="bg-gray-100 py-8 sm:py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <h2 className="text-center text-3xl sm:text-4xl font-semibold mb-8 sm:mb-12">
+    <div className="bg-gray-100 py-8 sm:py-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-24">
+        <h2 className="font-lexend text-center text-3xl sm:text-4xl font-semibold mb-8 sm:mb-12">
           Guides for Financial Success
         </h2>
 
@@ -92,7 +92,7 @@ const Guide = () => {
         </div>
 
         {/* Desktop Grid View */}
-        <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
+        <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-16">
           {guides.map((guide) => (
             <GuideCard key={guide.id} guide={guide} />
           ))}

@@ -58,7 +58,7 @@ const Glimpses = () => {
   ];
 
   return (
-    <div className="container text-center w-full mx-auto px-4">
+    <div className="font-lexend container text-center w-full mx-auto px-8 sm:px-20">
       <h1 className="text-2xl sm:text-4xl font-semibold mb-8">
         Glimpses at Sapphire
       </h1>

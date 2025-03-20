@@ -36,7 +36,7 @@ export default function Hero() {
           transition={{ duration: 0.5 }}
         >
           <motion.div
-            className="-mx-8 text-center font-semibold leading-tight text-5xl sm:text-5xl md:text-5xl"
+            className="-mx-8  text-center font-lexend font-semibold leading-tight text-5xl sm:text-5xl md:text-6xl"
             variants={fadeInUp}
             initial="initial"
             animate="animate"
@@ -56,7 +56,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div
-            className="-mx-4 text-xl sm:text-xl md:text-xl text-gray-heading pt-6"
+            className="-mx-4  text-xl sm:text-xl md:text-xl text-gray-heading pt-6"
             variants={fadeInUp}
             initial="initial"
             animate="animate"
