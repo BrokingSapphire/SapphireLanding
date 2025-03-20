@@ -160,21 +160,20 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({ onNext }) => {
         </div>
         
         <div className="flex justify-between mt-4">
-          <Button 
-            variant="outline"
+          <button 
             onClick={clearSignature}
-            className="border-gray-300 text-gray-700"
+            className="px-8 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700"
           >
             Clear
-          </Button>
+          </button>
           
-          <Button 
+          <button 
             onClick={handleSubmit}
             disabled={!signature}
-            className="bg-teal-800 hover:bg-teal-900 text-white"
+            className= "px-8 py-2 rounded bg-teal-800 hover:bg-teal-900 text-white"
           >
             Submit
-          </Button>
+          </button>
         </div>
       </div>
     </div>

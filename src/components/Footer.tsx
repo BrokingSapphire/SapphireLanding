@@ -75,15 +75,17 @@ const LegalSection = () => (
     </div>
 
     <div className="flex flex-wrap justify-center gap-4 py-4">
-      {EXCHANGES.map((exchange, index, array) => (
+    {EXCHANGES.map((exchange, index, array) => (
         <a
-          key={exchange}
-          href="#"
+          key={exchange.name}
+          href={exchange.link}
+          target="_blank"
+          rel="noopener noreferrer"
           className={`text-gray-400 ${
             index !== array.length - 1 ? "sm:border-r border-white sm:pr-4" : ""
           }`}
         >
-          {exchange}
+          {exchange.name}
         </a>
       ))}
     </div>

@@ -54,7 +54,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="fixed font-poppins w-full top-0 z-50 bg-white backdrop-blur-md shadow-sm">
-        <div className="xl:max-w-7xl mx-auto flex items-center justify-between py-4 pl-4 px-6 lg:px-8">
+        <div className="xl:max-w-7xl mx-auto flex items-center justify-between py-4 pl-4 px-6 lg:px-12">
           <Link href="/">
             <div className="items-center flex">
               <Image
@@ -82,7 +82,7 @@ const Navbar = () => {
 
                   {/* Green underline animation (for both hover & active states) */}
                   <span
-                    className={`absolute bottom-0 left-0 h-[3px] bg-[#064D51] transition-all duration-300 ${
+                    className={`absolute -bottom-4 left-0 h-[3px] bg-[#064D51] transition-all duration-300 ${
                       activeLink === link.href ? "w-full" : "w-0"
                     } group-hover:w-full`}
                   ></span>

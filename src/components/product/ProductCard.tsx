@@ -22,7 +22,7 @@ export const ProductCard = ({
     data-testid={`product-${index}`}
   >
     <div className="w-full md:w-1/2 space-y-3 sm:space-y-4">
-      <h2 className="text-3xl sm:text-5xl font-bold">{title}</h2>
+      <h2 className="font-lexend text-3xl sm:text-5xl font-bold">{title}</h2>
       <p className="text-gray-600 text-base sm:text-lg">
         &quot;{description}&quot;
       </p>

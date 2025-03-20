@@ -50,13 +50,13 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto mt-10 ">
+    <div className="w-full max-w-xl mx-auto  mt-16  ">
       <FormHeading
         title="Upload Income Proof"
         description="A small step for you, a big leap towards seamless trading!"
       />
 
-      <div className="mt-6">
+      <div className="mt-6 p-2 bg-[#F7F9FD] rounded">
         <div className="relative">
           <div
             className="border  rounded-md p-4 flex justify-between items-center cursor-pointer"
@@ -89,7 +89,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         </div>
 
         <div
-          className="mt-4 border-2 border-dashed border-gray-300 rounded-md p-6 text-center"
+          className="mt-4 border-2 border-dashed bg-white border-gray-300 rounded-md p-6 text-center"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
         >
@@ -124,7 +124,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
               </button>
             </div>
           ) : (
-            <div className="flex flex-col items-center">
+            <div className=" flex flex-col items-center">
               <Upload className="h-8 w-8 text-gray-400 mb-2" />
               <p className="text-gray-600 mb-2">Drag and drop file here or</p>
               <button
