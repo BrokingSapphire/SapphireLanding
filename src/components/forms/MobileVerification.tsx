@@ -9,7 +9,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [otpTimer, setOtpTimer] = useState(600); // 10 minutes in seconds
+  const [otpTimer, setOtpTimer] = useState(600); //  10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
