@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Poppins, Lobster_Two } from "next/font/google";
+import { Geist, Geist_Mono, Lexend, Poppins, Lobster_Two } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
-
 import { Analytics } from "@vercel/analytics/react";
 import FooterWrapper from "@/components/FooterWrapper";
 
@@ -18,11 +16,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Import Poppins and Lobster Two from Google Fonts
 const poppins = Poppins({
   weight: ["100", "400", "600"],
   subsets: ["latin"],
   variable: "--font-poppins",
+});
+
+const lexend = Lexend({
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-lexend",
 });
 
 const lobsterTwo = Lobster_Two({
@@ -56,15 +59,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* No need to import external links for fonts, as we are using next/font */}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${lobsterTwo.variable}  font-poppins bg-white text-black antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${lobsterTwo.variable} ${lexend.variable} font-poppins bg-white text-black antialiased`}
       >
         <Analytics />
-          <Navbar />
-          {children}
-          <FooterWrapper />
+        <Navbar />
+        {children}
+        <FooterWrapper />
       </body>
     </html>
   );

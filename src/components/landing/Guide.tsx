@@ -62,9 +62,9 @@ const GuideCard = ({ guide } : { guide: Guide }) => (
 
 const Guide = () => {
   return (
-    <div className="bg-gray-100 py-8 sm:py-12">
+    <div className="bg-gray-100 py-8 sm:py-14">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <h2 className="text-center text-3xl sm:text-4xl font-semibold mb-8 sm:mb-12">
+        <h2 className="text-center text-3xl sm:text-4xl font-medium mb-8 sm:mb-12">
           Guides for Financial Success
         </h2>
 

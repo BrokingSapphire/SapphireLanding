@@ -52,7 +52,7 @@ const Calculator: React.FC = () => {
       <div className="max-w-7xl flex flex-col-reverse md:flex-col lg:flex-row justify-between items-center mx-auto px-4 sm:px-6 lg:px-12">
         {/* Text & Buttons Section */}
         <div className="w-full lg:w-1/2 mt-6 md:mt-0">
-          <h1 className="text-3xl  sm:text-3xl font-bold text-black mb-8 sm:mb-6 text-center lg:text-left">
+          <h1 className="text-3xl sm:text-3xl font-medium text-black mb-8 sm:mb-6 text-center lg:text-left">
             Simplify your investments with our smart calculators!
           </h1>
 

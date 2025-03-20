@@ -93,7 +93,7 @@ const ContactCards: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#F5F7FA] py-6 sm:py-8 md:py-11 px-4 sm:px-6 md:px-8">
+    <div className="bg-[#F5F7FA] py-6 sm:py-8 md:py-11 px-9 sm:px-6 md:px-8">
       <div className="max-w-6xl mx-auto">
         {/* First row with 3 cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
