@@ -56,7 +56,7 @@ function SmartTrades() {
             fade ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
           }`}
         >
-          <h3 className="mt-4 md:mt-8 text-lg md:text-xl font-semibold">
+          <h3 className="mt-4 md:mt-16 text-lg md:text-xl font-semibold">
             {content[currentIndex].heading}
           </h3>
           <p className="text-gray-600 mt-3 md:mt-6 text-base md:text-lg max-w-md leading-relaxed md:leading-loose">

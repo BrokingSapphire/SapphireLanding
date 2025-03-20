@@ -2,7 +2,8 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react'
-import { FaChevronRight } from 'react-icons/fa';
+import { IoIosArrowRoundForward } from "react-icons/io";
+// import { FaChevronRight } from 'react-icons/fa';
 
 const Opportunities = () => {
     const router = useRouter()
@@ -17,8 +18,8 @@ const Opportunities = () => {
           alt="Arrows pointing right"
           className="ml-auto hidden sm:block  object-cover"
           aria-hidden="true"
-          width={1000}
-          height={1000}
+          width={350}
+          height={350}
         />
       </div>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,11 +32,11 @@ const Opportunities = () => {
           </h2>
 
           <button
-            className="bg-white text-black px-4 sm:px-6 py-2 rounded-md font-medium hover:bg-gray-100 transition-colors inline-flex items-center text-sm sm:text-base"
+            className="bg-white text-black px-4 sm:px-12 py-2 rounded-md font-medium hover:bg-gray-100 transition-colors inline-flex items-center justify-center text-sm sm:text-base group"
             onClick={() => router.push("/signup")}
           >
-            Sign up
-            <FaChevronRight className="ml-2 w-4 h-4" />
+            <span className="mx-auto">Sign Up</span>
+            <IoIosArrowRoundForward className="w-8 h-8 ml-2 transition-transform duration-300 group-hover:translate-x-2" />
           </button>
         </div>
       </div>

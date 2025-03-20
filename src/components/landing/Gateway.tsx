@@ -61,7 +61,7 @@ const Gateway = () => {
         <h1 className="font-lexend text-3xl sm:text-4xl font-semibold mb-3 sm:mb-4">
           Your Gateway to Smart Investing
         </h1>
-        <p className="text-xl text-gray-600 sm:text-base tracking-wider mt-3 px-4">
+        <p className="font-lexend text-xl text-gray-600 sm:text-base tracking-wider mt-3 px-4">
           Highlighted features that simplify and enhance the investing
           experience.
         </p>
