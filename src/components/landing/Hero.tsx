@@ -17,7 +17,7 @@ export default function Hero() {
   return (
     <AnimatePresence mode="wait">
       <div
-        className="relative mt-24 md:mt-32 w-full flex flex-col items-center justify-center mx-auto px-4 sm:px-6 md:px-8"
+        className="relative mt-24 md:mt-32 w-full flex flex-col items-center justify-center mx-auto px-8 sm:px-6 md:px-8"
         style={{
           backgroundImage: "url('/main/Bg_Landing.png')",
           backgroundSize: "cover",
@@ -97,7 +97,7 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 1 }}
         >
           <Image
-            className="border-4 sm:border-6 md:border-8 border-gray-100 rounded-md w-full md:w-auto"
+            className="border-4 mb-8 sm:border-6 md:border-8 border-gray-100 rounded-md w-full md:w-auto"
             alt="Platform Photo"
             src="/hero.svg"
             width={1000}

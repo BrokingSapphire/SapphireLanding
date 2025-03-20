@@ -56,7 +56,7 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
 
 const Gateway = () => {
   return (
-    <section className="max-w-7xl mt-4 mx-auto p-4 sm:p-8">
+    <section className="max-w-7xl mt-4 mx-auto p-8">
       <div className="text-center mb-8 sm:mb-12">
         <h1 className="font-lexend text-3xl sm:text-4xl font-semibold mb-3 sm:mb-4">
           Your Gateway to Smart Investing
