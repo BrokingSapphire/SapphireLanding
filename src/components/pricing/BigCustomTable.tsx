@@ -114,7 +114,7 @@ const ChargesTable = () => {
 
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-14 space-y-6 sm:space-y-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8">
         {/* Navigation Bar */}
         <div className="flex border-b overflow-x-auto hide-scrollbar">
           {["Equity", "Currency", "Commodity"].map((tab) => (
@@ -206,7 +206,7 @@ const ChargesTable = () => {
 
         {/* Account Opening Charges */}
         <div>
-          <div className="py-4 text-xl sm:text-2xl font-semibold text-gray-800">
+          <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
             Account Opening Charges
           </div>
           <div className="overflow-x-auto">
@@ -241,7 +241,7 @@ const ChargesTable = () => {
 
         {/* Non Trade Charges */}
         <div>
-          <div className="py-4 text-xl sm:text-2xl font-semibold text-gray-800">
+          <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
             Non Trade Charges
           </div>
           <div className="overflow-x-auto">
@@ -276,7 +276,7 @@ const ChargesTable = () => {
 
         {/* MTF Charges */}
         <div>
-          <div className="py-4 text-xl sm:text-2xl font-semibold text-gray-800">
+          <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
             MTF Charges
           </div>
           <div className="overflow-x-auto">
@@ -310,8 +310,8 @@ const ChargesTable = () => {
         </div>
       </div>
 
-      <div className="p-6 sm:p-16 text-sm bg-gray-100 text-gray-600">
-        <span className="text-xl sm:text-2xl font-semibold text-black">
+      <div className="p-6 sm:py-16 sm:px-24 text-sm bg-gray-100 text-gray-600">
+        <span className=" font-lexend text-xl sm:text-2xl font-semibold text-black">
           Disclaimer
         </span>
         <p className="mt-4 sm:mt-5 leading-relaxed">
