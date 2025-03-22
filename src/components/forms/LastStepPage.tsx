@@ -37,9 +37,9 @@ const LastStepPage: React.FC<LastStepPageProps> = ({ onNext }) => {
       </div>
       
       <Button 
-        variant="default" 
+        variant="ghost"
         onClick={onNext} 
-        className="w-full bg-teal-800 hover:bg-teal-900 text-white py-3 rounded"
+        className="py-6 w-full"
       >
         Proceed to E-sign
       </Button>

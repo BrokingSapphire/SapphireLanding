@@ -67,7 +67,7 @@ const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
   const isFormValid = occupation !== "" && isPoliticallyExposed !== null;
 
   return (
-    <div className="mx-auto mt-14 p-4">
+    <div className="mx-auto mt-14">
       <FormHeading
         title={"Trading Account Details"}
         description={"Set up your trading account in minutes."}

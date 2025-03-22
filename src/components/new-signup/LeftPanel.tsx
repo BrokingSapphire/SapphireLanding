@@ -116,7 +116,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
   const showProgressStepper = currentStep >= 3;
 
   return (
-    <div className="w-full h-full flex flex-col justify-between relative px-20 py-14 overflow-hidden">
+    <div className="w-full bg-[#F6FAFC] h-full flex flex-col justify-between relative px-20 py-14 overflow-hidden">
       {/* Background decorative elements with enhanced animations */}
       <div className="absolute left-32 top-2 bg-yellow-400 w-96 h-40 blur-[70px] opacity-40 rounded-full animate-[float_8s_ease-in-out_infinite]"></div>
       <div className="absolute -left-6 -top-2 bg-green-500 w-44 h-32 blur-[70px] opacity-40 rounded-full animate-[pulse_6s_ease-in-out_infinite]"></div>
@@ -296,11 +296,17 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
         <div className="flex items-center justify-between text-sm text-gray-500">
           <div>© Sapphire Broking</div>
           <div className="flex items-center space-x-2">
-          <Link href="/privacy-policy">Privacy Policy</Link>
-          <span>•</span>
-          <Link href="/terms-and-conditions">T&C</Link>
-          <span>•</span>
-          <Link href="/contact">Contact Us</Link>
+            <Link target="_blank" href="/privacy-policy">
+              Privacy Policy
+            </Link>
+            <span>•</span>
+            <Link target="_blank" href="/terms-and-conditions">
+              T&C
+            </Link>
+            <span>•</span>
+            <Link target="_blank"  href="/contact">
+              Contact Us
+            </Link>
           </div>
         </div>
       </footer>

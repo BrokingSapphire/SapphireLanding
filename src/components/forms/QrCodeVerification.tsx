@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Clock } from "lucide-react";
 import { Button } from "../ui/button";
+import FormHeading from "./FormHeading";
 
 interface QrCodeVerificationProps {
   onBack: () => void;
@@ -34,16 +35,14 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 flex flex-col items-center">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold">Video Verification (IPV)</h2>
-        <p className="text-gray-600 mt-1">
-          A quick face-to-face verification for security.
-        </p>
-      </div>
+    <div className="w-full mx-auto flex flex-col items-start mt-16">
+      <FormHeading
+        title="Video Verification (IPV)"
+        description="A quick face-to-face verification for security."
+      />
 
       <div className="relative w-full mb-4">
-        <div className="absolute right-2 top-2 flex items-center text-gray-500 text-sm">
+        <div className="absolute right-2 -top-6 flex items-center text-gray-500 text-sm">
           <Clock className="h-4 w-4 mr-1" />
           <span>{formatTime(timeRemaining)}</span>
         </div>
@@ -83,7 +82,6 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
           <ArrowLeft className="h-4 w-4 mr-1" />
           go-back
         </Button>
-
       </div>
     </div>
   );
