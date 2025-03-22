@@ -1,6 +1,5 @@
 "use client"
 import React, { useState, useEffect } from "react";
-import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import ManualBankDetails from "./ManualBankDetails";
 import UpiLinking from "./UpiLinking";

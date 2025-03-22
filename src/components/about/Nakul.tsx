@@ -23,8 +23,8 @@ const Nakul = () => {
               </p>
               <p>
                 We understand the challenges investors face in navigating
-                complex information and making informed decisions. That's why
-                we've built a platform that combines cutting-edge technology
+                complex information and making informed decisions. That&apos;s why
+                we&apos;ve built a platform that combines cutting-edge technology
                 with personalised support, redefining the way you grow and
                 manage your wealth.
               </p>

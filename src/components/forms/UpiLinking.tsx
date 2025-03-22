@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-import { AlertTriangle, ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Clock } from "lucide-react";
 import Image from "next/image";
 
 interface UpiLinkingProps {

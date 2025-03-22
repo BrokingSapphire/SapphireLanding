@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import SignatureQrCode from "./SignatureQrCode";
 
