@@ -31,8 +31,8 @@ const MeetOurTeam = () => {
       </p>
       <div className="flex flex-wrap justify-center gap-10 sm:gap-40 mt-16 w-full">
         {teamMembers.map((member, index) => (
-          <div key={index} className="space-y-3 text-center">
-            <div className="w-40 h-40 relative">
+          <div key={index} className="space-y-1.5 text-center flex flex-col items-center">
+            <div className="w-40 h-40 relative mx-auto mb-6">
               <Image
                 src={member.image}
                 alt={member.name}
@@ -48,6 +48,5 @@ const MeetOurTeam = () => {
     </div>
   );
 };
-
 
 export default MeetOurTeam;

@@ -3,7 +3,7 @@ import React from "react";
 
 const Nakul = () => {
   return (
-    <div className="mt-14 mx-10 py-6 sm:px-20">
+    <div className="mt-14 mx-10 py-6 sm:px-14">
       <div className="flex items-center flex-col-reverse md:flex-row md:items-start gap-12">
         {/* Content Section */}
         <div className="flex-1">

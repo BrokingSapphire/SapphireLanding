@@ -70,7 +70,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex flex-1 justify-center">
-            <div className="flex uppercase items-center gap-8">
+            <div className="flex uppercase items-center gap-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -80,11 +80,11 @@ const Navbar = () => {
                 >
                   {link.label}
 
-                  {/* Green underline animation with increased length (for both hover & active states) */}
+                  {/* Green underline animation with consistent 140% length for both hover & active states */}
                   <span
                     className={`absolute -bottom-4 left-1/2 transform -translate-x-1/2 h-[3px] bg-[#064D51] transition-all duration-300 ${
-                      activeLink === link.href ? "w-[120%]" : "w-0"
-                    } group-hover:w-[120%]`}
+                      activeLink === link.href ? "w-[140%]" : "w-0"
+                    } group-hover:w-[140%]`}
                   ></span>
                 </Link>
               ))}

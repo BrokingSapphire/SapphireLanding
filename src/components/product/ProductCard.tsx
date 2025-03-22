@@ -21,8 +21,8 @@ export const ProductCard = ({
     className={`flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 md:gap-12`}
     data-testid={`product-${index}`}
   >
-    <div className="w-full md:w-1/2 space-y-3 sm:space-y-4">
-      <h2 className="font-lexend text-3xl sm:text-5xl font-bold">{title}</h2>
+    <div className="w-full md:w-1/2 pl-4 space-y-3 sm:space-y-4">
+      <h2 className="font-lexend text-3xl sm:text-4xl font-semibold">{title}</h2>
       <p className="text-gray-600 text-base sm:text-lg">
         &quot;{description}&quot;
       </p>
@@ -61,13 +61,13 @@ export const ProductCard = ({
     </div>
 
     <div className="w-full md:w-1/2 mt-6 md:mt-0">
-      <div className="bg-white rounded-lg p-3 sm:p-4 md:p-8">
+      <div className="bg-white rounded-lg p-3 sm:p-1 md:p-0">
         <Image
           src={image}
           alt={`${title} interface`}
-          className="w-full h-auto"
-          width={1000}
-          height={1000}
+          className="w-full h-full"
+          width={1400}
+          height={1400}
           priority
         />
       </div>

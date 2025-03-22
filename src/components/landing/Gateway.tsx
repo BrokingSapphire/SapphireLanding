@@ -1,6 +1,8 @@
-import React from "react";
+'use client'
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { GatewayItem, gatewayItems } from "@/constants/landing";
+import { type CarouselApi } from "@/components/ui/carousel";
 
 import {
   Carousel,
@@ -14,7 +16,7 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
   <div className="flex justify-center p-4 h-full mt-10 sm:mt-0">
     <div className="relative w-[280px] max-w-xs sm:max-w-sm h-64 group">
       <div className="absolute bottom-20 sm:bottom-8 w-full h-36 bg-[#FFD62D] rounded-xl transform-gpu transition-transform duration-700 ease-in-out origin-top group-hover:-rotate-6" />
-
+      
       <div className="relative -top-0">
         <div className="bg-gray-100 rounded-xl p-6 sm:p-8 shadow-md h-full flex flex-col justify-between transform-gpu transition-all duration-300 ease-in-out group-hover:-translate-y-4">
           <div className="flex flex-col items-start space-y-2 sm:space-y-3">
@@ -33,7 +35,7 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
             </p>
           </div>
         </div>
-
+        
         <div className="absolute inset-0 bg-teal-800 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-start p-6 sm:p-8 space-y-2 sm:space-y-3 group-hover:-translate-y-4">
           <Image
             src={icon}
@@ -45,7 +47,7 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
           <h3 className="text-lg sm:text-2xl font-semibold text-white">
             {title}
           </h3>
-          <button className="px-3 sm:px-5 py-1.5 sm:py-2 border rounded-full bg-white text-gray-900 text-xs sm:text-sm hover:bg-gray-900 hover:text-white transition-colors duration-300">
+          <button className="px-3 sm:px-5 py-1.5 sm:py-2 border rounded-full bg-white text-gray-900 text-xs sm:text-sm">
             Learn more
           </button>
         </div>
@@ -55,6 +57,19 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
 );
 
 const Gateway = () => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   return (
     <section className="max-w-7xl mt-4 mx-auto p-8">
       <div className="text-center mb-8 sm:mb-12">
@@ -66,7 +81,7 @@ const Gateway = () => {
           experience.
         </p>
       </div>
-
+      
       {/* Mobile Carousel View */}
       <div className="md:hidden">
         <Carousel
@@ -74,6 +89,7 @@ const Gateway = () => {
             align: "center",
             loop: true,
           }}
+          setApi={setApi}
           className="w-full"
         >
           <CarouselContent>
@@ -86,11 +102,22 @@ const Gateway = () => {
           <CarouselPrevious className="left-0 bg-white/80" />
           <CarouselNext className="right-0 bg-white/80" />
         </Carousel>
-
-        {/* Carousel indicators - optional */}
         
+        {/* Pagination Dots */}
+        <div className="flex justify-center gap-2 mt-6">
+          {gatewayItems.map((_, index) => (
+            <button
+              key={index}
+              className={`h-2 rounded-full transition-all ${
+                current === index ? "w-4 bg-teal-600" : "w-2 bg-gray-300"
+              }`}
+              onClick={() => api?.scrollTo(index)}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
-
+      
       {/* Desktop Grid View */}
       <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
         {gatewayItems.map((item, index) => (

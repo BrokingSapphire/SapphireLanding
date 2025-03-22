@@ -116,7 +116,7 @@ const ChargesTable = () => {
     <>
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8">
         {/* Navigation Bar */}
-        <div className="flex border-b py-4  gap-x-16 sm:gap-x-20 overflow-x-auto hide-scrollbar">
+        <div className="flex border-b pt-6 gap-x-16 sm:gap-x-20 overflow-x-auto hide-scrollbar">
           {["Equity", "Currency", "Commodity"].map((tab) => (
             <div
               key={tab}
@@ -132,7 +132,7 @@ const ChargesTable = () => {
                 <div
                   className="absolute bottom-0 left-0 w-full h-0.5 bg-[#064D51]"
                   style={{
-                    bottom: "-16px",
+                    bottom: "0px",
                     height: "2px",
                   }}
                 ></div>
