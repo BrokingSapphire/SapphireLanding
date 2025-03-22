@@ -1,5 +1,30 @@
-// Equity related data
-export const equityData = [
+// Types for the data structures
+export interface EquityRowType {
+    type: string;
+    equityDelivery: string;
+    equityIntraday: string;
+    equityFutures: string;
+    equityOptions: string;
+  }
+  
+  export interface OtherRowType {
+    type: string;
+    futures: string;
+    options: string;
+  }
+  
+  export interface AccountType {
+    type: string;
+    charges: string;
+  }
+  
+  export interface ChargeType {
+    title: string;
+    charges: string;
+  }
+  
+  // Equity related data
+  export const equityData = [
     {
       type: "Brokerage",
       equityDelivery:

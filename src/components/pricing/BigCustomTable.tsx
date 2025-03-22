@@ -8,13 +8,17 @@ import {
   accountOpeningData,
   nonTradeCharges,
   mtfCharges,
+  EquityRowType,
+  OtherRowType,
+  AccountType,
+  ChargeType
 } from "@/constants/ChargesTable";
 
-const ChargesTable = () => {
-  const [activeTab, setActiveTab] = useState("Equity");
+const ChargesTable: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<string>("Equity");
 
   // Functions to render different table types
-  const renderEquityTable = () => (
+  const renderEquityTable = (): React.ReactNode => (
     <div className="overflow-x-auto">
       <div className="min-w-[900px]">
         <table className="w-full border-collapse">
@@ -36,7 +40,7 @@ const ChargesTable = () => {
             </tr>
           </thead>
           <tbody>
-            {equityData.map((row, index) => (
+            {equityData.map((row: EquityRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
                 <td className="py-3 px-4 font-medium text-gray-700 flex items-center text-sm sm:text-base">
                   {row.type}
@@ -80,7 +84,7 @@ const ChargesTable = () => {
     </div>
   );
 
-  const renderCurrencyTable = () => (
+  const renderCurrencyTable = (): React.ReactNode => (
     <div className="overflow-x-auto">
       <div className="min-w-[600px]">
         <table className="w-full border-collapse">
@@ -96,7 +100,7 @@ const ChargesTable = () => {
             </tr>
           </thead>
           <tbody>
-            {currencyData.map((row, index) => (
+            {currencyData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
                 <td className="py-3 px-4 font-medium text-gray-700 flex items-center text-sm sm:text-base">
                   {row.type}
@@ -132,7 +136,7 @@ const ChargesTable = () => {
     </div>
   );
 
-  const renderCommodityTable = () => (
+  const renderCommodityTable = (): React.ReactNode => (
     <div className="overflow-x-auto">
       <div className="min-w-[600px]">
         <table className="w-full border-collapse">
@@ -148,7 +152,7 @@ const ChargesTable = () => {
             </tr>
           </thead>
           <tbody>
-            {commodityData.map((row, index) => (
+            {commodityData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
                 <td className="py-3 px-4 font-medium text-gray-700 flex items-center text-sm sm:text-base">
                   {row.type}
@@ -185,7 +189,7 @@ const ChargesTable = () => {
   );
 
   // Render table based on active tab
-  const renderActiveTable = () => {
+  const renderActiveTable = (): React.ReactNode => {
     switch (activeTab) {
       case "Currency":
         return renderCurrencyTable();
@@ -202,7 +206,7 @@ const ChargesTable = () => {
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8">
         {/* Navigation Bar */}
         <div className="flex border-b pt-6 gap-x-16 sm:gap-x-20 overflow-x-auto hide-scrollbar">
-          {["Equity", "Currency", "Commodity"].map((tab) => (
+          {["Equity", "Currency", "Commodity", "Other Charges"].map((tab: string) => (
             <div
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -248,7 +252,7 @@ const ChargesTable = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {accountOpeningData.map((item, index) => (
+                  {accountOpeningData.map((item: AccountType, index: number) => (
                     <tr key={index} className="border-b border-gray-200">
                       <td className="py-3 px-4 text-gray-600 text-sm sm:text-base">
                         {item.type}
@@ -283,7 +287,7 @@ const ChargesTable = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {nonTradeCharges.map((item, index) => (
+                  {nonTradeCharges.map((item: ChargeType, index: number) => (
                     <tr key={index} className="border-b border-gray-200">
                       <td className="py-3 px-4 text-gray-600 text-sm sm:text-base">
                         {item.title}
@@ -318,7 +322,7 @@ const ChargesTable = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {mtfCharges.map((item: { title: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; charges: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }, index: React.Key | null | undefined) => (
+                  {mtfCharges.map((item: ChargeType, index: number) => (
                     <tr key={index} className="border-b border-gray-200">
                       <td className="py-3 px-4 text-gray-600 text-sm sm:text-base">
                         {item.title}
@@ -358,4 +362,4 @@ const ChargesTable = () => {
   );
 };
 
-export default ChargesTable;                         
+export default ChargesTable;
