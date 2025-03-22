@@ -14,11 +14,11 @@ import Link from "next/link";
 
 const LinkSection = ({ title, links }: LinkSectionProps) => (
   <div className="col-span-1">
-    <h3 className="font-bold mb-4 text-xl">{title}</h3>
+    <h3 className="font-bold mb-4 text-lg">{title}</h3>
     <ul className="space-y-2">
       {links.map((link) => (
         <li key={link.title}>
-          <a href={link.href} className="text-sm hover:text-gray-300">
+          <a href={link.href} className="text-xs hover:text-gray-300">
             {link.title}
           </a>
         </li>
@@ -44,7 +44,7 @@ const SocialLinks = () => (
 );
 
 const LegalSection = () => (
-  <div className="text-sm space-y-4 border-t border-teal-800 pt-6">
+  <div className="text-xs space-y-4 border-t border-teal-800 pt-6">
     <div className="grid gap-4">
       {LEGAL_SECTIONS.map((section) => (
         <p key={section.title}>
@@ -95,10 +95,36 @@ const LegalSection = () => (
 const Footer = () => {
   return (
     <>
-      <footer className="bg-[#064D51] text-white p-4 sm:py-8 sm:px-14">
+      <footer className="bg-[#064D51] text-white p-4 sm:py-8 sm:px-20">
         <div className="max-w-7xl mx-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-0 mb-8">
-            <div className="col-span-1 sm:col-span-2 lg:col-span-1">
+          {/* For small screens, make a separate section that's centered */}
+          <div className="block sm:hidden text-center mb-8">
+            <div className="flex items-center justify-center mb-4">
+              <Image
+                src="/logo-white.svg"
+                alt="Logo"
+                width={32}
+                height={32}
+                priority
+              />
+              <h3 className="font-bold ml-2 text-lg">Sapphire</h3>
+            </div>
+            <address className="text-xs leading-loose not-italic">
+              Plot No. 33, Kotwal Nagar,
+              <br />
+              Khamla, Nagpur (MH)
+              <br />
+              Pincode : 440025
+              <br />
+              info@sapphirebroking.com
+              <br />
+              www.sapphirebroking.com
+            </address>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-0 mb-8">
+            {/* Hide this on small screens but show on sm and above */}
+            <div className="col-span-2 sm:col-span-2 lg:col-span-1 hidden sm:block">
               <div className="flex items-center mb-4">
                 <Image
                   src="/logo-white.svg"
@@ -107,9 +133,9 @@ const Footer = () => {
                   height={32}
                   priority
                 />
-                <h3 className="font-bold ml-2 text-xl">Sapphire</h3>
+                <h3 className="font-bold ml-2 text-lg">Sapphire</h3>
               </div>
-              <address className="text-sm leading-loose not-italic">
+              <address className="text-xs leading-loose not-italic">
                 Plot No. 33, Kotwal Nagar,
                 <br />
                 Khamla, Nagpur (MH)
@@ -126,25 +152,25 @@ const Footer = () => {
             <LinkSection title="Legal" links={LEGAL_LINKS} />
             <LinkSection title="Account" links={ACCOUNT_LINKS} />
 
-            <div className="col-span-1">
-              <h3 className="font-bold mb-4 text-xl">Follow us:</h3>
+            <div className="col-span-2 sm:col-span-1">
+              <h3 className="font-bold mb-4 text-lg">Follow us:</h3>
               <SocialLinks />
 
-              <h3 className="font-bold mb-4 text-xl">Download Our App</h3>
-              <div className="flex  items-center justify-center sm:justify-start gap-4">
+              <h3 className="font-bold mb-4 text-lg">Download Our App</h3>
+              <div className="flex items-center justify-start gap-4">
                 <Image
                   src="/apple.svg"
                   alt="App Store"
-                  width={100}
-                  height={40}
-                  className="h-10 w-auto"
+                  width={80}
+                  height={50}
+                  // className="h-10 w-auto"
                 />
                 <Image
                   src="/google.png"
                   alt="Google Play"
-                  width={100}
-                  height={40}
-                  className="h-10 -ml-3 w-auto"
+                  width={80}
+                  height={50}
+                  className="-ml-3 "
                 />
               </div>
             </div>
@@ -152,7 +178,7 @@ const Footer = () => {
           <LegalSection />
         </div>
       </footer>
-      <div className="py-1 text-white text-center bg-[#152F46]">
+      <div className="py-1 text-white text-center bg-[#152F46] text-xs">
         Copyright © 2025 Sapphire, All rights reserved.
       </div>
     </>

@@ -116,7 +116,7 @@ const ChargesTable = () => {
     <>
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8">
         {/* Navigation Bar */}
-        <div className="flex border-b py-4 gap-x-20 overflow-x-auto hide-scrollbar">
+        <div className="flex border-b py-4  gap-x-16 sm:gap-x-20 overflow-x-auto hide-scrollbar">
           {["Equity", "Currency", "Commodity"].map((tab) => (
             <div
               key={tab}

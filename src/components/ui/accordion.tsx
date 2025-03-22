@@ -33,9 +33,9 @@ const AccordionTrigger = React.forwardRef<
       {...props}
     >
       {children}
-      <div className="relative w-8 h-8">
-        <Plus className="h-8 w-8 shrink-0 absolute transition-all duration-300 group-data-[state=open]:opacity-0" />
-        <X className="h-8 w-8 shrink-0 absolute transition-all duration-300 opacity-0 group-data-[state=open]:opacity-100" />
+      <div className="relative w-6 h-6 sm:w-8 sm:h-8">
+        <Plus className="h-5 w-5 sm:h-8 sm:w-8 shrink-0 absolute transition-all duration-300 group-data-[state=open]:opacity-0" />
+        <X className="h-5 w-5 sm:h-8 sm:w-8 shrink-0 absolute transition-all duration-300 opacity-0 group-data-[state=open]:opacity-100" />
       </div>
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
