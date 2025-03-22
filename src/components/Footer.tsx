@@ -14,11 +14,11 @@ import Link from "next/link";
 
 const LinkSection = ({ title, links }: LinkSectionProps) => (
   <div className="col-span-1">
-    <h3 className="font-bold mb-4 text-lg">{title}</h3>
+    <h3 className="font-bold mb-4 text-lg sm:text-[20px]">{title}</h3>
     <ul className="space-y-2">
       {links.map((link) => (
         <li key={link.title}>
-          <a href={link.href} className="text-xs hover:text-gray-300">
+          <a href={link.href} className="text-xs sm:text-[14px] hover:text-gray-300">
             {link.title}
           </a>
         </li>
@@ -43,88 +43,77 @@ const SocialLinks = () => (
   </div>
 );
 
-const LegalSection = () => (
-  <div className="text-xs space-y-4 border-t border-teal-800 pt-6">
-    <div className="grid gap-4">
-      {LEGAL_SECTIONS.map((section) => (
-        <p key={section.title}>
-          <strong>{section.title}:</strong> {section.content}
-        </p>
-      ))}
+const LegalSection = () => {
+  // Create a copy of EXCHANGES and interchange BSE and MCX
+  const modifiedExchanges = [...EXCHANGES];
+  const bseIndex = modifiedExchanges.findIndex(exchange => exchange.name.includes("BSE"));
+  const mcxIndex = modifiedExchanges.findIndex(exchange => exchange.name.includes("MCX"));
+  
+  if (bseIndex !== -1 && mcxIndex !== -1) {
+    const temp = modifiedExchanges[bseIndex];
+    modifiedExchanges[bseIndex] = modifiedExchanges[mcxIndex];
+    modifiedExchanges[mcxIndex] = temp;
+  }
 
-      <div>
-        <strong>Attention Investors:</strong>
-        <ol className="list-decimal pl-6 mt-2 space-y-2">
-          {INVESTOR_POINTS.map((point, index) => (
-            <li key={index}>{point}</li>
-          ))}
-        </ol>
+  return (
+    <div className="text-xs sm:text-[14px] space-y-4 border-t border-teal-800 pt-6">
+      <div className="grid gap-4">
+        {LEGAL_SECTIONS.map((section) => (
+          <p key={section.title}>
+            <strong>{section.title}:</strong> {section.content}
+          </p>
+        ))}
+
+        <div>
+          <strong>Attention Investors:</strong>
+          <ol className="list-decimal pl-6 mt-2 space-y-2">
+            {INVESTOR_POINTS.map((point, index) => (
+              <li key={index}>{point}</li>
+            ))}
+          </ol>
+        </div>
+
+        <p>
+          <strong>ODR Portal:</strong> Resolve disputes efficiently using
+          SEBI&apos;s Online Dispute Resolution Portal:
+          [https://smartodr.in/login].
+        </p>
+        <p>
+          <strong>Charts are powered by:</strong>{" "}
+          <Link href="https://www.tradingview.com">
+            <span className="underline">TradingView</span>
+          </Link>
+        </p>
       </div>
 
-      <p>
-        <strong>ODR Portal:</strong> Resolve disputes efficiently using
-        SEBI&apos;s Online Dispute Resolution Portal:
-        [https://smartodr.in/login].
-      </p>
-      <p>
-        <strong>Charts are powered by:</strong>{" "}
-        <Link href="https://www.tradingview.com">
-          <span className="underline">TradingView</span>
-        </Link>
-      </p>
+      <div className="flex flex-wrap justify-center gap-4 py-4">
+        {modifiedExchanges.map((exchange, index, array) => (
+          <a
+            key={exchange.name}
+            href={exchange.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`text-gray-400 ${
+              index !== array.length - 1 ? "sm:border-r border-white sm:pr-4" : ""
+            }`}
+          >
+            {exchange.name}
+          </a>
+        ))}
+      </div>
     </div>
-
-    <div className="flex flex-wrap justify-center gap-4 py-4">
-    {EXCHANGES.map((exchange, index, array) => (
-        <a
-          key={exchange.name}
-          href={exchange.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`text-gray-400 ${
-            index !== array.length - 1 ? "sm:border-r border-white sm:pr-4" : ""
-          }`}
-        >
-          {exchange.name}
-        </a>
-      ))}
-    </div>
-  </div>
-);
+  );
+};
 
 const Footer = () => {
   return (
     <>
       <footer className="bg-[#064D51] text-white p-4 sm:py-8 sm:px-20">
         <div className="max-w-7xl mx-5">
-          {/* For small screens, make a separate section that's centered */}
-          <div className="block sm:hidden text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <Image
-                src="/logo-white.svg"
-                alt="Logo"
-                width={32}
-                height={32}
-                priority
-              />
-              <h3 className="font-bold ml-2 text-lg">Sapphire</h3>
-            </div>
-            <address className="text-xs leading-loose not-italic">
-              Plot No. 33, Kotwal Nagar,
-              <br />
-              Khamla, Nagpur (MH)
-              <br />
-              Pincode : 440025
-              <br />
-              info@sapphirebroking.com
-              <br />
-              www.sapphirebroking.com
-            </address>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-0 mb-8">
-            {/* Hide this on small screens but show on sm and above */}
-            <div className="col-span-2 sm:col-span-2 lg:col-span-1 hidden sm:block">
+          {/* Mobile Layout (hidden on sm and above) */}
+          <div className="sm:hidden">
+            {/* Full Width Sapphire Address */}
+            <div className="w-full mb-8">
               <div className="flex items-center mb-4">
                 <Image
                   src="/logo-white.svg"
@@ -135,12 +124,8 @@ const Footer = () => {
                 />
                 <h3 className="font-bold ml-2 text-lg">Sapphire</h3>
               </div>
-              <address className="text-xs leading-loose not-italic">
-                Plot No. 33, Kotwal Nagar,
-                <br />
-                Khamla, Nagpur (MH)
-                <br />
-                Pincode : 440025
+              <address className="text-xs leading-loose not-italic mb-6 w-full">
+                Plot No. 33, Kotwal Nagar, 440025
                 <br />
                 info@sapphirebroking.com
                 <br />
@@ -148,37 +133,103 @@ const Footer = () => {
               </address>
             </div>
 
-            <LinkSection title="Company" links={COMPANY_LINKS} />
-            <LinkSection title="Legal" links={LEGAL_LINKS} />
-            <LinkSection title="Account" links={ACCOUNT_LINKS} />
+            {/* Two Column Layout for Mobile */}
+            <div className="grid grid-cols-2 gap-6 mb-8">
+              {/* Left Column: Legal and Follow Us */}
+              <div className="col-span-1 space-y-8">
+                <LinkSection title="Legal" links={LEGAL_LINKS} />
+                
+                <div>
+                  <h3 className="font-bold mb-4 text-lg">Follow us:</h3>
+                  <SocialLinks />
+                </div>
+              </div>
 
-            <div className="col-span-2 sm:col-span-1">
-              <h3 className="font-bold mb-4 text-lg">Follow us:</h3>
-              <SocialLinks />
-
-              <h3 className="font-bold mb-4 text-lg">Download Our App</h3>
-              <div className="flex items-center justify-start gap-4">
-                <Image
-                  src="/apple.svg"
-                  alt="App Store"
-                  width={80}
-                  height={50}
-                  // className="h-10 w-auto"
-                />
-                <Image
-                  src="/google.png"
-                  alt="Google Play"
-                  width={80}
-                  height={50}
-                  className="-ml-3 "
-                />
+              {/* Right Column: Company and Download Our App */}
+              <div className="col-span-1 space-y-8">
+                <LinkSection title="Company" links={COMPANY_LINKS} />
+                
+                <div>
+                  <h3 className="font-bold mb-4 text-lg">Download Our App</h3>
+                  <div className="flex items-center justify-start gap-4">
+                    <Image
+                      src="/apple.svg"
+                      alt="App Store"
+                      width={80}
+                      height={50}
+                    />
+                    <Image
+                      src="/google.png"
+                      alt="Google Play"
+                      width={80}
+                      height={50}
+                      className="-ml-3"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Desktop Layout (hidden on xs, visible on sm and above) */}
+          <div className="hidden sm:block">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-0 mb-8">
+              <div className="col-span-2 lg:col-span-1">
+                <div className="flex items-center mb-4">
+                  <Image
+                    src="/logo-white.svg"
+                    alt="Logo"
+                    width={32}
+                    height={32}
+                    priority
+                  />
+                  <h3 className="font-bold ml-2 text-[20px]">Sapphire</h3>
+                </div>
+                <address className="text-[14px] leading-loose not-italic mb-6 sm:mb-0 w-full">
+                  Plot No. 33, Kotwal Nagar,
+                  <br />
+                  Khamla, Nagpur (MH)
+                  <br />
+                  Pincode : 440025
+                  <br />
+                  info@sapphirebroking.com
+                  <br />
+                  www.sapphirebroking.com
+                </address>
+              </div>
+
+              <LinkSection title="Company" links={COMPANY_LINKS} />
+              <LinkSection title="Legal" links={LEGAL_LINKS} />
+              <LinkSection title="Account" links={ACCOUNT_LINKS} />
+
+              <div className="col-span-2 sm:col-span-1">
+                <h3 className="font-bold mb-4 text-[20px]">Follow us:</h3>
+                <SocialLinks />
+
+                <h3 className="font-bold mb-4 text-[20px]">Download Our App</h3>
+                <div className="flex items-center justify-start gap-4">
+                  <Image
+                    src="/apple.svg"
+                    alt="App Store"
+                    width={80}
+                    height={50}
+                  />
+                  <Image
+                    src="/google.png"
+                    alt="Google Play"
+                    width={80}
+                    height={50}
+                    className="-ml-3"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <LegalSection />
         </div>
       </footer>
-      <div className="py-1 text-white text-center bg-[#152F46] text-xs">
+      <div className="py-1 text-white text-center bg-[#152F46] text-xs sm:text-[14px]">
         Copyright © 2025 Sapphire, All rights reserved.
       </div>
     </>
