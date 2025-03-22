@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Camera } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
@@ -14,84 +14,52 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({ onNext }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showQrCode, setShowQrCode] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleCameraCapture = async () => {
+  const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = document.createElement("video");
-      video.srcObject = stream;
-      video.play();
-  
-      // Create a modal-like popup to show the camera feed
-      const overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.top = "0";
-      overlay.style.left = "0";
-      overlay.style.width = "100vw";
-      overlay.style.height = "100vh";
-      overlay.style.background = "rgba(0,0,0,0.8)";
-      overlay.style.display = "flex";
-      overlay.style.alignItems = "center";
-      overlay.style.justifyContent = "center";
-      overlay.style.zIndex = "1000";
-  
-      const captureButton = document.createElement("button");
-      captureButton.innerText = "Capture";
-      captureButton.style.position = "absolute";
-      captureButton.style.bottom = "20px";
-      captureButton.style.padding = "10px 20px";
-      captureButton.style.background = "#fff";
-      captureButton.style.border = "none";
-      captureButton.style.cursor = "pointer";
-  
-      const closeButton = document.createElement("button");
-      closeButton.innerText = "✕";
-      closeButton.style.position = "absolute";
-      closeButton.style.top = "20px";
-      closeButton.style.right = "20px";
-      closeButton.style.color = "#fff";
-      closeButton.style.background = "transparent";
-      closeButton.style.border = "none";
-      closeButton.style.fontSize = "24px";
-      closeButton.style.cursor = "pointer";
-  
-      const canvas = document.createElement("canvas");
-      overlay.appendChild(video);
-      overlay.appendChild(captureButton);
-      overlay.appendChild(closeButton);
-      document.body.appendChild(overlay);
-  
-      const cleanup = () => {
-        stream.getTracks().forEach((track) => track.stop());
-        document.body.removeChild(overlay);
-      };
-  
-      captureButton.onclick = () => {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const capturedFile = new File([blob], "captured-image.jpg", {
-                type: "image/jpeg",
-              });
-              setImageFile(capturedFile);
-            }
-          }, "image/jpeg");
-        }
-        cleanup();
-      };
-  
-      closeButton.onclick = cleanup;
+      setShowCamera(true);
+      setError(null);
+      // Camera will be initialized in useEffect when showCamera becomes true
     } catch (err) {
       console.error("Camera access error:", err);
       setError("Camera access failed. Please enable permissions.");
     }
   };
-  
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    if (video && canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const capturedFile = new File([blob], "captured-image.jpg", {
+              type: "image/jpeg",
+            });
+            setImageFile(capturedFile);
+            setShowCamera(false);
+
+            // Stop all video tracks when photo is captured
+            const stream = video.srcObject as MediaStream;
+            if (stream) {
+              stream.getTracks().forEach((track) => track.stop());
+            }
+          }
+        }, "image/jpeg");
+      }
+    }
+  };
+
   const validateAndSetImage = (file: File) => {
     setError(null);
 
@@ -135,9 +103,57 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({ onNext }) => {
     }
   };
 
+  // Initialize camera when showCamera becomes true
+  useEffect(() => {
+    let stream: MediaStream | null = null;
+
+    const setupCamera = async () => {
+      if (showCamera && videoRef.current) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user" },
+          });
+
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } catch (err) {
+          console.error("Camera access error:", err);
+          setError("Camera access failed. Please enable permissions.");
+          setShowCamera(false);
+        }
+      }
+    };
+
+    if (showCamera) {
+      setupCamera();
+    }
+
+    // Cleanup function
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [showCamera]);
+
+  const stopCamera = () => {
+    setShowCamera(false);
+    // Stop camera stream
+    const video = videoRef.current;
+    if (video && video.srcObject) {
+      const stream = video.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
+    }
+  };
 
   if (showQrCode) {
-    return <QrCodeVerification onBack={() => setShowQrCode(false)} onComplete={onNext} />;
+    return (
+      <QrCodeVerification
+        onBack={() => setShowQrCode(false)}
+        onComplete={onNext}
+      />
+    );
   }
 
   return (
@@ -147,42 +163,34 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({ onNext }) => {
         description="A quick face-to-face verification for security."
       />
       <div className="mb-6">
-        <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center">
-          {imageFile ? (
+        <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg flex flex-col items-center justify-center overflow-hidden">
+          {showCamera ? (
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className="w-full h-full object-cover rounded"
+            />
+          ) : imageFile ? (
             <div className="space-y-4 w-full flex flex-col items-center">
-              <div className="relative w-full h-64">
+              <div className="relative w-full h-[100vh]">
                 <Image
                   src={URL.createObjectURL(imageFile)}
                   alt="Preview"
                   className="object-contain rounded"
                   fill
-                  sizes="(max-width: 400px) 100vw, 400px"
+                  // sizes="(max-width: 400px) 100vw, 400px"
                   priority
                 />
               </div>
-
-              <Button
-                onClick={() => {
-                  setImageFile(null);
-                  setError(null);
-                }}
-                variant="ghost"
-                className="mt-4 py-4 w-40"
-              >
-                Re-Capture
-              </Button>
             </div>
           ) : (
             <div className="text-center space-y-4">
               <Camera className="w-16 h-16 mx-auto text-gray-400" />
-              <p className="text-gray-600">Turn on your camera or upload an image</p>
+              <p className="text-gray-600">Use camera for verification</p>
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                <Button
-                  onClick={handleCameraCapture}
-                  variant="ghost"
-                  className="py-3"
-                >
-                  Allow Camera Access
+                <Button onClick={startCamera} variant="ghost" className="py-3">
+                  Open Camera
                 </Button>
 
                 <input
@@ -197,6 +205,34 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({ onNext }) => {
           )}
         </div>
 
+        <canvas ref={canvasRef} className="hidden" />
+
+        {showCamera && (
+          <div className="flex justify-center mt-4 gap-4">
+            <Button onClick={capturePhoto} variant="ghost" className="py-2">
+              Capture
+            </Button>
+            <Button onClick={stopCamera} variant="ghost" className="py-2">
+              Cancel
+            </Button>
+          </div>
+        )}
+
+        {imageFile && (
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={() => {
+                setImageFile(null);
+                setError(null);
+              }}
+              variant="ghost"
+              className="py-2"
+            >
+              Re-Capture
+            </Button>
+          </div>
+        )}
+
         {error && (
           <div className="mt-2 p-2 bg-red-50 rounded">
             <p className="text-red-600 text-sm">{error}</p>
@@ -205,11 +241,14 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({ onNext }) => {
 
         {/* Added "Problems with Webcam? Click Here" with onClick handler */}
         <div className="hidden sm:block text-center mt-4">
-          <button 
-            onClick={() => setShowQrCode(true)} 
+          <button
+            onClick={() => setShowQrCode(true)}
             className="text-sm bg-transparent border-none cursor-pointer"
           >
-            Problems with Webcam? <span className="text-blue-500 underline font-medium">Click Here</span>
+            Problems with Webcam?{" "}
+            <span className="text-blue-500 underline font-medium">
+              Click Here
+            </span>
           </button>
         </div>
       </div>

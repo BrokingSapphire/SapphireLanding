@@ -59,7 +59,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
               onClick={() => setLinkingMethod("upi")}
             >
               <div className="flex items-center justify-center w-20 h-10 mt-4 mb-2">
-                <Image width={1000} height={1000} src="/new-signup/upi.png" alt="UPI" className="h-full w-20"  />
+                <Image width={1000} height={1000} src="/new-signup/new-upi.svg" alt="UPI" className="h-full w-20"  />
               </div>
               <div className="font-medium">Link with UPI</div>
               <div className="text-xs text-gray-500">(recommended)</div>

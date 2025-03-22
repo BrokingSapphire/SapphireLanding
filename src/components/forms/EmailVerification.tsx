@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import axios from "axios";
+import FormHeading from "./FormHeading";
 
 const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   const [email, setEmail] = useState("");
@@ -198,10 +199,10 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
   return (
     <div className="mx-auto pt-24">
-      <h2 className="text-3xl font-bold mb-3">Verify Your Email</h2>
-      <p className="text-gray-600 mb-8">
-        Please enter your email address to receive a verification code
-      </p>
+      <FormHeading
+        title={"Hi, Welcome to Sapphire!"}
+        description={"Get started in just a few easy steps!"}
+      />
 
       <div className="mb-8">
         <label className="block text-gray-700 mb-2">Email Address</label>

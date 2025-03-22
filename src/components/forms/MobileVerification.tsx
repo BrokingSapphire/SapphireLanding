@@ -238,8 +238,8 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   return (
     <div className="mx-auto pt-24">
       <FormHeading
-        title={"Hi, Welcome to Sapphire!"}
-        description={"Get started in just a few easy steps!"}
+        title={"Verify your Mobile"}
+        description={"Please enter your mobile for verification."}
       />
 
       <div className="mb-8">

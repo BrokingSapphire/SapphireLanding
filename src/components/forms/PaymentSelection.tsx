@@ -70,9 +70,9 @@ const PaymentSelection = ({ onNext }: { onNext: () => void }) => {
 
   return (
     <div className="w-full mx-auto">
-      <h2 className="text-2xl font-bold mb-2">
-        Unlock Your Trading Potential - Get Started for Just{" "}
-        <span className="text-orange-500 font-bold">₹99/- only</span>
+      <h2 className="text-3xl font-lexend font-bold mb-3">
+        Unlock Your Trading Potential - Get Started for{" "}
+        <span className="text-orange-500"> Just ₹99/- only </span>
       </h2>
 
       <div className="mt-6">
