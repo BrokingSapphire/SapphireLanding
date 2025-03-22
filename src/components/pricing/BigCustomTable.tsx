@@ -116,25 +116,27 @@ const ChargesTable = () => {
     <>
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8">
         {/* Navigation Bar */}
-        <div className="flex border-b overflow-x-auto hide-scrollbar">
+        <div className="flex border-b py-4 gap-x-20 overflow-x-auto hide-scrollbar">
           {["Equity", "Currency", "Commodity"].map((tab) => (
             <div
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3 sm:px-6 py-3 sm:py-4 font-semibold text-sm sm:text-base cursor-pointer whitespace-nowrap ${
+              className={`px-3 sm:px-6 py-3 sm:py-4 font-semibold text-sm sm:text-base cursor-pointer whitespace-nowrap relative ${
                 activeTab === tab
-                  ? "text-[#064D51] border-b-2 border-[#064D51]"
+                  ? "text-[#064D51]"
                   : "text-gray-700 hover:text-[]"
               }`}
-              style={{
-                textDecoration: activeTab === tab ? "" : "none",
-                textDecorationColor:
-                  activeTab === tab ? "#0D9488" : "transparent",
-                textDecorationThickness: "2px",
-                textUnderlineOffset: "4px",
-              }}
             >
               {tab}
+              {activeTab === tab && (
+                <div
+                  className="absolute bottom-0 left-0 w-full h-0.5 bg-[#064D51]"
+                  style={{
+                    bottom: "-16px",
+                    height: "2px",
+                  }}
+                ></div>
+              )}
             </div>
           ))}
         </div>

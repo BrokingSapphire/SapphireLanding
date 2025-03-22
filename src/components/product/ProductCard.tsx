@@ -33,7 +33,7 @@ export const ProductCard = ({
         <button className="bg-white flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition">
           <FaApple />
           <div className="flex items-center gap-1">
-            <span className="text-sm hidden  sm:text-base md:block">App store</span>
+            <span className="text-sm  sm:text-base ">App store</span>
             <FaArrowRightLong className="text-xs sm:text-sm" />
           </div>
         </button>
@@ -44,14 +44,14 @@ export const ProductCard = ({
             <button className="bg-white flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
               <FaGooglePlay />
               <div className="flex items-center gap-1">
-                <span className="text-sm hidden  sm:text-base md:block">Play store</span>
+                <span className="text-sm   sm:text-base ">Play store</span>
                 <FaArrowRightLong className="text-xs sm:text-sm" />
               </div>
             </button>
             <button className="bg-white flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
               <FaChrome />
               <div className="flex items-center gap-1">
-                <span className="text-sm hidden  sm:text-base md:block">Web app</span>
+                <span className="text-sm  sm:text-base ">Web app</span>
                 <FaArrowRightLong className="text-xs sm:text-sm" />
               </div>
             </button>
