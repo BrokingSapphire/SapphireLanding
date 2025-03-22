@@ -6,27 +6,33 @@ interface TradingAccountDetailsProps {
   onNext: () => void;
 }
 
-type IncomeRange = 
-  | "< 1 Lakh" 
-  | "1 - 5 Lacs" 
-  | "5 - 10 Lacs" 
-  | "10 - 25 Lacs" 
-  | "25 - 1 Cr" 
+type IncomeRange =
+  | "< 1 Lakh"
+  | "1 - 5 Lacs"
+  | "5 - 10 Lacs"
+  | "10 - 25 Lacs"
+  | "25 - 1 Cr"
   | "> 1Cr";
 
-type ExperienceRange = 
-  | "No Experience" 
-  | "< 1 year" 
-  | "1 - 5 years" 
-  | "5 - 10 years" 
+type ExperienceRange =
+  | "No Experience"
+  | "< 1 year"
+  | "1 - 5 years"
+  | "5 - 10 years"
   | "10+ years";
 
-type SettlementPreference = "Quaterly" | "Monthly";
+type SettlementPreference = "Quarterly" | "Monthly";
 
-const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) => {
-  const [selectedIncome, setSelectedIncome] = useState<IncomeRange | null>(null);
-  const [selectedExperience, setSelectedExperience] = useState<ExperienceRange | null>(null);
-  const [selectedSettlement, setSelectedSettlement] = useState<SettlementPreference | null>(null);
+const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
+  onNext,
+}) => {
+  const [selectedIncome, setSelectedIncome] = useState<IncomeRange | null>(
+    null
+  );
+  const [selectedExperience, setSelectedExperience] =
+    useState<ExperienceRange | null>();
+  const [selectedSettlement, setSelectedSettlement] =
+    useState<SettlementPreference>("Quarterly");
 
   const handleIncomeSelect = (income: IncomeRange) => {
     setSelectedIncome(income);
@@ -40,10 +46,11 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
     setSelectedSettlement(settlement);
   };
 
-  const isFormValid = selectedIncome && selectedExperience && selectedSettlement;
+  const isFormValid =
+    selectedIncome && selectedExperience && selectedSettlement;
 
   return (
-    <div className="w-full mx-auto mt-8 p-4">
+    <div className="w-full mx-auto mt-8">
       <FormHeading
         title="Trading Account Details"
         description="Set up your trading account in minutes."
@@ -195,14 +202,14 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({ onNext }) =>
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => handleSettlementSelect("Quaterly")}
+              onClick={() => handleSettlementSelect("Quarterly")}
               className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 ${
-                selectedSettlement === "Quaterly"
+                selectedSettlement === "Quarterly"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
               }`}
             >
-              Quaterly
+              Quarterly
             </button>
             <button
               type="button"

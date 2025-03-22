@@ -98,7 +98,7 @@ const NetbankingPaymentForm = ({
           <Button
             type="submit"
             disabled={!selectedBank}
-            className={`w-full mt-6 py-3 ${
+            className={`w-full mt-6 py-6 ${
               selectedBank
                 ? ""
                 : "cursor-not-allowed"

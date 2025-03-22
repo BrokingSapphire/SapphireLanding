@@ -10,6 +10,8 @@ const Navbar = () => {
   const pathname = usePathname();
   const [activeLink, setActiveLink] = useState(pathname);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  //TODO: make this true on the timilnie signup page, after user account creation
+  const isProductPage = pathname === "/product";
 
   // Social media icons - filtered to only Twitter, LinkedIn, and Instagram
   const FILTERED_SOCIAL_ICONS = [
@@ -68,37 +70,50 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex flex-1 justify-center">
-            <div className="flex uppercase items-center gap-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="relative group text-black py-2 transition-all duration-300"
-                  onClick={() => setActiveLink(link.href)}
-                >
-                  {link.label}
+          {/* Desktop Navigation - Hide on product page */}
+          {!isProductPage && (
+            <div className="hidden lg:flex flex-1 justify-center">
+              <div className="flex uppercase items-center gap-8">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="relative group text-black py-2 transition-all duration-300"
+                    onClick={() => setActiveLink(link.href)}
+                  >
+                    {link.label}
 
-                  {/* Green underline animation with increased length (for both hover & active states) */}
-                  <span
-                    className={`absolute -bottom-4 left-1/2 transform -translate-x-1/2 h-[3px] bg-[#064D51] transition-all duration-300 ${
-                      activeLink === link.href ? "w-[120%]" : "w-0"
-                    } group-hover:w-[120%]`}
-                  ></span>
-                </Link>
-              ))}
+                    {/* Green underline animation with increased length (for both hover & active states) */}
+                    <span
+                      className={`absolute -bottom-4 left-1/2 transform -translate-x-1/2 h-[3px] bg-[#064D51] transition-all duration-300 ${
+                        activeLink === link.href ? "w-[120%]" : "w-0"
+                      } group-hover:w-[120%]`}
+                    ></span>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Desktop Auth Buttons */}
+          {/* Desktop Auth Buttons - Show login/signup or logout based on page */}
           <div className="hidden md:flex space-x-4">
-            <Link href="/login">
-              <Button variant="outline">Login</Button>
-            </Link>
-            <Link href="/signup">
-              <Button variant="ghost">Signup</Button>
-            </Link>
+            {isProductPage ? (
+              <Button
+                variant="outline"
+                onClick={() => console.log("Logout clicked")}
+              >
+                Logout
+              </Button>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="outline">Login</Button>
+                </Link>
+                <Link href="/signup">
+                  <Button variant="ghost">Signup</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -140,7 +155,7 @@ const Navbar = () => {
         }`}
       >
         <div className="flex flex-col h-full pt-20 pb-6 px-6">
-          <div className="absolute  backdrop-blur-md shadow-sm pb-3 top-5 right-6 flex items-center justify-between w-full">
+          <div className="absolute backdrop-blur-md shadow-sm pb-3 top-5 right-6 flex items-center justify-between w-full">
             <div className="ml-10 items-center flex">
               <Image
                 src="/logo.svg"
@@ -153,7 +168,7 @@ const Navbar = () => {
             </div>
             <button
               onClick={toggleSidebar}
-              className=" rounded-full hover:bg-gray-100 transition-colors duration-200"
+              className="rounded-full hover:bg-gray-100 transition-colors duration-200"
               aria-label="Close sidebar"
             >
               <svg
@@ -173,42 +188,56 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex flex-col space-y-6 mt-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-lg font-medium py-2 border-l-4 pl-4 transition-colors duration-200 ${
-                  activeLink === link.href
-                    ? "border-[#064D51] text-[#064D51]"
-                    : "border-transparent hover:border-gray-300 hover:text-gray-700"
-                }`}
-                onClick={() => {
-                  setActiveLink(link.href);
-                  setSidebarOpen(false);
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          {/* Navigation Links - Hide on product page */}
+          {!isProductPage && (
+            <div className="flex flex-col space-y-6 mt-6">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-lg font-medium py-2 border-l-4 pl-4 transition-colors duration-200 ${
+                    activeLink === link.href
+                      ? "border-[#064D51] text-[#064D51]"
+                      : "border-transparent hover:border-gray-300 hover:text-gray-700"
+                  }`}
+                  onClick={() => {
+                    setActiveLink(link.href);
+                    setSidebarOpen(false);
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
 
-          {/* Auth Section */}
+          {/* Auth Section - Show login/signup or logout based on page */}
           <div className="mt-auto space-y-4 border-t border-gray-200 pt-6">
-            <Link href="/login" className="block">
-              <Button variant="outline" className="w-full">
-                Login
+            {isProductPage ? (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => console.log("Logout clicked")}
+              >
+                Logout
               </Button>
-            </Link>
-            <Link href="/signup" className="block">
-              <Button className="w-full bg-[#064D51] hover:bg-[#043638] text-white">
-                Signup
-              </Button>
-            </Link>
+            ) : (
+              <>
+                <Link href="/login" className="block">
+                  <Button variant="outline" className="w-full">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/signup" className="block">
+                  <Button className="w-full bg-[#064D51] hover:bg-[#043638] text-white">
+                    Signup
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
-          {/* Social Links */}
+          {/* Social Links - Show on all pages */}
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             {FILTERED_SOCIAL_ICONS.map(({ Icon, href }, index) => (
               <a
