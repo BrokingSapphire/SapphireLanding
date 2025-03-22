@@ -277,7 +277,7 @@ const ChargesTable = () => {
         </div>
 
         {/* MTF Charges */}
-        <div>
+        <div className="">
           <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
             MTF Charges
           </div>

@@ -93,8 +93,8 @@ export const INVESTOR_POINTS = [
 
 export const EXCHANGES = [
   { name: "NSE", link: "https://www.nseindia.com/" },
-  { name: "BSE", link: "https://www.nseindia.com/" },
-  { name: "MCX", link: "https://www.bseindia.com/" },
+  { name: "BSE", link: "https://www.bseindia.com/" },
+  { name: "MCX", link: "https://www.mcxindia.com/" },
   { name: "NCDEX", link: "https://www.ncdex.com" }
 ];  
 
