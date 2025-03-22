@@ -25,7 +25,7 @@ export default function Hero() {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#A3F794]/10 to-[#FFDE55]/20 z-0" />
+        {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#A3F794]/10 to-[#FFDE55]/20 z-0" /> */}
 
         <motion.div
           className="relative z-10 max-w-xs sm:max-w-lg md:max-w-2xl space-y-3 sm:space-y-4 md:space-y-5 text-center"
