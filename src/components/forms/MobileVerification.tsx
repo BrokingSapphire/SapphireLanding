@@ -34,7 +34,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [showOTP, otpTimer]);
+  }, [showOTP, otpTimer])
 
   // Resend OTP timer for 30 seconds
   useEffect(() => {
