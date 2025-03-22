@@ -5,9 +5,9 @@ const AboutInfo = () => {
   // const handleExplore = () => { };
   return (
     <>
-      <div className="py-20 bg-[#F5F7FA] ">
+      <div className="py-20 px-8 sm:px-0 bg-[#F5F7FA] ">
         <div className="text-center">
-          <h1 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
+          <h1 className="font-lexend text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
             Our Mission
           </h1>
           <p className="text-sm sm:text-base text-[#5F5F5F] mt-3 px-4 max-w-3xl mx-auto">
@@ -18,7 +18,7 @@ const AboutInfo = () => {
             our clients.
           </p>
 
-          <h1 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 mt-8">
+          <h1 className="font-lexend text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 mt-8">
             Vision
           </h1>
           <p className="text-sm sm:text-base text-[#5F5F5F] mt-3 px-4 max-w-3xl mx-auto">

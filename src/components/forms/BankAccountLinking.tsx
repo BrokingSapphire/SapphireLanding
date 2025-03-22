@@ -1,6 +1,5 @@
 "use client"
 import React, { useState, useEffect } from "react";
-import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import ManualBankDetails from "./ManualBankDetails";
 import UpiLinking from "./UpiLinking";
@@ -55,38 +54,28 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
           {/* Only show UPI option on larger screens */}
           {!isSmallScreen && (
-            <Button 
-              variant="outline" 
-              className="flex flex-col items-center justify-center h-32 border-2 hover:border-blue-500"
+            <button 
+              className="flex flex-col items-center justify-center h-32 border-2 rounded hover:border-[#064D51]"
               onClick={() => setLinkingMethod("upi")}
             >
-              <div className="flex items-center justify-center w-10 h-10 mb-2">
-                <Image width={1000} height={1000} src="/upi-icon.png" alt="UPI" className="w-8 h-8" />
+              <div className="flex items-center justify-center w-20 h-10 mt-4 mb-2">
+                <Image width={1000} height={1000} src="/new-signup/upi.png" alt="UPI" className="h-full w-20"  />
               </div>
               <div className="font-medium">Link with UPI</div>
               <div className="text-xs text-gray-500">(recommended)</div>
-            </Button>
+            </button>
           )}
           
-          <Button 
-            variant="outline" 
-            className={`flex flex-col items-center justify-center h-32 border-2 hover:border-blue-500 ${isSmallScreen ? "col-span-1" : ""}`}
+          <button 
+            className={`flex flex-col items-center justify-center h-32 border-2 rounded hover:border-[#064D51] ${isSmallScreen ? "col-span-1" : ""}`}
             onClick={() => setLinkingMethod("manual")}
           >
             <div className="flex items-center justify-center space-x-1 mb-2">
-              <div className="w-6 h-6 bg-red-500 rounded-sm flex items-center justify-center text-white text-xs">
-                H
-              </div>
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">
-                S
-              </div>
-              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs">
-                B
-              </div>
+              <Image width={1000} height={1000} src="/new-signup/threebanks.png" alt="Bank" className="h-full w-20"  />
             </div>
             <div className="font-medium">Enter bank</div>
             <div className="font-medium">details manually</div>
-          </Button>
+          </button>
         </div>
       </div>
     );

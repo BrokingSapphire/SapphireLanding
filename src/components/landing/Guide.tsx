@@ -1,5 +1,6 @@
+'use client'
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -7,6 +8,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useEffect } from "react";
+import { type CarouselApi } from "@/components/ui/carousel";
 
 interface Guide {
   id: number;
@@ -61,6 +64,19 @@ const GuideCard = ({ guide } : { guide: Guide }) => (
 );
 
 const Guide = () => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   return (
     <div className="bg-gray-100 py-8 sm:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-24">
@@ -75,6 +91,7 @@ const Guide = () => {
               align: "center",
               loop: true,
             }}
+            setApi={setApi}
             className="w-full px-10 sm:px-0"
           >
             <CarouselContent>
@@ -89,6 +106,20 @@ const Guide = () => {
             <CarouselPrevious className="left-1 bg-white/80" />
             <CarouselNext className="right-1 bg-white/80" />
           </Carousel>
+          
+          {/* Pagination Dots */}
+          <div className="flex justify-center gap-2 mt-4">
+            {guides.map((_, index) => (
+              <button
+                key={index}
+                className={`h-2 rounded-full transition-all ${
+                  current === index ? "w-4 bg-blue-600" : "w-2 bg-gray-300"
+                }`}
+                onClick={() => api?.scrollTo(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Desktop Grid View */}

@@ -91,7 +91,12 @@ export const INVESTOR_POINTS = [
   "For IPO applications, use ASBA for payment, eliminating the need for cheques.",
 ];
 
-export const EXCHANGES = ["Terms", "BSE", "MCX", "NCDEX"];
+export const EXCHANGES = [
+  { name: "NSE", link: "https://www.nseindia.com/" },
+  { name: "BSE", link: "https://www.nseindia.com/" },
+  { name: "MCX", link: "https://www.bseindia.com/" },
+  { name: "NCDEX", link: "https://www.ncdex.com" }
+];  
 
 export interface LinkSectionProps {
   title: string;

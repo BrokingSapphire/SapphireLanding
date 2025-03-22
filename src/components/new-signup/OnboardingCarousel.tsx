@@ -65,8 +65,8 @@ const OnboardingCarousel = () => {
 
   // Define components with stable keys
   const components = [
-    { id: "email", component: <EmailVerification onNext={handleNext} /> },
     { id: "mobile", component: <MobileVerification onNext={handleNext} /> },
+    { id: "email", component: <EmailVerification onNext={handleNext} /> },
     {
       id: "payment selection",
       component: <PaymentSelection onNext={handleNext} />,

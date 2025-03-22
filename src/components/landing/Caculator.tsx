@@ -48,7 +48,7 @@ const Calculator: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#F5F7FA] py-8 sm:py-12 px-6 md:py-16">
+    <section className="bg-[#F5F7FA] py-8 sm:py-12 px-12 md:py-16">
       <div className="max-w-7xl flex flex-col-reverse md:flex-col lg:flex-row justify-between items-center mx-auto px-4 sm:px-6 lg:px-12">
         {/* Text & Buttons Section */}
         <div className="w-full lg:w-1/2 mt-6 md:mt-0">
@@ -69,7 +69,7 @@ const Calculator: React.FC = () => {
         </div>
 
         {/* Illustration Image */}
-        <div className="hidden md:flex w-full justify-center lg:w-auto lg:mt-0 relative lg:left-[-130px] mb-4 md:mb-6 lg:mb-0">
+        <div className="hidden md:flex w-full justify-center lg:w-auto lg:mt-0 relative lg:left-[-70px] mb-4 md:mb-6 lg:mb-0">
           <Image
             src="/Calc.png"
             alt="Investment Calculator Illustration"
