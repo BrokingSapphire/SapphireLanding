@@ -22,7 +22,7 @@ const Navbar = () => {
     setActiveLink(pathname);
   }, [pathname]);
 
-  // Close sidebar when pathname changes (user navigates)
+  //Close sidebar when pathname changes (user navigates)
   useEffect(() => {
     setSidebarOpen(false);
   }, [pathname]);
