@@ -23,29 +23,29 @@ const CardPaymentForm = ({
     // Add your card payment logic here
     onSuccess();
   };
-  
+
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Remove all non-numeric characters and spaces
-    const numbersOnly = value.replace(/\D/g, '');
-    
+    const numbersOnly = value.replace(/\D/g, "");
+
     // Format the card number with spaces after every 4 digits
-    let formattedValue = '';
+    let formattedValue = "";
     for (let i = 0; i < numbersOnly.length; i++) {
       if (i > 0 && i % 4 === 0) {
-        formattedValue += ' ';
+        formattedValue += " ";
       }
       formattedValue += numbersOnly[i];
     }
-    
+
     // Update state with formatted value
     setCardDetails({ ...cardDetails, cardNumber: formattedValue });
   };
-  
+
   const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Only allow numbers
-    const numbersOnly = value.replace(/\D/g, '');
+    const numbersOnly = value.replace(/\D/g, "");
     setCardDetails({ ...cardDetails, cvv: numbersOnly });
   };
 
@@ -110,42 +110,77 @@ const CardPaymentForm = ({
                 Expiry Month & Year
               </label>
               <div className="flex gap-2">
-                <select
-                  value={cardDetails.expiryMonth}
-                  onChange={(e) =>
-                    setCardDetails({
-                      ...cardDetails,
-                      expiryMonth: e.target.value,
-                    })
-                  }
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500"
-                  style={{ backgroundPosition: "right 12.5rem center" }}
-                >
-                  <option value="">Month</option>
-                  {months.map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative flex-1">
+                  <select
+                    value={cardDetails.expiryMonth}
+                    onChange={(e) =>
+                      setCardDetails({
+                        ...cardDetails,
+                        expiryMonth: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-8"
+                  >
+                    <option value="">Month</option>
+                    {months.map((month) => (
+                      <option key={month} value={month}>
+                        {month}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg
+                      className="h-4 w-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
 
-                <select
-                  value={cardDetails.expiryYear}
-                  onChange={(e) =>
-                    setCardDetails({
-                      ...cardDetails,
-                      expiryYear: e.target.value,
-                    })
-                  }
-                  className="flex-1 px-3 py-2 pr-8 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500 bg-right-05 bg-[length:1.25rem]"
-                >
-                  <option value="">Year</option>
-                  {generateYearOptions().map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative flex-1">
+                  <select
+                    value={cardDetails.expiryYear}
+                    onChange={(e) =>
+                      setCardDetails({
+                        ...cardDetails,
+                        expiryYear: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-8"
+                  >
+                    <option value="">Year</option>
+                    {generateYearOptions().map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg
+                      className="h-4 w-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
 

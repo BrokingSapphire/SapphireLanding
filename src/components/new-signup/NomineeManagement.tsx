@@ -148,10 +148,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
   // Calculate remaining percentage to allocate
   const remainingPercentage = 100 - totalSharePercentage;
 
-  // If current nominee's share is exactly 100% and no nominees yet, enable Continue
-  // const currentNomineeShareIs100 =
-  //   nominees.length === 0 && parseFloat(currentNominee.sharePercentage) === 100;
-
   const isCurrentNomineeComplete =
     currentNominee.name &&
     currentNominee.panOrAadhar &&
@@ -258,20 +254,38 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                 <label className="block text-sm mb-1">
                   Relationship <span className="text-red-500">*</span>
                 </label>
-                <select
-                  value={currentNominee.relationship}
-                  onChange={(e) =>
-                    handleInputChange("relationship", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                >
-                  <option value="">select</option>
-                  {relationships.map((rel) => (
-                    <option key={rel} value={rel}>
-                      {rel}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={currentNominee.relationship}
+                    onChange={(e) =>
+                      handleInputChange("relationship", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-10"
+                  >
+                    <option value="">select</option>
+                    {relationships.map((rel) => (
+                      <option key={rel} value={rel}>
+                        {rel}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg
+                      className="h-4 w-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <div>

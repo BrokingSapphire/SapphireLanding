@@ -16,7 +16,7 @@ interface StepItem {
 const LeftPanel = ({ currentStep }: { currentStep: number }) => {
   // Track previous step to detect changes
   const [prevStep, setPrevStep] = useState(currentStep);
-  const [transitioningStep, setTransitioningStep] = useState<number | null>(
+  const [, setTransitioningStep] = useState<number | null>(
     null
   );
 
@@ -35,6 +35,9 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
       return () => clearTimeout(timer);
     }
   }, [currentStep, prevStep]);
+
+  // Determine if we're in the Trading Account steps range (6-8)
+  // const isInTradingAccountSteps = currentStep > 5 && currentStep <= 8;
 
   // Define all onboarding steps for the progress stepper
   const steps: StepItem[] = [
@@ -59,8 +62,8 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
     {
       id: 3,
       label: "Trading Account details",
-      completed: currentStep > 6,
-      active: currentStep === 6,
+      completed: currentStep > 8,
+      active: currentStep <= 8 && currentStep > 5,
     },
     {
       id: 4,
@@ -187,19 +190,19 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
             </div>
           ) : (
             // Show progress steps for verification process
-            <div className="relative animate-[fadeIn_0.5s_ease-out] space-y-3">
+            <div className="relative animate-none space-y-3">
+              {/* Removed fadeIn animation here */}
               {steps.map((step, index) => {
                 // Check if this step is transitioning (newly active)
-                const isTransitioning = step.id + 3 === transitioningStep;
+                // const isTransitioning =
+                //   step.id + 3 === transitioningStep && !isInTradingAccountSteps;
+                // // Special handling for Trading Account step
+                // const isTradingAccount = index === 3;
 
                 return (
                   <div
                     key={step.id}
-                    className={`flex items-center relative ${
-                      isTransitioning
-                        ? "animate-[smoothFadeIn_0.8s_ease-in-out]"
-                        : ""
-                    }`}
+                    className="flex items-center relative" /* Removed all animations */
                   >
                     {/* Step indicator with pulsing effect for active step */}
                     <div className="flex-shrink-0 rounded-full flex items-center justify-center z-10">
@@ -252,27 +255,30 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
                           xmlns="http://www.w3.org/2000/svg"
                           className="transform scale-90 rounded-full"
                         >
-                          <circle cx="15" cy="15" r="12" fill="white" />
-                          <circle
-                            cx="15"
-                            cy="15"
-                            r="11.75"
-                            stroke="#1DB954"
-                            strokeWidth="0.5"
+                          <circle cx="15" cy="15" r="12" fill="#1DB954" />
+                          <path
+                            d="M10 15L13.5 18.5L20 12"
+                            stroke="white"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
-                          <circle cx="15" cy="15" r="5" fill="#1DB954" />
                         </svg>
                       ) : (
                         <div className="w-5 h-5 rounded-full bg-gray-200/60"></div>
                       )}
                     </div>
 
-                    {/* Vertical line */}
+                    {/* Vertical line - conditionally change color based on completion status */}
                     {index < steps.length - 1 && (
-                      <div className="absolute left-2.5 top-6 w-px h-10 bg-gray-200/50"></div>
+                      <div
+                        className={`absolute left-3 top-6 w-0.5 h-10 ${
+                          step.completed ? "bg-green-500" : "bg-gray-200/50"
+                        } transition-colors duration-500 ease-in-out`}
+                      ></div>
                     )}
 
-                    {/* Step label with transition animation */}
+                    {/* Step label without animation that could cause blinking */}
                     <div
                       className={`ml-4 ${
                         step.active
@@ -280,7 +286,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
                           : step.completed
                           ? "text-gray-700"
                           : "text-gray-300"
-                      } transition-colors duration-1000 ease-in-out`}
+                      }`}
                     >
                       {step.label}
                     </div>
@@ -304,7 +310,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
               T&C
             </Link>
             <span>•</span>
-            <Link target="_blank"  href="/contact">
+            <Link target="_blank" href="/contact">
               Contact Us
             </Link>
           </div>
@@ -335,7 +341,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
         @keyframes smoothFadeIn {
           0% {
             opacity: 0.3;
-            transform: scale(0.98) translateX(-5px);
+            transform: scale(0.99) translateX(-3px);
           }
           100% {
             opacity: 1;
