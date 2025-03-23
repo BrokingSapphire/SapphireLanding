@@ -5,11 +5,11 @@ import { ArrowRight, Clock } from "lucide-react";
 import Image from "next/image";
 
 interface UpiLinkingProps {
-  onNext: () => void;
+  // onNext: () => void;
   onBack: () => void;
 }
 
-const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
+const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack,  }) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
 
   useEffect(() => {

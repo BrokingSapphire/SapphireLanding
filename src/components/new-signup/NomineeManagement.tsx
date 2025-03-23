@@ -149,8 +149,8 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
   const remainingPercentage = 100 - totalSharePercentage;
 
   // If current nominee's share is exactly 100% and no nominees yet, enable Continue
-  const currentNomineeShareIs100 =
-    nominees.length === 0 && parseFloat(currentNominee.sharePercentage) === 100;
+  // const currentNomineeShareIs100 =
+  //   nominees.length === 0 && parseFloat(currentNominee.sharePercentage) === 100;
 
   const isCurrentNomineeComplete =
     currentNominee.name &&
