@@ -5,30 +5,32 @@ import { ArrowRight, Clock } from "lucide-react";
 import Image from "next/image";
 
 interface UpiLinkingProps {
-  // onNext: () => void;
+  onNext: () => void;
   onBack: () => void;
 }
 
-const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack,  }) => {
+const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
 
   useEffect(() => {
-    // Only start timer if it's greater than 0
-    if (timeLeft <= 0) return;
+    if (timeLeft <= 0) {
+      onNext();
+      return;
+    }
 
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timer);
+          onNext(); // Call onNext when timer reaches zero
           return 0;
         }
         return prevTime - 1;
       });
     }, 1000);
 
-    // Cleanup on component unmount
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [timeLeft, onNext]);
 
   // Format the time as mm:ss
   const formatTime = (seconds: number) => {
