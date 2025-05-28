@@ -5,12 +5,12 @@ import {
   equityData,
   currencyData,
   commodityData,
-  accountOpeningData,
+  // accountOpeningData,
   nonTradeCharges,
   mtfCharges,
   EquityRowType,
   OtherRowType,
-  AccountType,
+  // AccountType,
   ChargeType
 } from "@/constants/ChargesTable";
 
@@ -233,7 +233,7 @@ const ChargesTable: React.FC = () => {
         {/* Trading Charges Table - Dynamically render based on active tab */}
         {renderActiveTable()}
 
-        {/* Account Opening Charges */}
+        {/* Account Opening Charges
         <div>
           <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
             Account Opening Charges
@@ -266,7 +266,7 @@ const ChargesTable: React.FC = () => {
               </table>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Non Trade Charges */}
         <div>
