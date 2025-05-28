@@ -149,16 +149,16 @@ export interface EquityRowType {
     },
   ];
   
-  // Account Opening Charges Data
-  export const accountOpeningData = [
-    { type: "Individual Account", charges: "₹99/-" },
-    { type: "Company Account", charges: "₹799/-" },
-    { type: "Partnership Account", charges: "₹499/-" },
-    { type: "LLP Account", charges: "₹499/-" },
-    { type: "Hindu Undivided Family (HUF) Account", charges: "₹199/-" },
-    { type: "Trust Account", charges: "₹499/-" },
-    { type: "Association of Persons (AOP) Account", charges: "₹299/-" },
-  ];
+  // // Account Opening Charges Data
+  // export const accountOpeningData = [
+  //   { type: "Individual Account", charges: "₹99/-" },
+  //   { type: "Company Account", charges: "₹799/-" },
+  //   { type: "Partnership Account", charges: "₹499/-" },
+  //   { type: "LLP Account", charges: "₹499/-" },
+  //   { type: "Hindu Undivided Family (HUF) Account", charges: "₹199/-" },
+  //   { type: "Trust Account", charges: "₹499/-" },
+  //   { type: "Association of Persons (AOP) Account", charges: "₹299/-" },
+  // ];
   
   // Non Trade Charges
   export const nonTradeCharges = [
