@@ -75,12 +75,14 @@ const LegalSection = () => {
 
         <p>
           <strong>ODR Portal:</strong> Resolve disputes efficiently using
-          SEBI&apos;s Online Dispute Resolution Portal:
-          [https://smartodr.in/login].
+          SEBI&apos;s Online Dispute Resolution Portal:{" "}
+          <Link target="_blank" href="https://smartodr.in/login">
+            <span className="underline">Smart ODR Portal</span>
+          </Link>
         </p>
         <p>
           <strong>Charts are powered by:</strong>{" "}
-          <Link href="https://www.tradingview.com">
+          <Link target="_blank" href="https://www.tradingview.com">
             <span className="underline">TradingView</span>
           </Link>
         </p>
