@@ -10,58 +10,113 @@ import {
 } from "@/components/ui/carousel";
 import { useEffect } from "react";
 import { type CarouselApi } from "@/components/ui/carousel";
+import { Play } from "lucide-react";
 
 interface Guide {
   id: number;
   title: string;
   author: string;
-  image: string;
+  thumbnail: string;
+  videoId: string;
+  duration: string;
 }
 
 const guides = [
   {
     id: 1,
-    title:
-      "Beginner's Guide to Budgeting - Simple Steps to Take Control of Your Finances",
-    author: "Nakul Thakur",
-    image: "/nakul.svg",
+    title: "Rick Astley - Never Gonna Give You Up (Official Video)",
+    author: "Rick Astley",
+    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    videoId: "dQw4w9WgXcQ",
+    duration: "3:33",
   },
   {
     id: 2,
-    title:
-      "Beginner's Guide to Budgeting - Simple Steps to Take Control of Your Finances",
-    author: "Nakul Thakur",
-    image: "/nakul.svg",
+    title: "PSY - GANGNAM STYLE(강남스타일) M/V",
+    author: "PSY",
+    thumbnail: "https://img.youtube.com/vi/9bZkp7q19f0/maxresdefault.jpg",
+    videoId: "9bZkp7q19f0",
+    duration: "4:13",
   },
   {
     id: 3,
-    title:
-      "Beginner's Guide to Budgeting - Simple Steps to Take Control of Your Finances",
-    author: "Nakul Thakur",
-    image: "/nakul.svg",
+    title: "Smash Mouth - All Star (Official Music Video)",
+    author: "Smash Mouth",
+    thumbnail: "https://img.youtube.com/vi/L_jWHffIx5E/maxresdefault.jpg",
+    videoId: "L_jWHffIx5E",
+    duration: "3:21",
   },
 ];
 
-const GuideCard = ({ guide } : { guide: Guide }) => (
-  <div className="bg-white rounded-2xl shadow-md overflow-hidden h-full">
-    <div className="relative">
-      <Image
-        src={guide.image}
-        alt={guide.title}
-        width={300}
-        height={200}
-        className="w-full h-48 object-cover blur-sm transition-all duration-300 hover:blur-0"
-      />
+const GuideCard = ({ guide }: { guide: Guide }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handlePlayVideo = () => {
+    // Redirect to YouTube video in a new tab
+    window.open(`https://www.youtube.com/watch?v=${guide.videoId}`, '_blank');
+  };
+
+  return (
+    <div className="bg-white rounded-[18px] pb-2 shadow-md overflow-hidden h-full">
+      <div className="relative">
+        <div 
+          className="relative group cursor-pointer"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onClick={handlePlayVideo}
+        >
+          <Image
+            src={guide.thumbnail}
+            alt={guide.title}
+            width={300}
+            height={200}
+            className={`w-full h-48 object-cover transition-all duration-300 ${
+              isHovered ? 'blur-0' : 'blur-[2px]'
+            }`}
+          />
+          
+          {/* Video Duration - Bottom Right (hidden on hover) */}
+          {!isHovered && (
+            <div className="absolute bottom-4 left-12 text-white text-[12px] font-semibold px-2 py-1 rounded transition-all duration-300">
+              {guide.duration}
+            </div>
+          )}
+
+          {/* Animated Play Button */}
+          <div 
+            className={`absolute transition-all duration-500 ease-in-out ${
+              isHovered 
+                ? 'top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2' 
+                : 'bottom-3 left-3'
+            }`}
+          >
+            <div className="bg-black/50 rounded-full p-2 flex items-center justify-center">
+              <Play className="w-4 h-4 text-white fill-white" />
+            </div>
+          </div>
+
+          {/* Background overlay on hover */}
+          {isHovered && (
+            <div className="absolute inset-0 bg-black/30 transition-all duration-300" />
+          )}
+        </div>
+      </div>
+      
+      <div className="p-4">
+        <h3 className="font-lexend text-[20px] font-medium text-slate-600 line-clamp-2">
+          {guide.title}
+        </h3>
+        <p className="text-gray-600 text-sm mt-3">{guide.author}</p>
+        <button 
+          onClick={handlePlayVideo}
+          className="mt-3 px-3 rounded-full bg-[#F2FFEF] text-[#19A800] py-1 text-sm transition hover:bg-[#E0FFD9]"
+        >
+          Watch Video
+        </button>
+      </div>
     </div>
-    <div className="p-4">
-      <h3 className="text-md font-semibold text-slate-600">{guide.title}</h3>
-      <p className="text-gray-600 text-sm mt-3">{guide.author}</p>
-      <button className="mt-3 px-3 rounded-full bg-[#F2FFEF] text-[#19A800] py-1 text-sm transition hover:bg-[#E0FFD9]">
-        Understand Budget
-      </button>
-    </div>
-  </div>
-);
+  );
+};
 
 const Guide = () => {
   const [api, setApi] = useState<CarouselApi>();

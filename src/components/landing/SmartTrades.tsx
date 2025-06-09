@@ -45,58 +45,77 @@ function SmartTrades() {
   }, []);
 
   return (
-    <div className="min-h-[500px] mt-8 md:mt-16 flex flex-col md:flex-row items-center justify-center text-left gap-6 md:gap-12 px-10 md:px-32 lg:pl-20 pb-16 md:pb-0">
-      <div className="md:h-[380px] md:-mt-28 w-full md:w-1/2 flex flex-col">
-        <h2 className="font-lexend text-3xl text-center mx-auto md:text-3xl lg:text-4xl font-semibold leading-relaxed">
-          {content[currentIndex].title}
-          <span className='font-lexend'>{content[currentIndex].subtitle}</span>
-        </h2>
-        <div
-          className={`transition-all duration-700 ease-in-out ${
-            fade ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
-          }`}
-        >
-          <h3 className="mt-4 md:mt-16 text-lg md:text-xl font-semibold">
-            {content[currentIndex].heading}
-          </h3>
-          <p className="text-gray-600 mt-3 md:mt-6 text-base md:text-lg max-w-md leading-relaxed md:leading-loose">
-            {content[currentIndex].text}
-          </p>
+    <div className="min-h-[500px] mt-8 md:mt-[90px] md:mb-[110px] px-10 md:px-[48px] lg:px-[100px]">
+      {/* Container that stacks on smaller screens */}
+      <div className="flex flex-col items-center justify-center gap-8 xl:flex-row xl:gap-20 xl:items-start">
+        
+        {/* Text Content */}
+        <div className="flex flex-col text-center xl:text-left xl:w-1/2 xl:min-w-[500px] xl:h-[400px]">
+          <h2 className="font-lexend text-3xl lg:text-4xl font-medium leading-relaxed mb-12">
+            {content[currentIndex].title}
+            <br className="xl:hidden" />
+            <span className='font-lexend'>{content[currentIndex].subtitle}</span>
+          </h2>
+          
+          <div
+            className={`transition-all duration-700 ease-in-out flex-1 ${
+              fade ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
+            }`}
+          >
+            <h3 className="text-lg md:text-[24px]  font-medium mt-[12px] mb-4">
+              {content[currentIndex].heading}
+            </h3>
+            <p className="text-gray-600 text-base md:text-[20px] leading-relaxed md:leading-loose max-w-md mx-auto xl:mx-0 overflow-hidden">
+              {content[currentIndex].text}
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="w-full md:w-1/2 relative flex flex-col items-center mt-8 mb-4 md:mb-0">
-        <div className="flex  md:flex-col gap-3 justify-center md:justify-start absolute md:left-[-30px] bottom-[-30px] md:bottom-auto md:top-1/2 left-1/2 transform -translate-x-1/2 md:-translate-x-0 md:-translate-y-1/2">
-          {content.map((_, index) => (
-            <span
-              key={index}
-              className={`w-3 h-3 rounded-full transition-all duration-500 ${
-                index === currentIndex
-                  ? "bg-[#19A800] scale-125"
-                  : "bg-gray-400"
-              }`}
-              onClick={() => {
-                setFade(false);
-                setTimeout(() => {
-                  setCurrentIndex(index);
-                  setFade(true);
-                }, 500);
-              }}
-            />
-          ))}
-        </div>
-        <div className="overflow-hidden -mt-8 border-4 w-full max-w-[550px] h-[250px] md:h-[350px] rounded-lg shadow-lg relative">
-          {content.map((item, index) => (
-            <Image
-              key={index}
-              src={item.image}
-              alt={item.heading}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className={`object-cover transition-opacity duration-1000 ease-in-out ${
-                index === currentIndex ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          ))}
+
+        {/* Image Container with Fixed Size */}
+        <div className="relative flex flex-col items-center xl:mt-[108px] xl:-mb-[280px] xl:h-[400px] xl:flex-shrink-0">
+          
+          {/* Navigation Dots */}
+          <div className="flex gap-3 justify-center mb-6 xl:absolute xl:flex-col xl:left-[-40px] xl:top-[150px] xl:mb-0">
+            {content.map((_, index) => (
+              <span
+                key={index}
+                className={`w-3 h-3 rounded-full transition-all duration-500 cursor-pointer ${
+                  index === currentIndex
+                    ? "bg-[#19A800] scale-125"
+                    : "bg-[#D9D9D9]"
+                }`}
+                onClick={() => {
+                  setFade(false);
+                  setTimeout(() => {
+                    setCurrentIndex(index);
+                    setFade(true);
+                  }, 500);
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Fixed Size Image Container */}
+          <div 
+            className="overflow-hidden border-[11px] border-[#EFF6FF] rounded-[10px] shadow-lg relative"
+            style={{
+              width: 'min(550px, calc(100vw - 40px))',
+              height: 'min(350px, calc((100vw - 40px) * 350 / 550))',
+            }}
+          >
+            {content.map((item, index) => (
+              <Image
+                key={index}
+                src={item.image}
+                alt={item.heading}
+                fill
+                sizes="(max-width: 640px) calc(100vw - 40px), 550px"
+                className={`object-cover transition-opacity duration-1000 ease-in-out ${
+                  index === currentIndex ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

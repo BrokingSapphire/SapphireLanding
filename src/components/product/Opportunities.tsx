@@ -16,7 +16,7 @@ const Opportunities = () => {
         <Image
           src="/products/arrows.svg"
           alt="Arrows pointing right"
-          className="ml-auto hidden sm:block  object-cover"
+          className="ml-auto hidden lg:block  object-cover"
           aria-hidden="true"
           width={350}
           height={350}

@@ -92,7 +92,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex space-x-4">
+          <div className="hidden lg:flex space-x-4">
             <Link href="/login">
               <Button variant="outline">Login</Button>
             </Link>

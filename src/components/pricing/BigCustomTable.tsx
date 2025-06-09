@@ -203,7 +203,7 @@ const ChargesTable: React.FC = () => {
 
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8 mb-8">
         {/* Navigation Bar */}
         <div className="flex border-b pt-6 gap-x-16 sm:gap-x-20 overflow-x-auto hide-scrollbar">
           {["Equity", "Currency", "Commodity", "Other Charges"].map((tab: string) => (
@@ -339,7 +339,7 @@ const ChargesTable: React.FC = () => {
         </div>
       </div>
 
-      <div className="p-6 sm:py-16 sm:px-24 text-sm bg-gray-100 text-gray-600">
+      <div className="p-6 sm:py-[34px] sm:px-24 text-sm bg-gray-100 text-gray-600">
         <span className=" font-lexend text-xl sm:text-2xl font-semibold text-black">
           Disclaimer
         </span>

@@ -38,7 +38,7 @@ const Nakul = () => {
           </div>
         </div>
         {/* Profile Image - Centered */}
-        <div className="h-80 w-80 sm:w-96 sm:h-96 rounded-lg overflow-hidden bg-pink-50 flex-shrink-0 self-center">
+        <div className="h-80 w-80 sm:w-96 sm:h-96 rounded-[16px] border-[12px] border-[#F5F7FA] overflow-hidden flex-shrink-0 self-center">
           <Image
             src="/about/about-logo.png"
             alt="Nakul Thakur"

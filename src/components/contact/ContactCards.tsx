@@ -56,7 +56,7 @@ const HQCard: React.FC = () => (
         </h3>
       </div>
       <p className="text-sm sm:text-base text-gray-600">
-        Plot No. 33, Pratap Nagar, Khamla, Nagpur, Maharashtra
+      📍 Plot No. 33, Pratap Nagar, Khamla, Nagpur, Maharashtra
         <br />
         Pincode : 440025
       </p>
