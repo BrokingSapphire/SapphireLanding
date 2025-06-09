@@ -125,7 +125,7 @@ const Footer = () => {
                 <h3 className="font-bold ml-2 text-lg">Sapphire</h3>
               </div>
               <address className="text-xs leading-loose not-italic mb-6 w-full">
-                Plot No. 33, Kotwal Nagar, 440025
+                First Floor, Pande Layout, New Sneh Nagar, Khamla, Nagpur (MH) - 440025
                 <br />
                 info@sapphirebroking.com
                 <br />
@@ -185,7 +185,9 @@ const Footer = () => {
                   <h3 className="font-bold ml-2 text-[20px]">Sapphire</h3>
                 </div>
                 <address className="text-[14px] leading-loose not-italic mb-6 sm:mb-0 w-full max-w-[180px] lg:max-w-[160px] xl:max-w-[200px] break-words">
-                  Plot No. 33, Kotwal Nagar,
+                  First Floor, Pande Layout,
+                  <br />
+                  New Sneh Nagar,
                   <br />
                   Khamla, Nagpur (MH)
                   <br />
