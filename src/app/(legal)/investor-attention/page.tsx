@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React from "react";
 import Link from "next/link";
-import { advisoryData } from "@/constants/legal/investorattention";
+import { advisoryData } from "@/components/legal/investorattention";
 import { AdvisoryCard } from "@/components/InvestorAttentionComponents";
 
 const InvestorAttention: React.FC = () => {

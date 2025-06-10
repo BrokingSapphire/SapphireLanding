@@ -4,7 +4,7 @@ import { MousePointer } from 'lucide-react';
 
 const HeroSection = () => {
   return (
-   <section className=" relative overflow-hidden " style={{ paddingLeft: '66px', paddingRight: '66px', paddingBottom: '80px' }}>
+   <section className=" relative overflow-hidden " style={{ paddingLeft: '66px', paddingRight: '66px',paddingTop:'66px' , paddingBottom: '80px' }}>
       {/* Floating Feature Pills - Outside the main content container */}
       <div className="absolute hidden lg:flex items-center space-x-2 z-10" style={{ top: '10%', left: '30%', transform: 'translateX(8rem)' }}>
         <MousePointer className="w-7 h-7 transform" style={{ color: '#9060F7', fill:'#9060F7' , transform: 'rotate(20deg)' }} />
@@ -32,7 +32,7 @@ const HeroSection = () => {
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between h-full">
         
         {/* Left Side - Hero Content */}
-        <div className="lg:w-[70%]  text-left" style={{ marginTop: '-40px'}}>
+        <div className="lg:w-[70%]  text-left  lg:-mt-10" >
           <h1 className="font-lexend font-medium mb-6  text-5xl xl:text-6xl leading-tight" >
             Your Collaboration Station
           </h1>

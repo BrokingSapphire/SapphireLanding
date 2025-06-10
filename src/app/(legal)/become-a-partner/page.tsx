@@ -1,8 +1,8 @@
-import PartnerSupport from '@/constants/legal/BecomePartner/PartnerSupport'
-import Section1 from '@/constants/legal/BecomePartner/Section1'
-import Section2 from '@/constants/legal/BecomePartner/Section2'
-import Section3 from '@/constants/legal/BecomePartner/Section3'
-import Section4 from '@/constants/legal/BecomePartner/Section4'
+import PartnerSupport from '@/components/legal/BecomePartner/PartnerSupport'
+import Section1 from '@/components/legal/BecomePartner/Section1'
+import Section2 from '@/components/legal/BecomePartner/Section2'
+import Section3 from '@/components/legal/BecomePartner/Section3'
+import Section4 from '@/components/legal/BecomePartner/Section4'
 import React from 'react'
 
 function BecomePartner() {
