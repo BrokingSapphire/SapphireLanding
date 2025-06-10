@@ -19,7 +19,7 @@ export const ProductCard = ({
   index,
 }: ProductCardProps) => (
   <div
-    className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 md:gap-12 py-20 my-0"
+    className="flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 md:gap-12 py-10 md:py-20 my-0"
     data-testid={`product-${index}`}
   >
     <div className="w-full md:w-1/2 pl-4 space-y-3 sm:space-y-4">

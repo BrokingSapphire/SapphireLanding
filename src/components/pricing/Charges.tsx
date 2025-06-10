@@ -17,18 +17,18 @@ const ChargesCard: React.FC<ChargesCardProps> = ({
   icon: Icon,
 }) => {
   return (
-    <div className="rounded-2xl h-auto min-h-[300px] sm:h-[360px] p-4 sm:p-5 bg-gradient-to-t from-[#EAFBF099] to-white shadow-[0_4px_15px_rgba(196,253,216,0.6)] w-full sm:w-[340px] md:w-[360px] border-2 border-[#C4FDD866]">
-      <div className="space-y-4 sm:space-y-6">
+    <div className="rounded-2xl h-auto min-h-[220px] sm:min-h-[240px] md:min-h-[260px] lg:min-h-[420px] xl:min-h-[420px] p-4 sm:p-5 md:p-5 lg:p-5 xl:p-6 bg-gradient-to-t from-[#EAFBF099] to-white shadow-[0_4px_15px_rgba(196,253,216,0.6)] w-full sm:w-full md:w-full lg:w-full lg:max-w-[320px] xl:max-w-[340px] 2xl:max-w-[380px] min-w-[280px] lg:min-w-[280px] xl:min-w-[320px] border-2 border-[#C4FDD866] flex-1 lg:flex-shrink">
+      <div className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
         {/* Header */}
-        <div className="flex items-start rounded-md bg-[#EAFBF0] p-2 sm:p-3 gap-2 sm:gap-3 shadow-[0_4px_10px_rgba(196,253,216,0.5)]">
-          <div className="mt-1">
-            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#1F6B12]" />
+        <div className="flex items-start rounded-md bg-[#EAFBF0] p-2 sm:p-3 md:p-3.5 gap-2 sm:gap-3 shadow-[0_4px_10px_rgba(196,253,216,0.5)]">
+          <div className="mt-1 flex-shrink-0">
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-5 md:h-5 text-[#1F6B12]" />
           </div>
-          <div className="space-y-0.5 sm:space-y-1">
-            <h3 className="text-lg sm:text-xl text-[#1F6B12] font-bold">
+          <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
+            <h3 className="text-base sm:text-lg md:text-lg lg:text-lg xl:text-xl text-[#1F6B12] font-bold leading-tight break-words">
               {title}
             </h3>
-            <p className="text-xs sm:text-sm text-gray-600 leading-snug">
+            <p className="text-sm sm:text-xs md:text-base lg:text-base xl:text-base text-gray-600 leading-snug break-words">
               {subtitle}
             </p>
           </div>
@@ -36,23 +36,25 @@ const ChargesCard: React.FC<ChargesCardProps> = ({
 
         {/* Price */}
         <div className="flex items-start">
-          <span className="text-xl sm:text-2xl text-gray-900 font-normal mt-1.5">
+          <span className="text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-2xl text-gray-900 font-normal mt-1.5 flex-shrink-0">
             ₹
           </span>
-          <span className="text-5xl sm:text-6xl font-bold text-gray-900 leading-none ml-0.5">
+          <span className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-6xl font-bold text-gray-900 leading-none ml-0.5 flex-shrink-0">
             {charge}
           </span>
           {charge === "20" && (
-            <span className="text-2xl sm:text-3xl text-gray-900 font-bold mt-1">
+            <span className="text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-3xl text-gray-900 font-bold mt-1 flex-shrink-0">
               *
             </span>
           )}
         </div>
 
         {/* Description */}
-        <p className="text-sm sm:text-base text-gray-800 leading-relaxed">
-          {description}
-        </p>
+        <div className="min-w-0">
+          <p className="text-sm sm:text-base md:text-sm lg:text-sm xl:text-base text-gray-800 leading-relaxed break-words hyphens-auto">
+            {description}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -87,8 +89,8 @@ const Charges: React.FC = () => {
   ];
 
   return (
-    <div className="mx-auto px-2 sm:px-4">
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-4 md:gap-8">
+    <div className="w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-4 xl:px-8">
+      <div className="flex flex-col lg:flex-row items-center justify-center gap-4 sm:gap-4 md:gap-6 lg:gap-4 xl:gap-6 2xl:gap-8 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0">
         {chargesData.map((card, index) => (
           <ChargesCard key={index} {...card} />
         ))}

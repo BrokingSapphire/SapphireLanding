@@ -11,7 +11,7 @@ const Product = () => {
   return (
     <div className="bg-[#F5F7FA] w-full px-3 sm:px-0">
       <section
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-8 sm:py-0 space-y-12 sm:space-y-0"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-8 sm:py-0 space-y-[28px] sm:space-y-0"
         aria-label="Products section"
       >
         {PRODUCTS.map((product, index) => (

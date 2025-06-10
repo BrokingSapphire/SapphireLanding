@@ -15,6 +15,7 @@ const excludedPaths = [
   "/investor-dos-and-donts",
   "/investor-rights",
   "/investor-responsibilities",
+  "/become-a-partner",
   "/code-of-conduct-participants",
 ];
 

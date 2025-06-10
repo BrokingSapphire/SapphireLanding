@@ -95,21 +95,59 @@ const ContactCards: React.FC = () => {
   return (
     <div className="bg-[#F5F7FA] py-6 sm:py-8 md:py-11 px-9 sm:px-6 md:px-8">
       <div className="max-w-6xl mx-auto">
-        {/* First row with 3 cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
-          {contactOptions.slice(0, 3).map((option, index) => (
-            <ContactCard
-              key={index}
-              title={option.title}
-              hours={option.hours}
-              satHours={option.satHours}
-              phone={option.phone}
-            />
-          ))}
+        {/* Layout for lg+ screens: Original 3+2 layout */}
+        <div className="hidden lg:block">
+          {/* First row with 3 cards */}
+          <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+            {contactOptions.slice(0, 3).map((option, index) => (
+              <ContactCard
+                key={index}
+                title={option.title}
+                hours={option.hours}
+                satHours={option.satHours}
+                phone={option.phone}
+              />
+            ))}
+          </div>
+          {/* Second row with partner support and HQ */}
+          <div className="grid grid-cols-3 gap-4 sm:gap-6">
+            <div className="col-span-1">
+              <ContactCard
+                title={contactOptions[3].title}
+                hours={contactOptions[3].hours}
+                satHours={contactOptions[3].satHours}
+                phone={contactOptions[3].phone}
+              />
+            </div>
+            <div className="col-span-2">
+              <HQCard />
+            </div>
+          </div>
         </div>
-        {/* Second row with partner support and HQ */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-          <div className="sm:col-span-1 h-full">
+
+        {/* Layout for sm to lg screens: 2+2+1 layout */}
+        <div className="block lg:hidden">
+          {/* First row with Account opening and Support */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+            {contactOptions.slice(0, 2).map((option, index) => (
+              <ContactCard
+                key={index}
+                title={option.title}
+                hours={option.hours}
+                satHours={option.satHours}
+                phone={option.phone}
+              />
+            ))}
+          </div>
+
+          {/* Second row with Call & Trade and Partner Support */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+            <ContactCard
+              title={contactOptions[2].title}
+              hours={contactOptions[2].hours}
+              satHours={contactOptions[2].satHours}
+              phone={contactOptions[2].phone}
+            />
             <ContactCard
               title={contactOptions[3].title}
               hours={contactOptions[3].hours}
@@ -117,7 +155,9 @@ const ContactCards: React.FC = () => {
               phone={contactOptions[3].phone}
             />
           </div>
-          <div className="sm:col-span-1 md:col-span-2 h-full">
+
+          {/* Third row with HQ taking full width */}
+          <div className="grid grid-cols-1">
             <HQCard />
           </div>
         </div>
