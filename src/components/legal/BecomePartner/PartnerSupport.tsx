@@ -12,7 +12,7 @@ function PartnerSupport() {
                     alt="Partner Support"
                     width={250}
                     height={250}
-                    className="w-full h-auto object-cover max-w-md lg:max-w-lg"
+                    className=" w-[80%] md:w-full h-auto object-cover max-w-sm sm:max-w-md lg:max-w-lg transform translate-x-8 md:translate-x-12 lg:translate-x-0"
                 />
             </div>
             

@@ -10,18 +10,18 @@ interface PartnerBenefitProps {
 }
 
 const PartnerBenefitCard = ({ icon, title, description, alt }: PartnerBenefitProps) => (
-  <div className="flex flex-col w-72 sm:w-40 md:w-72 items-center">
-    <div className="mb-4 w-full justify-start">
+  <div className="flex flex-col w-full max-w-72 items-center">
+    <div className="mb-4 w-full justify-center sm:justify-start ">
       <Image 
         src={icon} 
         alt={alt} 
         width={48} 
         height={48}
-        className="sm:w-8 sm:h-8 md:w-12 md:h-12"
+        className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
       />
     </div>
-    <div className="font-lexend text-lg sm:text-lg md:text-2xl font-medium mb-2 text-left">{title}</div>
-    <p className="text-gray-600 text-left text-xs sm:text-sm md:text-base">
+    <div className="font-lexend text-xl sm:text-xl md:text-xl lg:text-2xl font-medium mb-2 text-left w-full">{title}</div>
+    <p className=" text-left text-sm sm:text-base md:text-base pr-3 w-full">
       {description}
     </p>
   </div>
@@ -68,13 +68,13 @@ const Section3 = () => {
   ];
 
   return (
-    <section className="py-16 px-6 md:px-24 lg:px-40">
+    <section className="py-8 sm:py-12 md:py-16 px-6 sm:px-6 md:px-12 lg:px-24 xl:px-40">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-14">What our Partners get</h2>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-10 md:mb-14">What our Partners get</h2>
         
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-10  justify-items-center mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3  sm:gap-x-8 md:gap-x-12 lg:gap-x-16 gap-y-6 sm:gap-y-8 md:gap-y-10 justify-items-center mx-auto">
           {partnerBenefits.map((benefit, index) => (
-            <div key={index} className="flex justify-center mb-12">
+            <div key={index} className="flex justify-center mb-4 sm:mb-6 md:mb-8 lg:mb-12 w-full">
               <PartnerBenefitCard
                 icon={benefit.icon}
                 alt={benefit.alt}
