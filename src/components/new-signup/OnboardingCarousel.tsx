@@ -13,18 +13,19 @@ import LastStepPage from "../forms/LastStepPage";
 import CongratulationsPage from "../forms/Congratulations";
 import InvestmentSegment from "../forms/InvestmentSegment.tsx";
 // import CardVerification from "../forms/CardVerification";
-import PaymentSelection from "../forms/PaymentSelection";
 import TradingPreferences from "../forms/TradingPreferences";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import BankAccountLinking from "../forms/BankAccountLinking";
 import SignatureComponent from "../forms/Signature";
+import MPIN from "../forms/MPIN";
+import AadhaarPANMismatch from "../forms/AadhaarPANMismatch";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const TOTAL_STEPS = 15;
+  const TOTAL_STEPS = 16;
 
   const handleNext = useCallback(() => {
     if (isAnimating) return;
@@ -67,11 +68,6 @@ const OnboardingCarousel = () => {
   const components = [
     { id: "email", component: <EmailVerification onNext={handleNext} /> },
     { id: "mobile", component: <MobileVerification onNext={handleNext} /> },
-    {
-      id: "payment selection",
-      component: <PaymentSelection onNext={handleNext} />,
-    },
-    // { id: 'card', component: <CardVerification onNext={handleNext} /> },
     { id: "pan", component: <PANVerify onNext={handleNext} /> },
     { id: "aadhaar", component: <AadhaarVerification onNext={handleNext} /> },
     {
@@ -99,6 +95,8 @@ const OnboardingCarousel = () => {
 
     { id: "nominee", component: <NomineeSelection onNext={handleNext} /> },
     { id: "Last Step", component: <LastStepPage onNext={handleNext} /> },
+    { id: "MPIN", component: <MPIN onNext={handleNext} /> },
+    { id: "Set Password ", component: <AadhaarPANMismatch onNext={handleNext} /> },
     {
       id: "congratulations",
       component: <CongratulationsPage onNext={handleNext} />,
@@ -159,7 +157,7 @@ const OnboardingCarousel = () => {
         } bg-white h-full`}
       >
         <div className="h-full flex items-center">
-          <div className="p-4 sm:p-12 w-full sm:max-w-2xl flex mx-auto relative">
+          <div className="p-4 sm:p-10 w-full max-w-2xl flex mx-auto relative">
             {/* Previous Screen */}
             {direction === 1 && (
               <div

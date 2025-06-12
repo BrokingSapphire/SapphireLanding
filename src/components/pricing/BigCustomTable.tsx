@@ -13,6 +13,7 @@ import {
   // AccountType,
   ChargeType
 } from "@/constants/ChargesTable";
+import ChargesExplained from "./ChargesExplained";
 
 const ChargesTable: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("Equity");
@@ -302,10 +303,13 @@ const ChargesTable: React.FC = () => {
             </div>
           </div>
         </div>
+        <div>
+          <ChargesExplained />
+        </div>
       </div>
 
       <div className="p-6 sm:py-[34px] sm:px-24 text-sm bg-gray-100 text-gray-600">
-        <span className=" font-lexend text-xl sm:text-2xl font-semibold text-black">
+        <span className="font-lexend text-xl sm:text-2xl font-semibold text-black">
           Disclaimer
         </span>
         <p className="mt-4 sm:mt-5 leading-relaxed">

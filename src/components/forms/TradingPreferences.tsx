@@ -65,7 +65,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleIncomeSelect("< 1 Lakh")}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm  hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
                 selectedIncome === "< 1 Lakh"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-700 hover:border-gray-400"
@@ -76,7 +76,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleIncomeSelect("1 - 5 Lacs")}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
                 selectedIncome === "1 - 5 Lacs"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -87,7 +87,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleIncomeSelect("5 - 10 Lacs")}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
                 selectedIncome === "5 - 10 Lacs"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -98,7 +98,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleIncomeSelect("10 - 25 Lacs")}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
                 selectedIncome === "10 - 25 Lacs"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -109,7 +109,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleIncomeSelect("25 - 1 Cr")}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
                 selectedIncome === "25 - 1 Cr"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -120,7 +120,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleIncomeSelect("> 1Cr")}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
                 selectedIncome === "> 1Cr"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -139,7 +139,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleExperienceSelect("No Experience")}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "No Experience"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -150,7 +150,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleExperienceSelect("< 1 year")}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "< 1 year"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -161,7 +161,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleExperienceSelect("1 - 5 years")}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "1 - 5 years"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -172,7 +172,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleExperienceSelect("5 - 10 years")}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "5 - 10 years"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -183,7 +183,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleExperienceSelect("10+ years")}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
                 selectedExperience === "10+ years"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -203,7 +203,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleSettlementSelect("Quarterly")}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
                 selectedSettlement === "Quarterly"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -214,7 +214,7 @@ const TradingPreferences: React.FC<TradingAccountDetailsProps> = ({
             <button
               type="button"
               onClick={() => handleSettlementSelect("Monthly")}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
                 selectedSettlement === "Monthly"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"

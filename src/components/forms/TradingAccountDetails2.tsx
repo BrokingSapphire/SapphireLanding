@@ -85,7 +85,7 @@ const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
                 type="button"
                 onClick={() => handleOccupationSelect(option)}
                 disabled={isSubmitting}
-                className={`px-4 py-2 rounded border transition-colors
+                className={`px-4 py-2 rounded border transition-colors text-sm
                   ${
                     occupation === option
                       ? "border-teal-800 bg-teal-50 text-teal-800"
