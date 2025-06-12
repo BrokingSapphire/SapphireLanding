@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/carousel";
 
 const GatewayCard = ({ title, icon, description }: GatewayItem) => (
-  <div className="flex justify-center p-4 h-full mt-10 sm:mt-0">
+  <div className="flex justify-center h-full mt-10 sm:mt-0">
     <div className="relative w-[280px] max-w-xs sm:max-w-sm h-64 group">
       <div className="absolute bottom-20 sm:bottom-8 w-full h-36 bg-[#FFD62D] rounded-xl transform-gpu transition-transform duration-700 ease-in-out origin-top group-hover:-rotate-6" />
       
@@ -71,7 +71,7 @@ const Gateway = () => {
   }, [api]);
 
   return (
-    <section className="max-w-7xl mt-4 mx-auto p-8">
+    <section className="max-w-7xl mt-4 mx-auto p-8 xl:py-[58px] xl:px-[118px]">
       <div className="text-center mb-8 sm:mb-12">
         <h1 className="font-lexend text-3xl sm:text-4xl font-semibold mb-3 sm:mb-4">
           Your Gateway to Smart Investing
@@ -119,7 +119,7 @@ const Gateway = () => {
       </div>
       
       {/* Desktop Grid View */}
-      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-[48px]">
         {gatewayItems.map((item, index) => (
           <GatewayCard key={index} {...item} />
         ))}

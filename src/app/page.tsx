@@ -1,4 +1,4 @@
-import Calculator from "@/components/landing/Caculator";
+import Calculator from "@/components/landing/Calculator";
 import FAQ from "@/components/landing/FAQ";
 import Gateway from "@/components/landing/Gateway";
 import Hero from "@/components/landing/Hero";

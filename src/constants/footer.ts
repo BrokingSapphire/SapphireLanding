@@ -60,17 +60,17 @@ export const LEGAL_SECTIONS = [
   {
     title: "Legal Name",
     content:
-      "[Legal Name](Trading as Sapphire Broking): Registered Office: [Registered Address], CIN: [CIN], SEBI Registration No.: [SEBI Registration No.] – Member of NSE, BSE, MCX, and NCDEX. Depository Participant: CDSL Registration No.: [DP Registration No.]. Compliance Officer: [Name of Compliance Officer], Tel: [Phone Number], Email: compliance@sapphirebroking.com.",
+      "Sapphire Broking: Registered Office: Plot No. 84A, First Floor, Pande Layout, New Sneh Nagar, Khamla, Nagpur (MH) - 440025, FRN: NG000010895, SEBI Registration No.: INZ923930210 – Member of NSE, BSE, MCX, and NCDEX. Clearing House: Globe Capital Services Ltd.: DP ID: 12020600. Compliance Officer: Mr. Yash Katyari, Tel: +91 93595 61831, Email: yash.katyari@sapphirebroking.com.",
   },
   {
     title: "Grievance Redressal",
     content:
-      "For complaints related to broking services, email us at support@sapphirebroking.com. For depository-related issues, email dpo@sapphirebroking.com. To escalate unresolved issues, contact our Grievance Redressal Officer: [Name], Mobile: [Mobile Number]. Alternatively, file complaints on the SEBI SCORES portal by registering with mandatory details like Name, PAN, Address, Mobile Number, and Email ID.",
+      "For complaints related to broking services, email us at support@sapphirebroking.com. For depository-related issues, email us at dp@sapphirebroking.com. To escalate unresolved issues, contact our Grievance Redressal Officer: Mr. Undefined, Mobile: +91 Undefined. Alternatively, file complaints on the SEBI SCORES portal by registering with mandatory details like Name, PAN, Address, Mobile Number, and Email ID.",
   },
   {
     title: "Cybersecurity Issues",
     content:
-      "Report cybersecurity concerns to support@sapphirebroking.com or call us at [Cybersecurity Contact Number].",
+      "Report cybersecurity concerns to abhigya.krishna@sapphirebroking.com or call us at +91 98903 36989.",
   },
   {
     title: "Regulatory Compliance",

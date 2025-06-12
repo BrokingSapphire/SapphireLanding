@@ -13,13 +13,14 @@ import {
   // AccountType,
   ChargeType
 } from "@/constants/ChargesTable";
+import ChargesExplained from "./ChargesExplained";
 
 const ChargesTable: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("Equity");
 
   // Functions to render different table types
   const renderEquityTable = (): React.ReactNode => (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto scrollbar-hide">
       <div className="min-w-[900px]">
         <table className="w-full border-collapse">
           <thead>
@@ -85,7 +86,7 @@ const ChargesTable: React.FC = () => {
   );
 
   const renderCurrencyTable = (): React.ReactNode => (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto scrollbar-hide">
       <div className="min-w-[600px]">
         <table className="w-full border-collapse">
           <thead>
@@ -137,7 +138,7 @@ const ChargesTable: React.FC = () => {
   );
 
   const renderCommodityTable = (): React.ReactNode => (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto scrollbar-hide">
       <div className="min-w-[600px]">
         <table className="w-full border-collapse">
           <thead>
@@ -203,9 +204,9 @@ const ChargesTable: React.FC = () => {
 
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8 mb-8 overflow-x-auto scrollbar-hide">
         {/* Navigation Bar */}
-        <div className="flex border-b pt-6 gap-x-16 sm:gap-x-20 overflow-x-auto hide-scrollbar">
+        <div className="flex border-b pt-6 gap-x-8 lg:gap-x-20 overflow-x-auto scrollbar-hide">
           {["Equity", "Currency", "Commodity", "Other Charges"].map((tab: string) => (
             <div
               key={tab}
@@ -233,47 +234,12 @@ const ChargesTable: React.FC = () => {
         {/* Trading Charges Table - Dynamically render based on active tab */}
         {renderActiveTable()}
 
-        {/* Account Opening Charges
-        <div>
-          <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
-            Account Opening Charges
-          </div>
-          <div className="overflow-x-auto">
-            <div className="min-w-[600px]">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="py-3 px-4 text-left font-semibold text-gray-700 w-1/2 text-sm sm:text-base">
-                      Account Type
-                    </th>
-                    <th className="py-3 px-4 text-left font-semibold text-gray-700 w-1/2 text-sm sm:text-base">
-                      Opening Charges
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {accountOpeningData.map((item: AccountType, index: number) => (
-                    <tr key={index} className="border-b border-gray-200">
-                      <td className="py-3 px-4 text-gray-600 text-sm sm:text-base">
-                        {item.type}
-                      </td>
-                      <td className="py-3 px-4 text-gray-600 text-sm sm:text-base">
-                        {item.charges}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div> */}
-
         {/* Non Trade Charges */}
         <div>
           <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
             Non Trade Charges
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto scrollbar-hide">
             <div className="min-w-[600px]">
               <table className="w-full border-collapse">
                 <thead>
@@ -308,7 +274,7 @@ const ChargesTable: React.FC = () => {
           <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
             MTF Charges
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto scrollbar-hide">
             <div className="min-w-[600px]">
               <table className="w-full border-collapse">
                 <thead>
@@ -337,10 +303,13 @@ const ChargesTable: React.FC = () => {
             </div>
           </div>
         </div>
+        <div>
+          <ChargesExplained />
+        </div>
       </div>
 
-      <div className="p-6 sm:py-16 sm:px-24 text-sm bg-gray-100 text-gray-600">
-        <span className=" font-lexend text-xl sm:text-2xl font-semibold text-black">
+      <div className="p-6 sm:py-[34px] sm:px-24 text-sm bg-gray-100 text-gray-600">
+        <span className="font-lexend text-xl sm:text-2xl font-semibold text-black">
           Disclaimer
         </span>
         <p className="mt-4 sm:mt-5 leading-relaxed">
@@ -358,6 +327,25 @@ const ChargesTable: React.FC = () => {
           delivery happens is ₹199 per month.
         </p>
       </div>
+
+      <style jsx global>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;  /* Internet Explorer 10+ */
+          scrollbar-width: none;  /* Firefox */
+        }
+        .scrollbar-hide::-webkit-scrollbar { 
+          display: none;  /* Safari and Chrome */
+        }
+        
+        /* Global scrollbar hiding for any overflow */
+        * {
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* Internet Explorer 10+ */
+        }
+        *::-webkit-scrollbar {
+          display: none; /* Safari and Chrome */
+        }
+      `}</style>
     </>
   );
 };

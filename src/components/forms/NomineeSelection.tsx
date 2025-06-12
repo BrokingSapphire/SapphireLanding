@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NomineeManagement from "../new-signup/NomineeManagement";
+import NomineeManagement from "./NomineeManagement";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 
@@ -15,7 +15,7 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({ onNext }) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto ">
       {!showNomineeForm ? (
         // Initial Nominee Selection View
         <div>
@@ -27,13 +27,12 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({ onNext }) => {
           />
 
           <div className="flex flex-col gap-4">
-            <Button
-              variant="ghost"
+            <button
               onClick={() => setShowNomineeForm(true)}
-              className="w-full py-6"
-            >
+              className="text-white py-3 px-2 rounded-md transition-all duration-300 ease-in-out bg-green-heading hover:bg-white border-2 border-green-heading hover:text-green-heading"
+               >
               Add nominee now (Recommended)
-            </Button>
+            </button>
 
             <button
               onClick={handleSkip}

@@ -36,64 +36,64 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
     }
   }, [currentStep, prevStep]);
 
-  // Determine if we're in the Trading Account steps range (6-8)
-  // const isInTradingAccountSteps = currentStep > 5 && currentStep <= 8;
+  // Determine if we're in the Trading Account steps range (5-7)
+  // const isInTradingAccountSteps = currentStep > 4 && currentStep <= 7;
 
   // Define all onboarding steps for the progress stepper
   const steps: StepItem[] = [
     {
       id: 0,
       label: "PAN Verification",
-      completed: currentStep > 3,
-      active: currentStep === 3,
+      completed: currentStep > 2,
+      active: currentStep === 2,
     },
     {
       id: 1,
       label: "Aadhar Verification",
-      completed: currentStep > 4,
-      active: currentStep === 4,
+      completed: currentStep > 3,
+      active: currentStep === 3,
     },
     {
       id: 2,
       label: "Choose Segment",
-      completed: currentStep > 5,
-      active: currentStep === 5,
+      completed: currentStep > 4,
+      active: currentStep === 4,
     },
     {
       id: 3,
       label: "Trading Account details",
-      completed: currentStep > 8,
-      active: currentStep <= 8 && currentStep > 5,
+      completed: currentStep > 7,
+      active: currentStep <= 7 && currentStep > 4,
     },
     {
       id: 4,
       label: "Bank Account Details",
-      completed: currentStep > 9,
-      active: currentStep === 9,
+      completed: currentStep > 8,
+      active: currentStep === 8,
     },
     {
       id: 5,
       label: "Complete Video Verification",
-      completed: currentStep > 10,
-      active: currentStep === 10,
+      completed: currentStep > 9,
+      active: currentStep === 9,
     },
     {
       id: 6,
       label: "Draw Signature",
-      completed: currentStep > 11,
-      active: currentStep === 11,
+      completed: currentStep > 10,
+      active: currentStep === 10,
     },
     {
       id: 8,
       label: "Add Nominee (Optional)",
-      completed: currentStep > 12,
-      active: currentStep === 12,
+      completed: currentStep > 11,
+      active: currentStep === 11,
     },
     {
       id: 9,
       label: "Digitally Sign Documents",
-      completed: currentStep > 13,
-      active: currentStep === 13,
+      completed: currentStep > 12,
+      active: currentStep === 12,
     },
   ];
 
@@ -116,10 +116,10 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
   ];
 
   // Display progress stepper for verification steps (starting from PAN verification)
-  const showProgressStepper = currentStep >= 3;
+  const showProgressStepper = currentStep >= 2;
 
   return (
-    <div className="w-full bg-[#F6FAFC] h-full flex flex-col justify-between relative px-20 py-14 overflow-hidden">
+    <div className="w-full bg-[#F6FAFC] h-full flex flex-col justify-between relative px-6 md:px-10 lg:px-16 xl:px-20 py-10 lg:py-14 overflow-hidden">
       {/* Background decorative elements with enhanced animations */}
       <div className="absolute left-32 top-2 bg-yellow-400 w-96 h-40 blur-[70px] opacity-40 rounded-full animate-[float_8s_ease-in-out_infinite]"></div>
       <div className="absolute -left-6 -top-2 bg-green-500 w-44 h-32 blur-[70px] opacity-40 rounded-full animate-[pulse_6s_ease-in-out_infinite]"></div>
@@ -139,7 +139,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
       <div className="flex-grow relative z-10 flex items-center">
         <div className="max-w-2xl w-full">
           <div className="mb-12 mt-16">
-            <h1 className="text-4xl font-bold text-gray-900 animate-[fadeIn_1s_ease-out]">
+            <h1 className=" text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 animate-[fadeIn_1s_ease-out]">
               Trusted Broking for
               <br />
               Smarter Investments.
@@ -178,10 +178,10 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
                     </div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-lg font-medium text-gray-900">
+                    <h3 className=" text-sm lg:text-lg xl:text-lg font-medium text-gray-900">
                       {feature.title}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-xs lg:text-sm xl:text-sm text-gray-500">
                       {feature.description}
                     </p>
                   </div>
@@ -195,7 +195,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
               {steps.map((step, index) => {
                 // Check if this step is transitioning (newly active)
                 // const isTransitioning =
-                //   step.id + 3 === transitioningStep && !isInTradingAccountSteps;
+                //   step.id + 2 === transitioningStep && !isInTradingAccountSteps;
                 // // Special handling for Trading Account step
                 // const isTradingAccount = index === 3;
 
@@ -299,7 +299,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
       </div>
 
       <footer className="w-full pt-6 animate-[fadeIn_0.5s_ease-out_1.2s_both]">
-        <div className="flex items-center justify-between text-sm text-gray-500">
+        <div className="flex items-center justify-between  text-[10px] md:text-[11px] lg:text-sm text-gray-500">
           <div>© Sapphire Broking</div>
           <div className="flex items-center space-x-2">
             <Link target="_blank" href="/privacy-policy">

@@ -11,11 +11,13 @@ interface ManualBankDetailsProps {
 interface FormData {
   ifscCode: string;
   accountNumber: string;
+  accountType: string;
 }
 
 interface FormErrors {
   ifscCode?: string;
   accountNumber?: string;
+  accountType?: string;
 }
 
 const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
@@ -25,6 +27,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   const [formData, setFormData] = useState<FormData>({
     ifscCode: "",
     accountNumber: "",
+    accountType: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -43,6 +46,19 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     }));
   };
 
+  const handleAccountTypeSelect = (accountType: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      accountType,
+    }));
+
+    // Clear error when user selects
+    setErrors((prev) => ({
+      ...prev,
+      accountType: undefined,
+    }));
+  };
+
   const validateForm = () => {
     const newErrors: FormErrors = {};
 
@@ -52,6 +68,10 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
 
     if (!formData.accountNumber) {
       newErrors.accountNumber = "Account Number is required";
+    }
+
+    if (!formData.accountType) {
+      newErrors.accountType = "Account Type is required";
     }
 
     setErrors(newErrors);
@@ -110,6 +130,38 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
           />
           {errors.accountNumber && (
             <p className="text-xs text-red-500">{errors.accountNumber}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="accountType" className="block text-sm font-medium">
+            Account Type*
+          </label>
+          <div className="flex gap-3">
+            <div 
+              onClick={() => handleAccountTypeSelect("Savings")}
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 cursor-pointer ${
+                formData.accountType === "Savings"
+                  ? "border-teal-800 bg-teal-50 text-teal-800"
+                  : "border-gray-300 text-gray-600 hover:border-gray-400"
+              }`}
+            >
+              Savings
+            </div>
+
+            <div 
+              onClick={() => handleAccountTypeSelect("Current")}
+              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 cursor-pointer ${
+                formData.accountType === "Current"
+                  ? "border-teal-800 bg-teal-50 text-teal-800"
+                  : "border-gray-300 text-gray-600 hover:border-gray-400"
+              }`}
+            >
+              Current
+            </div>
+          </div>
+          {errors.accountType && (
+            <p className="text-xs text-red-500">{errors.accountType}</p>
           )}
         </div>
 

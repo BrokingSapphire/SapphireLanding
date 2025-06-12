@@ -28,7 +28,7 @@ const LinkSection = ({ title, links }: LinkSectionProps) => (
 );
 
 const SocialLinks = () => (
-  <div className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-7 gap-4 mb-6">
+  <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7 gap-1.5 mb-6 max-w-[140px] md:max-w-[120px] lg:max-w-[120px] xl:max-w-xs">
     {SOCIAL_ICONS.map(({ Icon, href }) => (
       <a
         key={href}
@@ -75,12 +75,14 @@ const LegalSection = () => {
 
         <p>
           <strong>ODR Portal:</strong> Resolve disputes efficiently using
-          SEBI&apos;s Online Dispute Resolution Portal:
-          [https://smartodr.in/login].
+          SEBI&apos;s Online Dispute Resolution Portal:{" "}
+          <Link target="_blank" href="https://smartodr.in/login">
+            <span className="underline">Smart ODR Portal</span>
+          </Link>
         </p>
         <p>
           <strong>Charts are powered by:</strong>{" "}
-          <Link href="https://www.tradingview.com">
+          <Link target="_blank" href="https://www.tradingview.com">
             <span className="underline">TradingView</span>
           </Link>
         </p>
@@ -125,7 +127,7 @@ const Footer = () => {
                 <h3 className="font-bold ml-2 text-lg">Sapphire</h3>
               </div>
               <address className="text-xs leading-loose not-italic mb-6 w-full">
-                Plot No. 33, Kotwal Nagar, 440025
+                First Floor, Pande Layout, New Sneh Nagar, Khamla, Nagpur (MH) - 440025
                 <br />
                 info@sapphirebroking.com
                 <br />
@@ -135,21 +137,20 @@ const Footer = () => {
 
             {/* Two Column Layout for Mobile */}
             <div className="grid grid-cols-2 gap-6 mb-8">
-              {/* Left Column: Legal and Follow Us */}
+              {/* Left Column: Company and Legal */}
               <div className="col-span-1 space-y-8">
+                <LinkSection title="Company" links={COMPANY_LINKS} />
                 <LinkSection title="Legal" links={LEGAL_LINKS} />
+              </div>
+
+              {/* Right Column: Account and Follow us + Download */}
+              <div className="col-span-1 space-y-8">
+                <LinkSection title="Account" links={ACCOUNT_LINKS} />
                 
                 <div>
                   <h3 className="font-bold mb-4 text-lg">Follow us:</h3>
                   <SocialLinks />
-                </div>
-              </div>
-
-              {/* Right Column: Company and Download Our App */}
-              <div className="col-span-1 space-y-8">
-                <LinkSection title="Company" links={COMPANY_LINKS} />
-                
-                <div>
+                  
                   <h3 className="font-bold mb-4 text-lg">Download Our App</h3>
                   <div className="flex items-center justify-start gap-4">
                     <Image
@@ -173,7 +174,7 @@ const Footer = () => {
 
           {/* Desktop Layout (hidden on xs, visible on sm and above) */}
           <div className="hidden sm:block">
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-0 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-2 mb-8">
               <div className="col-span-2 lg:col-span-1">
                 <div className="flex items-center mb-4">
                   <Image
@@ -185,24 +186,64 @@ const Footer = () => {
                   />
                   <h3 className="font-bold ml-2 text-[20px]">Sapphire</h3>
                 </div>
-                <address className="text-[14px] leading-loose not-italic mb-6 sm:mb-0 w-full">
-                  Plot No. 33, Kotwal Nagar,
+                <address className="text-[14px] leading-loose not-italic mb-6 sm:mb-0 w-full max-w-[180px] lg:max-w-[160px] xl:max-w-[200px] break-words">
+                  First Floor, Pande Layout,
+                  <br />
+                  New Sneh Nagar,
                   <br />
                   Khamla, Nagpur (MH)
                   <br />
                   Pincode : 440025
                   <br />
-                  info@sapphirebroking.com
+                  <span className="break-all">info@sapphirebroking.com</span>
                   <br />
-                  www.sapphirebroking.com
+                  <span className="break-all">www.sapphirebroking.com</span>
                 </address>
               </div>
 
-              <LinkSection title="Company" links={COMPANY_LINKS} />
-              <LinkSection title="Legal" links={LEGAL_LINKS} />
-              <LinkSection title="Account" links={ACCOUNT_LINKS} />
+              <div className="hidden lg:block">
+                <LinkSection title="Company" links={COMPANY_LINKS} />
+              </div>
+              <div className="hidden lg:block">
+                <LinkSection title="Legal" links={LEGAL_LINKS} />
+              </div>
+              <div className="hidden lg:block">
+                <LinkSection title="Account" links={ACCOUNT_LINKS} />
+              </div>
 
-              <div className="col-span-2 sm:col-span-1">
+              {/* SM/MD Layout - Company, Legal, Account, Follow us in responsive grid */}
+              <div className="col-span-2 lg:hidden">
+                <div className="grid grid-cols-2 gap-6">
+                  <LinkSection title="Company" links={COMPANY_LINKS} />
+                  <LinkSection title="Legal" links={LEGAL_LINKS} />
+                  <LinkSection title="Account" links={ACCOUNT_LINKS} />
+                  
+                  <div className="col-span-1">
+                    <h3 className="font-bold mb-4 text-[20px]">Follow us:</h3>
+                    <SocialLinks />
+
+                    <h3 className="font-bold mb-4 text-[20px]">Download Our App</h3>
+                    <div className="flex items-center justify-start gap-4">
+                      <Image
+                        src="/apple.svg"
+                        alt="App Store"
+                        width={80}
+                        height={50}
+                      />
+                      <Image
+                        src="/google.png"
+                        alt="Google Play"
+                        width={80}
+                        height={50}
+                        className="-ml-3"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* LG+ Layout - Follow us column */}
+              <div className="hidden lg:block col-span-1">
                 <h3 className="font-bold mb-4 text-[20px]">Follow us:</h3>
                 <SocialLinks />
 

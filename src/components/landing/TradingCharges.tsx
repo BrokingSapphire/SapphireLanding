@@ -2,7 +2,7 @@ import React from "react";
 
 const TradingCharges = () => {
   return (
-    <div className="bg-gray-100 py-8 md:py-12">
+    <div className="bg-gray-100 py-8 md:py-[42px]">
       <div className="max-w-7xl mx-auto px-4 md:px-20">
         {/* Simplified Charges Section */}
         <h2 className="text-center text-3xl md:text-5xl font-semibold mb-6 md:mb-8">
@@ -29,13 +29,13 @@ const TradingCharges = () => {
           ].map((item, index) => (
             <div key={index} className="p-4 md:p-6">
               <div className="flex relative justify-center">
-                <h3 className="text-3xl md:text-4xl absolute bottom-4 font-bold text-[#FFAE00] left-[30%] sm:left-[30%] md:left-1/4 lg:left-1/3 xl:left-20">
+                <h3 className="text-3xl md:text-[38px] absolute bottom-4 font-medium text-[#FFAE00] left-[30%] sm:left-[30%] md:left-1/4 lg:left-[20%] xl:left-[28%]">
                   ₹
                 </h3>
-                <h3 className="text-9xl md:text-9xl font-bold text-[#FFAE00]">
+                <h3 className="text-8xl md:text-[140px] font-[600] text-[#FFAE00]">
                   0
                 </h3>
-                <h3 className="text-4xl md:text-4xl font-bold text-[#FFAE00]">
+                <h3 className="text-4xl md:text-[45px] font-medium text-[#FFAE00]">
                   *
                 </h3>
               </div>

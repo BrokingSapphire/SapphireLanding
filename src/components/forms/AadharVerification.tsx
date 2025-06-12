@@ -31,10 +31,10 @@ const DigiLockerVerification = ({ onNext }: { onNext: () => void }) => {
             </svg>
           </div>
           <div>
-            <h3 className="font-semibold text-blue-800 mb-1">
+            <h3 className=" text-base sm:text-sm md:text-base font-semibold text-blue-800 mb-1">
               Why DigiLocker?
             </h3>
-            <p className="text-sm text-blue-700">
+            <p className="  text-sm sm:text-xs md:text-sm text-blue-700">
               DigiLocker is a secure digital platform by the Government of India
               that allows you to access and share your documents easily.
             </p>
@@ -60,10 +60,10 @@ const DigiLockerVerification = ({ onNext }: { onNext: () => void }) => {
             </svg>
           </div>
           <div>
-            <h3 className="font-semibold text-blue-800 mb-1">
+            <h3 className="text-base sm:text-sm md:text-base font-semibold text-blue-800 mb-1">
               Benefits of DigiLocker
             </h3>
-            <ul className="text-sm text-blue-700 list-disc ml-4 space-y-1">
+            <ul className="text-sm sm:text-xs md:text-sm text-blue-700 list-disc ml-4 space-y-1">
               <li>Faster verification with no manual paperwork</li>
               <li>Secure government-approved platform</li>
               <li>Instant KYC verification</li>
@@ -80,7 +80,7 @@ const DigiLockerVerification = ({ onNext }: { onNext: () => void }) => {
         Proceed to DigiLocker
       </Button>
 
-      <div className="text-center text-xs text-gray-600 mt-8 space-y-3">
+      <div className="text-center text-xs text-gray-600 mt-8 sm:mt-0 md:mt-8 space-y-3">
         <p>I authorise Sapphire to fetch my KYC information from DigiLocker.</p>
         <p>
           If you are looking to open a HUF, Corporate, Partnership, or NRI

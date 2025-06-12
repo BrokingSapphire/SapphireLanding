@@ -97,7 +97,7 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 1 }}
         >
           <Image
-            className="border-4 mb-8 sm:border-6 md:border-8 border-gray-100 rounded-md w-full md:w-auto"
+            className="border-4 mb-[68px] sm:border-6 md:border-8 border-gray-100 rounded-[10px] w-full md:w-auto"
             alt="Platform Photo"
             src="/hero.svg"
             width={1000}

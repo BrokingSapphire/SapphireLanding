@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React from "react";
 import Link from "next/link";
-import { investorCharterData } from "@/constants/legal/investorattention";
+import { investorCharterData } from "@/components/legal/investorattention";
 import {
   RightsTable,
   TimelineTable,

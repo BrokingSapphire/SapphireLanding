@@ -17,7 +17,7 @@ const SubHero = ({ chipText, titleText, gradientText, description }: SubHeroProp
         width={1000}
         height={250}
         draggable={false} 
-        className="sm:absolute sm:block top-8 hidden sm:w-64 left-0 "
+        className="sm:absolute sm:block  top-8 hidden w-32 md:w-52 lg:w-64 left-0 "
       />
 
       <div className="w-full space-y-5 text-center">

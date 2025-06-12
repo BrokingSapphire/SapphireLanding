@@ -413,62 +413,14 @@ const PANVerify = ({ onNext }: { onNext: () => void }) => {
           Format: ABCDE1234F (5 letters, 4 numbers, 1 letter)
         </p>
       </div>
-      <div className="mb-6">
-        <label className="block text-gray-700 mb-2">Date of Birth</label>
-        <div className="relative">
-          <div className="flex">
-            <div className={`w-full flex rounded ${showCalendar ? 'ring-2 ring-teal-500' : ''}`}>
-              <input
-                type="text"
-                placeholder="DD/MM/YYYY"
-                className={`flex-grow px-3 py-2 border ${
-                  errors.dob ? "border-red-500" : "border-gray-300"
-                } rounded-l focus:outline-none focus:ring-0 transition-all`}
-                value={dobInput}
-                onChange={handleDateInputChange}
-                maxLength={10}
-                onClick={() => setShowCalendar(true)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowCalendar(!showCalendar)}
-                className={`calendar-trigger px-3 py-2 border-y border-r ${
-                  errors.dob ? "border-red-500" : "border-gray-300"
-                } rounded-r focus:outline-none focus:ring-0 bg-gray-50 hover:bg-gray-100 transition-colors`}
-              >
-                <CalendarIcon className="h-5 w-5 text-gray-500" />
-              </button>
-            </div>
-          </div>
-          
-          {/* Calendar popup positioned below the input field */}
-          {showCalendar && (
-            <div className="absolute left-0 right-0 sm:left-auto sm:right-auto mt-1 z-10 calendar-container">
-              <CustomCalendar
-                selectedDate={dob}
-                onDateSelect={handleDateSelect}
-                minDate={minDate}
-              />
-            </div>
-          )}
-        </div>
 
-        {errors.dob && (
-          <p className="text-red-500 text-sm mt-1">
-            Please enter a valid date. You must be at least 18 years old.
-          </p>
-        )}
-        <p className="text-gray-500 text-xs mt-1">
-          Enter in DD/MM/YYYY format or select from calendar
-        </p>
-      </div>
       <Button
         onClick={handleSubmit}
         variant="ghost"
         className={`w-full py-6 ${
-          !panNumber || !dob ? "opacity-50 cursor-not-allowed" : ""
+          !panNumber? "opacity-50 cursor-not-allowed" : ""
         } transition-opacity`}
-        disabled={!panNumber || !dob}
+        disabled={!panNumber}
       >
         Continue
       </Button>

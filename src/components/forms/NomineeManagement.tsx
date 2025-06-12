@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FormHeading from "../forms/FormHeading";
+import FormHeading from "./FormHeading";
 
 interface NomineeManagementProps {
   onNext: () => void;
@@ -190,7 +190,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
 
               <div>
                 <label className="block text-sm text-gray-600 mb-1">
-                  Pan/Aadhar card
+                  Pan-Aadhar card
                 </label>
                 <div className="text-sm font-medium">{nominee.panOrAadhar}</div>
               </div>
@@ -223,9 +223,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               <h3 className="font-medium">Nominee {currentNominee.id}</h3>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2  gap-4 mb-6">
               <div>
-                <label className="block text-sm mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm  mb-1">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -237,7 +237,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm mb-1">
                   Pan/Aadhar card <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -251,7 +251,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm  mb-1">
                   Relationship <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -289,7 +289,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               </div>
 
               <div>
-                <label className="block text-sm mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm  mb-1">
                   % Share <span className="text-red-500">*</span>
                   {nominees.length > 0 && (
                     <span className="text-xs text-gray-500 ml-1">
