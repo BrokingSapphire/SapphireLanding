@@ -50,7 +50,7 @@ jobs:
               nvm use 20
             fi
             
-            mv -p static .next/
+            mv static .next/
             
             echo "Starting landing..."
             screen -S sapphire-landing -d -m $(which node) server.js
