@@ -28,7 +28,7 @@ jobs:
         with:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_KEY }}
           ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: ".next/standalone/ .next/static package.json package-lock.json public"
+          SOURCE: ".next/standalone/ .next/static public"
           REMOTE_HOST: ${{ secrets.EC2_HOST }}
           REMOTE_USER: ${{ secrets.EC2_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
@@ -39,7 +39,6 @@ jobs:
           SCRIPT_BEFORE_REQUIRED: true
           SCRIPT_AFTER: |
             cd "${{ secrets.REMOTE_TARGET }}"
-            mv -p static .next/static
             screen -S sapphire-landing -X quit || true
             
             if ! command -v nvm &> /dev/null; then
@@ -51,7 +50,7 @@ jobs:
               nvm use 20
             fi
             
-            npm ci --production
+            mv -rp static .next/
             
             echo "Starting landing..."
             screen -S sapphire-landing -d -m ${which node} server.js
