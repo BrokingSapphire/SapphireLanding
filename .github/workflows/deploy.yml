@@ -31,7 +31,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.EC2_HOST }}
           REMOTE_USER: ${{ secrets.EC2_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
-          EXCLUDE: "/node_modules/ /.git/ /.github/"
+          EXCLUDE: "/node_modules/, /.git/, /.github/"
           SCRIPT_BEFORE: |
             whoami
             mkdir -p ${{ secrets.REMOTE_TARGET }}
