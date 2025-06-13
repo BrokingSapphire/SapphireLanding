@@ -1,6 +1,7 @@
 name: Deploy to EC2 (Main)
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -27,27 +28,29 @@ jobs:
         with:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_KEY }}
           ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: ".next/ public/ package.json package-lock.json next.config.ts"
           REMOTE_HOST: ${{ secrets.EC2_HOST }}
           REMOTE_USER: ${{ secrets.EC2_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
-          EXCLUDE: "/node_modules/, /.git/, /.github/, /src/"
+          EXCLUDE: "/node_modules/"
           SCRIPT_BEFORE: |
             whoami
             mkdir -p ${{ secrets.REMOTE_TARGET }}
           SCRIPT_BEFORE_REQUIRED: true
           SCRIPT_AFTER: |
             cd "${{ secrets.REMOTE_TARGET }}"
-            screen -S sapphire -X quit || true
+            screen -S sapphire-landing -X quit || true
             
-            if ! command -v node &> /dev/null; then
+            if ! command -v nvm &> /dev/null; then
               echo "Installing Node.js..."
-              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-              sudo apt-get install -y nodejs
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+              nvm install 20
+              nvm use 20
             fi
             
             npm ci --production
             
-            echo "Starting server..."
-            screen -S sapphire-landing -d -m npm start
+            echo "Starting landing..."
+            screen -S sapphire-landing -d -m ${which npm} run start
           SCRIPT_AFTER_REQUIRED: true
