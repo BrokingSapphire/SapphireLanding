@@ -11,22 +11,27 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      
       - name: Install Node.js and Build
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
-      - run: npm install && npm run build
-
+          
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
+          
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_KEY }}
           ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "dist/ package.json yarn.lock"
+          SOURCE: ".next/ public/ package.json package-lock.json next.config.js"
           REMOTE_HOST: ${{ secrets.EC2_HOST }}
           REMOTE_USER: ${{ secrets.EC2_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
-          EXCLUDE: "/dist/, /node_modules/"
+          EXCLUDE: "/node_modules/, /.git/, /.github/, /src/"
           SCRIPT_BEFORE: |
             whoami
             mkdir -p ${{ secrets.REMOTE_TARGET }}
@@ -35,17 +40,14 @@ jobs:
             cd "${{ secrets.REMOTE_TARGET }}"
             screen -S sapphire -X quit || true
             
-            if ! command -v nvm &> /dev/null; then
+            if ! command -v node &> /dev/null; then
               echo "Installing Node.js..."
-              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-              export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-              nvm install 20
-              nvm use 20
+              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+              sudo apt-get install -y nodejs
             fi
             
-            npm install --production --frozen-lockfile --ignore-scripts
+            npm ci --production
             
             echo "Starting server..."
-            screen -S sapphire-landing -d -m $(which npm) run start -p 8000
+            screen -S sapphire-landing -d -m npm start
           SCRIPT_AFTER_REQUIRED: true
