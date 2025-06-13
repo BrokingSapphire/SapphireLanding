@@ -1,6 +1,5 @@
 'use client';
 
-import { MousePointer } from 'lucide-react';
 import Image from 'next/image';
 
 const HeroSection = () => {
@@ -48,7 +47,7 @@ const HeroSection = () => {
           <p className="text-start xl:text-center max-w-xl xl:max-w-2xl  text-base md:text-xl xl:text-[20px] mx-auto lg:mx-0" style={{ color: '#717171'}}>
             Have questions, need guidance, or looking for support? Our team is 
             dedicated to assisting you every step of the way. Reach out to us 
-            anytime, and we'll help you invest confidently.
+            anytime, and we will help you invest confidently.
           </p>
           </div>
         </div>

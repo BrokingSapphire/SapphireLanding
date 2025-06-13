@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Check, Eye, EyeOff } from "lucide-react";
 import FormHeading from "./FormHeading";
-import Image from "next/image";
 
 interface MPINSetupProps {
   onNext: () => void;
@@ -78,6 +77,7 @@ const MPINSetup: React.FC<MPINSetupProps> = ({ onNext }) => {
       }
     } catch (error) {
       setErrors({ mpin: 'Network error. Please try again.' });
+      console.log("Error setting MPIN:", error);
     } finally {
       setIsLoading(false);
     }
