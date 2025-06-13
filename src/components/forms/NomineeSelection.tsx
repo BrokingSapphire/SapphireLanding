@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import NomineeManagement from "./NomineeManagement";
-import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 
 interface NomineeSelectionProps {

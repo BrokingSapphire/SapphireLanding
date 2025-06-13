@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { Check, Calendar } from "lucide-react";
+import { Check } from "lucide-react";
 import FormHeading from "./FormHeading";
-import Image from "next/image";
 
 interface AadhaarPANMismatchProps {
   onNext: () => void;
@@ -76,6 +75,7 @@ const AadhaarPANMismatch: React.FC<AadhaarPANMismatchProps> = ({ onNext }) => {
       
       onNext();
     } catch (error) {
+      console.error("Error submitting Aadhaar PAN mismatch details:", error);
       setErrors({ fullName: 'Network error. Please try again.' });
     } finally {
       setIsLoading(false);

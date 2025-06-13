@@ -123,7 +123,7 @@ const LegalSection = () => {
         </div>
 
         <p>
-          <strong>ODR Portal:</strong> Resolve disputes efficiently using SEBI's Online Dispute Resolution Portal:{" "}
+          <strong>ODR Portal:</strong> Resolve disputes efficiently using SEBI&apos;s Online Dispute Resolution Portal:{" "}
           <Link target="_blank" href="https://smartodr.in/login">
             <span className="font-bold underline decoration-dotted decoration-slate-400">Smart ODR Portal</span>
           </Link>

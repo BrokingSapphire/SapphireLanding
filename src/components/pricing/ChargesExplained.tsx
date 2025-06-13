@@ -101,7 +101,7 @@ function ChargesExplained() {
 
       {/* Charges for Investor's Protection Fund Trust (IPFT) by NSE */}
       <div className='space-y-4'>
-        <h2 className='font-lexend font-normal text-2xl text-gray-900'>Charges for Investor's Protection Fund Trust (IPFT) by NSE</h2>
+        <h2 className='font-lexend font-normal text-2xl text-gray-900'>Charges for Investor&apos;s Protection Fund Trust (IPFT) by NSE</h2>
         <div className='space-y-2'>
           <div className='flex items-start'>
             <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 

@@ -43,7 +43,7 @@ const RiskDisclosureModal: React.FC<RiskDisclosureModalProps> = ({ onAccept, }) 
               >
                 SEBI study
               </a>{" "}
-              dated January 25, 2023 on "Analysis of Profit and Loss of Individual Traders dealing in equity Futures and Options (F&O) Segment", wherein Aggregate Level findings are based on annual Profit/Loss incurred by individual traders in equity F&O during FY 2021-22.
+              dated January 25, 2023 on &quot;Analysis of Profit and Loss of Individual Traders dealing in equity Futures and Options (F&O) Segment&quout;, wherein Aggregate Level findings are based on annual Profit/Loss incurred by individual traders in equity F&O during FY 2021-22.
             </p>
           </div>
         </div>
