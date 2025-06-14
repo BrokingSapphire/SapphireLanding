@@ -1,13 +1,16 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
+import axios from "axios";
 
-interface TradingAccountDetailsProps {
+interface TradingAccountDetails2Props {
   onNext: () => void;
+  initialData?: any;
+  isCompleted?: boolean;
 }
 
 const occupationOptions = [
-  "Bussiness",
+  "Business",
   "Housewife",
   "Student",
   "Professional",
@@ -19,25 +22,38 @@ const occupationOptions = [
   "Others",
 ];
 
-const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
+const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({ 
+  onNext, 
+  initialData, 
+  isCompleted 
+}) => {
   const [occupation, setOccupation] = useState("");
-  const [isPoliticallyExposed, setIsPoliticallyExposed] = useState<
-    boolean | null
-  >(null);
+  const [isPoliticallyExposed, setIsPoliticallyExposed] = useState<boolean | null>(null);
   const [showValidation, setShowValidation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Prefill data from initialData (API response)
+  useEffect(() => {
+    if (isCompleted && initialData) {
+      setOccupation(initialData.occupation || "");
+      setIsPoliticallyExposed(initialData.is_politically_exposed ?? null);
+    }
+  }, [initialData, isCompleted]);
 
   const handleOccupationSelect = (selected: string) => {
     if (isSubmitting) return;
     setOccupation(selected);
     setShowValidation(false);
+    setError(null);
   };
 
   const handlePoliticallyExposedChange = (value: boolean) => {
     if (isSubmitting) return;
     setIsPoliticallyExposed(value);
     setShowValidation(false);
+    setError(null);
   };
 
   const validateForm = () => {
@@ -46,31 +62,139 @@ const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
     return isValid;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Map frontend occupation values to API values
+  const mapOccupationToApi = (occupation: string): string => {
+    const occupationMapping: Record<string, string> = {
+      "Business": "business",
+      "Housewife": "housewife",
+      "Student": "student",
+      "Professional": "professional",
+      "Private Sector": "private_sector",
+      "Government Service": "government_service",
+      "Agriculturist": "agriculturist",
+      "Public Sector": "public_sector",
+      "Retired": "retired",
+      "Others": "others"
+    };
+    return occupationMapping[occupation] || occupation.toLowerCase();
+  };
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (isSubmitting) return;
 
-    if (validateForm()) {
-      setIsSubmitting(true);
-      try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        onNext();
-      } catch (error) {
-        console.error("Error during submission:", error);
-      } finally {
-        setIsSubmitting(false);
+    if (isCompleted) {
+      onNext();
+      return;
+    }
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "other_detail",
+          occupation: mapOccupationToApi(occupation),
+          politically_exposed: isPoliticallyExposed,
+        }
+      );
+
+      if (!response.data) {
+        setError("Failed to save other details. Please try again.");
+        return;
       }
+
+      onNext();
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        setError(`Error: ${err.response.data.message}`);
+      } else if (err.response?.status === 400) {
+        setError("Invalid details. Please check and try again.");
+      } else if (err.response?.status === 401) {
+        setError("Authentication failed. Please restart the process.");
+      } else {
+        setError("Failed to save details. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const isFormValid = occupation !== "" && isPoliticallyExposed !== null;
 
+  const getButtonText = () => {
+    if (isCompleted) return "Continue";
+    if (isSubmitting) return "Saving...";
+    return "Continue";
+  };
+
+  const isButtonDisabled = () => {
+    if (isSubmitting) return true;
+    if (isCompleted) return false;
+    return !isFormValid;
+  };
+
+  // Show completed state
+  if (isCompleted) {
+    return (
+      <div className="mx-auto mt-14">
+        <FormHeading
+          title={"Other Details Saved Successfully!"}
+          description={"Your other details have been saved. Click continue to proceed."}
+        />
+
+        <div className="mb-6">
+          <label className="block mb-2">
+            Occupation<span className="text-red-500">*</span>
+          </label>
+          <div className="p-3 bg-green-50 border border-green-300 rounded">
+            <span className="text-green-800 font-medium">{occupation}</span>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <label className="block mb-2">
+            Are you a politically exposed person?
+            <span className="text-red-500">*</span>
+          </label>
+          <div className="p-3 bg-green-50 border border-green-300 rounded">
+            <span className="text-green-800 font-medium">
+              {isPoliticallyExposed ? "Yes" : "No"}
+            </span>
+          </div>
+        </div>
+
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-green-800 font-medium">Other details saved successfully!</span>
+          </div>
+        </div>
+
+        <Button
+          variant={"ghost"}
+          onClick={handleSubmit}
+          className="w-full py-6"
+        >
+          Continue to Next Step
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto mt-14">
       <FormHeading
-        title={"Trading Account Details"}
-        description={"Set up your trading account in minutes."}
+        title={"Other Details"}
+        description={"Provide additional information for your trading account."}
       />
 
       <form ref={formRef} onSubmit={handleSubmit}>
@@ -149,22 +273,25 @@ const TradingAccountDetails = ({ onNext }: TradingAccountDetailsProps) => {
           )}
         </div>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 rounded">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
+
         <Button
           variant={"ghost"}
           type="submit"
-          disabled={!isFormValid || isSubmitting}
-          className={`w-full py-6
-            ${
-              isFormValid && !isSubmitting
-                ? ""
-                : "opacity-50 cursor-not-allowed"
-            }`}
+          disabled={isButtonDisabled()}
+          className={`w-full py-6 ${
+            isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          {isSubmitting ? "Please wait..." : "Continue"}
+          {getButtonText()}
         </Button>
       </form>
     </div>
   );
 };
 
-export default TradingAccountDetails;
+export default TradingAccountDetails2;

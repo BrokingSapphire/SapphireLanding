@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import { Check } from "lucide-react"; 
@@ -8,9 +8,15 @@ import axios from "axios";
 
 interface InvestmentSegmentProps {
   onNext: () => void;
+  initialData?: any;
+  isCompleted?: boolean;
 }
 
-const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
+const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ 
+  onNext, 
+  initialData, 
+  isCompleted 
+}) => {
   const [selectedSegments, setSelectedSegments] = useState<string[]>(["Cash"]);
   const [showRiskModal, setShowRiskModal] = useState(false);
   const [hasAcceptedRisk, setHasAcceptedRisk] = useState(false);
@@ -18,23 +24,27 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
   const [showUploadIncome, setShowUploadIncome] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [requiresIncomeProof, setRequiresIncomeProof] = useState(false);
 
   const segments = [
     { id: "Cash", label: "Cash/Mutual Funds" },
     { id: "F&O", label: "F&O", requiresDisclosure: true },
     { id: "Debt", label: "Debt" },
-    { id: "Currency", label: "Currency" },
+    { id: "Currency", label: "Currency", requiresDisclosure: true },
     { id: "Commodity", label: "Commodity Derivatives", requiresDisclosure: true },
   ];
+
+  // Prefill data from initialData (API response)
+  useEffect(() => {
+    if (isCompleted && initialData) {
+      setSelectedSegments(initialData.segments || ["Cash"]);
+    }
+  }, [initialData, isCompleted]);
 
   const handleSegmentClick = (segmentId: string, requiresDisclosure: boolean) => {
     if (segmentId === "Cash") return;
 
-    if (requiresDisclosure && !hasAcceptedRisk) {
-      setPendingSegment(segmentId);
-      setShowRiskModal(true);
-      return;
-    }
+    // Just toggle the segment selection, don't show risk modal immediately
     toggleSegment(segmentId);
   };
 
@@ -49,18 +59,30 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
 
   const handleRiskAccept = () => {
     setHasAcceptedRisk(true);
-    if (pendingSegment) {
-      toggleSegment(pendingSegment);
-      setPendingSegment("");
-    }
     setShowRiskModal(false);
     
-    // Show the Upload Income Proof component when user accepts risk disclosure
+    // After accepting risk, show upload income proof
     setShowUploadIncome(true);
   };
 
   // Submit selected investment segments
   const handleSubmitSegments = async () => {
+    if (isCompleted) {
+      onNext();
+      return;
+    }
+
+    // Check if any selected segments require risk disclosure
+    const segmentsRequiringRisk = selectedSegments.filter(segment => 
+      segment === "F&O" || segment === "Currency" || segment === "Commodity"
+    );
+
+    // If risk-requiring segments are selected but risk not accepted, show modal
+    if (segmentsRequiringRisk.length > 0 && !hasAcceptedRisk) {
+      setShowRiskModal(true);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -73,28 +95,27 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
         }
       );
 
-      if (!response) {
+      if (!response.data) {
         setError("Failed to save investment segments. Please try again.");
-        console.error("Submit segments error, Response:", response);
         return;
       }
 
-      console.log("Investment segments saved successfully");
-      
-      // Check if user selected segments that require income proof
-      const needsIncomeProof = selectedSegments.some(segment => 
-        segment === "F&O" || segment === "Commodity"
-      );
+      // Check if backend says income proof is required
+      const backendRequiresProof = response.data.data?.requiresIncomeProof;
+      setRequiresIncomeProof(backendRequiresProof);
 
-      if (needsIncomeProof && hasAcceptedRisk) {
+      if (backendRequiresProof && hasAcceptedRisk) {
         // Initialize income proof step
         await handleInitializeIncomeProof();
       } else {
         onNext();
       }
-    } catch (err) {
-      setError("Failed to save investment segments. Please try again.");
-      console.error("Submit segments error:", err);
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        setError(`Error: ${err.response.data.message}`);
+      } else {
+        setError("Failed to save investment segments. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -110,28 +131,76 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
         }
       );
 
-      if (!response) {
+      if (!response.data) {
         setError("Failed to initialize income proof. Please try again.");
-        console.error("Initialize income proof error, Response:", response);
         return;
       }
 
-      console.log("Income proof initialized successfully");
       setShowUploadIncome(true);
-    } catch (err) {
-      setError("Failed to initialize income proof. Please try again.");
-      console.error("Initialize income proof error:", err);
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        setError(`Error: ${err.response.data.message}`);
+      } else {
+        setError("Failed to initialize income proof. Please try again.");
+      }
     }
   };
 
   // Handle upload income proof completion
-  const handleIncomeProofNext = () => {
+  const handleIncomeProofNext = async (file?: File) => {
+    if (file) {
+      try {
+        // Upload the file using PUT request
+        const formData = new FormData();
+        formData.append('pdf', file);
+
+        // You'll need to get the UID from somewhere (maybe from your auth context)
+        // For now, I'll assume it's available in your environment or you'll need to pass it
+        const uid = "USER_UID"; // Replace with actual UID
+        
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/${uid}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+      } catch (err) {
+        console.error("Failed to upload income proof:", err);
+        // Continue anyway, as upload might be optional
+      }
+    }
+    
     onNext();
   };
 
   // Skip income proof upload
   const handleSkipIncomeProof = () => {
     onNext();
+  };
+
+  const getButtonText = () => {
+    if (isCompleted) return "Continue";
+    if (isLoading) return "Saving...";
+    
+    // Check if any selected segments require risk disclosure
+    const segmentsRequiringRisk = selectedSegments.filter(segment => 
+      segment === "F&O" || segment === "Currency" || segment === "Commodity"
+    );
+    
+    if (segmentsRequiringRisk.length > 0 && !hasAcceptedRisk) {
+      return "Accept Risk & Continue";
+    }
+    
+    return "Next";
+  };
+
+  const isButtonDisabled = () => {
+    if (isLoading) return true;
+    if (isCompleted) return false;
+    return selectedSegments.length === 0;
   };
 
   // If showing upload income proof, render that component
@@ -144,13 +213,51 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
     );
   }
 
-  // Get button text based on loading state
-  const getButtonText = () => {
-    if (isLoading) {
-      return "Saving...";
-    }
-    return "Next";
-  };
+  // Show completed state
+  if (isCompleted) {
+    return (
+      <div className="w-full max-w-2xl mx-auto p-4">
+        <FormHeading 
+          title="Investment Segments Saved Successfully!" 
+          description="Your investment segments have been saved. Click continue to proceed." 
+        />
+
+        <div className="flex flex-wrap gap-2 mb-6">
+          {selectedSegments.map((segmentId) => {
+            const segment = segments.find(s => s.id === segmentId);
+            return (
+              <div
+                key={segmentId}
+                className="px-4 py-2 border border-green-600 bg-green-50 rounded flex items-center gap-3"
+              >
+                <span className="whitespace-nowrap">{segment?.label || segmentId}</span>
+                <div className="h-6 w-6 flex items-center justify-center border-2 border-green-600 bg-white rounded-lg">
+                  <Check className="h-4 w-4 text-green-600" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-green-800 font-medium">Investment segments saved successfully!</span>
+          </div>
+        </div>
+
+        <Button 
+          onClick={handleSubmitSegments}
+          variant="ghost" 
+          className="mt-6 py-6 px-10"
+        >
+          Continue to Next Step
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4">
@@ -190,10 +297,10 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ onNext }) => {
 
       <Button 
         onClick={handleSubmitSegments}
-        disabled={isLoading || selectedSegments.length === 0}
+        disabled={isButtonDisabled()}
         variant="ghost" 
         className={`mt-6 py-6 px-10 ${
-          isLoading || selectedSegments.length === 0 ? "opacity-50 cursor-not-allowed" : ""
+          isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         {getButtonText()}

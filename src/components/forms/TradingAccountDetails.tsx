@@ -1,49 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
+import axios from "axios";
 
 interface TradingAccountDetailsProps {
   onNext: () => void;
+  initialData?: any;
+  isCompleted?: boolean;
 }
 
 interface TradingAccountFormData {
-  maritalStatus: string;
-  fatherName: string;
+  fatherSpouseName: string;
   motherName: string;
+  maidenName: string; // Optional field
 }
 
 interface FormErrors {
-  maritalStatus: boolean;
-  fatherName: boolean;
+  fatherSpouseName: boolean;
   motherName: boolean;
 }
 
 const initialFormData: TradingAccountFormData = {
-  maritalStatus: "",
-  fatherName: "",
+  fatherSpouseName: "",
   motherName: "",
+  maidenName: "",
 };
 
 const initialErrors: FormErrors = {
-  maritalStatus: false,
-  fatherName: false,
+  fatherSpouseName: false,
   motherName: false,
 };
 
-const maritalStatusOptions = ["Single", "Married", "Divorced"];
-
 const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   onNext,
+  initialData,
+  isCompleted,
 }) => {
-  const [formData, setFormData] =
-    useState<TradingAccountFormData>(initialFormData);
+  const [formData, setFormData] = useState<TradingAccountFormData>(initialFormData);
   const [errors, setErrors] = useState<FormErrors>(initialErrors);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Prefill data from initialData (API response)
+  useEffect(() => {
+    if (isCompleted && initialData) {
+      setFormData({
+        fatherSpouseName: initialData.father_spouse_name || "",
+        motherName: initialData.mother_name || "",
+        maidenName: initialData.maiden_name || "",
+      });
+    }
+  }, [initialData, isCompleted]);
 
   const validateForm = () => {
     const newErrors = {
-      maritalStatus: !formData.maritalStatus,
-      fatherName: !formData.fatherName.trim(),
+      fatherSpouseName: !formData.fatherSpouseName.trim(),
       motherName: !formData.motherName.trim(),
     };
 
@@ -66,91 +77,168 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
       ...prev,
       [field]: false,
     }));
+    
+    setError(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (isSubmitting) return;
 
-    if (validateForm()) {
-      setIsSubmitting(true);
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulating API call
-        onNext();
-      } catch (err) {
-        console.error("Error during submission:", err);
-      } finally {
-        setIsSubmitting(false);
+    if (isCompleted) {
+      onNext();
+      return;
+    }
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "user_detail",
+          father_spouse_name: formData.fatherSpouseName.trim(),
+          mother_name: formData.motherName.trim(),
+          maiden_name: formData.maidenName.trim() || undefined,
+        }
+      );
+
+      if (!response.data) {
+        setError("Failed to save parent details. Please try again.");
+        return;
       }
+
+      onNext();
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        setError(`Error: ${err.response.data.message}`);
+      } else if (err.response?.status === 400) {
+        setError("Invalid details. Please check and try again.");
+      } else if (err.response?.status === 401) {
+        setError("Authentication failed. Please restart the process.");
+      } else {
+        setError("Failed to save details. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const isFormValid =
-    formData.maritalStatus &&
-    formData.fatherName.trim() &&
-    formData.motherName.trim();
+    formData.fatherSpouseName.trim() && formData.motherName.trim();
+
+  const getButtonText = () => {
+    if (isCompleted) return "Continue";
+    if (isSubmitting) return "Saving...";
+    return "Continue";
+  };
+
+  const isButtonDisabled = () => {
+    if (isSubmitting) return true;
+    if (isCompleted) return false;
+    return !isFormValid;
+  };
+
+  // Show completed state
+  if (isCompleted) {
+    return (
+      <div className="mx-auto mt-10">
+        <FormHeading
+          title={"Parent Details Saved Successfully!"}
+          description={"Your parent details have been saved. Click continue to proceed."}
+        />
+
+        <div className="mb-6">
+          <label className="block text-gray-700 mb-2">
+            Father's/Spouse Name<span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
+            value={formData.fatherSpouseName}
+            disabled
+          />
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-gray-700 mb-2">
+            Mother's Name<span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
+            value={formData.motherName}
+            disabled
+          />
+        </div>
+
+        {formData.maidenName && (
+          <div className="mb-6">
+            <label className="block text-gray-700 mb-2">Maiden Name (Optional)</label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
+              value={formData.maidenName}
+              disabled
+            />
+          </div>
+        )}
+
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-green-800 font-medium">Parent details saved successfully!</span>
+          </div>
+        </div>
+
+        <Button
+          onClick={handleSubmit}
+          className="w-full py-6"
+          variant="ghost"
+        >
+          Continue to Next Step
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto mt-10">
       <FormHeading
-        title={"Trading Account Details"}
-        description={"Set up your trading account in minutes."}
+        title={"Parent Details"}
+        description={"Provide your parent/spouse information for KYC verification."}
       />
 
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
           <label className="block mb-2">
-            Marital Status<span className="text-red-500">*</span>
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {maritalStatusOptions.map((status) => (
-              <button
-                key={status}
-                type="button"
-                onClick={() => handleInputChange("maritalStatus", status)}
-                disabled={isSubmitting}
-                className={`px-4 py-2 rounded border transition-colors
-                  ${
-                    formData.maritalStatus === status
-                      ? "border-teal-800 bg-teal-50 text-teal-800"
-                      : "border-gray-300 text-gray-600 hover:border-gray-400"
-                  }
-                  ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
-                `}
-              >
-                {status}
-              </button>
-            ))}
-          </div>
-          {errors.maritalStatus && (
-            <p className="text-red-500 text-sm mt-1">
-              Please select your marital status
-            </p>
-          )}
-        </div>
-
-        <div className="mb-6">
-          <label className="block mb-2">
-            Father&apos;s Name<span className="text-red-500">*</span>
+            Father's/Spouse Name<span className="text-red-500">*</span>
           </label>
           <input
             type="text"
-            placeholder="Enter your father's full name"
-            value={formData.fatherName}
-            onChange={(e) => handleInputChange("fatherName", e.target.value)}
+            placeholder="Enter father's or spouse's full name"
+            value={formData.fatherSpouseName}
+            onChange={(e) => handleInputChange("fatherSpouseName", e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
-          {errors.fatherName && (
+          {errors.fatherSpouseName && (
             <p className="text-red-500 text-sm mt-1">
-              Please enter your father&apos;s name
+              Please enter father's or spouse's name
             </p>
           )}
         </div>
 
         <div className="mb-6">
           <label className="block mb-2">
-            Mother&apos;s Name<span className="text-red-500">*</span>
+            Mother's Name<span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -162,23 +250,40 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           />
           {errors.motherName && (
             <p className="text-red-500 text-sm mt-1">
-              Please enter your mother&apos;s name
+              Please enter your mother's name
             </p>
           )}
         </div>
 
+        <div className="mb-6">
+          <label className="block mb-2">
+            Maiden Name (Optional)
+          </label>
+          <input
+            type="text"
+            placeholder="Enter maiden name if applicable"
+            value={formData.maidenName}
+            onChange={(e) => handleInputChange("maidenName", e.target.value)}
+            disabled={isSubmitting}
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 rounded">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
+
         <Button
           variant={"ghost"}
           type="submit"
-          disabled={!isFormValid || isSubmitting}
-          className={`w-full py-6
-            ${
-              isFormValid && !isSubmitting
-                ? ""
-                : "opacity-50 cursor-not-allowed"
-            }`}
+          disabled={isButtonDisabled()}
+          className={`w-full py-6 ${
+            isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          {isSubmitting ? "Please wait..." : "Continue"}
+          {getButtonText()}
         </Button>
 
         <div className="mt-6 text-sm text-gray-600">

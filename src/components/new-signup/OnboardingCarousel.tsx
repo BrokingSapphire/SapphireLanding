@@ -125,6 +125,7 @@ const OnboardingCarousel = () => {
           onNext={handleNext}
           initialData={getStepData(CheckpointStep.AADHAAR)}
           isCompleted={isStepCompleted(CheckpointStep.AADHAAR)}
+          panMaskedAadhaar={getStepData(CheckpointStep.PAN)?.masked_aadhaar}
         />
       )
     },
