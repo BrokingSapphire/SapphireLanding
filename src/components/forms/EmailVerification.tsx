@@ -2,8 +2,15 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import axios from "axios";
 import FormHeading from "./FormHeading";
+import { useAuthToken } from "@/hooks/useCheckpoint";
 
-const EmailVerification = ({ onNext }: { onNext: () => void }) => {
+interface EmailVerificationProps {
+  onNext: () => void;
+  initialData?: any;
+  isCompleted?: boolean;
+}
+
+const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificationProps) => {
   const [email, setEmail] = useState("");
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -13,6 +20,33 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const { setAuthToken } = useAuthToken();
+
+  // Prefill email from localStorage or initialData
+  useEffect(() => {
+    if (isCompleted && initialData?.email) {
+      // If step is completed, prefill with data from API
+      setEmail(initialData.email);
+    } else {
+      // Try to get email from localStorage (from previous session)
+      const storedEmail = localStorage.getItem("email") || "";
+      if (storedEmail) {
+        setEmail(storedEmail);
+      }
+    }
+  }, [initialData, isCompleted]);
+
+  // If step is already completed, show completed state
+  useEffect(() => {
+    if (isCompleted) {
+      // Auto-advance to next step after a short delay
+      const timer = setTimeout(() => {
+        onNext();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isCompleted, onNext]);
 
   // OTP timer for 10 minutes
   useEffect(() => {
@@ -78,10 +112,6 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
     setError(null);
 
     try {
-      // OTP should be in string
-      localStorage.setItem("email", email);
-      console.log("Email OTP:",otp)
-      console.log("Email:",email)
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
         {
@@ -90,14 +120,27 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
           otp: otp.join(""),
         }
       );
-      if (!response) {
+
+      if (!response.data) {
         setError("Failed to verify your code. Please try again.");
-        console.error("Send OTP error, Response :", response);
         return;
       }
+
+      // Store email and auth token
+      localStorage.setItem("email", email);
+      
+      // Store auth token in cookies and axios headers
+      if (response.data.token) {
+        setAuthToken(response.data.token);
+      }
+
       onNext();
-    } catch (err) {
-      setError("Error verifying code. Please try again.");
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Error verifying code. Please try again.");
+      }
       console.error("Verification error:", err);
     } finally {
       setIsLoading(false);
@@ -114,7 +157,6 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
     setError(null);
 
     try {
-
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp`,
         {
@@ -122,20 +164,26 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
           email: email,
         }
       );
-      if (!response) {
+
+      if (!response.data) {
         setError("Failed to send verification code. Please try again.");
-        console.error("Send OTP error, Response :", response);
         return;
       }
+
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds
+      
       // Focus on the first OTP input after showing OTP fields
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
-    } catch (err) {
-      setError("Failed to send verification code. Please try again.");
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Failed to send verification code. Please try again.");
+      }
       console.error("Send OTP error:", err);
     } finally {
       setIsLoading(false);
@@ -184,6 +232,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
   // Get button text based on current state
   const getButtonText = () => {
+    if (isCompleted) return "Completed ✓";
     if (isLoading) {
       return showOTP ? "Verifying..." : "Sending Code...";
     }
@@ -192,10 +241,52 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
   // Determine if button should be disabled
   const isButtonDisabled = () => {
+    if (isCompleted) return false;
     if (isLoading) return true;
     if (!showOTP) return !validateEmail(email);
     return !otp.every((digit) => digit !== "");
   };
+
+  // Show completed state
+  if (isCompleted) {
+    return (
+      <div className="mx-auto pt-24">
+        <FormHeading
+          title={"Email Verified Successfully!"}
+          description={"Proceeding to the next step..."}
+        />
+        
+        <div className="mb-8">
+          <label className="block text-gray-700 mb-2">Email Address</label>
+          <div className="flex gap-3">
+            <input
+              type="email"
+              className="flex-1 px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
+              value={email}
+              disabled
+            />
+          </div>
+        </div>
+
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-green-800 font-medium">Email verified successfully!</span>
+          </div>
+        </div>
+
+        <Button
+          onClick={onNext}
+          className="w-full py-6 mb-6 bg-green-600 hover:bg-green-700"
+          variant="ghost"
+        >
+          Continue to Next Step
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto pt-24">
@@ -280,7 +371,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
         disabled={isButtonDisabled()}
         className={`w-full py-6 mb-6 ${
           isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
-        }`}
+        } ${isCompleted ? "bg-green-600 hover:bg-green-700" : ""}`}
         variant="ghost"
       >
         {getButtonText()}
@@ -301,4 +392,4 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   );
 };
 
-export default EmailVerification
+export default EmailVerification;

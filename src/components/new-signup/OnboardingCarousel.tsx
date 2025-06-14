@@ -12,20 +12,42 @@ import NomineeSelection from "../forms/NomineeSelection";
 import LastStepPage from "../forms/LastStepPage";
 import CongratulationsPage from "../forms/Congratulations";
 import InvestmentSegment from "../forms/InvestmentSegment.tsx";
-// import CardVerification from "../forms/CardVerification";
 import TradingPreferences from "../forms/TradingPreferences";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import BankAccountLinking from "../forms/BankAccountLinking";
 import SignatureComponent from "../forms/Signature";
 import MPIN from "../forms/MPIN";
 import AadhaarPANMismatch from "../forms/AadhaarPANMismatch";
+import { useCheckpoint, CheckpointStep } from "@/hooks/useCheckpoint";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Use checkpoint hook to manage state
+  const { 
+    checkpointData, 
+    currentStep: resumeStep, 
+    isLoading: checkpointLoading,
+    error: checkpointError,
+    getStepData,
+    isStepCompleted,
+    isEmailCompleted,
+    isMobileCompleted 
+  } = useCheckpoint();
 
   const TOTAL_STEPS = 16;
+
+  // Initialize current step from checkpoint data
+  useEffect(() => {
+    if (!checkpointLoading && !isInitialized) {
+      console.log('Resuming from step:', resumeStep);
+      setCurrentStep(resumeStep);
+      setIsInitialized(true);
+    }
+  }, [checkpointLoading, resumeStep, isInitialized]);
 
   const handleNext = useCallback(() => {
     if (isAnimating) return;
@@ -64,36 +86,110 @@ const OnboardingCarousel = () => {
     },
   ];
 
-  // Define components with stable keys
+  // Define components with stable keys and pass checkpoint data
   const components = [
-    { id: "email", component: <EmailVerification onNext={handleNext} /> },
-    { id: "mobile", component: <MobileVerification onNext={handleNext} /> },
-    { id: "pan", component: <PANVerify onNext={handleNext} /> },
-    { id: "aadhaar", component: <AadhaarVerification onNext={handleNext} /> },
+    { 
+      id: "email", 
+      component: (
+        <EmailVerification 
+          onNext={handleNext} 
+          initialData={null} // Email doesn't have API data
+          isCompleted={isEmailCompleted()}
+        />
+      )
+    },
+    { 
+      id: "mobile", 
+      component: (
+        <MobileVerification 
+          onNext={handleNext}
+          initialData={null} // Mobile doesn't have API data
+          isCompleted={isMobileCompleted()}
+        />
+      )
+    },
+    { 
+      id: "pan", 
+      component: (
+        <PANVerify 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.PAN)}
+          isCompleted={isStepCompleted(CheckpointStep.PAN)}
+        />
+      )
+    },
+    { 
+      id: "aadhaar", 
+      component: (
+        <AadhaarVerification 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.AADHAAR)}
+          isCompleted={isStepCompleted(CheckpointStep.AADHAAR)}
+        />
+      )
+    },
     {
       id: "investment segment",
-      component: <InvestmentSegment onNext={handleNext} />,
+      component: (
+        <InvestmentSegment 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.INVESTMENT_SEGMENT)}
+          isCompleted={isStepCompleted(CheckpointStep.INVESTMENT_SEGMENT)}
+        />
+      ),
     },
-    { id: "trading", component: <TradingAccountDetails onNext={handleNext} /> },
+    { 
+      id: "trading", 
+      component: (
+        <TradingAccountDetails 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.USER_DETAIL)}
+          isCompleted={isStepCompleted(CheckpointStep.USER_DETAIL)}
+        />
+      )
+    },
     {
       id: "trading preference",
-      component: <TradingPreferences onNext={handleNext} />,
+      component: (
+        <TradingPreferences 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.PERSONAL_DETAIL)}
+          isCompleted={isStepCompleted(CheckpointStep.PERSONAL_DETAIL)}
+        />
+      ),
     },
     {
       id: "trading2",
-      component: <TradingAccountDetails2 onNext={handleNext} />,
+      component: (
+        <TradingAccountDetails2 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.OTHER_DETAIL)}
+          isCompleted={isStepCompleted(CheckpointStep.OTHER_DETAIL)}
+        />
+      ),
     },
     {
       id: "bankaccountdetails",
-      component: <BankAccountLinking onNext={handleNext} />,
+      component: (
+        <BankAccountLinking 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.BANK_VALIDATION)}
+          isCompleted={isStepCompleted(CheckpointStep.BANK_VALIDATION)}
+        />
+      ),
     },
-    
-    // divyansh bhaiya ki link bank account wale components
-
     { id: "ipv", component: <IPVVerification onNext={handleNext} /> },
     { id: "signature", component: <SignatureComponent onNext={handleNext} /> },
-
-    { id: "nominee", component: <NomineeSelection onNext={handleNext} /> },
+    { 
+      id: "nominee", 
+      component: (
+        <NomineeSelection 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.ADD_NOMINEES)}
+          isCompleted={isStepCompleted(CheckpointStep.ADD_NOMINEES)}
+        />
+      )
+    },
     { id: "Last Step", component: <LastStepPage onNext={handleNext} /> },
     { id: "MPIN", component: <MPIN onNext={handleNext} /> },
     { id: "Set Password ", component: <AadhaarPANMismatch onNext={handleNext} /> },
@@ -106,9 +202,9 @@ const OnboardingCarousel = () => {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent): void => {
       if (e.key === "ArrowUp") {
-      handlePrevious();
+        handlePrevious();
       } else if (e.key === "ArrowDown") {
-      handleNext();
+        handleNext();
       }
     };
 
@@ -138,6 +234,46 @@ const OnboardingCarousel = () => {
         "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in-out",
     };
   };
+
+  // Show loading state while fetching checkpoint data
+  if (checkpointLoading && !isInitialized) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your progress...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if checkpoint fetch failed
+  if (checkpointError && !isInitialized) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-red-600 mb-4">
+            <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to Load Progress</h3>
+          <p className="text-gray-600 mb-4">
+            We couldn't retrieve your previous progress. You can start from the beginning.
+          </p>
+          <button 
+            onClick={() => {
+              setCurrentStep(0);
+              setIsInitialized(true);
+            }}
+            className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            Start Over
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen max-h-screen overflow-hidden">
@@ -208,7 +344,8 @@ const OnboardingCarousel = () => {
             <div
               key={`indicator-${index}`}
               className={`w-1 sm:w-2 h-1 sm:h-2 rounded-full transition-colors duration-300 ${
-                index === currentStep ? "bg-teal-600" : "bg-gray-300"
+                index === currentStep ? "bg-teal-600" : 
+                index < currentStep ? "bg-green-500" : "bg-gray-300"
               }`}
             />
           ))}

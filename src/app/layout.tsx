@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lexend, Poppins, Lobster_Two } from "next/font/google";
 import "./globals.css";
+import { QueryProvider } from '@/providers/QueryProvider';
 import Navbar from "../components/Navbar";
 import { Analytics } from "@vercel/analytics/react";
 import FooterWrapper from "@/components/FooterWrapper";
@@ -63,10 +64,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${lobsterTwo.variable} ${lexend.variable} font-poppins bg-white text-black antialiased`}
       >
-        <Analytics />
-        <Navbar />
-        {children}
-        <FooterWrapper />
+        <QueryProvider>
+          <Analytics />
+          <Navbar />
+          {children}
+          <FooterWrapper />
+        </QueryProvider>
       </body>
     </html>
   );
