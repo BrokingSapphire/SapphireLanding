@@ -86,7 +86,7 @@ const ContactCards: React.FC = () => {
     },
     {
       title: "Partner Support",
-      hours: "8:00 AM - 6:00 PM",
+      hours: "8:00 AM - 11:55 PM",
       satHours: "10:30 AM - 2:30 PM",
       phone: "+91 84466-09679",
     },
