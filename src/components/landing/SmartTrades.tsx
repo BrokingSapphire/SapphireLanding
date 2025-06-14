@@ -45,7 +45,7 @@ function SmartTrades() {
   }, []);
 
   return (
-    <div className="min-h-[500px] mt-8 md:mt-[90px] md:mb-[110px] px-10 md:px-[48px] lg:px-[100px]">
+    <div className="min-h-[500px] mb-12 sm:mb-0 mt-8 md:mt-[90px] md:mb-[110px] px-10 md:px-[48px] lg:px-[100px]">
       {/* Container that stacks on smaller screens */}
       <div className="flex flex-col items-center justify-center gap-8 xl:flex-row xl:gap-20 xl:items-start">
         

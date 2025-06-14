@@ -16,7 +16,7 @@ const CalculatorButton: React.FC<CalculatorButtonProps> = ({
 }) => (
   <button
     onClick={onClick}
-    className="w-full min-w-[338px] flex justify-between items-center px-3 sm:px-6 py-3 sm:py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+    className="w-full min-w-[250px] flex justify-between items-center px-3 sm:px-6 py-3 sm:py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition"
   >
     <div className="flex items-center gap-2 sm:gap-4 text-[#5B5B5B] text-base sm:text-lg font-medium">
       <Image
@@ -70,7 +70,7 @@ const Calculator: React.FC = () => {
         </div>
 
         {/* Illustration Image */}
-        <div className="hidden md:flex w-full md:w-[50%] lg:w-auto h-[335px] justify-end mt-6 md:-mb-14 lg:mt-12 xl:mt-12 relative md:left-[-80px] lg:left-[-70px] mb-4 md:mb-6 lg:mb-0">
+        <div className="hidden md:flex w-full md:w-[50%] lg:w-auto h-[335px] justify-end mt-6 md:-mb-14 lg:mt-12 xl:mt-12 relative md:left-[-80px] lg:left-[-70px] mb-4 md:-6 lg:mb-0">
           <Image
             src="/Calc.png"
             alt="Investment Calculator Illustration"
