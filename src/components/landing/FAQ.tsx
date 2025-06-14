@@ -28,10 +28,10 @@ export default function FAQ() {
               value={`item-${index + 1}`}
               className="py-1 sm:py-2"
             >
-              <AccordionTrigger className="font-lexend text-sm sm:text-base md:text-[28px] hover:no-underline text-left">
+              <AccordionTrigger className="font-lexend text-sm sm:text-lg md:text-[28px] hover:no-underline text-left">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="font-lexend font-light text-gray-600 text-[24px] leading-relaxed pr-2 sm:pr-8">
+              <AccordionContent className="font-lexend font-light text-gray-600 text-sm sm:text-base md:text-[24px] leading-relaxed pr-2 sm:pr-8">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>
