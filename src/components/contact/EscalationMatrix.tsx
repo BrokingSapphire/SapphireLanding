@@ -58,7 +58,7 @@ const ContactDetails: React.FC = () => {
     {
       details: "Head of Customer Care",
       contactPerson: "Mr.",
-      emailId: "abc@sapphirebroking.com",
+      emailId: "@sapphirebroking.com",
       contactNo: "0811-5883899",
       workingHours: "11:00 - 6:00",
     },
@@ -83,7 +83,7 @@ const ContactDetails: React.FC = () => {
       srNo: "1",
       name: "Nakul Thakur",
       designation: "Partner",
-      contactNo: "0+91 98903 36989",
+      contactNo: "+91 98903 36989",
       email: "nakul.thakur@sapphirebroking.com",
     },
     {
