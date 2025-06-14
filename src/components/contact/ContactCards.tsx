@@ -56,7 +56,7 @@ const HQCard: React.FC = () => (
         </h3>
       </div>
       <p className="text-sm sm:text-base text-gray-600">
-      📍 Plot No. 33, Pratap Nagar, Khamla, Nagpur, Maharashtra
+      📍 Plot No. 84-A, First Floor, East Side (Front), Pande Layout, New Sneh Nagar, Khamla, Nagpur, Maharashtra
         <br />
         Pincode : 440025
       </p>
@@ -86,7 +86,7 @@ const ContactCards: React.FC = () => {
     },
     {
       title: "Partner Support",
-      hours: "8:00 AM - 6:00 PM",
+      hours: "8:00 AM - 11:55 PM",
       satHours: "10:30 AM - 2:30 PM",
       phone: "+91 84466-09679",
     },
