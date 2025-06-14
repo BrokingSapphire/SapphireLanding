@@ -7,7 +7,7 @@ import { DosAndDontsTable } from "@/components/InvestorAttentionComponents";
 const DosAndDonts: React.FC = () => {
   return (
     <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
         Do's and Don'ts
       </h1>
 
@@ -17,6 +17,7 @@ const DosAndDonts: React.FC = () => {
       </p>
 
       <div className="space-y-10">
+        <hr />
         {/* Main Content */}
         <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
           <h2 className="text-2xl uppercase font-semibold text-green-heading mb-6">

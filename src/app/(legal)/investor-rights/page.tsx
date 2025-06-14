@@ -433,7 +433,7 @@ const RightSection: React.FC<{
 const RightsOfInvestors: React.FC = () => {
   return (
     <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
         Rights of Investors
       </h1>
 
@@ -443,6 +443,7 @@ const RightsOfInvestors: React.FC = () => {
       </p>
 
       <div className="space-y-10">
+        <hr />
         {/* Quick Access - Moved here from bottom */}
         <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
           <h2 className="text-2xl font-semibold text-green-heading mb-4">

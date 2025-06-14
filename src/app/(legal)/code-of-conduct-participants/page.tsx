@@ -465,7 +465,7 @@ const CodeSection: React.FC<{
 const CodeOfConduct: React.FC = () => {
   return (
     <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
         Code of Conduct
       </h1>
 
@@ -474,6 +474,7 @@ const CodeOfConduct: React.FC = () => {
       </p>
 
       <div className="space-y-10">
+        <hr />
         {/* Introduction */}
         <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
           <div className="space-y-4 text-gray-500">

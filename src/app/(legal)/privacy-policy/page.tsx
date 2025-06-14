@@ -3,7 +3,7 @@
 const PrivacyPolicy = () => {
   return (
     <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
         PRIVACY POLICY
       </h1>
 
@@ -13,6 +13,7 @@ const PrivacyPolicy = () => {
       </p>
 
       <div className="space-y-8">
+        <br />
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold text-green-heading">
             1. INTRODUCTION
