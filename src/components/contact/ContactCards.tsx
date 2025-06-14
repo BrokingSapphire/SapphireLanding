@@ -56,9 +56,7 @@ const HQCard: React.FC = () => (
         </h3>
       </div>
       <p className="text-sm sm:text-base text-gray-600">
-      📍 Plot No. 84-A, First Floor, East Side (Front), Pande Layout, New Sneh Nagar, Khamla, Nagpur, Maharashtra
-        <br />
-        Pincode : 440025
+      📍 Plot No. 84-A, First Floor, East Side (Front), Pande Layout, New Sneh Nagar, Khamla, Nagpur, Maharashtra - 440025
       </p>
     </div>
   </div>
