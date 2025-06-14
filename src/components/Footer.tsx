@@ -90,7 +90,7 @@ const LegalSection = () => {
       <div className="grid gap-4">
         {/* Legal Name */}
         <p>
-          <strong>Legal Name:</strong> <strong>Sapphire Broking</strong>: Registered Office: <strong><span className="underline decoration-dotted decoration-slate-400">Plot No. 84A, First Floor, Pande Layout, New Sneh Nagar, Khamla, Nagpur (MH) - 440025</span></strong>, <strong>FRN:</strong> <span className="underline decoration-dotted decoration-slate-400">NG000010895</span>, <strong>SEBI Registration No.:</strong> <span className="font-bold underline decoration-dotted decoration-slate-400">INZ923930210</span> – Member of <span className="font-bold underline decoration-dotted decoration-slate-400">NSE, BSE, MCX, and NCDEX</span>. Clearing House: <strong><span className="underline decoration-dotted decoration-slate-400">Globe Capital Services Ltd.</span></strong>: DP ID: 12020600. Compliance Officer: <strong><span className="underline decoration-dotted decoration-slate-400">Mr. Yash Katyari</span></strong>, Tel: <strong><a href="tel:+919359561831" className="underline decoration-dotted decoration-slate-400 text-inherit">+91 93595 61831</a></strong>, Email: <strong><a href="mailto:yash.katyari@sapphirebroking.com" className="underline decoration-dotted decoration-slate-400 text-inherit">yash.katyari@sapphirebroking.com</a></strong>.
+          <strong>Legal Name:</strong> <strong>Sapphire Broking</strong>: Registered Office: <strong><span className="underline decoration-dotted decoration-slate-400">Plot No. 84A, First Floor, Pande Layout, New Sneh Nagar, Khamla, Nagpur (MH) - 440025</span></strong>, FRN: <strong><span className="underline decoration-dotted decoration-slate-400">NG000010895</span></strong>, SEBI Registration No.: <span className="font-bold underline decoration-dotted decoration-slate-400">INZ923930210</span> – Member of <span className="font-bold underline decoration-dotted decoration-slate-400">NSE, BSE, MCX, and NCDEX</span>. Clearing House: <strong><span className="underline decoration-dotted decoration-slate-400">Globe Capital Services Ltd.</span></strong>: DP ID: <strong><span className="underline decoration-dotted decoration-slate-400">12020600</span></strong>. Compliance Officer: <strong><span className="underline decoration-dotted decoration-slate-400">Mr. Yash Katyari</span></strong>, Tel: <strong><a href="tel:+919359561831" className="underline decoration-dotted decoration-slate-400 text-inherit">+91 93595 61831</a></strong>, Email: <strong><a href="mailto:yash.katyari@sapphirebroking.com" className="underline decoration-dotted decoration-slate-400 text-inherit">yash.katyari@sapphirebroking.com</a></strong>.
         </p>
 
         {/* Grievance Redressal */}
@@ -161,9 +161,9 @@ const Footer = () => {
     { title: "Company Info", href: "#" },
     { title: "Pricing", href: "/pricing" },
     { title: "Contact Us", href: "/contact" },
-    { title: "Support Portal", href: "/contact" },
-    { title: "Become a Partner", href: "#" },
-    { title: "Careers", href: "#" },
+    { title: "Support Portal", href: "https://support.sapphirebroking.com" },
+    { title: "Become a Partner", href: "/become-a-partner" },
+    { title: "Careers", href: "https://careers.sapphirebroking.com" },
   ];
 
   const LEGAL_LINKS = [
@@ -186,10 +186,10 @@ const Footer = () => {
 
   const ACCOUNT_LINKS = [
     { title: "Open an Account", href: "/signup" },
-    { title: "Bank Details", href: "#" },
-    { title: "Account Closure", href: "#" },
-    { title: "Collateral Haircut", href: "#" },
-    { title: "Risk Disclosure", href: "#" },
+    { title: "Bank Details", href: "/bank-details" },
+    { title: "Account Closure", href: "/account-closure" },
+    { title: "Collateral Haircut", href: "/collateral-haircut" },
+    { title: "Risk Disclosure", href: "/risk-disclosure" },
   ];
 
   return (
