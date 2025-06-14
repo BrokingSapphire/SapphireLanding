@@ -1,20 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Clock, ExternalLink } from "lucide-react";
 import Image from "next/image";
+import axios from "axios";
+import QRCode from "qrcode";
 
 interface UpiLinkingProps {
   onNext: () => void;
   onBack: () => void;
 }
 
+interface UpiData {
+  payment_link: string;
+  ios_links: {
+    paytm: string;
+    phonepe: string;
+    gpay: string;
+    bhim: string;
+    whatsapp: string;
+  };
+}
+
 const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+  const [upiData, setUpiData] = useState<UpiData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isPolling, setIsPolling] = useState(false);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
 
+  // Initialize UPI verification
+  useEffect(() => {
+    initializeUpiVerification();
+  }, []);
+
+  // Timer effect
   useEffect(() => {
     if (timeLeft <= 0) {
-      onNext();
+      setError("Verification timeout. Please try again.");
       return;
     }
 
@@ -22,7 +46,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timer);
-          onNext(); // Call onNext when timer reaches zero
+          setError("Verification timeout. Please try again.");
           return 0;
         }
         return prevTime - 1;
@@ -30,7 +54,119 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, onNext]);
+  }, [timeLeft]);
+
+  // Polling effect
+  useEffect(() => {
+    let pollingInterval: NodeJS.Timeout;
+
+    if (upiData && !isPolling && timeLeft > 0) {
+      setIsPolling(true);
+      
+      // Start polling after 10 seconds
+      setTimeout(() => {
+        pollingInterval = setInterval(() => {
+          checkUpiStatus();
+        }, 3000); // Poll every 3 seconds
+      }, 10000);
+    }
+
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    };
+  }, [upiData, timeLeft]);
+
+  const initializeUpiVerification = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "bank_validation_start",
+          validation_type: "upi"
+        }
+      );
+
+      if (response.data?.data) {
+        setUpiData(response.data.data);
+        // Generate QR code from payment link
+        if (response.data.data.payment_link) {
+          generateQRCode(response.data.data.payment_link);
+        }
+      } else {
+        setError("Failed to initialize UPI verification. Please try again. line 101");
+      }
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        setError(`Error: ${err.response.data.message}`);
+      } else {
+        setError("Failed to initialize UPI verification. Please try again. line 107");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const generateQRCode = async (paymentLink: string) => {
+    try {
+      const qrCodeDataUrl = await QRCode.toDataURL(paymentLink, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      setQrCodeDataUrl(qrCodeDataUrl);
+    } catch (err) {
+      console.error('Error generating QR code:', err);
+    }
+  };
+
+  const checkUpiStatus = async () => {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "bank_validation",
+          validation_type: "upi"
+        }
+      );
+
+      // If successful (status 201), verification is complete
+      if (response.status === 201) {
+        onNext();
+      }
+    } catch (err: any) {
+      if (err.response?.status === 204) {
+        // 204 means still pending, continue polling
+        return;
+      } else if (err.response?.status === 406) {
+        // 406 means validation failed
+        setError("UPI verification failed. Please try again or use manual bank details.");
+        setIsPolling(false);
+      } else {
+        // Other errors, but don't stop polling yet
+        console.error("UPI status check error:", err);
+      }
+    }
+  };
+
+  const handleUpiAppClick = (appLink: string) => {
+    window.open(appLink, '_blank');
+  };
+
+  const handleRetry = () => {
+    setTimeLeft(300);
+    setError(null);
+    setIsPolling(false);
+    setQrCodeDataUrl("");
+    initializeUpiVerification();
+  };
 
   // Format the time as mm:ss
   const formatTime = (seconds: number) => {
@@ -38,6 +174,53 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-full mt-8 max-w-2xl mx-auto p-2">
+        <FormHeading
+          title="Bank Account Details"
+          description="Initializing UPI verification..."
+        />
+        <div className="flex items-center justify-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+          <span className="ml-3 text-gray-600">Setting up UPI verification...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full mt-8 max-w-2xl mx-auto p-2">
+        <FormHeading
+          title="Bank Account Details"
+          description="UPI verification encountered an issue."
+        />
+        <div className="mt-6 p-4 bg-red-50 rounded-lg border border-red-200">
+          <p className="text-red-600 text-sm">{error}</p>
+        </div>
+        <div className="mt-6 flex justify-between">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleRetry}
+            className="text-teal-600 border-teal-600 hover:bg-teal-50"
+          >
+            Try Again
+          </Button>
+          <Button
+            type="button"
+            variant="link"
+            onClick={onBack}
+            className="text-blue-500 flex items-center"
+          >
+            Enter details manually <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full mt-8 max-w-2xl mx-auto p-2">
@@ -57,14 +240,25 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
       <div className="mt-2">
         <div className="bg-[#F7F9FD] p-3 rounded flex flex-col md:flex-row gap-4 mt-2 mb-2">
           <div className="flex-1 flex justify-center">
-            <div className="bg-white p-2 rounded-lg">
-              <Image
-                width={100}
-                height={100}
-                src="/api/placeholder/200/200"
-                alt="QR Code"
-                className="w-40 h-40"
-              />
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              {qrCodeDataUrl ? (
+                <img 
+                  src={qrCodeDataUrl} 
+                  alt="UPI Payment QR Code"
+                  className="w-40 h-40"
+                />
+              ) : upiData?.payment_link ? (
+                <div className="w-40 h-40 flex items-center justify-center border-2 border-dashed border-gray-300 rounded">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-2"></div>
+                    <span className="text-xs text-gray-500">Generating QR...</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-40 h-40 bg-gray-100 rounded flex items-center justify-center">
+                  <span className="text-xs text-gray-500">Loading QR...</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -81,6 +275,36 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
                 alt="banks"
               />
             </div>
+
+            {/* UPI App Quick Links */}
+            {upiData?.ios_links && (
+              <div className="grid grid-cols-2 gap-2 w-full max-w-xs">
+                <button
+                  onClick={() => handleUpiAppClick(upiData.ios_links.gpay)}
+                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
+                >
+                  GPay <ExternalLink className="ml-1 h-3 w-3" />
+                </button>
+                <button
+                  onClick={() => handleUpiAppClick(upiData.ios_links.phonepe)}
+                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
+                >
+                  PhonePe <ExternalLink className="ml-1 h-3 w-3" />
+                </button>
+                <button
+                  onClick={() => handleUpiAppClick(upiData.ios_links.paytm)}
+                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
+                >
+                  Paytm <ExternalLink className="ml-1 h-3 w-3" />
+                </button>
+                <button
+                  onClick={() => handleUpiAppClick(upiData.ios_links.bhim)}
+                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
+                >
+                  BHIM <ExternalLink className="ml-1 h-3 w-3" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <div className="bg-[#F7F9FD] p-3 rounded mt-6 space-y-1 text-sm">
@@ -90,8 +314,18 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
               ₹1 will be debited from your account and refunded within 24 hours.
             </li>
             <li>Scan using any UPI app to complete bank verification.</li>
+            <li>We'll automatically detect once payment is completed.</li>
           </ul>
         </div>
+
+        {isPolling && (
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
+              <span className="text-blue-800 text-sm">Waiting for UPI payment completion...</span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mt-3 flex justify-end">

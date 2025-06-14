@@ -7,9 +7,15 @@ import Image from "next/image";
 
 interface BankAccountLinkingProps {
   onNext: () => void;
+  initialData?: any;
+  isCompleted?: boolean;
 }
 
-const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
+const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ 
+  onNext, 
+  initialData, 
+  isCompleted 
+}) => {
   const [linkingMethod, setLinkingMethod] = useState<string | null>(null);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -38,6 +44,43 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
     }
   }, [isSmallScreen, linkingMethod]);
 
+  // Show completed state
+  if (isCompleted) {
+    return (
+      <div className="w-full max-w-2xl mx-auto p-4">
+        <FormHeading 
+          title="Bank Account Verified Successfully!" 
+          description="Your bank account has been linked and verified. Click continue to proceed." 
+        />
+
+        <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <div>
+              <h3 className="text-green-800 font-medium">Bank Account Linked Successfully!</h3>
+              {initialData?.account_no && (
+                <p className="text-green-700 text-sm">
+                  Account: ****{initialData.account_no.slice(-4)} | IFSC: {initialData.ifsc_code}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button 
+            onClick={onNext}
+            className="bg-teal-800 text-white px-6 py-2 rounded hover:bg-teal-900"
+          >
+            Continue to Next Step
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const renderLinkingOption = () => {
     if (linkingMethod === "manual") {
       return <ManualBankDetails onNext={onNext} onBack={() => setLinkingMethod(null)} />;
@@ -55,7 +98,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
           {/* Only show UPI option on larger screens */}
           {!isSmallScreen && (
             <button 
-              className="flex flex-col items-center justify-center h-32 border-2 rounded hover:border-[#064D51]"
+              className="flex flex-col items-center justify-center h-32 border-2 rounded hover:border-[#064D51] transition-colors"
               onClick={() => setLinkingMethod("upi")}
             >
               <div className="flex items-center justify-center w-20 h-10 mt-4 mb-2">
@@ -67,7 +110,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ onNext }) => {
           )}
           
           <button 
-            className={`flex flex-col items-center justify-center h-32 border-2 rounded hover:border-[#064D51] ${isSmallScreen ? "col-span-1" : ""}`}
+            className={`flex flex-col items-center justify-center h-32 border-2 rounded hover:border-[#064D51] transition-colors ${isSmallScreen ? "col-span-1" : ""}`}
             onClick={() => setLinkingMethod("manual")}
           >
             <div className="flex items-center justify-center space-x-1 mb-2">
