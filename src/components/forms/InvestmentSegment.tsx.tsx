@@ -25,6 +25,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [requiresIncomeProof, setRequiresIncomeProof] = useState(false);
+  const [incomeProofUid, setIncomeProofUid] = useState<string | null>(null);
 
   const segments = [
     { id: "Cash", label: "Cash/Mutual Funds" },
@@ -131,11 +132,13 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         }
       );
 
-      if (!response.data) {
+      if (!response.data?.data?.uid) {
         setError("Failed to initialize income proof. Please try again.");
         return;
       }
 
+      // Store the UID from backend response
+      setIncomeProofUid(response.data.data.uid);
       setShowUploadIncome(true);
     } catch (err: any) {
       if (err.response?.data?.message) {
@@ -208,7 +211,8 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     return (
       <UploadIncomeProof 
         onNext={handleIncomeProofNext} 
-        onSkip={handleSkipIncomeProof} 
+        onSkip={handleSkipIncomeProof}
+        uid={incomeProofUid} // Pass the UID to UploadIncomeProof
       />
     );
   }

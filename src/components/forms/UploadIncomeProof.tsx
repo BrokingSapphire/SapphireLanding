@@ -7,11 +7,13 @@ import axios from "axios";
 interface UploadIncomeProofProps {
   onNext: (file?: File) => void;
   onSkip?: () => void;
+  uid: string | null; // UID from the income_proof initialization
 }
 
 const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({ 
   onNext,
-  onSkip 
+  onSkip,
+  uid 
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedOption, setSelectedOption] = useState<string>("Bank statement (last 6 months) with ₹10,000+ average balance.");
@@ -84,15 +86,15 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
       return;
     }
 
+    if (!uid) {
+      setError("Upload session not initialized. Please try again.");
+      return;
+    }
+
     setIsUploading(true);
     setError(null);
 
     try {
-      // Get UID from localStorage or your auth context
-      // You might need to adjust this based on how you store user info
-      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-      const uid = userInfo.uid || 'USER_UID'; // Replace with actual UID retrieval logic
-
       const formData = new FormData();
       formData.append('pdf', selectedFile);
 
@@ -159,6 +161,12 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         title="Upload Income Proof"
         description="A small step for you, a big leap towards seamless trading!"
       />
+
+      {!uid && (
+        <div className="mt-4 p-3 bg-yellow-50 rounded border border-yellow-200">
+          <p className="text-yellow-600 text-sm">Upload session not initialized. Please go back and try again.</p>
+        </div>
+      )}
 
       <div className="mt-6 p-2 bg-[#F7F9FD] rounded">
         <div className="relative">
@@ -275,9 +283,9 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         <Button
           variant="ghost"
           onClick={selectedFile ? handleUploadAndContinue : () => onNext()}
-          disabled={isUploading}
+          disabled={isUploading || !uid}
           className={`${onSkip ? 'flex-1' : 'w-full'} py-6 ${
-            isUploading ? "opacity-50 cursor-not-allowed" : ""
+            (isUploading || !uid) ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
           {isUploading ? "Uploading..." : selectedFile ? "Upload & Continue" : "Continue"}
