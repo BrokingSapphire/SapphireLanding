@@ -93,6 +93,9 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         {
           step: "investment_segment",
           segments: selectedSegments,
+        },
+        {
+          withCredentials: true // Use cookies for authentication
         }
       );
 
@@ -112,10 +115,24 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         onNext();
       }
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Error: ${err.response.data.message}`);
+        } else if (err.response.data?.error?.message) {
+          setError(`Error: ${err.response.data.error.message}`);
+        } else if (err.response.status === 400) {
+          setError("Invalid investment segments. Please try again.");
+        } else if (err.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 422) {
+          setError("Invalid segment selection. Please try again.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
       } else {
-        setError("Failed to save investment segments. Please try again.");
+        setError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -129,6 +146,9 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "income_proof",
+        },
+        {
+          withCredentials: true // Use cookies for authentication
         }
       );
 
@@ -141,41 +161,28 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
       setIncomeProofUid(response.data.data.uid);
       setShowUploadIncome(true);
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Error: ${err.response.data.message}`);
+        } else if (err.response.data?.error?.message) {
+          setError(`Error: ${err.response.data.error.message}`);
+        } else if (err.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
       } else {
-        setError("Failed to initialize income proof. Please try again.");
+        setError("An unexpected error occurred. Please try again.");
       }
     }
   };
 
   // Handle upload income proof completion
   const handleIncomeProofNext = async (file?: File) => {
-    if (file) {
-      try {
-        // Upload the file using PUT request
-        const formData = new FormData();
-        formData.append('pdf', file);
-
-        // You'll need to get the UID from somewhere (maybe from your auth context)
-        // For now, I'll assume it's available in your environment or you'll need to pass it
-        const uid = "USER_UID"; // Replace with actual UID
-        
-        await axios.put(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/${uid}`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        );
-      } catch (err) {
-        console.error("Failed to upload income proof:", err);
-        // Continue anyway, as upload might be optional
-      }
-    }
-    
+    // The file upload is handled by UploadIncomeProof component
+    // We just need to proceed to the next step
     onNext();
   };
 

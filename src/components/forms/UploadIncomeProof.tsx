@@ -105,16 +105,27 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
           headers: {
             'Content-Type': 'multipart/form-data',
           },
+          withCredentials: true // Use cookies for authentication
         }
       );
 
       // Call onNext with the file
       onNext(selectedFile);
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Upload failed: ${err.response.data.message}`);
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Upload failed: ${err.response.data.message}`);
+        } else if (err.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 422) {
+          setError("Invalid file or upload error. Please try again.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
       } else {
-        setError("Failed to upload file. Please try again.");
+        setError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsUploading(false);

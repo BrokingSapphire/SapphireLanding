@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormHeading from "./FormHeading";
+import axios from "axios";
 
 interface NomineeManagementProps {
   onNext: () => void;
+  initialData?: any;
+  isCompleted?: boolean;
 }
 
 interface NomineeData {
@@ -13,7 +16,11 @@ interface NomineeData {
   sharePercentage: string;
 }
 
-const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
+const NomineeManagement: React.FC<NomineeManagementProps> = ({ 
+  onNext, 
+  initialData, 
+  isCompleted 
+}) => {
   const [nominees, setNominees] = useState<NomineeData[]>([]);
   const [currentNominee, setCurrentNominee] = useState<NomineeData>({
     id: "1",
@@ -23,6 +30,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
     sharePercentage: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const relationships = [
     "Spouse",
@@ -34,6 +42,20 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
     "Sister",
     "Other",
   ];
+
+  // Prefill data from initialData (API response)
+  useEffect(() => {
+    if (isCompleted && initialData?.nominees) {
+      const formattedNominees = initialData.nominees.map((nominee: any, index: number) => ({
+        id: (index + 1).toString(),
+        name: nominee.name || "",
+        panOrAadhar: nominee.gov_id || "",
+        relationship: nominee.relation || "",
+        sharePercentage: nominee.share?.toString() || "",
+      }));
+      setNominees(formattedNominees);
+    }
+  }, [initialData, isCompleted]);
 
   const handleInputChange = (field: keyof NomineeData, value: string) => {
     setError(null);
@@ -154,6 +176,166 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
     currentNominee.relationship &&
     currentNominee.sharePercentage;
 
+  const handleSubmit = async () => {
+    if (nominees.length === 0) {
+      setError("Please add at least one nominee");
+      return;
+    }
+
+    if (totalSharePercentage !== 100) {
+      setError("Total share percentage must equal 100%");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Format nominees data for API
+      const formattedNominees = nominees.map(nominee => ({
+        name: nominee.name.trim(),
+        gov_id: nominee.panOrAadhar.trim(),
+        relation: nominee.relationship,
+        share: parseFloat(nominee.sharePercentage)
+      }));
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "add_nominees",
+          nominees: formattedNominees
+        },
+        {
+          withCredentials: true // Use cookies for authentication
+        }
+      );
+
+      if (!response.data) {
+        setError("Failed to save nominees. Please try again.");
+        return;
+      }
+
+      onNext();
+    } catch (err: any) {
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Error: ${err.response.data.message}`);
+        } else if (err.response.data?.error?.message) {
+          setError(`Error: ${err.response.data.error.message}`);
+        } else if (err.response.status === 400) {
+          setError("Invalid nominee details. Please check and try again.");
+        } else if (err.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 422) {
+          setError("Invalid nominee data or share percentage doesn't equal 100%.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getButtonText = () => {
+    if (isCompleted) return "Continue";
+    if (isLoading) return "Saving Nominees...";
+    return "Continue";
+  };
+
+  const isButtonDisabled = () => {
+    if (isLoading) return true;
+    if (isCompleted) return false;
+    return totalSharePercentage !== 100;
+  };
+
+  const handleContinue = () => {
+    if (isCompleted) {
+      onNext();
+      return;
+    }
+    handleSubmit();
+  };
+
+  // Show completed state
+  if (isCompleted && nominees.length > 0) {
+    return (
+      <div className="mx-auto h-full max-h-[80vh] overflow-y-auto mt-20">
+        <div className="sticky top-0 bg-white z-10 pt-0 pb-2">
+          <FormHeading
+            title={"Nominees Added Successfully!"}
+            description={"Your nominees have been saved. Click continue to proceed."}
+          />
+        </div>
+
+        <div className="space-y-6 mt-2">
+          {nominees.map((nominee) => (
+            <div
+              key={nominee.id}
+              className="mb-6 bg-green-50 rounded-lg p-4 border border-green-200"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-medium text-green-800">Nominee {nominee.id}</h3>
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-green-600 text-sm">Verified</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Name</label>
+                  <div className="text-sm font-medium">{nominee.name}</div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Pan-Aadhar card</label>
+                  <div className="text-sm font-medium">{nominee.panOrAadhar}</div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">Relationship</label>
+                  <div className="text-sm font-medium">{nominee.relationship}</div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">% Share</label>
+                  <div className="text-sm font-medium">{nominee.sharePercentage}%</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="sticky bottom-0 bg-white pt-4 pb-0 border-t border-gray-200 mt-4">
+          <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex items-center">
+              <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-green-800 font-medium">
+                {nominees.length} nominee(s) added successfully! Total: 100%
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleContinue}
+            className="w-full bg-green-600 text-white py-3 rounded font-medium hover:bg-green-700 transition-colors"
+          >
+            Continue to Next Step
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto h-full max-h-[80vh] overflow-y-auto mt-20">
       <div className="sticky top-0 bg-white z-10 pt-0 pb-2">
@@ -177,6 +359,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               <button
                 onClick={() => handleDeleteNominee(nominee.id)}
                 className="text-gray-600 hover:text-red-600"
+                disabled={isLoading}
               >
                 <TrashIcon className="w-5 h-5" />
               </button>
@@ -233,6 +416,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                   value={currentNominee.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -247,6 +431,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                     handleInputChange("panOrAadhar", e.target.value)
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -261,6 +446,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                       handleInputChange("relationship", e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-10"
+                    disabled={isLoading}
                   >
                     <option value="">select</option>
                     {relationships.map((rel) => (
@@ -312,6 +498,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                       : remainingPercentage.toString()
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -321,11 +508,11 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
             <button
               onClick={handleAddNominee}
               disabled={
-                !isCurrentNomineeComplete || totalSharePercentage >= 100
+                !isCurrentNomineeComplete || totalSharePercentage >= 100 || isLoading
               }
               className={`flex items-center text-blue-500 hover:text-blue-600 mb-0
                 ${
-                  !isCurrentNomineeComplete || totalSharePercentage >= 100
+                  !isCurrentNomineeComplete || totalSharePercentage >= 100 || isLoading
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
@@ -362,16 +549,16 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
 
         {/* Continue Button */}
         <button
-          onClick={onNext}
-          disabled={totalSharePercentage !== 100}
+          onClick={handleContinue}
+          disabled={isButtonDisabled()}
           className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors
             ${
-              totalSharePercentage !== 100
+              isButtonDisabled()
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-teal-700"
             }`}
         >
-          Continue
+          {getButtonText()}
         </button>
       </div>
     </div>

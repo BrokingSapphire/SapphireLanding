@@ -1,20 +1,110 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NomineeManagement from "./NomineeManagement";
 import FormHeading from "./FormHeading";
+import axios from "axios";
 
 interface NomineeSelectionProps {
   onNext: () => void;
+  initialData?: any;
+  isCompleted?: boolean;
 }
 
-const NomineeSelection: React.FC<NomineeSelectionProps> = ({ onNext }) => {
+const NomineeSelection: React.FC<NomineeSelectionProps> = ({ 
+  onNext, 
+  initialData, 
+  isCompleted 
+}) => {
   const [showNomineeForm, setShowNomineeForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSkip = () => {
-    onNext();
+  // If completed, show nominees or skip message
+  useEffect(() => {
+    if (isCompleted) {
+      if (initialData?.nominees && initialData.nominees.length > 0) {
+        setShowNomineeForm(true);
+      }
+    }
+  }, [isCompleted, initialData]);
+
+  const handleSkip = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Send empty nominees array to backend
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "add_nominees",
+          nominees: []
+        },
+        {
+          withCredentials: true // Use cookies for authentication
+        }
+      );
+
+      if (!response.data) {
+        setError("Failed to skip nominees. Please try again.");
+        return;
+      }
+
+      onNext();
+    } catch (err: any) {
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Error: ${err.response.data.message}`);
+        } else if (err.response.data?.error?.message) {
+          setError(`Error: ${err.response.data.error.message}`);
+        } else if (err.response.status === 400) {
+          setError("Invalid request. Please try again.");
+        } else if (err.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 422) {
+          setError("Unable to process request. Please try again.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // If completed and skipped, show skip confirmation
+  if (isCompleted && (!initialData?.nominees || initialData.nominees.length === 0)) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <FormHeading
+          title={"Nominees Skipped"}
+          description={"You have chosen to skip adding nominees. You can add them later from your account settings."}
+        />
+
+        <div className="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-yellow-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <span className="text-yellow-800 font-medium">No nominees added</span>
+          </div>
+        </div>
+
+        <button
+          onClick={onNext}
+          className="w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors"
+        >
+          Continue to Next Step
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-2xl mx-auto ">
+    <div className="max-w-2xl mx-auto">
       {!showNomineeForm ? (
         // Initial Nominee Selection View
         <div>
@@ -25,24 +115,38 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({ onNext }) => {
             }
           />
 
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 rounded">
+              <p className="text-red-600 text-sm">{error}</p>
+            </div>
+          )}
+
           <div className="flex flex-col gap-4">
             <button
               onClick={() => setShowNomineeForm(true)}
               className="text-white py-3 px-2 rounded-md transition-all duration-300 ease-in-out bg-green-heading hover:bg-white border-2 border-green-heading hover:text-green-heading"
-               >
+              disabled={isLoading}
+            >
               Add nominee now (Recommended)
             </button>
 
             <button
               onClick={handleSkip}
-              className="w-full border border-gray-300 text-gray-700 py-3 rounded font-medium hover:bg-gray-50 transition-colors"
+              disabled={isLoading}
+              className={`w-full border border-gray-300 text-gray-700 py-3 rounded font-medium hover:bg-gray-50 transition-colors ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Skip for now
+              {isLoading ? "Skipping..." : "Skip for now"}
             </button>
           </div>
         </div>
       ) : (
-        <NomineeManagement onNext={onNext} />
+        <NomineeManagement 
+          onNext={onNext} 
+          initialData={initialData} 
+          isCompleted={isCompleted} 
+        />
       )}
     </div>
   );
