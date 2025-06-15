@@ -11,7 +11,8 @@ export enum CheckpointStep {
   PERSONAL_DETAIL = 'personal_detail',
   OTHER_DETAIL = 'other_detail',
   BANK_VALIDATION = 'bank_validation',
-  IPV = 'ipv', 
+  IPV = 'ipv',
+  SIGNATURE = 'signature', // Added SIGNATURE
   ADD_NOMINEES = 'add_nominees'
 }
 
@@ -64,7 +65,8 @@ const API_STEP_ORDER = [
   CheckpointStep.PERSONAL_DETAIL,
   CheckpointStep.OTHER_DETAIL,
   CheckpointStep.BANK_VALIDATION,
-  CheckpointStep.IPV, // Added IPV to the order
+  CheckpointStep.IPV,
+  CheckpointStep.SIGNATURE, // Added SIGNATURE to the order
   CheckpointStep.ADD_NOMINEES,
 ];
 
@@ -112,14 +114,39 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     if (!token) throw new Error('No auth token found');
 
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/${step}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+      
+      // Use specific endpoints for IPV and SIGNATURE
+      if (step === CheckpointStep.IPV) {
+        response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (step === CheckpointStep.SIGNATURE) {
+        response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        // Use the general checkpoint endpoint for other steps
+        response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/${step}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+      
       return {
         step,
         data: response.data.data,
@@ -185,8 +212,8 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     }
 
     // If all API steps are completed, continue with non-API steps
-    // For now, return to SIGNATURE step (index 10)
-    return STEP_TO_COMPONENT_INDEX[AllSteps.SIGNATURE];
+    // Go to LAST_STEP (index 12)
+    return STEP_TO_COMPONENT_INDEX[AllSteps.LAST_STEP];
   };
 
   const currentComponentStep = getCurrentStep();

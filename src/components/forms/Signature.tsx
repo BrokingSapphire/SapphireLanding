@@ -31,15 +31,27 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     }
   }, [isCompleted, isInitialized]);
 
+  // Prefill data from initialData (API response)
+  useEffect(() => {
+    if (isCompleted && initialData?.signature) {
+      // If already completed, we have the signature data
+      setIsInitialized(true);
+    }
+  }, [initialData, isCompleted]);
+
   const initializeSignature = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
+      // Use your existing checkpoint API to initialize signature
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "signature"
+        },
+        {
+          withCredentials: true
         }
       );
 
@@ -50,10 +62,22 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
         setError("Failed to initialize signature session. Please try again.");
       }
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Error: ${err.response.data.message}`);
+        } else if (err.response.data?.error?.message) {
+          setError(`Error: ${err.response.data.error.message}`);
+        } else if (err.response.status === 400) {
+          setError("Invalid request. Please try again.");
+        } else if (err.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
       } else {
-        setError("Failed to initialize signature session. Please try again.");
+        setError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -204,6 +228,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
       const formData = new FormData();
       formData.append('image', signatureFile);
 
+      // Use your existing putSignature endpoint
       await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature/${signatureUid}`,
         formData,
@@ -211,22 +236,31 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
           headers: {
             'Content-Type': 'multipart/form-data',
           },
+          withCredentials: true
         }
       );
 
       // If successful, proceed to next step
       onNext();
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Upload failed: ${err.response.data.message}`);
-      } else if (err.response?.status === 401) {
-        setError("Session expired. Please try again.");
-        // Re-initialize signature session
-        setIsInitialized(false);
-        setSignatureUid(null);
-        clearSignature();
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Upload failed: ${err.response.data.message}`);
+        } else if (err.response.status === 401) {
+          setError("Session expired. Please try again.");
+          // Re-initialize signature session
+          setIsInitialized(false);
+          setSignatureUid(null);
+          clearSignature();
+        } else if (err.response.status === 422) {
+          setError("Invalid signature format. Please try again.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
       } else {
-        setError("Failed to submit signature. Please try again.");
+        setError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -277,11 +311,12 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   }
 
   // Render QR code component if user clicks "Click Here"
-  if (showQrCode) {
+  if (showQrCode && signatureUid) {
     return (
       <SignatureQrCode
         onBack={() => setShowQrCode(false)}
         onComplete={onNext}
+        signatureUid={signatureUid}
       />
     );
   }
@@ -381,20 +416,14 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
           </button>
         </div>
 
-        {/* QR Code fallback - temporarily disabled until APIs are ready */}
-        <div className="hidden sm:block mt-4 text-center">
+        {/* QR Code option */}
+        <div className="text-center mt-4">
           <button
-            className="text-sm bg-transparent border-none cursor-pointer"
             onClick={handleQrCodeClick}
-            disabled // Temporarily disabled until QR APIs are ready
+            className="text-sm text-blue-600 hover:text-blue-800 underline"
+            disabled={!signatureUid}
           >
-            Problems with Signature?{" "}
-            <span className="text-gray-400 line-through">
-              Click Here
-            </span>
-            <span className="text-xs text-gray-500 block">
-              (QR signature coming soon)
-            </span>
+            Problems with Signature Pad? Use Mobile to Sign
           </button>
         </div>
       </div>
