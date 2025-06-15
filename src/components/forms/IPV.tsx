@@ -35,15 +35,27 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     }
   }, [isCompleted, isInitialized]);
 
+  // Prefill data from initialData (API response)
+  useEffect(() => {
+    if (isCompleted && initialData?.ipv) {
+      // If already completed, we have the IPV data
+      setIsInitialized(true);
+    }
+  }, [initialData, isCompleted]);
+
   const initializeIPV = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
+      // Use your existing checkpoint API to initialize IPV
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "ipv"
+        },
+        {
+          withCredentials: true
         }
       );
 
@@ -54,10 +66,22 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         setError("Failed to initialize IPV. Please try again.");
       }
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Error: ${err.response.data.message}`);
+        } else if (err.response.data?.error?.message) {
+          setError(`Error: ${err.response.data.error.message}`);
+        } else if (err.response.status === 400) {
+          setError("Invalid request. Please try again.");
+        } else if (err.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
       } else {
-        setError("Failed to initialize IPV. Please try again.");
+        setError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -68,7 +92,6 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     try {
       setShowCamera(true);
       setError(null);
-      // Camera will be initialized in useEffect when showCamera becomes true
     } catch (err) {
       console.error("Camera access error:", err);
       setError("Camera access failed. Please enable permissions.");
@@ -100,7 +123,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
               stream.getTracks().forEach((track) => track.stop());
             }
           }
-        }, "image/jpeg", 0.8); // 0.8 quality for better compression
+        }, "image/jpeg", 0.8);
       }
     }
   };
@@ -143,6 +166,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       const formData = new FormData();
       formData.append('image', imageFile);
 
+      // Use your existing putIpv endpoint
       await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/${ipvUid}`,
         formData,
@@ -150,21 +174,30 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
           headers: {
             'Content-Type': 'multipart/form-data',
           },
+          withCredentials: true
         }
       );
 
       // If successful, proceed to next step
       onNext();
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Upload failed: ${err.response.data.message}`);
-      } else if (err.response?.status === 401) {
-        setError("Upload session expired. Please try again.");
-        // Re-initialize IPV
-        setIsInitialized(false);
-        setIpvUid(null);
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Upload failed: ${err.response.data.message}`);
+        } else if (err.response.status === 401) {
+          setError("Upload session expired. Please try again.");
+          // Re-initialize IPV
+          setIsInitialized(false);
+          setIpvUid(null);
+        } else if (err.response.status === 422) {
+          setError("Invalid image format. Please try again.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
       } else {
-        setError("Verification failed. Please try again.");
+        setError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -259,11 +292,12 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     );
   }
 
-  if (showQrCode) {
+  if (showQrCode && ipvUid) {
     return (
       <QrCodeVerification
         onBack={() => setShowQrCode(false)}
         onComplete={onNext}
+        ipvUid={ipvUid}
       />
     );
   }
@@ -409,20 +443,14 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
           </div>
         )}
 
-        {/* QR Code fallback - will implement later when APIs are ready */}
-        <div className="hidden sm:block text-center mt-4">
+        {/* QR Code option */}
+        <div className="text-center mt-4">
           <button
             onClick={() => setShowQrCode(true)}
-            className="text-sm bg-transparent border-none cursor-pointer"
-            disabled // Temporarily disabled until QR APIs are ready
+            className="text-sm text-blue-600 hover:text-blue-800 underline"
+            disabled={!ipvUid}
           >
-            Problems with Webcam?{" "}
-            <span className="text-gray-400 line-through">
-              Click Here
-            </span>
-            <span className="text-xs text-gray-500 block">
-              (QR verification coming soon)
-            </span>
+            Problems with Webcam? Use Mobile Camera
           </button>
         </div>
       </div>

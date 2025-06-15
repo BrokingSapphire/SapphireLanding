@@ -11,6 +11,7 @@ export enum CheckpointStep {
   PERSONAL_DETAIL = 'personal_detail',
   OTHER_DETAIL = 'other_detail',
   BANK_VALIDATION = 'bank_validation',
+  IPV = 'ipv', 
   ADD_NOMINEES = 'add_nominees'
 }
 
@@ -63,28 +64,9 @@ const API_STEP_ORDER = [
   CheckpointStep.PERSONAL_DETAIL,
   CheckpointStep.OTHER_DETAIL,
   CheckpointStep.BANK_VALIDATION,
+  CheckpointStep.IPV, // Added IPV to the order
   CheckpointStep.ADD_NOMINEES,
 ];
-
-// Complete step order for determining current step
-// const COMPLETE_STEP_ORDER = [
-//   AllSteps.EMAIL,
-//   AllSteps.MOBILE,
-//   AllSteps.PAN,
-//   AllSteps.AADHAAR,
-//   AllSteps.INVESTMENT_SEGMENT,
-//   AllSteps.USER_DETAIL,
-//   AllSteps.PERSONAL_DETAIL,
-//   AllSteps.OTHER_DETAIL,
-//   AllSteps.BANK_VALIDATION,
-//   AllSteps.IPV,
-//   AllSteps.SIGNATURE,
-//   AllSteps.ADD_NOMINEES,
-//   AllSteps.LAST_STEP,
-//   AllSteps.MPIN,
-//   AllSteps.SET_PASSWORD,
-//   AllSteps.CONGRATULATIONS,
-// ];
 
 interface CheckpointData {
   step: CheckpointStep;
@@ -203,8 +185,8 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     }
 
     // If all API steps are completed, continue with non-API steps
-    // For now, return to IPV step (index 9)
-    return STEP_TO_COMPONENT_INDEX[AllSteps.IPV];
+    // For now, return to SIGNATURE step (index 10)
+    return STEP_TO_COMPONENT_INDEX[AllSteps.SIGNATURE];
   };
 
   const currentComponentStep = getCurrentStep();

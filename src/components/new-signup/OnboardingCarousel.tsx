@@ -179,7 +179,16 @@ const OnboardingCarousel = () => {
         />
       ),
     },
-    { id: "ipv", component: <IPVVerification onNext={handleNext} /> },
+    { 
+      id: "ipv", 
+      component: (
+        <IPVVerification 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.IPV)}
+          isCompleted={isStepCompleted(CheckpointStep.IPV)}
+        />
+      )
+    },
     { id: "signature", component: <SignatureComponent onNext={handleNext} /> },
     { 
       id: "nominee", 
