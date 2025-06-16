@@ -9,7 +9,7 @@ import PANVerify from "../forms/PANVerify";
 import TradingAccountDetails2 from "../forms/TradingAccountDetails2";
 import IPVVerification from "../forms/IPV";
 import NomineeSelection from "../forms/NomineeSelection";
-import LastStepPage from "../forms/LastStepPage";
+import LastStepPage from "../forms/ESign";
 import CongratulationsPage from "../forms/Congratulations";
 import InvestmentSegment from "../forms/InvestmentSegment.tsx";
 import TradingPreferences from "../forms/TradingPreferences";
@@ -17,14 +17,15 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import BankAccountLinking from "../forms/BankAccountLinking";
 import SignatureComponent from "../forms/Signature";
 import MPIN from "../forms/MPIN";
-import AadhaarPANMismatch from "../forms/AadhaarPANMismatch";
 import { useCheckpoint, CheckpointStep } from "@/hooks/useCheckpoint";
+import SetPassword from "../forms/SetPassword";
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [clientId, setClientId] = useState<string | undefined>(undefined);
 
   // Use checkpoint hook to manage state
   const { 
@@ -35,7 +36,8 @@ const OnboardingCarousel = () => {
     getStepData,
     isStepCompleted,
     isEmailCompleted,
-    isMobileCompleted 
+    isMobileCompleted,
+    getClientId // Add this
   } = useCheckpoint();
 
   const TOTAL_STEPS = 16;
@@ -45,9 +47,17 @@ const OnboardingCarousel = () => {
     if (!checkpointLoading && !isInitialized) {
       console.log('Resuming from step:', resumeStep);
       setCurrentStep(resumeStep);
+      
+      // Initialize clientId from checkpoint data if available
+      const existingClientId = getClientId();
+      if (existingClientId) {
+        setClientId(existingClientId);
+        console.log('Found existing client ID:', existingClientId);
+      }
+      
       setIsInitialized(true);
     }
-  }, [checkpointLoading, resumeStep, isInitialized]);
+  }, [checkpointLoading, resumeStep, isInitialized, getClientId]);
 
   const handleNext = useCallback(() => {
     if (isAnimating) return;
@@ -93,7 +103,7 @@ const OnboardingCarousel = () => {
       component: (
         <EmailVerification 
           onNext={handleNext} 
-          initialData={null} // Email doesn't have API data
+          initialData={null}
           isCompleted={isEmailCompleted()}
         />
       )
@@ -103,7 +113,7 @@ const OnboardingCarousel = () => {
       component: (
         <MobileVerification 
           onNext={handleNext}
-          initialData={null} // Mobile doesn't have API data
+          initialData={null}
           isCompleted={isMobileCompleted()}
         />
       )
@@ -189,7 +199,16 @@ const OnboardingCarousel = () => {
         />
       )
     },
-    { id: "signature", component: <SignatureComponent onNext={handleNext} /> },
+    { 
+      id: "signature", 
+      component: (
+        <SignatureComponent 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.SIGNATURE)}
+          isCompleted={isStepCompleted(CheckpointStep.SIGNATURE)}
+        />
+      )
+    },
     { 
       id: "nominee", 
       component: (
@@ -200,12 +219,53 @@ const OnboardingCarousel = () => {
         />
       )
     },
-    { id: "Last Step", component: <LastStepPage onNext={handleNext} /> },
-    { id: "MPIN", component: <MPIN onNext={handleNext} /> },
-    { id: "Set Password ", component: <AadhaarPANMismatch onNext={handleNext} /> },
+    {
+      id: "Last Step", 
+      component: (
+        <LastStepPage 
+          onNext={handleNext}
+          initialData={getStepData(CheckpointStep.ESIGN)}
+          isCompleted={isStepCompleted(CheckpointStep.ESIGN)}
+        />
+      )
+    },
+    { 
+      id: "Set Password", 
+      component: (
+        <SetPassword 
+          onNext={(newClientId) => {
+            console.log('SetPassword completed with client ID:', newClientId);
+            setClientId(newClientId);
+            handleNext();
+          }}
+          initialData={getStepData(CheckpointStep.PASSWORD_SETUP)}
+          isCompleted={isStepCompleted(CheckpointStep.PASSWORD_SETUP)}
+        />
+      )
+    },
+    { 
+      id: "MPIN", 
+      component: (
+        <MPIN 
+          onNext={(passedClientId) => {
+            console.log('MPIN completed with client ID:', passedClientId);
+            setClientId(passedClientId);
+            handleNext();
+          }}
+          clientId={clientId}
+          initialData={getStepData(CheckpointStep.MPIN_SETUP)}
+          isCompleted={isStepCompleted(CheckpointStep.MPIN_SETUP)}
+        />
+      )
+    },
     {
       id: "congratulations",
-      component: <CongratulationsPage onNext={handleNext} />,
+      component: (
+        <CongratulationsPage 
+          onNext={handleNext}
+          clientId={clientId}
+        />
+      ),
     },
   ];
 

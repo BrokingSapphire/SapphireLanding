@@ -3,19 +3,19 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 
-interface DigiLockerVerificationProps {
+interface AadhaarVerificationProps {
   onNext: () => void;
   initialData?: any;
   isCompleted?: boolean;
   panMaskedAadhaar?: string; // Masked Aadhaar from PAN verification
 }
 
-const DigiLockerVerification = ({ 
+const AadhaarVerification = ({ 
   onNext, 
   initialData, 
   isCompleted, 
   panMaskedAadhaar 
-}: DigiLockerVerificationProps) => {
+}: AadhaarVerificationProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'verifying' | 'completed' | 'mismatch'>('initial');
@@ -24,21 +24,20 @@ const DigiLockerVerification = ({
   
   // Aadhaar mismatch form state
   const [mismatchFormData, setMismatchFormData] = useState({
-    fullName: '',
-    fatherName: '',
-    dateOfBirth: '',
-    gender: '',
-    address: '',
-    pincode: ''
+    full_name: '',
+    dob: ''
   });
   const [isSubmittingMismatch, setIsSubmittingMismatch] = useState(false);
+  const [mismatchInfo, setMismatchInfo] = useState<{
+    pan_masked_aadhaar?: string;
+    digilocker_masked_aadhaar?: string;
+    requires_manual_review?: boolean;
+  }>({});
 
-  // REMOVED: Auto-advance logic when completed
-  // Set completed state but don't automatically advance
+  // Set completed state if already completed
   useEffect(() => {
     if (isCompleted) {
       setCurrentStep('completed');
-      // REMOVED: Auto-advance timer
     }
   }, [isCompleted]);
 
@@ -61,7 +60,10 @@ const DigiLockerVerification = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "aadhaar_uri",
-          redirect: "https://sapphirebroking.com/signup"
+          redirect: "http://localhost:3000/signup"
+        },
+        {
+          withCredentials: true
         }
       );
 
@@ -123,6 +125,9 @@ const DigiLockerVerification = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "aadhaar"
+        },
+        {
+          withCredentials: true
         }
       );
 
@@ -133,25 +138,21 @@ const DigiLockerVerification = ({
       }
 
       // Check for Aadhaar mismatch
-      const digilockerMaskedAadhaar = response.data?.data?.masked_aadhaar;
-      
-      if (panMaskedAadhaar && digilockerMaskedAadhaar && panMaskedAadhaar !== digilockerMaskedAadhaar) {
-        // Aadhaar mismatch detected
-        setCurrentStep('mismatch');
-        return;
-      }
-
       if (response.data?.data?.requires_additional_verification) {
-        // Handle other verification requirements
-        setError("Aadhaar verification requires additional details.");
-        setCurrentStep('initial');
+        setMismatchInfo({
+          pan_masked_aadhaar: response.data.data.pan_masked_aadhaar,
+          digilocker_masked_aadhaar: response.data.data.digilocker_masked_aadhaar
+        });
+        setCurrentStep('mismatch');
         return;
       }
 
       setCurrentStep('completed');
       
-      // REMOVED: Auto-advance timer
-      // Wait for user to manually click continue
+      // Auto-advance after 3 seconds
+      setTimeout(() => {
+        onNext();
+      }, 3000);
 
     } catch (err: any) {
       if (err.response?.status === 401) {
@@ -187,13 +188,25 @@ const DigiLockerVerification = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "aadhaar_mismatch_details",
-          ...mismatchFormData
+          full_name: mismatchFormData.full_name,
+          dob: mismatchFormData.dob
+        },
+        {
+          withCredentials: true
         }
       );
 
-      if (response.data?.success) {
+      if (response.data?.message) {
+        setMismatchInfo(prev => ({
+          ...prev,
+          requires_manual_review: response.data.data?.requires_manual_review
+        }));
         setCurrentStep('completed');
-        // REMOVED: Auto-advance timer
+        
+        // Auto-advance after 3 seconds
+        setTimeout(() => {
+          onNext();
+        }, 3000);
       } else {
         setError("Failed to submit additional details. Please try again.");
       }
@@ -234,7 +247,7 @@ const DigiLockerVerification = ({
       case 'verifying':
         return "Verifying Aadhaar...";
       case 'completed':
-        return "Continue"; // Changed from "Verified ✓"
+        return "Continue";
       case 'mismatch':
         return "Submit Additional Details";
       default:
@@ -271,10 +284,15 @@ const DigiLockerVerification = ({
             </svg>
             <div>
               <h3 className="font-semibold text-yellow-800 mb-1">Aadhaar Mismatch Detected</h3>
-              <p className="text-yellow-700 text-sm">
-                The Aadhaar number linked to your PAN doesn't match the one from DigiLocker verification. 
-                Please provide the correct details below to proceed.
+              <p className="text-yellow-700 text-sm mb-2">
+                The Aadhaar number linked to your PAN doesn't match the one from DigiLocker verification.
               </p>
+              {mismatchInfo.pan_masked_aadhaar && mismatchInfo.digilocker_masked_aadhaar && (
+                <div className="text-sm text-yellow-700">
+                  <p>PAN Linked Aadhaar: {mismatchInfo.pan_masked_aadhaar}</p>
+                  <p>DigiLocker Aadhaar: {mismatchInfo.digilocker_masked_aadhaar}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -287,84 +305,23 @@ const DigiLockerVerification = ({
             <input
               type="text"
               required
-              value={mismatchFormData.fullName}
-              onChange={(e) => handleInputChange('fullName', e.target.value)}
+              value={mismatchFormData.full_name}
+              onChange={(e) => handleInputChange('full_name', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your full name"
+              placeholder="Enter your full name as per Aadhaar"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Father's Name *
-            </label>
-            <input
-              type="text"
-              required
-              value={mismatchFormData.fatherName}
-              onChange={(e) => handleInputChange('fatherName', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter father's name"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date of Birth *
+              Date of Birth (as per Aadhaar) *
             </label>
             <input
               type="date"
               required
-              value={mismatchFormData.dateOfBirth}
-              onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+              value={mismatchFormData.dob}
+              onChange={(e) => handleInputChange('dob', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender *
-            </label>
-            <select
-              required
-              value={mismatchFormData.gender}
-              onChange={(e) => handleInputChange('gender', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Address (as per Aadhaar) *
-            </label>
-            <textarea
-              required
-              value={mismatchFormData.address}
-              onChange={(e) => handleInputChange('address', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter complete address"
-              rows={3}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Pincode *
-            </label>
-            <input
-              type="text"
-              required
-              pattern="[0-9]{6}"
-              value={mismatchFormData.pincode}
-              onChange={(e) => handleInputChange('pincode', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter 6-digit pincode"
-              maxLength={6}
             />
           </div>
 
@@ -391,21 +348,45 @@ const DigiLockerVerification = ({
     );
   }
 
-  // Show completed state - but don't auto-advance
+  // Show completed state
   if (currentStep === 'completed') {
     return (
       <div className="mx-auto pt-20">
         <FormHeading
           title={"Aadhaar Verified Successfully!"}
-          description={"Your DigiLocker verification is complete. Click continue to proceed."}
+          description={
+            mismatchInfo.requires_manual_review 
+              ? "Your verification is complete but requires manual review due to name verification."
+              : "Your DigiLocker verification is complete."
+          }
         />
 
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+        <div className={`mb-6 p-4 rounded-lg border ${
+          mismatchInfo.requires_manual_review 
+            ? 'bg-yellow-50 border-yellow-200'
+            : 'bg-green-50 border-green-200'
+        }`}>
           <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-6 h-6 mr-3 ${
+              mismatchInfo.requires_manual_review ? 'text-yellow-600' : 'text-green-600'
+            }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span className="text-green-800 font-medium">Aadhaar verified successfully via DigiLocker!</span>
+            <div>
+              <span className={`font-medium ${
+                mismatchInfo.requires_manual_review ? 'text-yellow-800' : 'text-green-800'
+              }`}>
+                {mismatchInfo.requires_manual_review 
+                  ? 'Aadhaar verified - Manual review required'
+                  : 'Aadhaar verified successfully via DigiLocker!'
+                }
+              </span>
+              {mismatchInfo.requires_manual_review && (
+                <p className="text-yellow-700 text-sm mt-1">
+                  Your application will be reviewed manually due to name verification requirements.
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -560,4 +541,4 @@ const DigiLockerVerification = ({
   );
 };
 
-export default DigiLockerVerification;
+export default AadhaarVerification;
