@@ -12,8 +12,11 @@ export enum CheckpointStep {
   OTHER_DETAIL = 'other_detail',
   BANK_VALIDATION = 'bank_validation',
   IPV = 'ipv',
-  SIGNATURE = 'signature', // Added SIGNATURE
-  ADD_NOMINEES = 'add_nominees'
+  SIGNATURE = 'signature',
+  ADD_NOMINEES = 'add_nominees',
+  ESIGN = 'esign',
+  PASSWORD_SETUP = 'password_setup', // Added
+  MPIN_SETUP = 'mpin_setup' // Added
 }
 
 // All steps in your flow (including non-API steps)
@@ -30,9 +33,9 @@ export enum AllSteps {
   IPV = 'ipv',
   SIGNATURE = 'signature',
   ADD_NOMINEES = 'add_nominees',
-  LAST_STEP = 'last_step',
-  MPIN = 'mpin',
+  LAST_STEP = 'last_step', // This is where eSign happens
   SET_PASSWORD = 'set_password',
+  MPIN = 'mpin',
   CONGRATULATIONS = 'congratulations'
 }
 
@@ -50,9 +53,9 @@ export const STEP_TO_COMPONENT_INDEX = {
   [AllSteps.IPV]: 9,
   [AllSteps.SIGNATURE]: 10,
   [AllSteps.ADD_NOMINEES]: 11,
-  [AllSteps.LAST_STEP]: 12,
-  [AllSteps.MPIN]: 13,
-  [AllSteps.SET_PASSWORD]: 14,
+  [AllSteps.LAST_STEP]: 12, // eSign happens here
+  [AllSteps.SET_PASSWORD]: 13, // Password setup
+  [AllSteps.MPIN]: 14, // MPIN setup
   [AllSteps.CONGRATULATIONS]: 15,
 } as const;
 
@@ -66,8 +69,11 @@ const API_STEP_ORDER = [
   CheckpointStep.OTHER_DETAIL,
   CheckpointStep.BANK_VALIDATION,
   CheckpointStep.IPV,
-  CheckpointStep.SIGNATURE, // Added SIGNATURE to the order
+  CheckpointStep.SIGNATURE,
   CheckpointStep.ADD_NOMINEES,
+  CheckpointStep.ESIGN,
+  CheckpointStep.PASSWORD_SETUP, // Added
+  CheckpointStep.MPIN_SETUP, // Added
 ];
 
 interface CheckpointData {
@@ -87,6 +93,7 @@ interface UseCheckpointReturn {
   isStepCompleted: (step: CheckpointStep) => boolean;
   isEmailCompleted: () => boolean;
   isMobileCompleted: () => boolean;
+  getClientId: () => string | null; // Added to get client ID
 }
 
 // Custom hook to manage checkpoint data
@@ -108,6 +115,31 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     return !!getAuthToken();
   };
 
+  // Get client ID from any completed checkpoint that has it
+  const getClientId = (): string | null => {
+    // Try to get from PASSWORD_SETUP first (most likely to have it)
+    const passwordData = checkpointData[CheckpointStep.PASSWORD_SETUP];
+    if (passwordData?.data?.client_id) {
+      return passwordData.data.client_id;
+    }
+    
+    // Try MPIN_SETUP
+    const mpinData = checkpointData[CheckpointStep.MPIN_SETUP];
+    if (mpinData?.data?.client_id) {
+      return mpinData.data.client_id;
+    }
+    
+    // Try other steps that might have client_id
+    for (const step of API_STEP_ORDER) {
+      const stepData = checkpointData[step];
+      if (stepData?.data?.client_id) {
+        return stepData.data.client_id;
+      }
+    }
+    
+    return null;
+  };
+
   // Function to fetch specific checkpoint step
   const fetchCheckpointStep = async (step: CheckpointStep): Promise<CheckpointData> => {
     const token = getAuthToken();
@@ -116,7 +148,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     try {
       let response;
       
-      // Use specific endpoints for IPV and SIGNATURE
+      // Use specific endpoints for IPV, SIGNATURE, and ESIGN
       if (step === CheckpointStep.IPV) {
         response = await axios.get(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv`,
@@ -129,6 +161,41 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       } else if (step === CheckpointStep.SIGNATURE) {
         response = await axios.get(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (step === CheckpointStep.ESIGN) {
+        // For eSign, we need to check if esign field exists in checkpoint
+        response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        
+        // Check if esign field exists and is not null
+        if (response.data?.data?.esign) {
+          return {
+            step,
+            data: { esign: response.data.data.esign },
+            completed: true,
+          };
+        } else {
+          return {
+            step,
+            data: null,
+            completed: false,
+          };
+        }
+      } else if (step === CheckpointStep.PASSWORD_SETUP || step === CheckpointStep.MPIN_SETUP) {
+        // Use the checkpoint endpoint for password and MPIN setup
+        response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/${step}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -203,17 +270,48 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       return STEP_TO_COMPONENT_INDEX[AllSteps.MOBILE];
     }
 
-    // Check API-backed steps
-    for (const step of API_STEP_ORDER) {
+    // Check API-backed steps up to but not including ESIGN, PASSWORD_SETUP, MPIN_SETUP
+    const preEsignSteps = [
+      CheckpointStep.PAN,
+      CheckpointStep.AADHAAR,
+      CheckpointStep.INVESTMENT_SEGMENT,
+      CheckpointStep.USER_DETAIL,
+      CheckpointStep.PERSONAL_DETAIL,
+      CheckpointStep.OTHER_DETAIL,
+      CheckpointStep.BANK_VALIDATION,
+      CheckpointStep.IPV,
+      CheckpointStep.SIGNATURE,
+      CheckpointStep.ADD_NOMINEES,
+    ];
+    
+    for (const step of preEsignSteps) {
       const stepData = checkpointData[step];
       if (!stepData?.completed) {
         return STEP_TO_COMPONENT_INDEX[step as unknown as AllSteps];
       }
     }
 
-    // If all API steps are completed, continue with non-API steps
-    // Go to LAST_STEP (index 12)
-    return STEP_TO_COMPONENT_INDEX[AllSteps.LAST_STEP];
+    // If all pre-eSign steps are completed, check eSign
+    const esignData = checkpointData[CheckpointStep.ESIGN];
+    if (!esignData?.completed) {
+      // eSign happens in LAST_STEP component
+      return STEP_TO_COMPONENT_INDEX[AllSteps.LAST_STEP];
+    }
+
+    // If eSign is completed, check password setup
+    const passwordData = checkpointData[CheckpointStep.PASSWORD_SETUP];
+    if (!passwordData?.completed) {
+      return STEP_TO_COMPONENT_INDEX[AllSteps.SET_PASSWORD];
+    }
+
+    // If password is completed, check MPIN setup
+    const mpinData = checkpointData[CheckpointStep.MPIN_SETUP];
+    if (!mpinData?.completed) {
+      return STEP_TO_COMPONENT_INDEX[AllSteps.MPIN];
+    }
+
+    // If everything is completed, go to congratulations
+    return STEP_TO_COMPONENT_INDEX[AllSteps.CONGRATULATIONS];
   };
 
   const currentComponentStep = getCurrentStep();
@@ -235,6 +333,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     isStepCompleted: (step: CheckpointStep) => checkpointData[step]?.completed || false,
     isEmailCompleted,
     isMobileCompleted,
+    getClientId, // Added this function
   };
 };
 

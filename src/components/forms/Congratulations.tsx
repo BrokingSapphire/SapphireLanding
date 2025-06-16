@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../ui/button';
+import { Copy, Check } from 'lucide-react';
 import Link from 'next/link';
 // import Image from 'next/image';
 
@@ -9,8 +10,36 @@ interface CongratulationsPageProps {
 }
 
 const CongratulationsPage: React.FC<CongratulationsPageProps> = ({ 
+  onNext,
   clientId = 'DEFAULT' // Default client ID if none provided
 }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyClientId = async () => {
+    if (clientId) {
+      try {
+        await navigator.clipboard.writeText(clientId);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy client ID:', err);
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = clientId;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        } catch (fallbackErr) {
+          console.error('Fallback copy failed:', fallbackErr);
+        }
+        document.body.removeChild(textArea);
+      }
+    }
+  };
+
   return (
     <div className="w-full mx-auto text-center text-xl">
       <div className="mb-8">
@@ -32,15 +61,33 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
 
       <div className="mb-8">
         <p className="text-gray-600 mb-2">Your Client ID is</p>
-        <div className="inline-block border border-gray-300 rounded px-4 py-2">
-          {clientId}
+        <div className="inline-flex items-center border border-gray-300 rounded px-4 py-2">
+          <span className="font-mono font-semibold select-all mr-2">
+            {clientId}
+          </span>
+          <button
+            onClick={handleCopyClientId}
+            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            title="Copy Client ID"
+          >
+            {copied ? (
+              <Check className="w-4 h-4 text-green-600" />
+            ) : (
+              <Copy className="w-4 h-4 text-gray-600" />
+            )}
+          </button>
         </div>
+        {copied && (
+          <p className="text-sm text-green-600 mt-2">
+            ✓ Client ID copied to clipboard!
+          </p>
+        )}
       </div>
 
-      <Link href={"https://terminal.sapphirebroking.com"}>
-      <Button variant={"ghost"}  className="py-6">
-        Login to Terminal
-      </Button>
+      <Link href="https://terminal.sapphirebroking.com" target="_blank" rel="noopener noreferrer">
+        <Button variant="ghost" className="py-6">
+          Login to Terminal
+        </Button>
       </Link>
     </div>
   );

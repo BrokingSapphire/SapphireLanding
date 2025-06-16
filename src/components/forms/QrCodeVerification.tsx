@@ -23,7 +23,7 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
   
   // QR code points to sapphirebroking.com with UUID as parameter
   const qrCodeUrl = `https://sapphirebroking.com/qr-ipv?uid=${ipvUid}`;
-  
+    
   // Generate QR code when component mounts
   useEffect(() => {
     const generateQR = async () => {

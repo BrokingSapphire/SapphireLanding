@@ -1,177 +1,335 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
-import { Check, Eye, EyeOff } from "lucide-react";
 import FormHeading from "./FormHeading";
+import axios from "axios";
 
-interface MPINSetupProps {
-  onNext: () => void;
+interface MPINProps {
+  onNext: (clientId: string) => void;
+  clientId?: string;
+  initialData?: any;
+  isCompleted?: boolean;
 }
 
-const MPINSetup: React.FC<MPINSetupProps> = ({ onNext }) => {
-  const [mpin, setMpin] = useState("");
-  const [confirmMpin, setConfirmMpin] = useState("");
-  const [isChecked, setIsChecked] = useState(true);
-  const [showMpin, setShowMpin] = useState(false);
-  const [showConfirmMpin, setShowConfirmMpin] = useState(false);
-  const [errors, setErrors] = useState<{mpin?: string, confirmMpin?: string}>({});
+const MPIN: React.FC<MPINProps> = ({ 
+  onNext, 
+  clientId, 
+  initialData, 
+  isCompleted 
+}) => {
+  const [mpin, setMpin] = useState(["", "", "", ""]);
+  const [confirmMpin, setConfirmMpin] = useState(["", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [step, setStep] = useState<'enter' | 'confirm'>('enter');
 
-  const handleMpinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ''); // Only allow digits
-    if (value.length <= 6) {
-      setMpin(value);
-      setErrors(prev => ({ ...prev, mpin: undefined }));
+  const mpinRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const confirmMpinRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Prefill data from initialData (API response)
+  useEffect(() => {
+    if (isCompleted && initialData?.mpin_already_set) {
+      // If MPIN is already set, proceed immediately
+      if (clientId) {
+        onNext(clientId);
+      }
+    }
+  }, [initialData, isCompleted, clientId, onNext]);
+
+  const handleMpinChange = (index: number, value: string) => {
+    if (value.length > 1) return; // Only allow single digit
+    if (!/^\d*$/.test(value)) return; // Only allow numbers
+
+    const newMpin = [...mpin];
+    newMpin[index] = value;
+    setMpin(newMpin);
+    setError(null);
+
+    // Auto-focus next input
+    if (value && index < 3) {
+      mpinRefs.current[index + 1]?.focus();
+    }
+
+    // Move to confirm step when all 4 digits are entered
+    if (newMpin.every(digit => digit !== "") && step === 'enter') {
+      setStep('confirm');
+      setTimeout(() => {
+        confirmMpinRefs.current[0]?.focus();
+      }, 100);
     }
   };
 
-  const handleConfirmMpinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ''); // Only allow digits
-    if (value.length <= 6) {
-      setConfirmMpin(value);
-      setErrors(prev => ({ ...prev, confirmMpin: undefined }));
+  const handleConfirmMpinChange = (index: number, value: string) => {
+    if (value.length > 1) return; // Only allow single digit
+    if (!/^\d*$/.test(value)) return; // Only allow numbers
+
+    const newConfirmMpin = [...confirmMpin];
+    newConfirmMpin[index] = value;
+    setConfirmMpin(newConfirmMpin);
+    setError(null);
+
+    // Auto-focus next input
+    if (value && index < 3) {
+      confirmMpinRefs.current[index + 1]?.focus();
     }
   };
 
-  const validateForm = () => {
-    const newErrors: {mpin?: string, confirmMpin?: string} = {};
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number,
+    isConfirm: boolean = false
+  ) => {
+    if (e.key === "Backspace") {
+      const currentMpin = isConfirm ? confirmMpin : mpin;
+      const setCurrentMpin = isConfirm ? setConfirmMpin : setMpin;
+      const refs = isConfirm ? confirmMpinRefs : mpinRefs;
 
-    if (!mpin) {
-      newErrors.mpin = "MPIN is required";
-    } else if (mpin.length !== 6) {
-      newErrors.mpin = "MPIN must be 6 digits";
+      if (!currentMpin[index] && index > 0) {
+        // Move to previous input if current is empty
+        refs.current[index - 1]?.focus();
+      } else {
+        // Clear current input
+        const newMpin = [...currentMpin];
+        newMpin[index] = "";
+        setCurrentMpin(newMpin);
+      }
     }
-
-    if (!confirmMpin) {
-      newErrors.confirmMpin = "Please confirm your MPIN";
-    } else if (mpin !== confirmMpin) {
-      newErrors.confirmMpin = "MPIN does not match";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    if (!clientId) {
+      setError("Client ID not found. Please restart the process.");
+      return;
+    }
+
+    const mpinString = mpin.join("");
+    const confirmMpinString = confirmMpin.join("");
+
+    if (mpinString.length !== 4) {
+      setError("Please enter a 4-digit MPIN");
+      return;
+    }
+
+    if (confirmMpinString.length !== 4) {
+      setError("Please confirm your 4-digit MPIN");
+      return;
+    }
+
+    if (mpinString !== confirmMpinString) {
+      setError("MPIN and confirmation don't match. Please try again.");
+      setStep('enter');
+      setMpin(["", "", "", ""]);
+      setConfirmMpin(["", "", "", ""]);
+      setTimeout(() => {
+        mpinRefs.current[0]?.focus();
+      }, 100);
+      return;
+    }
+
+    if (isCompleted) {
+      onNext(clientId);
+      return;
+    }
 
     setIsLoading(true);
-    
-    try {
-      const response = await fetch('http://13.202.238.76:3000/api/v1/auth/signup/mpin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // Adjust based on how you store the token
-        },
-        body: JSON.stringify({
-          step: "MPIN",
-          mpin: mpin
-        })
-      });
+    setError(null);
 
-      if (response.ok) {
-        onNext();
+    try {
+      // Set MPIN using checkpoint API
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "mpin_setup",
+          mpin: mpinString,
+          confirm_mpin: confirmMpinString
+        },
+        {
+          withCredentials: true
+        }
+      );
+
+      // If successful, proceed to next step with client ID
+      onNext(clientId);
+    } catch (err: any) {
+      if (err.response) {
+        if (err.response.data?.message) {
+          setError(`Error: ${err.response.data.message}`);
+        } else if (err.response.data?.error?.message) {
+          setError(`Error: ${err.response.data.error.message}`);
+        } else if (err.response.status === 400) {
+          setError("Invalid MPIN. Please try again.");
+        } else if (err.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 403) {
+          setError("Please set password first.");
+        } else if (err.response.status === 422) {
+          setError("MPIN validation failed. Please try again.");
+        } else {
+          setError(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        setError("Network error. Please check your connection and try again.");
       } else {
-        const errorData = await response.json();
-        setErrors({ mpin: errorData.message || 'Failed to set MPIN' });
+        setError("An unexpected error occurred. Please try again.");
       }
-    } catch (error) {
-      setErrors({ mpin: 'Network error. Please try again.' });
-      console.log("Error setting MPIN:", error);
+
+      // Reset form on error
+      setStep('enter');
+      setMpin(["", "", "", ""]);
+      setConfirmMpin(["", "", "", ""]);
+      setTimeout(() => {
+        mpinRefs.current[0]?.focus();
+      }, 100);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleReset = () => {
+    setStep('enter');
+    setMpin(["", "", "", ""]);
+    setConfirmMpin(["", "", "", ""]);
+    setError(null);
+    setTimeout(() => {
+      mpinRefs.current[0]?.focus();
+    }, 100);
+  };
+
+  const isComplete = () => {
+    return mpin.every(digit => digit !== "") && confirmMpin.every(digit => digit !== "");
+  };
+
+  // Show completed state
+  if (isCompleted) {
+    return (
+      <div className="mx-auto mt-16 max-w-md">
+        <FormHeading
+          title="MPIN Set Successfully!"
+          description="Your 4-digit MPIN has been configured for secure transactions."
+        />
+
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <div>
+              <h3 className="text-green-800 font-medium">MPIN Set Successfully!</h3>
+              <p className="text-green-700 text-sm">Your account is now ready for trading.</p>
+            </div>
+          </div>
+        </div>
+
+        <Button
+          onClick={() => clientId && onNext(clientId)}
+          variant="ghost"
+          className="w-full py-6"
+        >
+          Complete Setup
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto p-4 mt-10">
+    <div className="mx-auto mt-16 max-w-md">
       <FormHeading
-        title="Set up your MPIN"
-        description="Create a secure 6-digit MPIN for quick access to your account."
+        title={step === 'enter' ? "Set Your MPIN" : "Confirm Your MPIN"}
+        description={
+          step === 'enter' 
+            ? "Create a 4-digit MPIN for secure transactions"
+            : "Re-enter your 4-digit MPIN to confirm"
+        }
       />
 
-      <div className="space-y-4 mb-6">
-        <div className="space-y-2">
-          <label htmlFor="mpin" className="block text-sm font-medium">
-            Enter 6-digit MPIN*
+      {clientId && (
+        <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-200">
+          <p className="text-blue-700 text-sm">
+            <strong>Client ID:</strong> {clientId}
+          </p>
+        </div>
+      )}
+
+      <div className="space-y-6">
+        {/* MPIN Input */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-4 text-center">
+            {step === 'enter' ? "Enter 4-digit MPIN" : "Confirm 4-digit MPIN"}
           </label>
-          <div className="relative">
-            <input
-              type={showMpin ? "text" : "password"}
-              id="mpin"
-              value={mpin}
-              onChange={handleMpinChange}
-              className={`w-full p-3 border rounded-lg text-left text-sm tracking-widest ${
-                errors.mpin ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Enter 6-digit MPIN"
-              maxLength={6}
-            />
-            <button
-              type="button"
-              onClick={() => setShowMpin(!showMpin)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-            >
-              {showMpin ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
+          <div className="flex justify-center space-x-4">
+            {(step === 'enter' ? mpin : confirmMpin).map((digit, index) => (
+              <input
+                key={`${step}-${index}`}
+                ref={(el) => {
+                  if (step === 'enter') {
+                    mpinRefs.current[index] = el;
+                  } else {
+                    confirmMpinRefs.current[index] = el;
+                  }
+                }}
+                type="password"
+                value={digit}
+                onChange={(e) => 
+                  step === 'enter' 
+                    ? handleMpinChange(index, e.target.value)
+                    : handleConfirmMpinChange(index, e.target.value)
+                }
+                onKeyDown={(e) => handleKeyDown(e, index, step === 'confirm')}
+                className="w-12 h-12 text-center text-xl font-semibold border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                maxLength={1}
+                disabled={isLoading}
+              />
+            ))}
           </div>
-          {errors.mpin && (
-            <p className="text-xs text-red-500">{errors.mpin}</p>
+        </div>
+
+        {/* Progress indicator */}
+        <div className="flex justify-center space-x-2">
+          <div className={`w-3 h-3 rounded-full ${step === 'enter' ? 'bg-teal-600' : 'bg-green-500'}`} />
+          <div className={`w-3 h-3 rounded-full ${step === 'confirm' ? 'bg-teal-600' : 'bg-gray-300'}`} />
+        </div>
+
+        {error && (
+          <div className="p-3 bg-red-50 rounded border border-red-200">
+            <p className="text-red-600 text-sm text-center">{error}</p>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="space-y-3">
+          {step === 'confirm' && (
+            <Button
+              onClick={handleSubmit}
+              disabled={!isComplete() || isLoading}
+              variant="ghost"
+              className={`w-full py-6 ${
+                (!isComplete() || isLoading) ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {isLoading ? "Setting MPIN..." : "Confirm MPIN"}
+            </Button>
+          )}
+
+          {step === 'confirm' && (
+            <Button
+              onClick={handleReset}
+              variant="outline"
+              className="w-full py-3"
+              disabled={isLoading}
+            >
+              Start Over
+            </Button>
           )}
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="confirmMpin" className="block text-sm font-medium">
-            Confirm MPIN*
-          </label>
-          <div className="relative">
-            <input
-              type={showConfirmMpin ? "text" : "password"}
-              id="confirmMpin"
-              value={confirmMpin}
-              onChange={handleConfirmMpinChange}
-              className={`w-full p-3 border rounded-lg text-left text-sm tracking-widest ${
-                errors.confirmMpin ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Confirm 6-digit MPIN"
-              maxLength={6}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmMpin(!showConfirmMpin)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-            >
-              {showConfirmMpin ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
-          </div>
-          {errors.confirmMpin && (
-            <p className="text-xs text-red-500">{errors.confirmMpin}</p>
-          )}
+        <div className="text-center text-xs text-gray-600">
+          <p>
+            Your MPIN will be used for secure transactions and account access.
+            Keep it confidential and don't share with anyone.
+          </p>
         </div>
       </div>
-      
-      <div className="mb-6 flex items-center cursor-pointer" onClick={() => setIsChecked(!isChecked)}>
-        <div
-          className={`h-6 w-6 flex items-center justify-center border-2 rounded-lg transition-colors cursor-pointer
-            ${isChecked ? "border-green-600 bg-white" : "border-gray-400"}`}
-        >
-          {isChecked && <Check className="h-4 w-4 text-green-600" />}
-        </div>
-        <label className="text-sm text-gray-600 ml-2">
-          I agree to use this MPIN for secure transactions and account access.
-        </label>
-      </div>
-      
-      <Button 
-        variant="ghost"
-        onClick={handleSubmit}
-        disabled={isLoading || !mpin || !confirmMpin || !isChecked}
-        className="py-6 w-full disabled:opacity-50"
-      >
-        {isLoading ? "Setting up MPIN..." : "Set MPIN"}
-      </Button>
     </div>
   );
 };
 
-export default MPINSetup;
+export default MPIN;
