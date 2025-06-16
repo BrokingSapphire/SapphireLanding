@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import Image from "next/image";
 
 // Separate component to handle search params
 const SignatureContent = () => {
@@ -193,11 +194,12 @@ const SignatureContent = () => {
       );
 
       setSuccess(true);
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: { message?: string } } };
+      if (error.response?.status === 401) {
         setError("Signature session expired. Please scan the QR code again.");
-      } else if (err.response?.data?.message) {
-        setError(`Upload failed: ${err.response.data.message}`);
+      } else if (error.response?.data?.message) {
+        setError(`Upload failed: ${error.response.data.message}`);
       } else {
         setError("Signature submission failed. Please try again.");
       }
@@ -231,9 +233,11 @@ const SignatureContent = () => {
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
         <div className="text-center mb-6">
           <div className="mb-4">
-            <img 
+            <Image 
               src="/logo.png" 
               alt="Sapphire Broking"
+              width={32}
+              height={32}
               className="h-8 mx-auto"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';

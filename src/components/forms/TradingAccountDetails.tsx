@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
-
+import Cookies from "js-cookie";
 interface TradingAccountDetailsProps {
   onNext: () => void;
   initialData?: any;
@@ -96,7 +96,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
 
     setIsSubmitting(true);
     setError(null);
-
+    const token = Cookies.get('authToken');
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
@@ -105,6 +105,12 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           father_spouse_name: formData.fatherSpouseName.trim(),
           mother_name: formData.motherName.trim(),
           maiden_name: formData.maidenName.trim() || undefined,
+        },
+        {
+          headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+          }
         }
       );
 

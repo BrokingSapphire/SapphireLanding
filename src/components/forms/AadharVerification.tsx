@@ -2,19 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
-
+import Cookies from 'js-cookie';
 interface AadhaarVerificationProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: unknown;
   isCompleted?: boolean;
   panMaskedAadhaar?: string; // Masked Aadhaar from PAN verification
 }
 
 const AadhaarVerification = ({ 
   onNext, 
-  initialData, 
-  isCompleted, 
-  panMaskedAadhaar 
+  isCompleted
 }: AadhaarVerificationProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +48,7 @@ const AadhaarVerification = ({
     };
   }, [pollingInterval]);
 
+  const token = Cookies.get('authToken');
   // Step 1: Get DigiLocker URI
   const handleGetDigilockerUri = async () => {
     setIsLoading(true);
@@ -57,16 +56,20 @@ const AadhaarVerification = ({
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
         {
           step: "aadhaar_uri",
           redirect: "https://sapphirebroking.com/signup"
         },
         {
-          withCredentials: true
+          headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+          }
         }
       );
-
+      console.log("Auth token: ", token);
+      
       if (!response.data?.data?.uri) {
         setError("Failed to generate DigiLocker URI. Please try again.");
         return;
@@ -81,12 +84,13 @@ const AadhaarVerification = ({
       // Start polling for completion
       startPolling();
 
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
-      } else if (err.response?.status === 400) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string }; status?: number } };
+      if (error.response?.data?.message) {
+        setError(`Error: ${error.response.data.message}`);
+      } else if (error.response?.status === 400) {
         setError("Invalid request. Please try again.");
-      } else if (err.response?.status === 401) {
+      } else if (error.response?.status === 401) {
         setError("Authentication failed. Please restart the process.");
       } else {
         setError("Failed to initialize DigiLocker. Please try again.");
@@ -127,8 +131,11 @@ const AadhaarVerification = ({
           step: "aadhaar"
         },
         {
-          withCredentials: true
+          headers: {
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
         }
+
       );
 
       // If we get here, verification was successful
@@ -154,8 +161,9 @@ const AadhaarVerification = ({
         onNext();
       }, 3000);
 
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: { message?: string } } };
+      if (error.response?.status === 401) {
         // DigiLocker not completed yet, continue polling
         setCurrentStep('digilocker_pending');
         return;
@@ -167,8 +175,8 @@ const AadhaarVerification = ({
         setPollingInterval(null);
       }
 
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
+      if (error.response?.data?.message) {
+        setError(`Error: ${error.response.data.message}`);
       } else {
         setError("Failed to verify DigiLocker completion. Please try again.");
       }
@@ -191,9 +199,6 @@ const AadhaarVerification = ({
           full_name: mismatchFormData.full_name,
           dob: mismatchFormData.dob
         },
-        {
-          withCredentials: true
-        }
       );
 
       if (response.data?.message) {
@@ -211,9 +216,10 @@ const AadhaarVerification = ({
         setError("Failed to submit additional details. Please try again.");
       }
 
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      if (error.response?.data?.message) {
+        setError(`Error: ${error.response.data.message}`);
       } else {
         setError("Failed to submit additional details. Please try again.");
       }
@@ -285,7 +291,7 @@ const AadhaarVerification = ({
             <div>
               <h3 className="font-semibold text-yellow-800 mb-1">Aadhaar Mismatch Detected</h3>
               <p className="text-yellow-700 text-sm mb-2">
-                The Aadhaar number linked to your PAN doesn't match the one from DigiLocker verification.
+                The Aadhaar number linked to your PAN doesn&apos;t match the one from DigiLocker verification.
               </p>
               {mismatchInfo.pan_masked_aadhaar && mismatchInfo.digilocker_masked_aadhaar && (
                 <div className="text-sm text-yellow-700">

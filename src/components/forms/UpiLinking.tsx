@@ -5,7 +5,7 @@ import { ArrowRight, Clock, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import axios from "axios";
 import QRCode from "qrcode";
-
+import Cookies from "js-cookie";
 interface UpiLinkingProps {
   onNext: () => void;
   onBack: () => void;
@@ -88,6 +88,12 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
         {
           step: "bank_validation_start",
           validation_type: "upi"
+        },
+        {
+          headers:{
+            Authorization: `Bearer ${Cookies.get('authToken')}`, // Use cookies for authentication
+          }
+          
         }
       );
 
@@ -134,6 +140,11 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
         {
           step: "bank_validation",
           validation_type: "upi"
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('authToken')}`, // Use cookies for authentication
+          }
         }
       );
 

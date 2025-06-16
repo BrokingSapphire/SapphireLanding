@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import FormHeading from "./FormHeading";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface NomineeManagementProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: unknown;
   isCompleted?: boolean;
 }
 
@@ -45,8 +46,10 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
 
   // Prefill data from initialData (API response)
   useEffect(() => {
-    if (isCompleted && initialData?.nominees) {
-      const formattedNominees = initialData.nominees.map((nominee: any, index: number) => ({
+    const data = initialData as { nominees?: { name?: string; gov_id?: string; relation?: string; share?: number }[] } | undefined;
+    
+    if (isCompleted && data?.nominees) {
+      const formattedNominees = data.nominees.map((nominee, index: number) => ({
         id: (index + 1).toString(),
         name: nominee.name || "",
         panOrAadhar: nominee.gov_id || "",
@@ -206,7 +209,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
           nominees: formattedNominees
         },
         {
-          withCredentials: true // Use cookies for authentication
+          headers: {
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
         }
       );
 
@@ -216,22 +221,30 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       }
 
       onNext();
-    } catch (err: any) {
-      if (err.response) {
-        if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
-        } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
-        } else if (err.response.status === 400) {
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string; error?: { message?: string } };
+          status?: number;
+        };
+        request?: unknown;
+      };
+
+      if (error.response) {
+        if (error.response.data?.message) {
+          setError(`Error: ${error.response.data.message}`);
+        } else if (error.response.data?.error?.message) {
+          setError(`Error: ${error.response.data.error.message}`);
+        } else if (error.response.status === 400) {
           setError("Invalid nominee details. Please check and try again.");
-        } else if (err.response.status === 401) {
+        } else if (error.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
-        } else if (err.response.status === 422) {
+        } else if (error.response.status === 422) {
           setError("Invalid nominee data or share percentage doesn't equal 100%.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          setError(`Server error (${error.response.status}). Please try again.`);
         }
-      } else if (err.request) {
+      } else if (error.request) {
         setError("Network error. Please check your connection and try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
@@ -250,7 +263,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   const isButtonDisabled = () => {
     if (isLoading) return true;
     if (isCompleted) return false;
-    return totalSharePercentage !== 100;
+    return nominees.length === 0 || totalSharePercentage !== 100;
   };
 
   const handleContinue = () => {
@@ -399,16 +412,16 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
           </div>
         ))}
 
-        {/* Form for new nominee */}
-        {nominees.length < 5 && (
+        {/* Form for new nominee - Always show if not completed and less than 5 nominees */}
+        {!isCompleted && nominees.length < 5 && (
           <div className="bg-white rounded-lg p-4 border border-gray-200 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-medium">Nominee {currentNominee.id}</h3>
             </div>
 
-            <div className="grid grid-cols-2  gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm  mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm mb-1">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -417,6 +430,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
                   disabled={isLoading}
+                  placeholder="Enter nominee name"
                 />
               </div>
 
@@ -432,11 +446,12 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
                   disabled={isLoading}
+                  placeholder="Enter PAN/Aadhar number"
                 />
               </div>
 
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm  mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm mb-1">
                   Relationship <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -448,7 +463,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-10"
                     disabled={isLoading}
                   >
-                    <option value="">select</option>
+                    <option value="">Select relationship</option>
                     {relationships.map((rel) => (
                       <option key={rel} value={rel}>
                         {rel}
@@ -461,7 +476,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
                         strokeLinecap="round"
@@ -475,7 +489,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm  mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm mb-1">
                   % Share <span className="text-red-500">*</span>
                   {nominees.length > 0 && (
                     <span className="text-xs text-gray-500 ml-1">
@@ -490,7 +504,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                     handleInputChange("sharePercentage", e.target.value)
                   }
                   min="1"
-                  max="100"
+                  max={remainingPercentage || 100}
                   step="0.01"
                   placeholder={
                     nominees.length === 0
@@ -510,12 +524,11 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
               disabled={
                 !isCurrentNomineeComplete || totalSharePercentage >= 100 || isLoading
               }
-              className={`flex items-center text-blue-500 hover:text-blue-600 mb-0
-                ${
-                  !isCurrentNomineeComplete || totalSharePercentage >= 100 || isLoading
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }`}
+              className={`flex items-center text-blue-500 hover:text-blue-600 mb-0 ${
+                !isCurrentNomineeComplete || totalSharePercentage >= 100 || isLoading
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
             >
               <PlusIcon className="w-5 h-5 mr-1" />
               Add Nominee
@@ -551,12 +564,11 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
         <button
           onClick={handleContinue}
           disabled={isButtonDisabled()}
-          className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors
-            ${
-              isButtonDisabled()
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-teal-700"
-            }`}
+          className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors ${
+            isButtonDisabled()
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-teal-700"
+          }`}
         >
           {getButtonText()}
         </button>
@@ -572,7 +584,6 @@ const TrashIcon = ({ className }: { className?: string }) => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
   >
     <path
       strokeLinecap="round"
@@ -589,7 +600,6 @@ const PlusIcon = ({ className }: { className?: string }) => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
   >
     <path
       strokeLinecap="round"

@@ -7,7 +7,10 @@ import Image from "next/image";
 
 interface BankAccountLinkingProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: {
+    account_no: string;
+    ifsc_code: string;
+  };
   isCompleted?: boolean;
 }
 

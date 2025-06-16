@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import NomineeManagement from "./NomineeManagement";
 import FormHeading from "./FormHeading";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface NomineeSelectionProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: unknown;
   isCompleted?: boolean;
 }
 
@@ -18,12 +19,14 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If completed, show nominees or skip message
+  // If completed, check if we should show nominees or skip message
   useEffect(() => {
+    const data = initialData as { nominees?: unknown[] } | undefined;
     if (isCompleted) {
-      if (initialData?.nominees && initialData.nominees.length > 0) {
+      if (data?.nominees && data.nominees.length > 0) {
         setShowNomineeForm(true);
       }
+      // If completed but no nominees, don't automatically show form
     }
   }, [isCompleted, initialData]);
 
@@ -40,7 +43,9 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
           nominees: []
         },
         {
-          withCredentials: true // Use cookies for authentication
+         headers:{
+             Authorization: `Bearer ${Cookies.get('authToken')}`
+         }
         }
       );
 
@@ -50,22 +55,30 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
       }
 
       onNext();
-    } catch (err: any) {
-      if (err.response) {
-        if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
-        } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
-        } else if (err.response.status === 400) {
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string; error?: { message?: string } };
+          status?: number;
+        };
+        request?: unknown;
+      };
+
+      if (error.response) {
+        if (error.response.data?.message) {
+          setError(`Error: ${error.response.data.message}`);
+        } else if (error.response.data?.error?.message) {
+          setError(`Error: ${error.response.data.error.message}`);
+        } else if (error.response.status === 400) {
           setError("Invalid request. Please try again.");
-        } else if (err.response.status === 401) {
+        } else if (error.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
-        } else if (err.response.status === 422) {
+        } else if (error.response.status === 422) {
           setError("Unable to process request. Please try again.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          setError(`Server error (${error.response.status}). Please try again.`);
         }
-      } else if (err.request) {
+      } else if (error.request) {
         setError("Network error. Please check your connection and try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
@@ -76,7 +89,8 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
   };
 
   // If completed and skipped, show skip confirmation
-  if (isCompleted && (!initialData?.nominees || initialData.nominees.length === 0)) {
+  const data = initialData as { nominees?: unknown[] } | undefined;
+  if (isCompleted && (!data?.nominees || data.nominees.length === 0)) {
     return (
       <div className="max-w-2xl mx-auto">
         <FormHeading

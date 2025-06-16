@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface TradingPreferencesProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: unknown;
   isCompleted?: boolean;
 }
 
@@ -31,11 +32,18 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
 
   // Prefill data from initialData (API response)
   useEffect(() => {
-    if (isCompleted && initialData) {
-      setMaritalStatus(initialData.marital_status || null);
-      setSelectedIncome(initialData.annual_income || null);
-      setSelectedExperience(initialData.trading_exp || null);
-      setSelectedSettlement(initialData.account_settlement || "Quarterly");
+    const data = initialData as {
+      marital_status?: MaritalStatus;
+      annual_income?: IncomeRange;
+      trading_exp?: ExperienceRange;
+      account_settlement?: SettlementPreference;
+    } | undefined;
+
+    if (isCompleted && data) {
+      setMaritalStatus(data.marital_status || null);
+      setSelectedIncome(data.annual_income || null);
+      setSelectedExperience(data.trading_exp || null);
+      setSelectedSettlement(data.account_settlement || "Quarterly");
     }
   }, [initialData, isCompleted]);
 
@@ -73,23 +81,23 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
     return isValid;
   };
 
-  // Map frontend values to API values
+  // Map frontend values to API values - Fixed to match backend validation
   const mapToApiValues = () => {
     const incomeMapping: Record<IncomeRange, string> = {
-      "< 1 Lakh": "less_than_1_lakh",
-      "1 - 5 Lacs": "1_5_lakh",
-      "5 - 10 Lacs": "5_10_lakh", 
-      "10 - 25 Lacs": "10_25_lakh",
-      "25 - 1 Cr": "25_1_cr",
-      "> 1Cr": "more_than_1_cr"
+      "< 1 Lakh": "le_1_Lakh",        // Fixed: was "less_than_1_lakh"
+      "1 - 5 Lacs": "1_5_Lakh",       // Fixed: was "1_5_lakh"
+      "5 - 10 Lacs": "5_10_Lakh",     // Fixed: was "5_10_lakh"
+      "10 - 25 Lacs": "10_25_Lakh",   // Fixed: was "10_25_lakh"
+      "25 - 1 Cr": "25_1_Cr",         // Fixed: was "25_1_cr"
+      "> 1Cr": "Ge_1_Cr"              // Fixed: was "more_than_1_cr"
     };
 
     const experienceMapping: Record<ExperienceRange, string> = {
-      "No Experience": "0",
-      "< 1 year": "0-1",
-      "1 - 5 years": "1-5",
-      "5 - 10 years": "5-10",
-      "10+ years": "10+"
+      "No Experience": "1",            // Fixed: was "0"
+      "< 1 year": "1",                 // Fixed: was "0-1"
+      "1 - 5 years": "1-5",           // Kept same
+      "5 - 10 years": "5-10",         // Kept same
+      "10+ years": "10"               // Fixed: was "10+"
     };
 
     return {
@@ -124,6 +132,12 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
         {
           step: "personal_detail",
           ...apiValues
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("authToken")}` 
+          }
         }
       );
 
@@ -133,12 +147,19 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
       }
 
       onNext();
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
-      } else if (err.response?.status === 400) {
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string };
+          status?: number;
+        };
+      };
+
+      if (error.response?.data?.message) {
+        setError(`Error: ${error.response.data.message}`);
+      } else if (error.response?.status === 400) {
         setError("Invalid details. Please check and try again.");
-      } else if (err.response?.status === 401) {
+      } else if (error.response?.status === 401) {
         setError("Authentication failed. Please restart the process.");
       } else {
         setError("Failed to save details. Please try again.");

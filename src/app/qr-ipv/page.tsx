@@ -33,7 +33,7 @@ const QRIPVContent = () => {
     try {
       setShowCamera(true);
       setError(null);
-    } catch (err) {
+    } catch {
       setError("Camera access failed. Please enable permissions.");
     }
   };
@@ -108,11 +108,12 @@ const QRIPVContent = () => {
       );
 
       setSuccess(true);
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      const error = err as { response?: { status?: number; data?: { message?: string } } };
+      if (error.response?.status === 401) {
         setError("Verification session expired. Please scan the QR code again.");
-      } else if (err.response?.data?.message) {
-        setError(`Upload failed: ${err.response.data.message}`);
+      } else if (error.response?.data?.message) {
+        setError(`Upload failed: ${error.response.data.message}`);
       } else {
         setError("Verification failed. Please try again.");
       }
@@ -139,7 +140,7 @@ const QRIPVContent = () => {
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
           }
-        } catch (err) {
+        } catch {
           setError("Camera access failed. Please enable permissions.");
           setShowCamera(false);
         }
@@ -182,12 +183,13 @@ const QRIPVContent = () => {
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
         <div className="text-center mb-6">
           <div className="mb-4">
-            <img 
-              src="/logo.png" // Add your Sapphire Broking logo
+            <Image 
+              src="/logo.png"
               alt="Sapphire Broking"
+              width={32}
+              height={32}
               className="h-8 mx-auto"
               onError={(e) => {
-                // Hide logo if not found
                 e.currentTarget.style.display = 'none';
               }}
             />

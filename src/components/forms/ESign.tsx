@@ -4,10 +4,11 @@ import { Check } from "lucide-react";
 import FormHeading from "./FormHeading";
 import Image from "next/image";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface LastStepPageProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: unknown;
   isCompleted?: boolean;
 }
 
@@ -23,7 +24,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
   // Prefill data from initialData (API response)
   useEffect(() => {
-    if (isCompleted && initialData?.esign) {
+    const data = initialData as { esign?: boolean } | undefined;
+    if (isCompleted && data?.esign) {
       setEsignStatus('completed');
     }
   }, [initialData, isCompleted]);
@@ -37,6 +39,16 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       // Create redirect URL - this should be your app's URL where user returns after eSign
       const redirectUrl = `${window.location.origin}/esign-callback`;
 
+      // Get the auth token
+      const authToken = Cookies.get('authToken');
+      
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setEsignStatus('idle');
+        setIsLoading(false);
+        return;
+      }
+
       // Initialize eSign session
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
@@ -45,7 +57,10 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           redirect_url: redirectUrl
         },
         {
-          withCredentials: true
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`
+          },
         }
       );
 
@@ -72,20 +87,32 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         setError("Failed to initialize eSign. Please try again.");
         setEsignStatus('idle');
       }
-    } catch (err: any) {
-      if (err.response) {
-        if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
-        } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
-        } else if (err.response.status === 400) {
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string; error?: { message?: string } };
+          status?: number;
+        };
+        request?: unknown;
+      };
+
+      if (error.response) {
+        if (error.response.data?.message) {
+          setError(`Error: ${error.response.data.message}`);
+        } else if (error.response.data?.error?.message) {
+          setError(`Error: ${error.response.data.error.message}`);
+        } else if (error.response.status === 400) {
           setError("Invalid request. Please try again.");
-        } else if (err.response.status === 401) {
+        } else if (error.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
+        } else if (error.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
+        } else if (error.response.status === 500) {
+          setError("Server error. Please try again in a few moments.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          setError(`Server error (${error.response.status}). Please try again.`);
         }
-      } else if (err.request) {
+      } else if (error.request) {
         setError("Network error. Please check your connection and try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
@@ -101,14 +128,28 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       try {
         setEsignStatus('completing');
         
-        // Check if eSign is completed
+        // Get the auth token for polling
+        const authToken = Cookies.get('authToken');
+        
+        if (!authToken) {
+          clearInterval(pollInterval);
+          setError("Authentication token expired. Please restart the process.");
+          setEsignStatus('idle');
+          setIsLoading(false);
+          return;
+        }
+        
+        // Check if eSign is completed - FIXED: Corrected the typo from 'siafgnup' to 'signup'
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
           {
             step: "esign_complete"
           },
           {
-            withCredentials: true
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`
+            },
           }
         );
 
@@ -123,9 +164,16 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
             onNext();
           }, 2000);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const error = err as {
+          response?: {
+            data?: { message?: string };
+            status?: number;
+          };
+        };
+
         // If error is 401 (not completed yet), continue polling
-        if (err.response?.status === 401) {
+        if (error.response?.status === 401) {
           setEsignStatus('signing'); // Reset to signing state
           return;
         }
@@ -135,8 +183,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         setEsignStatus('idle');
         setIsLoading(false);
         
-        if (err.response?.data?.message) {
-          setError(`eSign error: ${err.response.data.message}`);
+        if (error.response?.data?.message) {
+          setError(`eSign error: ${error.response.data.message}`);
         } else {
           setError("eSign verification failed. Please try again.");
         }
@@ -327,7 +375,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       {esignStatus === 'signing' && (
         <div className="mt-4 text-center text-xs text-gray-600">
           <p>
-            If the eSign window doesn't open, please check your popup blocker settings.
+            If the eSign window doesn&apos;t open, please check your popup blocker settings.
             The process will timeout after 10 minutes.
           </p>
         </div>

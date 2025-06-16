@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface TradingAccountDetails2Props {
   onNext: () => void;
-  initialData?: any;
+  initialData?: unknown;
   isCompleted?: boolean;
 }
 
@@ -36,9 +37,14 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
 
   // Prefill data from initialData (API response)
   useEffect(() => {
-    if (isCompleted && initialData) {
-      setOccupation(initialData.occupation || "");
-      setIsPoliticallyExposed(initialData.is_politically_exposed ?? null);
+    const data = initialData as {
+      occupation?: string;
+      is_politically_exposed?: boolean;
+    } | undefined;
+
+    if (isCompleted && data) {
+      setOccupation(data.occupation || "");
+      setIsPoliticallyExposed(data.is_politically_exposed ?? null);
     }
   }, [initialData, isCompleted]);
 
@@ -62,21 +68,21 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
     return isValid;
   };
 
-  // Map frontend occupation values to API values
+  // Map frontend occupation values to API values - Fixed to match backend validation
   const mapOccupationToApi = (occupation: string): string => {
     const occupationMapping: Record<string, string> = {
-      "Business": "business",
-      "Housewife": "housewife",
-      "Student": "student",
-      "Professional": "professional",
-      "Private Sector": "private_sector",
-      "Government Service": "government_service",
-      "Agriculturist": "agriculturist",
-      "Public Sector": "public_sector",
-      "Retired": "retired",
-      "Others": "others"
+      "Business": "self employed",           // Fixed: was "business"
+      "Housewife": "housewife",             // Kept same
+      "Student": "student",                 // Kept same
+      "Professional": "private sector",     // Fixed: was "professional"
+      "Private Sector": "private sector",   // Fixed: was "private_sector"
+      "Government Service": "govt servant", // Fixed: was "government_service"
+      "Agriculturist": "agriculturalist",   // Fixed: was "agriculturist"
+      "Public Sector": "govt servant",      // Fixed: was "public_sector"
+      "Retired": "retired",                 // Kept same
+      "Others": "other"                     // Fixed: was "others"
     };
-    return occupationMapping[occupation] || occupation.toLowerCase();
+    return occupationMapping[occupation] || "other";
   };
 
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -102,6 +108,12 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
           step: "other_detail",
           occupation: mapOccupationToApi(occupation),
           politically_exposed: isPoliticallyExposed,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("authToken")}` 
+          }
         }
       );
 
@@ -111,12 +123,19 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
       }
 
       onNext();
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
-      } else if (err.response?.status === 400) {
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string };
+          status?: number;
+        };
+      };
+
+      if (error.response?.data?.message) {
+        setError(`Error: ${error.response.data.message}`);
+      } else if (error.response?.status === 400) {
         setError("Invalid details. Please check and try again.");
-      } else if (err.response?.status === 401) {
+      } else if (error.response?.status === 401) {
         setError("Authentication failed. Please restart the process.");
       } else {
         setError("Failed to save details. Please try again.");
