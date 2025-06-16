@@ -60,7 +60,7 @@ const AadhaarVerification = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "aadhaar_uri",
-          redirect: "http://localhost:3000/signup"
+          redirect: "https://sapphirebroking.com/signup"
         },
         {
           withCredentials: true
