@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import FormHeading from "./FormHeading";
 import SignatureQrCode from "./SignatureQrCode";
 import axios from "axios";
+import Cookies from 'js-cookie';
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint'; // Adjust import path as needed
 
 interface SignatureComponentProps {
   onNext: () => void;
@@ -24,34 +26,59 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  // Initialize signature session when component mounts (if not completed)
+  // Use the checkpoint hook to check for existing signature data
+  const { 
+    isStepCompleted,
+    getStepData,
+    refetchStep 
+  } = useCheckpoint();
+
+  // Check if signature is already completed from the hook
   useEffect(() => {
-    if (!isCompleted && !isInitialized) {
+    if (isStepCompleted(CheckpointStep.SIGNATURE)) {
+      // Signature is already completed, no need to initialize
+      setIsInitialized(true);
+      return;
+    }
+
+    // If not completed and not initialized, initialize signature
+    if (!isInitialized) {
       initializeSignature();
     }
-  }, [isCompleted, isInitialized]);
+  }, [isStepCompleted, isInitialized]);
 
-  // Prefill data from initialData (API response)
+  // Check if there's existing signature data
   useEffect(() => {
-    if (isCompleted && initialData?.signature) {
-      // If already completed, we have the signature data
+    const signatureData = getStepData(CheckpointStep.SIGNATURE);
+    if (signatureData?.url) {
+      // Signature already exists
       setIsInitialized(true);
     }
-  }, [initialData, isCompleted]);
+  }, [getStepData]);
 
   const initializeSignature = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Use your existing checkpoint API to initialize signature
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Use the correct endpoint for signature initialization
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "signature"
         },
         {
-          withCredentials: true
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`
+          }
         }
       );
 
@@ -62,15 +89,16 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
         setError("Failed to initialize signature session. Please try again.");
       }
     } catch (err: any) {
+      console.error("Signature initialization error:", err);
       if (err.response) {
         if (err.response.data?.message) {
           setError(`Error: ${err.response.data.message}`);
-        } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
         } else if (err.response.status === 400) {
           setError("Invalid request. Please try again.");
         } else if (err.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
         } else {
           setError(`Server error (${err.response.status}). Please try again.`);
         }
@@ -211,38 +239,50 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!signature || isLoading || !signatureUid) return;
-
-    if (isCompleted) {
+    // If already completed, just go to next step
+    if (isStepCompleted(CheckpointStep.SIGNATURE)) {
       onNext();
       return;
     }
+
+    if (!signature || isLoading || !signatureUid) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setIsLoading(false);
+        return;
+      }
+
       // Convert canvas signature to file
       const signatureFile = convertDataURLToFile(signature, "signature.png");
       
       const formData = new FormData();
       formData.append('image', signatureFile);
 
-      // Use your existing putSignature endpoint
+      // Use the correct PUT endpoint for signature upload
       await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature/${signatureUid}`,
         formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-          },
-          withCredentials: true
+            Authorization: `Bearer ${authToken}`
+          }
         }
       );
+
+      // Refetch signature step to update the hook
+      refetchStep(CheckpointStep.SIGNATURE);
 
       // If successful, proceed to next step
       onNext();
     } catch (err: any) {
+      console.error("Signature upload error:", err);
       if (err.response) {
         if (err.response.data?.message) {
           setError(`Upload failed: ${err.response.data.message}`);
@@ -254,6 +294,8 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
           clearSignature();
         } else if (err.response.status === 422) {
           setError("Invalid signature format. Please try again.");
+        } else if (err.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
         } else {
           setError(`Server error (${err.response.status}). Please try again.`);
         }
@@ -280,7 +322,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   };
 
   // Show completed state
-  if (isCompleted) {
+  if (isStepCompleted(CheckpointStep.SIGNATURE)) {
     return (
       <div className="mx-auto mt-16">
         <FormHeading

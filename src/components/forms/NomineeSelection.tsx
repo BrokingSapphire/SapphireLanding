@@ -3,6 +3,7 @@ import NomineeManagement from "./NomineeManagement";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint'; // Adjust import path as needed
 
 interface NomineeSelectionProps {
   onNext: () => void;
@@ -19,14 +20,33 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If completed, check if we should show nominees or skip message
+  // Use the checkpoint hook to check for existing nominee data
+  const { 
+    isStepCompleted,
+    getStepData,
+    refetchStep 
+  } = useCheckpoint();
+
+  // Check if nominees step is completed and if there are actual nominees
+  useEffect(() => {
+    if (isStepCompleted(CheckpointStep.ADD_NOMINEES)) {
+      const nomineeData = getStepData(CheckpointStep.ADD_NOMINEES);
+      
+      // If there are actual nominees, show the nominee management form
+      if (nomineeData?.nominees && nomineeData.nominees.length > 0) {
+        setShowNomineeForm(true);
+      }
+      // If step is completed but no nominees, it was skipped - show initial selection
+    }
+  }, [isStepCompleted, getStepData]);
+
+  // Also check initialData as fallback
   useEffect(() => {
     const data = initialData as { nominees?: unknown[] } | undefined;
     if (isCompleted) {
       if (data?.nominees && data.nominees.length > 0) {
         setShowNomineeForm(true);
       }
-      // If completed but no nominees, don't automatically show form
     }
   }, [isCompleted, initialData]);
 
@@ -35,6 +55,13 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
     setError(null);
 
     try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setIsLoading(false);
+        return;
+      }
+
       // Send empty nominees array to backend
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
@@ -43,9 +70,10 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
           nominees: []
         },
         {
-         headers:{
-             Authorization: `Bearer ${Cookies.get('authToken')}`
-         }
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`
+          }
         }
       );
 
@@ -53,6 +81,9 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
         setError("Failed to skip nominees. Please try again.");
         return;
       }
+
+      // Refetch the nominees step to update the hook
+      refetchStep(CheckpointStep.ADD_NOMINEES);
 
       onNext();
     } catch (err: unknown) {
@@ -64,6 +95,7 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
         request?: unknown;
       };
 
+      console.error("Skip nominees error:", err);
       if (error.response) {
         if (error.response.data?.message) {
           setError(`Error: ${error.response.data.message}`);
@@ -73,6 +105,8 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
           setError("Invalid request. Please try again.");
         } else if (error.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
+        } else if (error.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
         } else if (error.response.status === 422) {
           setError("Unable to process request. Please try again.");
         } else {
@@ -88,9 +122,28 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
     }
   };
 
-  // If completed and skipped, show skip confirmation
-  const data = initialData as { nominees?: unknown[] } | undefined;
-  if (isCompleted && (!data?.nominees || data.nominees.length === 0)) {
+  const handleAddNominees = () => {
+    setShowNomineeForm(true);
+  };
+
+  // Check if step is completed and has actual nominees data
+  const stepCompleted = isStepCompleted(CheckpointStep.ADD_NOMINEES);
+  const nomineeData = getStepData(CheckpointStep.ADD_NOMINEES);
+  const hasNominees = nomineeData?.nominees && nomineeData.nominees.length > 0;
+
+  // If completed and has nominees, show the nominee management form
+  if (stepCompleted && hasNominees && showNomineeForm) {
+    return (
+      <NomineeManagement 
+        onNext={onNext} 
+        initialData={nomineeData} 
+        isCompleted={true} 
+      />
+    );
+  }
+
+  // If completed but no nominees (skipped), show skip confirmation
+  if (stepCompleted && !hasNominees && !showNomineeForm) {
     return (
       <div className="max-w-2xl mx-auto">
         <FormHeading
@@ -107,61 +160,71 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
           </div>
         </div>
 
-        <button
-          onClick={onNext}
-          className="w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors"
-        >
-          Continue to Next Step
-        </button>
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={handleAddNominees}
+            className="text-white py-3 px-2 rounded-md transition-all duration-300 ease-in-out bg-green-600 hover:bg-white border-2 border-green-600 hover:text-green-600"
+          >
+            Add nominees now
+          </button>
+
+          <button
+            onClick={onNext}
+            className="w-full bg-teal-800 text-white py-3 rounded font-medium hover:bg-teal-700 transition-colors"
+          >
+            Continue to Next Step
+          </button>
+        </div>
       </div>
     );
   }
 
+  // Show nominee form if user clicked "Add nominees"
+  if (showNomineeForm) {
+    return (
+      <NomineeManagement 
+        onNext={onNext} 
+        initialData={nomineeData || initialData} 
+        isCompleted={stepCompleted && hasNominees} 
+      />
+    );
+  }
+
+  // Default: Show initial selection
   return (
     <div className="max-w-2xl mx-auto">
-      {!showNomineeForm ? (
-        // Initial Nominee Selection View
-        <div>
-          <FormHeading
-            title={"Nominees"}
-            description={
-              "You can add up to 5 nominee(s) to your account. Adding nominees makes the claim process simple in case of unforeseen events."
-            }
-          />
+      <FormHeading
+        title={"Nominees"}
+        description={
+          "You can add up to 5 nominee(s) to your account. Adding nominees makes the claim process simple in case of unforeseen events."
+        }
+      />
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 rounded">
-              <p className="text-red-600 text-sm">{error}</p>
-            </div>
-          )}
-
-          <div className="flex flex-col gap-4">
-            <button
-              onClick={() => setShowNomineeForm(true)}
-              className="text-white py-3 px-2 rounded-md transition-all duration-300 ease-in-out bg-green-heading hover:bg-white border-2 border-green-heading hover:text-green-heading"
-              disabled={isLoading}
-            >
-              Add nominee now (Recommended)
-            </button>
-
-            <button
-              onClick={handleSkip}
-              disabled={isLoading}
-              className={`w-full border border-gray-300 text-gray-700 py-3 rounded font-medium hover:bg-gray-50 transition-colors ${
-                isLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              {isLoading ? "Skipping..." : "Skip for now"}
-            </button>
-          </div>
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 rounded">
+          <p className="text-red-600 text-sm">{error}</p>
         </div>
-      ) : (
-        <NomineeManagement 
-          onNext={onNext} 
-          initialData={initialData} 
-          isCompleted={isCompleted} 
-        />
       )}
+
+      <div className="flex flex-col gap-4">
+        <button
+          onClick={handleAddNominees}
+          className="text-white py-3 px-2 rounded-md transition-all duration-300 ease-in-out bg-green-600 hover:bg-white border-2 border-green-600 hover:text-green-600"
+          disabled={isLoading}
+        >
+          Add nominee now (Recommended)
+        </button>
+
+        <button
+          onClick={handleSkip}
+          disabled={isLoading}
+          className={`w-full border border-gray-300 text-gray-700 py-3 rounded font-medium hover:bg-gray-50 transition-colors ${
+            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          {isLoading ? "Skipping..." : "Skip for now"}
+        </button>
+      </div>
     </div>
   );
 };

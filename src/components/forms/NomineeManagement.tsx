@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint'; // Adjust import path as needed
 
 interface NomineeManagementProps {
   onNext: () => void;
@@ -33,6 +34,13 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Use the checkpoint hook
+  const { 
+    isStepCompleted,
+    getStepData,
+    refetchStep 
+  } = useCheckpoint();
+
   const relationships = [
     "Spouse",
     "Son",
@@ -44,21 +52,34 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
     "Other",
   ];
 
-  // Prefill data from initialData (API response)
+  // Load existing nominees from hook data or initialData
   useEffect(() => {
-    const data = initialData as { nominees?: { name?: string; gov_id?: string; relation?: string; share?: number }[] } | undefined;
+    // First try to get data from hook
+    const hookData = getStepData(CheckpointStep.ADD_NOMINEES);
+    let dataToUse = hookData;
+
+    // Fallback to initialData if hook data is not available
+    if (!dataToUse) {
+      dataToUse = initialData as { nominees?: { name?: string; govId?: string; gov_id?: string; relation?: string; share?: number }[] } | undefined;
+    }
     
-    if (isCompleted && data?.nominees) {
-      const formattedNominees = data.nominees.map((nominee, index: number) => ({
+    if (dataToUse?.nominees && Array.isArray(dataToUse.nominees)) {
+      const formattedNominees = dataToUse.nominees.map((nominee: any, index: number) => ({
         id: (index + 1).toString(),
         name: nominee.name || "",
-        panOrAadhar: nominee.gov_id || "",
+        panOrAadhar: nominee.govId || nominee.gov_id || "",
         relationship: nominee.relation || "",
         sharePercentage: nominee.share?.toString() || "",
       }));
       setNominees(formattedNominees);
+      
+      // Update current nominee ID
+      setCurrentNominee(prev => ({
+        ...prev,
+        id: (formattedNominees.length + 1).toString()
+      }));
     }
-  }, [initialData, isCompleted]);
+  }, [getStepData, initialData]);
 
   const handleInputChange = (field: keyof NomineeData, value: string) => {
     setError(null);
@@ -194,6 +215,13 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
     setError(null);
 
     try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setIsLoading(false);
+        return;
+      }
+
       // Format nominees data for API
       const formattedNominees = nominees.map(nominee => ({
         name: nominee.name.trim(),
@@ -210,7 +238,8 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
         },
         {
           headers: {
-            Authorization: `Bearer ${Cookies.get('authToken')}`
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`
           }
         }
       );
@@ -219,6 +248,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
         setError("Failed to save nominees. Please try again.");
         return;
       }
+
+      // Refetch the nominees step to update the hook
+      refetchStep(CheckpointStep.ADD_NOMINEES);
 
       onNext();
     } catch (err: unknown) {
@@ -230,6 +262,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
         request?: unknown;
       };
 
+      console.error("Save nominees error:", err);
       if (error.response) {
         if (error.response.data?.message) {
           setError(`Error: ${error.response.data.message}`);
@@ -239,6 +272,8 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
           setError("Invalid nominee details. Please check and try again.");
         } else if (error.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
+        } else if (error.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
         } else if (error.response.status === 422) {
           setError("Invalid nominee data or share percentage doesn't equal 100%.");
         } else {
@@ -255,27 +290,41 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   };
 
   const getButtonText = () => {
-    if (isCompleted) return "Continue";
+    const stepCompleted = isStepCompleted(CheckpointStep.ADD_NOMINEES);
+    const hasNominees = getStepData(CheckpointStep.ADD_NOMINEES)?.nominees?.length > 0;
+    
+    if (stepCompleted && hasNominees) return "Continue";
     if (isLoading) return "Saving Nominees...";
     return "Continue";
   };
 
   const isButtonDisabled = () => {
     if (isLoading) return true;
-    if (isCompleted) return false;
+    
+    const stepCompleted = isStepCompleted(CheckpointStep.ADD_NOMINEES);
+    const hasNominees = getStepData(CheckpointStep.ADD_NOMINEES)?.nominees?.length > 0;
+    
+    if (stepCompleted && hasNominees) return false;
     return nominees.length === 0 || totalSharePercentage !== 100;
   };
 
   const handleContinue = () => {
-    if (isCompleted) {
+    const stepCompleted = isStepCompleted(CheckpointStep.ADD_NOMINEES);
+    const hasNominees = getStepData(CheckpointStep.ADD_NOMINEES)?.nominees?.length > 0;
+    
+    if (stepCompleted && hasNominees) {
       onNext();
       return;
     }
     handleSubmit();
   };
 
+  // Check if step is completed with nominees
+  const stepCompleted = isStepCompleted(CheckpointStep.ADD_NOMINEES);
+  const hasNominees = getStepData(CheckpointStep.ADD_NOMINEES)?.nominees?.length > 0;
+
   // Show completed state
-  if (isCompleted && nominees.length > 0) {
+  if (stepCompleted && hasNominees && nominees.length > 0) {
     return (
       <div className="mx-auto h-full max-h-[80vh] overflow-y-auto mt-20">
         <div className="sticky top-0 bg-white z-10 pt-0 pb-2">
@@ -413,7 +462,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
         ))}
 
         {/* Form for new nominee - Always show if not completed and less than 5 nominees */}
-        {!isCompleted && nominees.length < 5 && (
+        {!(stepCompleted && hasNominees) && nominees.length < 5 && (
           <div className="bg-white rounded-lg p-4 border border-gray-200 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-medium">Nominee {currentNominee.id}</h3>

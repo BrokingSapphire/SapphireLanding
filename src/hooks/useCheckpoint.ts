@@ -200,6 +200,23 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             },
           }
         );
+        
+        // Signature endpoint returns 200 OK with data when completed, 204 NO_CONTENT when not uploaded
+        // We need to check if we actually got data
+        if (response.status === 200 && response.data?.data?.url) {
+          return {
+            step,
+            data: response.data.data,
+            completed: true,
+          };
+        } else {
+          // If no data or empty response, signature is not completed
+          return {
+            step,
+            data: null,
+            completed: false,
+          };
+        }
       } else if (step === CheckpointStep.ESIGN) {
         // For eSign, check if esign field exists in checkpoint
         response = await axios.get(

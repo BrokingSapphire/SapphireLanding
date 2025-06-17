@@ -5,6 +5,8 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import QrCodeVerification from "./QrCodeVerification";
 import axios from "axios";
+import Cookies from 'js-cookie';
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint'; // Adjust import path as needed
 
 interface IPVVerificationProps {
   onNext: () => void;
@@ -28,34 +30,59 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize IPV when component mounts (if not completed)
+  // Use the checkpoint hook to check for existing IPV data
+  const { 
+    isStepCompleted,
+    getStepData,
+    refetchStep 
+  } = useCheckpoint();
+
+  // Check if IPV is already completed from the hook
   useEffect(() => {
-    if (!isCompleted && !isInitialized) {
+    if (isStepCompleted(CheckpointStep.IPV)) {
+      // IPV is already completed, no need to initialize
+      setIsInitialized(true);
+      return;
+    }
+
+    // If not completed and not initialized, initialize IPV
+    if (!isInitialized) {
       initializeIPV();
     }
-  }, [isCompleted, isInitialized]);
+  }, [isStepCompleted, isInitialized]);
 
-  // Prefill data from initialData (API response)
+  // Check if there's existing IPV data
   useEffect(() => {
-    if (isCompleted && initialData?.ipv) {
-      // If already completed, we have the IPV data
+    const ipvData = getStepData(CheckpointStep.IPV);
+    if (ipvData?.url) {
+      // IPV already exists
       setIsInitialized(true);
     }
-  }, [initialData, isCompleted]);
+  }, [getStepData]);
 
   const initializeIPV = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Use your existing checkpoint API to initialize IPV
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Use the correct endpoint for IPV initialization
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "ipv"
         },
         {
-          withCredentials: true
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`
+          }
         }
       );
 
@@ -66,15 +93,16 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         setError("Failed to initialize IPV. Please try again.");
       }
     } catch (err: any) {
+      console.error("IPV initialization error:", err);
       if (err.response) {
         if (err.response.data?.message) {
           setError(`Error: ${err.response.data.message}`);
-        } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
         } else if (err.response.status === 400) {
           setError("Invalid request. Please try again.");
         } else if (err.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
         } else {
           setError(`Server error (${err.response.status}). Please try again.`);
         }
@@ -152,35 +180,47 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!imageFile || isLoading || !ipvUid) return;
-
-    if (isCompleted) {
+    // If already completed, just go to next step
+    if (isStepCompleted(CheckpointStep.IPV)) {
       onNext();
       return;
     }
+
+    if (!imageFile || isLoading || !ipvUid) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setIsLoading(false);
+        return;
+      }
+
       const formData = new FormData();
       formData.append('image', imageFile);
 
-      // Use your existing putIpv endpoint
+      // Use the correct PUT endpoint for IPV upload
       await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/${ipvUid}`,
         formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-          },
-          withCredentials: true
+            Authorization: `Bearer ${authToken}`
+          }
         }
       );
+
+      // Refetch IPV step to update the hook
+      refetchStep(CheckpointStep.IPV);
 
       // If successful, proceed to next step
       onNext();
     } catch (err: any) {
+      console.error("IPV upload error:", err);
       if (err.response) {
         if (err.response.data?.message) {
           setError(`Upload failed: ${err.response.data.message}`);
@@ -191,6 +231,8 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
           setIpvUid(null);
         } else if (err.response.status === 422) {
           setError("Invalid image format. Please try again.");
+        } else if (err.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
         } else {
           setError(`Server error (${err.response.status}). Please try again.`);
         }
@@ -261,7 +303,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   };
 
   // Show completed state
-  if (isCompleted) {
+  if (isStepCompleted(CheckpointStep.IPV)) {
     return (
       <div className="mx-auto mt-16">
         <FormHeading
