@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
-
+import Cookies from "js-cookie";
 interface MPINProps {
   onNext: (clientId: string) => void;
   clientId?: string;
@@ -136,14 +136,15 @@ const MPIN: React.FC<MPINProps> = ({
     try {
       // Set MPIN using checkpoint API
       await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/setup-mpin`,
         {
-          step: "mpin_setup",
           mpin: mpinString,
           confirm_mpin: confirmMpinString
         },
         {
-          withCredentials: true
+          headers:{
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
         }
       );
 

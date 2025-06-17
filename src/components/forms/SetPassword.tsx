@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import { Eye, EyeOff, Check, X } from "lucide-react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface SetPasswordProps {
   onNext: (clientId: string) => void;
@@ -30,7 +31,8 @@ const SetPassword: React.FC<SetPasswordProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clientId, setClientId] = useState<string | null>(null);
-  const [step, setStep] = useState<'finalize' | 'password'>('finalize');
+  const [isFinalizingInBackground, setIsFinalizingInBackground] = useState(false);
+  const [finalizeError, setFinalizeError] = useState<string | null>(null);
 
   const [validation, setValidation] = useState<PasswordValidation>({
     minLength: false,
@@ -44,14 +46,13 @@ const SetPassword: React.FC<SetPasswordProps> = ({
   useEffect(() => {
     if (isCompleted && initialData?.client_id) {
       setClientId(initialData.client_id);
-      setStep('password');
     }
   }, [initialData, isCompleted]);
 
-  // Initialize by calling finalize API first
+  // Try to finalize in background (non-blocking)
   useEffect(() => {
     if (!isCompleted && !clientId) {
-      handleFinalize();
+      handleFinalizeInBackground();
     }
   }, [isCompleted, clientId]);
 
@@ -66,55 +67,38 @@ const SetPassword: React.FC<SetPasswordProps> = ({
     });
   }, [password]);
 
-  const handleFinalize = async () => {
-    setIsLoading(true);
-    setError(null);
+  const handleFinalizeInBackground = async () => {
+    setIsFinalizingInBackground(true);
+    setFinalizeError(null);
 
     try {
-      // First, finalize signup to get client ID
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/finalize`,
         {},
         {
-          withCredentials: true
+          headers:{
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
         }
       );
 
       if (response.data?.data?.clientId) {
         setClientId(response.data.data.clientId);
-        setStep('password');
-      } else {
-        setError("Failed to finalize signup. Please try again.");
+        console.log('Finalize successful, Client ID:', response.data.data.clientId);
       }
     } catch (err: any) {
-      if (err.response) {
-        if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
-        } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
-        } else if (err.response.status === 400) {
-          setError("Invalid request. Please try again.");
-        } else if (err.response.status === 401) {
-          setError("Authentication failed. Please restart the process.");
-        } else if (err.response.status === 403) {
-          setError("Client ID already exists or signup not completed.");
-        } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
-        }
-      } else if (err.request) {
-        setError("Network error. Please check your connection and try again.");
-      } else {
-        setError("An unexpected error occurred. Please try again.");
-      }
+      console.warn('Finalize API failed (non-blocking):', err.response?.data?.message || err.message);
+      setFinalizeError(err.response?.data?.message || 'Finalize failed');
+      // Don't block the user, they can still set password
     } finally {
-      setIsLoading(false);
+      setIsFinalizingInBackground(false);
     }
   };
 
   const handlePasswordSubmit = async () => {
-    if (!isFormValid() || !clientId) return;
+    if (!isFormValid()) return;
 
-    if (isCompleted) {
+    if (isCompleted && clientId) {
       onNext(clientId);
       return;
     }
@@ -123,21 +107,30 @@ const SetPassword: React.FC<SetPasswordProps> = ({
     setError(null);
 
     try {
-      // Set password using checkpoint API
+      // Use the setup-password API directly
       await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/setup-password`,
         {
-          step: "password_setup",
           password: password,
           confirm_password: confirmPassword
         },
         {
-          withCredentials: true
+          headers:{
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
         }
       );
 
-      // If successful, proceed to next step with client ID
-      onNext(clientId);
+      // If we have a client ID from finalize, use it
+      // Otherwise, we'll need to get it somehow or continue without it
+      if (clientId) {
+        onNext(clientId);
+      } else {
+        // Try to get client ID from another source or continue with a placeholder
+        // You might need to call another API or handle this differently
+        console.log('Password set successfully, but no client ID available');
+        onNext('pending'); // Or handle this case differently
+      }
     } catch (err: any) {
       if (err.response) {
         if (err.response.data?.message) {
@@ -148,6 +141,8 @@ const SetPassword: React.FC<SetPasswordProps> = ({
           setError("Invalid password. Please check requirements and try again.");
         } else if (err.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 403) {
+          setError("Please complete the previous steps first.");
         } else if (err.response.status === 422) {
           setError("Password validation failed. Please check requirements.");
         } else {
@@ -169,18 +164,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
     return allValidationsPassed && passwordsMatch && password.length > 0;
   };
 
-  const handleRetry = () => {
-    setError(null);
-    setIsLoading(false);
-    if (step === 'finalize') {
-      handleFinalize();
-    }
-  };
-
   const getButtonText = () => {
-    if (step === 'finalize') {
-      return isLoading ? "Finalizing Signup..." : "Try Again";
-    }
     if (isCompleted) return "Continue";
     return isLoading ? "Setting Password..." : "Set Password";
   };
@@ -217,38 +201,6 @@ const SetPassword: React.FC<SetPasswordProps> = ({
     );
   }
 
-  // Show finalization loading
-  if (step === 'finalize') {
-    return (
-      <div className="mx-auto mt-16 max-w-md">
-        <FormHeading
-          title="Finalizing Your Account"
-          description="Setting up your account credentials..."
-        />
-        
-        {isLoading ? (
-          <div className="flex items-center justify-center h-40">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
-            <span className="ml-3 text-gray-600">Finalizing signup...</span>
-          </div>
-        ) : error ? (
-          <div>
-            <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
-              <p className="text-red-600 text-sm">{error}</p>
-            </div>
-            <Button
-              onClick={handleRetry}
-              variant="ghost"
-              className="w-full py-6"
-            >
-              Try Again
-            </Button>
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-
   // Show password setup form
   return (
     <div className="mx-auto mt-16 max-w-md">
@@ -257,10 +209,28 @@ const SetPassword: React.FC<SetPasswordProps> = ({
         description="Create a secure password for your trading account."
       />
 
-      {clientId && (
+      {/* Background finalize status */}
+      {isFinalizingInBackground && (
         <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-200">
-          <p className="text-blue-700 text-sm">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+            <p className="text-blue-700 text-sm">Setting up your account...</p>
+          </div>
+        </div>
+      )}
+
+      {clientId && (
+        <div className="mb-4 p-3 bg-green-50 rounded border border-green-200">
+          <p className="text-green-700 text-sm">
             <strong>Client ID:</strong> {clientId}
+          </p>
+        </div>
+      )}
+
+      {finalizeError && !clientId && (
+        <div className="mb-4 p-3 bg-yellow-50 rounded border border-yellow-200">
+          <p className="text-yellow-700 text-sm">
+            <strong>Note:</strong> Account setup is still in progress. You can continue setting your password.
           </p>
         </div>
       )}

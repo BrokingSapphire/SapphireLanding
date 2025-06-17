@@ -159,9 +159,14 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
 
       if (!response.data?.data?.uid) {
         setError("Failed to initialize income proof. Please try again.");
+        if(response.data?.data==null) {
+          setError("Empty data received from server. Please try again.");
+        }
         return;
       }
-
+      
+      console.log(response.data);
+      
       // Store the UID from backend response
       setIncomeProofUid(response.data.data.uid);
       setShowUploadIncome(true);

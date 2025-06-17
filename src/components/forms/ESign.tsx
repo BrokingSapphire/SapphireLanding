@@ -5,6 +5,7 @@ import FormHeading from "./FormHeading";
 import Image from "next/image";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint'; // Adjust import path as needed
 
 interface LastStepPageProps {
   onNext: () => void;
@@ -22,7 +23,23 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [esignStatus, setEsignStatus] = useState<'idle' | 'initializing' | 'signing' | 'completing' | 'completed'>('idle');
 
-  // Prefill data from initialData (API response)
+  // Use the checkpoint hook to check for existing eSign data
+  const { 
+    isStepCompleted,
+    getStepData,
+    refetchStep 
+  } = useCheckpoint();
+
+  // Check if eSign is already completed from the hook
+  useEffect(() => {
+    if (isStepCompleted(CheckpointStep.ESIGN)) {
+      // eSign is already completed
+      setEsignStatus('completed');
+      return;
+    }
+  }, [isStepCompleted]);
+
+  // Also check initialData as fallback
   useEffect(() => {
     const data = initialData as { esign?: boolean } | undefined;
     if (isCompleted && data?.esign) {
@@ -37,7 +54,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
     try {
       // Create redirect URL - this should be your app's URL where user returns after eSign
-      const redirectUrl = `${window.location.origin}/esign-callback`;
+      const redirectUrl = 'https://sapphirebroking.com/signup';
 
       // Get the auth token
       const authToken = Cookies.get('authToken');
@@ -96,6 +113,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         request?: unknown;
       };
 
+      console.error("eSign initialization error:", err);
       if (error.response) {
         if (error.response.data?.message) {
           setError(`Error: ${error.response.data.message}`);
@@ -139,7 +157,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           return;
         }
         
-        // Check if eSign is completed - FIXED: Corrected the typo from 'siafgnup' to 'signup'
+        // Check if eSign is completed
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
           {
@@ -158,6 +176,9 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           clearInterval(pollInterval);
           setEsignStatus('completed');
           setIsLoading(false);
+          
+          // Refetch eSign step to update the hook
+          refetchStep(CheckpointStep.ESIGN);
           
           // Small delay before proceeding to next step
           setTimeout(() => {
@@ -219,7 +240,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       case 'completed':
         return "eSign Completed!";
       default:
-        return isCompleted ? "Continue" : "Proceed to E-sign";
+        const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
+        return stepCompleted ? "Continue" : "Proceed to E-sign";
     }
   };
 
@@ -228,15 +250,20 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   };
 
   const handleButtonClick = () => {
-    if (isCompleted || esignStatus === 'completed') {
+    const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
+    
+    if (stepCompleted || esignStatus === 'completed') {
       onNext();
     } else {
       handleEsignInitialize();
     }
   };
 
+  // Check if step is completed
+  const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
+
   // Show completed state
-  if (isCompleted && esignStatus === 'completed') {
+  if (stepCompleted || esignStatus === 'completed') {
     return (
       <div className="mx-auto p-4 mt-10">
         <FormHeading

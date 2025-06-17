@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import { ArrowRight } from "lucide-react";
 import axios from "axios";
-
+import Cookies from "js-cookie";
 interface ManualBankDetailsProps {
   onNext: () => void;
   onBack: () => void;
@@ -91,8 +91,8 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
 
   const mapAccountTypeToApi = (accountType: string): string => {
     const mapping: Record<string, string> = {
-      "Savings": "SAVINGS",
-      "Current": "CURRENT"
+      "Savings": "savings",
+      "Current": "current"
     };
     return mapping[accountType] || accountType.toUpperCase();
   };
@@ -117,7 +117,12 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
             ifsc_code: formData.ifscCode,
             account_type: mapAccountTypeToApi(formData.accountType),
           }
-        }
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get('authToken')}`,
+          },}
       );
 
       // If successful, proceed to next step
