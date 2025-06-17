@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import RiskDisclosureModal from "../new-signup/RiskDisclosure";
 import UploadIncomeProof from "./UploadIncomeProof";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface InvestmentSegmentProps {
   onNext: () => void;
@@ -95,7 +96,9 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
           segments: selectedSegments,
         },
         {
-          withCredentials: true // Use cookies for authentication
+          headers:{
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
         }
       );
 
@@ -148,7 +151,9 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
           step: "income_proof",
         },
         {
-          withCredentials: true // Use cookies for authentication
+          headers:{
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
         }
       );
 

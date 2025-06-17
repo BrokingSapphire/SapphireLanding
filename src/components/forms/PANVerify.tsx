@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface PANVerifyProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: unknown;
   isCompleted?: boolean;
 }
 
@@ -22,17 +23,21 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
 
   // Prefill data from initialData (API response)
   useEffect(() => {
-    if (isCompleted && initialData) {
+    const data = initialData as {
+      pan_number?: string;
+      full_name?: string;
+      dob?: string;
+      masked_aadhaar?: string;
+    } | undefined;
+
+    if (isCompleted && data) {
       // If step is completed, prefill with data from API
-      setPanNumber(initialData.pan_number || "");
-      setFullName(initialData.full_name || "");
-      setDob(initialData.dob || "");
-      setMaskedAadhaar(initialData.masked_aadhaar || "");
+      setPanNumber(data.pan_number || "");
+      setFullName(data.full_name || "");
+      setDob(data.dob || "");
+      setMaskedAadhaar(data.masked_aadhaar || "");
     }
   }, [initialData, isCompleted]);
-
-  // REMOVED: Auto-advance logic when completed
-  // This was causing the automatic skip to next step
 
   const validatePan = (pan: string) => {
     return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan);
@@ -83,12 +88,26 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
     setError(null);
 
     try {
+      const authToken = Cookies.get('authToken');
+      
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setIsLoading(false);
+        return;
+      }
+
       // Call checkpoint API with PAN step
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "pan",
           pan_number: panNumber,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`
+          }
         }
       );
 
@@ -98,23 +117,33 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
       }
 
       onNext();
-    } catch (err: any) {
-      if (err.response) {
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string; error?: { message?: string } };
+          status?: number;
+        };
+        request?: unknown;
+      };
+
+      if (error.response) {
         // Handle specific error messages from the server
-        if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
-        } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
-        } else if (err.response.status === 400) {
+        if (error.response.data?.message) {
+          setError(`Error: ${error.response.data.message}`);
+        } else if (error.response.data?.error?.message) {
+          setError(`Error: ${error.response.data.error.message}`);
+        } else if (error.response.status === 400) {
           setError("Invalid PAN details or request. Please check and try again.");
-        } else if (err.response.status === 401) {
+        } else if (error.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
-        } else if (err.response.status === 422) {
+        } else if (error.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
+        } else if (error.response.status === 422) {
           setError("Invalid PAN format or PAN already exists.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          setError(`Server error (${error.response.status}). Please try again.`);
         }
-      } else if (err.request) {
+      } else if (error.request) {
         setError("Network error. Please check your connection and try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
@@ -126,7 +155,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
 
   // Get button text based on current state
   const getButtonText = () => {
-    if (isCompleted) return "Continue"; // Changed from "Completed ✓"
+    if (isCompleted) return "Continue";
     if (isLoading) return "Verifying PAN...";
     return "Continue";
   };
@@ -134,7 +163,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
   // Determine if button should be disabled
   const isButtonDisabled = () => {
     if (isLoading) return true;
-    if (isCompleted) return false; // Allow clicking when completed
+    if (isCompleted) return false;
     return !validatePan(panNumber);
   };
 

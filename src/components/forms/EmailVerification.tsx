@@ -342,7 +342,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
               />
             ))}
           </div>
-          <div className="flex justify-between text-sm mb-2">
+          <div className="flex w-full justify-end text-sm mb-2">
             <button
               className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSendOTP}
@@ -352,9 +352,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
                 ? `Resend Code (${resendTimer}s)`
                 : "Resend Code"}
             </button>
-            <span className="text-gray-500">
-              Code valid for {formatTime(otpTimer)}
-            </span>
+            
           </div>
         </div>
       )}
