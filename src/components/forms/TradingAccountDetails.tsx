@@ -183,17 +183,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           />
         </div>
 
-        {formData.maidenName && (
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Maiden Name (Optional)</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
-              value={formData.maidenName}
-              disabled
-            />
-          </div>
-        )}
+        
 
         <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
           <div className="flex items-center">
@@ -261,19 +251,6 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           )}
         </div>
 
-        <div className="mb-6">
-          <label className="block mb-2">
-            Maiden Name (Optional)
-          </label>
-          <input
-            type="text"
-            placeholder="Enter maiden name if applicable"
-            value={formData.maidenName}
-            onChange={(e) => handleInputChange("maidenName", e.target.value)}
-            disabled={isSubmitting}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
-        </div>
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 rounded">

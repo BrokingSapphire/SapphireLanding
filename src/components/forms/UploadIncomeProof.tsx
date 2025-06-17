@@ -3,23 +3,26 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import { ChevronDown, Upload } from "lucide-react";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface UploadIncomeProofProps {
   onNext: (file?: File) => void;
   onSkip?: () => void;
-  uid: string | null; // UID from the income_proof initialization
+  uid?: string | null; // UID from the income_proof initialization (optional for re-initialization)
 }
 
 const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({ 
   onNext,
   onSkip,
-  uid 
+  uid: initialUid 
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedOption, setSelectedOption] = useState<string>("Bank statement (last 6 months) with ₹10,000+ average balance.");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uid, setUid] = useState<string | null>(initialUid || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,15 +83,90 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
     }
   };
 
+  // Map frontend display options to backend API values
+  const mapDocumentTypeToApi = (displayOption: string): string => {
+    const mapping: Record<string, string> = {
+      "Bank statement (last 6 months) with ₹10,000+ average balance.": "bank_statement",
+      "Latest salary slip with ₹15,000+ gross monthly income.": "salary_slip",
+      "Latest Form 16 with ₹1,20,000+ annual income": "form_16",
+      "Net worth certificate of ₹10,00,000+.": "net_worth_certificate",
+      "Latest demat statement with ₹10,000+ holdings.": "demat_statement"
+    };
+    return mapping[displayOption] || "bank_statement";
+  };
+
+  // Initialize income proof with selected document type
+  const initializeIncomeProof = async () => {
+    setIsInitializing(true);
+    setError(null);
+
+    try {
+      const incomeProofType = mapDocumentTypeToApi(selectedOption);
+      
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "income_proof",
+          income_proof_type: incomeProofType
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
+        }
+      );
+
+      if (!response.data?.data?.uid) {
+        setError("Failed to initialize income proof. Please try again.");
+        return null;
+      }
+
+      const newUid = response.data.data.uid;
+      setUid(newUid);
+      return newUid;
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string };
+          status?: number;
+        };
+        request?: unknown;
+      };
+
+      if (error.response) {
+        if (error.response.data?.message) {
+          setError(`Initialization failed: ${error.response.data.message}`);
+        } else if (error.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else {
+          setError(`Server error (${error.response.status}). Please try again.`);
+        }
+      } else if (error.request) {
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+      return null;
+    } finally {
+      setIsInitializing(false);
+    }
+  };
+
   const handleUploadAndContinue = async () => {
     if (!selectedFile) {
       setError("Please select a file to upload.");
       return;
     }
 
-    if (!uid) {
-      setError("Upload session not initialized. Please try again.");
-      return;
+    let currentUid = uid;
+
+    // Initialize income proof if we don't have a UID or if document type changed
+    if (!currentUid) {
+      currentUid = await initializeIncomeProof();
+      if (!currentUid) {
+        return; // Error already set in initializeIncomeProof
+      }
     }
 
     setIsUploading(true);
@@ -99,30 +177,38 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
       formData.append('pdf', selectedFile);
 
       await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/${uid}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/${currentUid}`,
         formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-          },
-          withCredentials: true // Use cookies for authentication
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
         }
       );
 
       // Call onNext with the file
       onNext(selectedFile);
-    } catch (err: any) {
-      if (err.response) {
-        if (err.response.data?.message) {
-          setError(`Upload failed: ${err.response.data.message}`);
-        } else if (err.response.status === 401) {
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string };
+          status?: number;
+        };
+        request?: unknown;
+      };
+
+      if (error.response) {
+        if (error.response.data?.message) {
+          setError(`Upload failed: ${error.response.data.message}`);
+        } else if (error.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
-        } else if (err.response.status === 422) {
+        } else if (error.response.status === 422) {
           setError("Invalid file or upload error. Please try again.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          setError(`Server error (${error.response.status}). Please try again.`);
         }
-      } else if (err.request) {
+      } else if (error.request) {
         setError("Network error. Please check your connection and try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
@@ -166,6 +252,8 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
     }
   };
 
+  const isProcessing = isUploading || isInitializing;
+
   return (
     <div className="w-full max-w-xl mx-auto mt-16">
       <FormHeading
@@ -173,27 +261,21 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         description="A small step for you, a big leap towards seamless trading!"
       />
 
-      {!uid && (
-        <div className="mt-4 p-3 bg-yellow-50 rounded border border-yellow-200">
-          <p className="text-yellow-600 text-sm">Upload session not initialized. Please go back and try again.</p>
-        </div>
-      )}
-
       <div className="mt-6 p-2 bg-[#F7F9FD] rounded">
         <div className="relative">
           <div
             className="border rounded-md p-4 flex justify-between items-center cursor-pointer"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
+            onClick={() => !isProcessing && setDropdownOpen(!dropdownOpen)}
           >
             <span className="w-[90%] text-center">{selectedOption}</span>
             <ChevronDown
               className={`h-5 w-5 transition-transform ${
                 dropdownOpen ? "transform rotate-180" : ""
-              }`}
+              } ${isProcessing ? "opacity-50" : ""}`}
             />
           </div>
 
-          {dropdownOpen && (
+          {dropdownOpen && !isProcessing && (
             <div className="absolute z-10 mt-1 bg-white border rounded-md shadow-lg w-full">
               {documentOptions.map((option, index) => (
                 <div
@@ -202,6 +284,10 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
                   onClick={() => {
                     setSelectedOption(option);
                     setDropdownOpen(false);
+                    // Reset UID when document type changes to force re-initialization
+                    if (option !== selectedOption && uid) {
+                      setUid(null);
+                    }
                   }}
                 >
                   <span>{option}</span>
@@ -229,7 +315,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
                   setError(null);
                 }}
                 className="mt-2 text-sm text-red-600 hover:text-red-800"
-                disabled={isUploading}
+                disabled={isProcessing}
               >
                 Remove
               </button>
@@ -241,7 +327,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
               <button
                 onClick={handleBrowseClick}
                 className="text-blue-600 hover:text-blue-800 font-medium"
-                disabled={isUploading}
+                disabled={isProcessing}
               >
                 Choose file
               </button>
@@ -251,7 +337,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
                 onChange={handleFileChange}
                 className="hidden"
                 accept=".pdf,.jpg,.jpeg,.png"
-                disabled={isUploading}
+                disabled={isProcessing}
               />
               <p className="text-xs text-gray-500 mt-2">
                 Supported formats: PDF, JPG, JPEG, PNG (Max 10MB)
@@ -266,16 +352,11 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
           </div>
         )}
 
-        <div className="mt-4 flex gap-2">
-          {onSkip && (
-            <button
-              onClick={onSkip}
-              className="text-gray-500 text-sm hover:text-gray-700 border border-gray-300 rounded py-2 px-4"
-              disabled={isUploading}
-            >
-              Skip for now
-            </button>
-          )}
+        {/* Show selected document type info */}
+        <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+          <p className="text-blue-800 text-sm">
+            <strong>Selected document type:</strong> {mapDocumentTypeToApi(selectedOption).replace(/_/g, ' ').toUpperCase()}
+          </p>
         </div>
       </div>
 
@@ -284,7 +365,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
           <Button
             variant="outline"
             onClick={onSkip}
-            disabled={isUploading}
+            disabled={isProcessing}
             className="flex-1 py-6"
           >
             Skip for now
@@ -294,18 +375,21 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         <Button
           variant="ghost"
           onClick={selectedFile ? handleUploadAndContinue : () => onNext()}
-          disabled={isUploading || !uid}
+          disabled={isProcessing}
           className={`${onSkip ? 'flex-1' : 'w-full'} py-6 ${
-            (isUploading || !uid) ? "opacity-50 cursor-not-allowed" : ""
+            isProcessing ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
-          {isUploading ? "Uploading..." : selectedFile ? "Upload & Continue" : "Continue"}
+          {isInitializing ? "Initializing..." : isUploading ? "Uploading..." : selectedFile ? "Upload & Continue" : "Continue"}
         </Button>
       </div>
 
       <div className="text-center text-xs text-gray-600 mt-4">
         <p>
           Upload any of the above documents to verify your income eligibility for derivative trading.
+        </p>
+        <p className="mt-1 text-blue-600">
+          Document type will be sent to backend: <strong>{mapDocumentTypeToApi(selectedOption)}</strong>
         </p>
       </div>
     </div>
