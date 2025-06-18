@@ -62,7 +62,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     const checkIncomeProofStatus = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof`,
           {
             headers: {
               Authorization: `Bearer ${Cookies.get('authToken')}`
@@ -128,7 +128,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
       console.log("Submitting investment segments:", selectedSegments);
       
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "investment_segment",
           segments: selectedSegments,
@@ -203,7 +203,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   const handleInitializeIncomeProof = async () => {
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "income_proof",
         },

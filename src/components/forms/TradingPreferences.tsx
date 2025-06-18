@@ -190,7 +190,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
       const apiValues = mapToApiValues();
       
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "personal_detail",
           ...apiValues

@@ -187,7 +187,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
 
     try {
       await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "bank_validation",
           validation_type: "bank",

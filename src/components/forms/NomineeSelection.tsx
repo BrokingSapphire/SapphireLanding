@@ -64,7 +64,7 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
 
       // Send empty nominees array to backend
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "add_nominees",
           nominees: []

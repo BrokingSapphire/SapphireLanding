@@ -96,7 +96,7 @@ const QRIPVContent = () => {
 
       // Use your existing putIpv endpoint
       await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/${uid}/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/${uid}`,
         formData,
         {
           headers: {

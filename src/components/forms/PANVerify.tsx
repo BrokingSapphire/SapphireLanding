@@ -118,7 +118,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
 
       // Call checkpoint API with PAN step
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "pan",
           pan_number: panNumber,

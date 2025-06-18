@@ -95,7 +95,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
       try {
         const token = Cookies.get('authToken');
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/pan/`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/pan`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -190,7 +190,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "user_detail",
           father_spouse_name: formData.fatherSpouseName.trim(),

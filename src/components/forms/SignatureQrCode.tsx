@@ -91,7 +91,7 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
     try {
       // Use your existing getSignature endpoint
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature`,
         { 
           withCredentials: true 
         }

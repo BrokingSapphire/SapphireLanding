@@ -66,7 +66,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
 
       // Use the correct endpoint for signature initialization
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "signature"
         },
@@ -313,7 +313,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
 
       // Use the correct PUT endpoint for signature upload
       await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature/${signatureUid}/`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature/${signatureUid}`,
         formData,
         {
           headers: {
