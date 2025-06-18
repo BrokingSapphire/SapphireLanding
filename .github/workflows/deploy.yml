@@ -20,6 +20,7 @@ jobs:
           
       - name: Install dependencies and build
         run: |
+          echo """${{ secrets.ENV }}""" > .env
           npm ci
           npm run build
           
@@ -51,7 +52,6 @@ jobs:
             fi
             
             mv static .next/
-            echo """${{ secrets.ENV }}""" > .env
             
             echo "Starting landing..."
             screen -S sapphire-landing -d -m $(which node) server.js
