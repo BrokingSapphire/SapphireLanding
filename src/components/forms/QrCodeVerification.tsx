@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { ArrowLeft, Clock} from "lucide-react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import QRCode from "qrcode";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface QrCodeVerificationProps {
   onBack: () => void;
@@ -106,23 +107,41 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
       } else {
         setVerificationStatus('waiting');
       }
-    } catch (err: any) {
-      if (err.response?.status === 204) {
-        // IPV not uploaded yet (NO_CONTENT from your backend)
-        setVerificationStatus('waiting');
-      } else if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
-        setVerificationStatus('failed');
-        setIsPolling(false);
-        toast.error(`Error: ${err.response.data.message}`);
-      } else if (err.response?.status === 401) {
-        setError("Session expired. Please restart the process.");
-        setVerificationStatus('failed');
-        setIsPolling(false);
-        toast.error("Session expired. Please restart the process.");
+    } catch (err: unknown) {
+      // Define a type guard for AxiosError
+      function isAxiosError(error: unknown): error is { response: { status: number; data?: { message?: string } } } {
+        return (
+          typeof error === "object" &&
+          error !== null &&
+          "response" in error &&
+          typeof (error as { response?: unknown }).response === "object" &&
+          (error as { response: { status: number } }).response !== undefined
+        );
+      }
+
+      if (isAxiosError(err)) {
+        const response = err.response;
+        if (response.status === 204) {
+          // IPV not uploaded yet (NO_CONTENT from your backend)
+          setVerificationStatus('waiting');
+        } else if (response.data?.message) {
+          setError(`Error: ${response.data.message}`);
+          setVerificationStatus('failed');
+          setIsPolling(false);
+          toast.error(`Error: ${response.data.message}`);
+        } else if (response.status === 401) {
+          setError("Session expired. Please restart the process.");
+          setVerificationStatus('failed');
+          setIsPolling(false);
+          toast.error("Session expired. Please restart the process.");
+        } else {
+          // For other errors, continue polling but show a warning
+          console.warn("Polling error:", err);
+          setVerificationStatus('waiting');
+        }
       } else {
-        // For other errors, continue polling but show a warning
-        console.warn("Polling error:", err);
+        // Unknown error structure
+        console.warn("Unknown error during polling:", err);
         setVerificationStatus('waiting');
       }
     }
@@ -183,7 +202,9 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
         <div className="border-2 border-gray-300 rounded-lg p-4 flex justify-center items-center">
           <div className="w-64 h-64 flex items-center justify-center">
             {qrCodeDataUrl ? (
-              <img 
+              <Image
+                height={200}
+                width={200}
                 src={qrCodeDataUrl} 
                 alt="QR Code for IPV Verification"
                 className="w-full h-full object-contain"

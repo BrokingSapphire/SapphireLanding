@@ -34,7 +34,6 @@ const OnboardingCarousel = () => {
 
   // Use checkpoint hook to manage state
   const { 
-    checkpointData, 
     currentStep: resumeStep, 
     isLoading: checkpointLoading,
     error: checkpointError,
@@ -43,9 +42,7 @@ const OnboardingCarousel = () => {
     isEmailCompleted,
     isMobileCompleted,
     getClientId,
-    forceNextStep,
     refetchStep,
-    invalidateAll
   } = useCheckpoint();
 
   const TOTAL_STEPS = 16;
@@ -57,15 +54,17 @@ const OnboardingCarousel = () => {
       setCurrentStep(resumeStep);
       
       // Check localStorage for existing client ID
-      const storedClientId = localStorage.getItem('clientId');
-      if (storedClientId) {
-        console.log('Found existing client ID in localStorage:', storedClientId);
-      } else {
-        // Try to get client ID from checkpoint data and save to localStorage
-        const existingClientId = getClientId();
-        if (existingClientId) {
-          localStorage.setItem('clientId', existingClientId);
-          console.log('Saved client ID from checkpoint to localStorage:', existingClientId);
+      if (typeof window !== 'undefined') {
+        const storedClientId = localStorage.getItem('clientId');
+        if (storedClientId) {
+          console.log('Found existing client ID in localStorage:', storedClientId);
+        } else {
+          // Try to get client ID from checkpoint data and save to localStorage
+          const existingClientId = getClientId();
+          if (existingClientId) {
+            localStorage.setItem('clientId', existingClientId);
+            console.log('Saved client ID from checkpoint to localStorage:', existingClientId);
+          }
         }
       }
       
@@ -117,6 +116,7 @@ const OnboardingCarousel = () => {
 
   // Helper function to get client ID from localStorage
   const getStoredClientId = (): string | null => {
+    if (typeof window === 'undefined') return null;
     return localStorage.getItem('clientId');
   };
 
@@ -149,7 +149,7 @@ const OnboardingCarousel = () => {
         const requiresIncomeProof = investmentData?.requiresIncomeProof === true;
         
         // Check if user selected risk segments
-        const selectedSegments = investmentData?.segments || [];
+        const selectedSegments: string[] = Array.isArray(investmentData?.segments) ? investmentData.segments : [];
         const hasRiskSegments = selectedSegments.some((segment: string) => 
           segment === "F&O" || segment === "Currency" || segment === "Commodity"
         );
@@ -338,7 +338,7 @@ const OnboardingCarousel = () => {
       component: (
         <EmailVerification 
           onNext={() => handleNext(true)} // Email verification handles its own completion
-          initialData={null}
+          initialData={undefined}
           isCompleted={isEmailCompleted()}
         />
       )
@@ -348,7 +348,7 @@ const OnboardingCarousel = () => {
       component: (
         <MobileVerification 
           onNext={() => handleNext(true)} // Mobile verification handles its own completion
-          initialData={null}
+          initialData={undefined}
           isCompleted={isMobileCompleted()}
         />
       )
@@ -371,7 +371,7 @@ const OnboardingCarousel = () => {
           onNext={() => handleStepCompletion(CheckpointStep.AADHAAR)}
           initialData={getStepData(CheckpointStep.AADHAAR)}
           isCompleted={isStepCompleted(CheckpointStep.AADHAAR)}
-          panMaskedAadhaar={getStepData(CheckpointStep.PAN)?.masked_aadhaar}
+          panMaskedAadhaar={getStepData(CheckpointStep.PAN)?.masked_aadhaar as string | undefined}
         />
       )
     },
@@ -380,7 +380,7 @@ const OnboardingCarousel = () => {
       component: (
         <InvestmentSegment 
           onNext={handleInvestmentNext} // Use special handler
-          initialData={getStepData(CheckpointStep.INVESTMENT_SEGMENT)}
+          initialData={getStepData(CheckpointStep.INVESTMENT_SEGMENT) ?? undefined}
           isCompleted={isStepCompleted(CheckpointStep.INVESTMENT_SEGMENT)}
         />
       ),
@@ -390,7 +390,7 @@ const OnboardingCarousel = () => {
       component: (
         <TradingAccountDetails 
           onNext={() => handleStepCompletion(CheckpointStep.USER_DETAIL)}
-          initialData={getStepData(CheckpointStep.USER_DETAIL)}
+          initialData={getStepData(CheckpointStep.USER_DETAIL) ?? undefined}
           isCompleted={isStepCompleted(CheckpointStep.USER_DETAIL)}
         />
       )
@@ -420,7 +420,7 @@ const OnboardingCarousel = () => {
       component: (
         <BankAccountLinking 
           onNext={() => handleStepCompletion(CheckpointStep.BANK_VALIDATION)}
-          initialData={getStepData(CheckpointStep.BANK_VALIDATION)}
+          initialData={getStepData(CheckpointStep.BANK_VALIDATION) ?? undefined}
           isCompleted={isStepCompleted(CheckpointStep.BANK_VALIDATION)}
         />
       ),
@@ -430,7 +430,7 @@ const OnboardingCarousel = () => {
       component: (
         <IPVVerification 
           onNext={() => handleStepCompletion(CheckpointStep.IPV)}
-          initialData={getStepData(CheckpointStep.IPV)}
+          initialData={getStepData(CheckpointStep.IPV) ?? undefined}
           isCompleted={isStepCompleted(CheckpointStep.IPV)}
         />
       )
@@ -440,7 +440,7 @@ const OnboardingCarousel = () => {
       component: (
         <SignatureComponent 
           onNext={() => handleStepCompletion(CheckpointStep.SIGNATURE)}
-          initialData={getStepData(CheckpointStep.SIGNATURE)}
+          initialData={getStepData(CheckpointStep.SIGNATURE) ?? undefined}
           isCompleted={isStepCompleted(CheckpointStep.SIGNATURE)}
         />
       )
@@ -474,7 +474,7 @@ const OnboardingCarousel = () => {
             // Client ID is now handled in localStorage within SetPassword component
             handleStepCompletion(CheckpointStep.PASSWORD_SETUP);
           }}
-          initialData={getStepData(CheckpointStep.PASSWORD_SETUP)}
+          initialData={getStepData(CheckpointStep.PASSWORD_SETUP) ?? undefined}
           isCompleted={isStepCompleted(CheckpointStep.PASSWORD_SETUP)}
         />
       )
@@ -488,8 +488,8 @@ const OnboardingCarousel = () => {
             // Client ID is now retrieved from localStorage within MPIN component
             handleStepCompletion(CheckpointStep.MPIN_SETUP);
           }}
-          clientId={getStoredClientId()} // Pass client ID from localStorage
-          initialData={getStepData(CheckpointStep.MPIN_SETUP)}
+          clientId={getStoredClientId() ?? undefined} // Pass client ID from localStorage, convert null to undefined
+          initialData={getStepData(CheckpointStep.MPIN_SETUP) ?? undefined}
           isCompleted={isStepCompleted(CheckpointStep.MPIN_SETUP)}
         />
       )
@@ -499,7 +499,7 @@ const OnboardingCarousel = () => {
       component: (
         <CongratulationsPage 
           onNext={() => handleNext(true)}
-          clientId={getStoredClientId()} // Pass client ID from localStorage
+          clientId={getStoredClientId() ?? undefined} // Pass client ID from localStorage, convert null to undefined
         />
       ),
     },
@@ -565,7 +565,7 @@ const OnboardingCarousel = () => {
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to Load Progress</h3>
           <p className="text-gray-600 mb-4">
-            We couldn't retrieve your previous progress. You can start from the beginning.
+            We couldn&apos;t retrieve your previous progress. You can start from the beginning.
           </p>
           <button 
             onClick={() => {

@@ -56,8 +56,16 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     accountType: "",
   });
 
+  // Define a type for the bank data received from the API
+  interface ApiBankData {
+    account_no?: string;
+    ifsc_code?: string;
+    account_type?: string;
+    full_name?: string;
+  }
+
   // Map API account type values back to frontend display values
-  const mapFromApiValues = (data: any) => {
+  const mapFromApiValues = (data: ApiBankData) => {
     const accountTypeReverseMapping: Record<string, string> = {
       "savings": "Savings",
       "current": "Current"
@@ -178,7 +186,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     setError(null);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "bank_validation",
@@ -204,15 +212,32 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
         onNext();
       }, 2000);
       
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
-      } else if (err.response?.status === 422) {
-        setError("Bank account does not exist or invalid details provided.");
-      } else if (err.response?.status === 400) {
-        setError("Invalid bank details. Please check and try again.");
-      } else if (err.response?.status === 401) {
-        setError("Authentication failed. Please restart the process.");
+    } catch (err: unknown) {
+      type AxiosErrorResponse = {
+        response?: {
+          data?: { message?: string };
+          status?: number;
+        };
+      };
+
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as AxiosErrorResponse).response === "object"
+      ) {
+        const response = (err as AxiosErrorResponse).response;
+        if (response?.data?.message) {
+          setError(`Error: ${response.data.message}`);
+        } else if (response?.status === 422) {
+          setError("Bank account does not exist or invalid details provided.");
+        } else if (response?.status === 400) {
+          setError("Invalid bank details. Please check and try again.");
+        } else if (response?.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else {
+          setError("Failed to verify bank account. Please try again.");
+        }
       } else {
         setError("Failed to verify bank account. Please try again.");
       }
@@ -361,7 +386,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
 
         <div className="text-center text-sm text-gray-600 mt-4">
           <p>
-            We'll verify your bank account details for secure transactions. 
+            We&apos;ll verify your bank account details for secure transactions. 
             This process may take a few moments.
           </p>
         </div>

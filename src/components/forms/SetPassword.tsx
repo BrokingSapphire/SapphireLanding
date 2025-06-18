@@ -6,9 +6,14 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 
+interface InitialData {
+  client_id?: string;
+  // Add other properties as needed based on API response
+}
+
 interface SetPasswordProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: InitialData;
   isCompleted?: boolean;
 }
 
@@ -33,7 +38,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [clientId, setClientId] = useState<string | null>(null);
   const [isFinalizingInBackground, setIsFinalizingInBackground] = useState(false);
-  const [finalizeError, setFinalizeError] = useState<string | null>(null);
+  const [, setFinalizeError] = useState<string | null>(null);
 
   const [validation, setValidation] = useState<PasswordValidation>({
     minLength: false,
@@ -103,9 +108,17 @@ const SetPassword: React.FC<SetPasswordProps> = ({
         localStorage.setItem('clientId', newClientId);
         console.log('Finalize successful, Client ID saved to localStorage:', newClientId);
       }
-    } catch (err: any) {
-      console.warn('Finalize API failed (non-blocking):', err.response?.data?.message || err.message);
-      setFinalizeError(err.response?.data?.message || 'Finalize failed');
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.warn('Finalize API failed (non-blocking):', err.response?.data?.message || err.message);
+        setFinalizeError(err.response?.data?.message || 'Finalize failed');
+      } else if (err instanceof Error) {
+        console.warn('Finalize API failed (non-blocking):', err.message);
+        setFinalizeError(err.message || 'Finalize failed');
+      } else {
+        console.warn('Finalize API failed (non-blocking): Unknown error');
+        setFinalizeError('Finalize failed');
+      }
       // Don't block the user, they can still set password
     } finally {
       setIsFinalizingInBackground(false);
@@ -155,35 +168,41 @@ const SetPassword: React.FC<SetPasswordProps> = ({
 
       // Proceed to next step
       onNext();
-    } catch (err: any) {
-      if (err.response) {
-        // Handle "Password already set" error specifically
-        if (err.response.status === 400 && 
-            (err.response.data?.message?.includes("Password already set") || 
-             err.response.data?.error?.message?.includes("Password already set"))) {
-          console.log("Password already set, proceeding to next step");
-          // If password is already set, just proceed to next step
-          onNext();
-          return;
-        }
-        
-        if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
-        } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
-        } else if (err.response.status === 400) {
-          setError("Invalid password. Please check requirements and try again.");
-        } else if (err.response.status === 401) {
-          setError("Authentication failed. Please restart the process.");
-        } else if (err.response.status === 403) {
-          setError("Please complete the previous steps first.");
-        } else if (err.response.status === 422) {
-          setError("Password validation failed. Please check requirements.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          // Handle "Password already set" error specifically
+          if (
+            err.response.status === 400 &&
+            (err.response.data?.message?.includes("Password already set") ||
+              err.response.data?.error?.message?.includes("Password already set"))
+          ) {
+            console.log("Password already set, proceeding to next step");
+            // If password is already set, just proceed to next step
+            onNext();
+            return;
+          }
+
+          if (err.response.data?.message) {
+            setError(`Error: ${err.response.data.message}`);
+          } else if (err.response.data?.error?.message) {
+            setError(`Error: ${err.response.data.error.message}`);
+          } else if (err.response.status === 400) {
+            setError("Invalid password. Please check requirements and try again.");
+          } else if (err.response.status === 401) {
+            setError("Authentication failed. Please restart the process.");
+          } else if (err.response.status === 403) {
+            setError("Please complete the previous steps first.");
+          } else if (err.response.status === 422) {
+            setError("Password validation failed. Please check requirements.");
+          } else {
+            setError(`Server error (${err.response.status}). Please try again.`);
+          }
+        } else if (err.request) {
+          setError("Network error. Please check your connection and try again.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          setError("An unexpected error occurred. Please try again.");
         }
-      } else if (err.request) {
-        setError("Network error. Please check your connection and try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
       }

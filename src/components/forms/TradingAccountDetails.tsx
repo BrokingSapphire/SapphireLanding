@@ -7,7 +7,12 @@ import { toast } from "sonner";
 
 interface TradingAccountDetailsProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: {
+    father_spouse_name?: string;
+    mother_name?: string;
+    maiden_name?: string;
+    [key: string]: unknown; // Allow extra fields if needed
+  };
   isCompleted?: boolean;
 }
 
@@ -113,7 +118,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         }
       } catch (error) {
         // Silently handle error - PAN data might not be available yet
-        console.log("Could not fetch PAN data for prefilling");
+        console.log("Could not fetch PAN data for prefilling",error);
       }
     };
     
@@ -212,13 +217,26 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         onNext();
       }, 500);
       
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
-      } else if (err.response?.status === 400) {
-        setError("Invalid details. Please check and try again.");
-      } else if (err.response?.status === 401) {
-        setError("Authentication failed. Please restart the process.");
+    } catch (err: unknown) {
+      // Import AxiosError from axios at the top if not already imported
+      // import type { AxiosError } from "axios";
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as import("axios").AxiosError).response === "object"
+      ) {
+        const axiosError = err as import("axios").AxiosError;
+        const response = axiosError.response;
+        if (response?.data && typeof response.data === "object" && "message" in response.data) {
+          setError(`Error: ${(response.data as { message?: string }).message}`);
+        } else if (response?.status === 400) {
+          setError("Invalid details. Please check and try again.");
+        } else if (response?.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else {
+          setError("Failed to save details. Please try again.");
+        }
       } else {
         setError("Failed to save details. Please try again.");
       }
@@ -253,7 +271,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
           <label className="block mb-2">
-            Father's/Spouse Name<span className="text-red-500">*</span>
+            Father&apos;s/Spouse Name<span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -269,14 +287,14 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           />
           {errors.fatherSpouseName && (
             <p className="text-red-500 text-sm mt-1">
-              Please enter father's or spouse's name
+              Please enter father&apos;s or spouse&apos;s name
             </p>
           )}
         </div>
 
         <div className="mb-6">
           <label className="block mb-2">
-            Mother's Name<span className="text-red-500">*</span>
+            Mother&apos;s Name<span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -292,7 +310,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           />
           {errors.motherName && (
             <p className="text-red-500 text-sm mt-1">
-              Please enter your mother's name
+              Please enter your mother&apos;s name
             </p>
           )}
         </div>

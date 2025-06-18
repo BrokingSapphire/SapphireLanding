@@ -1,7 +1,7 @@
 // Updated useCheckpoint hook with fixed step progression logic and eSign handling
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 
 // Define checkpoint steps that exist in your backend API
@@ -63,7 +63,7 @@ export const STEP_TO_COMPONENT_INDEX = {
   [AllSteps.CONGRATULATIONS]: 15,
 } as const;
 
-// Define the order of steps to check (only API-backed steps)
+// Define the order of steps to check (only API steps)
 const API_STEP_ORDER = [
   CheckpointStep.PAN,
   CheckpointStep.AADHAAR,
@@ -82,9 +82,39 @@ const API_STEP_ORDER = [
   CheckpointStep.MPIN_SETUP,
 ];
 
+// Type definitions for API responses
+interface StepDataWithUrl {
+  url: string;
+  [key: string]: unknown;
+}
+
+interface InvestmentSegmentData {
+  segments: string[];
+  requiresIncomeProof?: boolean;
+  [key: string]: unknown;
+}
+
+interface PasswordSetupData {
+  password_set?: boolean;
+  client_id?: string;
+  [key: string]: unknown;
+}
+
+interface MpinSetupData {
+  client_id?: string;
+  [key: string]: unknown;
+}
+
+interface ApiErrorResponse {
+  error?: {
+    message?: string;
+  };
+  message?: string;
+}
+
 interface CheckpointData {
   step: CheckpointStep;
-  data: any;
+  data: StepDataWithUrl | InvestmentSegmentData | PasswordSetupData | MpinSetupData | Record<string, unknown> | null;
   completed: boolean;
 }
 
@@ -95,14 +125,14 @@ interface UseCheckpointReturn {
   error: Error | null;
   refetchStep: (step: CheckpointStep) => void;
   invalidateAll: () => void;
-  getStepData: (step: CheckpointStep) => any;
+  getStepData: (step: CheckpointStep) => CheckpointData['data'];
   isStepCompleted: (step: CheckpointStep) => boolean;
   isEmailCompleted: () => boolean;
   isMobileCompleted: () => boolean;
   getClientId: () => string | null;
   // New functions for mismatch handling
   hasMismatchData: () => boolean;
-  getMismatchData: () => any;
+  getMismatchData: () => CheckpointData['data'];
   // Force next step function for income proof
   forceNextStep: (currentStepIndex: number) => number;
 }
@@ -118,7 +148,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
 
   // Check if email is completed
   const isEmailCompleted = () => {
-    return !!localStorage.getItem('email');
+    return typeof window !== "undefined" && !!localStorage.getItem('email');
   };
 
   // Check if mobile is completed
@@ -150,7 +180,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
         if (response.status === 200 && response.data?.data?.url) {
           return {
             step,
-            data: response.data.data,
+            data: response.data.data as StepDataWithUrl,
             completed: true,
           };
         } else {
@@ -176,7 +206,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
         if (response.status === 200 && response.data?.data?.url) {
           return {
             step,
-            data: response.data.data,
+            data: response.data.data as StepDataWithUrl,
             completed: true,
           };
         } else {
@@ -203,7 +233,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             console.log("Income proof is completed with data:", response.data);
             return {
               step,
-              data: response.data.data,
+              data: response.data.data as StepDataWithUrl,
               completed: true,
             };
           } else {
@@ -214,9 +244,10 @@ export const useCheckpoint = (): UseCheckpointReturn => {
               completed: false,
             };
           }
-        } catch (error: any) {
+        } catch (error) {
+          const err = error as AxiosError;
           // Handle 204 No Content specifically
-          if (error.response?.status === 204) {
+          if (err.response?.status === 204) {
             console.log("Income proof endpoint returned 204 No Content");
             return {
               step,
@@ -246,7 +277,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             console.log("eSign completed successfully with URL:", response.data.data.url);
             return {
               step,
-              data: { url: response.data.data.url },
+              data: { url: response.data.data.url } as StepDataWithUrl,
               completed: true,
             };
           } else {
@@ -257,17 +288,18 @@ export const useCheckpoint = (): UseCheckpointReturn => {
               completed: false,
             };
           }
-        } catch (error: any) {
-          console.log("eSign complete error:", error.response?.status, error.response?.data);
+        } catch (error) {
+          const err = error as AxiosError;
+          console.log("eSign complete error:", err.response?.status, err.response?.data);
           // Handle specific error cases
-          if (error.response?.status === 404) {
+          if (err.response?.status === 404) {
             console.log("eSign endpoint not found");
             return {
               step,
               data: null,
               completed: false,
             };
-          } else if (error.response?.status === 401) {
+          } else if (err.response?.status === 401) {
             console.log("eSign not authorized or expired - not completed yet");
             return {
               step,
@@ -292,11 +324,12 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       
       return {
         step,
-        data: response.data.data,
+        data: response.data.data as Record<string, unknown>,
         completed: true,
       };
-    } catch (error: any) {
-      if (error.response?.status === 404 || error.response?.status === 204) {
+    } catch (error) {
+      const err = error as AxiosError<ApiErrorResponse>;
+      if (err.response?.status === 404 || err.response?.status === 204) {
         // Step not completed yet
         return {
           step,
@@ -306,13 +339,13 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       }
       
       // Special handling for PASSWORD_SETUP step
-      if (step === CheckpointStep.PASSWORD_SETUP && error.response?.status === 400) {
-        const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || '';
+      if (step === CheckpointStep.PASSWORD_SETUP && err.response?.status === 400) {
+        const errorMessage = err.response?.data?.error?.message || err.response?.data?.message || '';
         if (errorMessage.includes('Password already set')) {
           console.log("Password already set - treating as completed");
           return {
             step,
-            data: { password_set: true },
+            data: { password_set: true } as PasswordSetupData,
             completed: true,
           };
         }
@@ -322,17 +355,19 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     }
   };
 
-  // Query only API-backed checkpoint steps
+  // Query only API-backed checkpoint steps - moved outside callback
   const checkpointQueries = API_STEP_ORDER.map(step => 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useQuery({
       queryKey: ['checkpoint', step],
       queryFn: () => fetchCheckpointStep(step),
       enabled: !!getAuthToken(), // Only fetch if we have a token
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes
-      retry: (failureCount, error: any) => {
+      retry: (failureCount, error) => {
+        const err = error as AxiosError;
         // Don't retry on 404 or 204 (step not completed)
-        if (error?.response?.status === 404 || error?.response?.status === 204) {
+        if (err?.response?.status === 404 || err?.response?.status === 204) {
           return false;
         }
         return failureCount < 3;
@@ -351,19 +386,19 @@ export const useCheckpoint = (): UseCheckpointReturn => {
   // Get client ID from completed checkpoints
   const getClientId = (): string | null => {
     const passwordData = checkpointData[CheckpointStep.PASSWORD_SETUP];
-    if (passwordData?.data?.client_id) {
-      return passwordData.data.client_id;
+    if (passwordData?.data && typeof passwordData.data === 'object' && 'client_id' in passwordData.data) {
+      return passwordData.data.client_id as string;
     }
     
     const mpinData = checkpointData[CheckpointStep.MPIN_SETUP];
-    if (mpinData?.data?.client_id) {
-      return mpinData.data.client_id;
+    if (mpinData?.data && typeof mpinData.data === 'object' && 'client_id' in mpinData.data) {
+      return mpinData.data.client_id as string;
     }
     
     for (const step of API_STEP_ORDER) {
       const stepData = checkpointData[step];
-      if (stepData?.data?.client_id) {
-        return stepData.data.client_id;
+      if (stepData?.data && typeof stepData.data === 'object' && 'client_id' in stepData.data) {
+        return stepData.data.client_id as string;
       }
     }
     
@@ -377,7 +412,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
   };
 
   // Get mismatch data
-  const getMismatchData = (): any => {
+  const getMismatchData = (): CheckpointData['data'] => {
     const mismatchData = checkpointData[CheckpointStep.AADHAAR_MISMATCH_DETAILS];
     return mismatchData?.data || null;
   };
@@ -398,23 +433,32 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     
     // Specific validation rules for different steps
     switch (step) {
-      case CheckpointStep.INVESTMENT_SEGMENT:
-        return !!(stepData.data.segments && stepData.data.segments.length > 0);
+      case CheckpointStep.INVESTMENT_SEGMENT: {
+        const data = stepData.data as InvestmentSegmentData;
+        return !!(data.segments && data.segments.length > 0);
+      }
       
-      case CheckpointStep.INCOME_PROOF:
-        return !!stepData.data.url; // Check for URL presence
+      case CheckpointStep.INCOME_PROOF: {
+        const data = stepData.data as StepDataWithUrl;
+        return !!data.url; // Check for URL presence
+      }
       
-      case CheckpointStep.IPV:
-        return !!stepData.data.url;
+      case CheckpointStep.IPV: {
+        const data = stepData.data as StepDataWithUrl;
+        return !!data.url;
+      }
       
-      case CheckpointStep.SIGNATURE:
-        return !!stepData.data.url;
+      case CheckpointStep.SIGNATURE: {
+        const data = stepData.data as StepDataWithUrl;
+        return !!data.url;
+      }
       
-      case CheckpointStep.ESIGN:
+      case CheckpointStep.ESIGN: {
         // For eSign, check if we have step data with url field (even empty string means completed)
-        const hasUrlField = stepData.data && ('url' in stepData.data);
-        console.log(`eSign validation - hasUrlField: ${hasUrlField}, url value:`, stepData.data?.url);
+        const hasUrlField = stepData.data && typeof stepData.data === 'object' && 'url' in stepData.data;
+        console.log(`eSign validation - hasUrlField: ${hasUrlField}, url value:`, (stepData.data as StepDataWithUrl)?.url);
         return hasUrlField;
+      }
       
       case CheckpointStep.PASSWORD_SETUP:
         // For password setup, check if we have data (including "password already set" case)
@@ -456,10 +500,11 @@ export const useCheckpoint = (): UseCheckpointReturn => {
 
     // Get investment segment data to check if income proof is required
     const investmentData = checkpointData[CheckpointStep.INVESTMENT_SEGMENT];
-    const requiresIncomeProof = investmentData?.data?.requiresIncomeProof === true;
+    const data = investmentData?.data as InvestmentSegmentData;
+    const requiresIncomeProof = data?.requiresIncomeProof === true;
     
     // Also check if user selected risk segments that would require income proof
-    const selectedSegments = investmentData?.data?.segments || [];
+    const selectedSegments = data?.segments || [];
     const hasRiskSegments = selectedSegments.some((segment: string) => 
       segment === "F&O" || segment === "Currency" || segment === "Commodity"
     );
@@ -609,7 +654,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     invalidateAll: () => {
       queryClient.invalidateQueries({ queryKey: ['checkpoint'] });
     },
-    getStepData: (step: CheckpointStep) => checkpointData[step]?.data,
+    getStepData: (step: CheckpointStep) => checkpointData[step]?.data ?? null,
     isStepCompleted,
     isEmailCompleted,
     isMobileCompleted,

@@ -8,9 +8,14 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 
+interface InvestmentSegmentData {
+  segments?: string[];
+  [key: string]: unknown;
+}
+
 interface InvestmentSegmentProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: InvestmentSegmentData;
   isCompleted?: boolean;
 }
 
@@ -25,11 +30,9 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   const [selectedSegments, setSelectedSegments] = useState<string[]>(["Cash"]);
   const [showRiskModal, setShowRiskModal] = useState(false);
   const [hasAcceptedRisk, setHasAcceptedRisk] = useState(false);
-  const [pendingSegment, setPendingSegment] = useState<string>("");
   const [showUploadIncome, setShowUploadIncome] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [requiresIncomeProof, setRequiresIncomeProof] = useState(false);
   const [incomeProofUid, setIncomeProofUid] = useState<string | null>(null);
   const [isIncomeProofCompleted, setIsIncomeProofCompleted] = useState(false);
 
@@ -73,7 +76,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         }
       } catch (error) {
         // If 204 or other error, income proof not uploaded yet
-        console.log("Income proof not yet uploaded");
+        console.log("Income proof not yet uploaded", error);
         setIsIncomeProofCompleted(false);
       }
     };
@@ -81,7 +84,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     checkIncomeProofStatus();
   }, []);
 
-  const handleSegmentClick = (segmentId: string, requiresDisclosure: boolean) => {
+  const handleSegmentClick = (segmentId: string) => {
     if (segmentId === "Cash") return;
 
     // Just toggle the segment selection, don't show risk modal immediately
@@ -103,27 +106,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     
     // After accepting risk, show upload income proof
     setShowUploadIncome(true);
-  };
-
-  // Check if step is truly completed (investment segment + income proof if required)
-  const isStepFullyCompleted = () => {
-    // Check if investment segment is completed
-    if (!isCompleted || !initialData || !initialData.segments || initialData.segments.length === 0) {
-      return false;
-    }
-
-    // Check if selected segments require income proof
-    const segmentsRequiringRisk = selectedSegments.filter(segment => 
-      segment === "F&O" || segment === "Currency" || segment === "Commodity"
-    );
-
-    // If risk segments are selected, income proof must be completed
-    if (segmentsRequiringRisk.length > 0) {
-      return isIncomeProofCompleted;
-    }
-
-    // If no risk segments, investment segment completion is sufficient
-    return true;
   };
 
   // Submit selected investment segments
@@ -167,10 +149,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         return;
       }
 
-      // Check if backend says income proof is required
-      const backendRequiresProof = response.data.data?.requiresIncomeProof === true;
-      setRequiresIncomeProof(backendRequiresProof);
-
       // If risk segments are selected, income proof is required
       if (segmentsRequiringRisk.length > 0) {
         // Check if income proof is already uploaded
@@ -194,10 +172,10 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
           onNext();
         }, 2000);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error saving investment segments:", err);
       
-      if (err.response) {
+      if (axios.isAxiosError(err) && err.response) {
         if (err.response.data?.message) {
           setError(`Error: ${err.response.data.message}`);
         } else if (err.response.data?.error?.message) {
@@ -211,7 +189,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         } else {
           setError(`Server error (${err.response.status}). Please try again.`);
         }
-      } else if (err.request) {
+      } else if (axios.isAxiosError(err) && err.request) {
         setError("Network error. Please check your connection and try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
@@ -249,10 +227,10 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
       // Store the UID from backend response
       setIncomeProofUid(response.data.data.uid);
       setShowUploadIncome(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error initializing income proof:", err);
       
-      if (err.response) {
+      if (axios.isAxiosError(err) && err.response) {
         if (err.response.data?.message) {
           setError(`Error: ${err.response.data.message}`);
         } else if (err.response.data?.error?.message) {
@@ -262,7 +240,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         } else {
           setError(`Server error (${err.response.status}). Please try again.`);
         }
-      } else if (err.request) {
+      } else if (axios.isAxiosError(err) && err.request) {
         setError("Network error. Please check your connection and try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
@@ -271,7 +249,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   };
 
   // Handle upload income proof completion
-  const handleIncomeProofNext = async (file?: File) => {
+  const handleIncomeProofNext = async () => {
     console.log("Income proof upload completed, proceeding to next step");
     setIsIncomeProofCompleted(true);
     
@@ -331,7 +309,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         {segments.map((segment) => (
           <button
             key={segment.id}
-            onClick={() => handleSegmentClick(segment.id, !!segment.requiresDisclosure)}
+            onClick={() => handleSegmentClick(segment.id)}
             disabled={isLoading}
             className={`px-4 py-2 border rounded flex items-center gap-5 transition-colors
               ${segment.id === "Cash" ? "cursor-default" : "cursor-pointer"}
@@ -390,7 +368,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
           onAccept={handleRiskAccept}
           onClose={() => {
             setShowRiskModal(false);
-            setPendingSegment("");
           }}
         />
       )}

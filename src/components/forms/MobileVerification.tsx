@@ -1,13 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useAuthToken } from "@/hooks/useCheckpoint";
 
 interface MobileVerificationProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: {
+    phone?: string;
+    [key: string]: unknown;
+  };
   isCompleted?: boolean;
+}
+
+interface ApiErrorResponse {
+  message: string;
+  [key: string]: unknown;
+}
+
+interface ApiResponse {
+  token?: string;
+  [key: string]: unknown;
 }
 
 const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerificationProps) => {
@@ -82,15 +95,6 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     };
   }, [resendTimer]);
 
-  // Format time from seconds to MM:SS
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
   const validateMobile = (number: string) => {
     return /^[6-9][0-9]{9}$/.test(number);
   };
@@ -123,7 +127,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     }
 
     try {
-      const response = await axios.post(
+      const response = await axios.post<ApiResponse>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
         {
           type: "phone",
@@ -150,9 +154,10 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
       }
 
       onNext();
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      if (axiosError.response?.data?.message) {
+        setError(axiosError.response.data.message);
       } else {
         setError("Error verifying OTP. Please try again.");
       }
@@ -178,7 +183,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     setError(null);
 
     try {
-      const response = await axios.post(
+      const response = await axios.post<ApiResponse>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp`,
         {
           type: "phone",
@@ -198,9 +203,10 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      if (axiosError.response?.data?.message) {
+        setError(axiosError.response.data.message);
       } else {
         setError("Failed to send OTP. Please try again.");
       }

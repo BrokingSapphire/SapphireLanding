@@ -1,24 +1,31 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import FormHeading from "./FormHeading";
 import SignatureQrCode from "./SignatureQrCode";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Cookies from 'js-cookie';
 import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
 import { toast } from "sonner";
 
 interface SignatureComponentProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: {
+    [key: string]: unknown;
+  };
   isCompleted?: boolean;
+}
+
+interface ApiErrorResponse {
+  data?: {
+    message?: string;
+  };
+  message?: string;
 }
 
 // Global flag to track if completion toast has been shown in this session
 let hasShownGlobalCompletedToast = false;
 
 const SignatureComponent: React.FC<SignatureComponentProps> = ({ 
-  onNext, 
-  initialData, 
-  isCompleted 
+  onNext
 }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
@@ -26,46 +33,18 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   const [signatureUid, setSignatureUid] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [wantsToResign, setWantsToResign] = useState(false);
-  const [isInitializingForQr, setIsInitializingForQr] = useState(false); // New state for QR initialization
+  const [isInitializingForQr, setIsInitializingForQr] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
   // Use the checkpoint hook to check for existing signature data
   const { 
     isStepCompleted,
-    getStepData,
     refetchStep 
   } = useCheckpoint();
 
-  // Check if signature is already completed and show toast
-  useEffect(() => {
-    console.log("useEffect triggered - isStepCompleted:", isStepCompleted(CheckpointStep.SIGNATURE), "wantsToResign:", wantsToResign, "isInitialized:", isInitialized, "isLoading:", isLoading);
-    
-    if (isStepCompleted(CheckpointStep.SIGNATURE) && !wantsToResign) {
-      // Signature is already completed and user doesn't want to re-sign
-      if (!isInitialized) {
-        setIsInitialized(true);
-      }
-      
-      // Show completion toast only once per session
-      if (!hasShownGlobalCompletedToast) {
-        toast.success("Signature already submitted! You can proceed or sign again if needed.");
-        hasShownGlobalCompletedToast = true;
-      }
-      return;
-    }
-
-    // If not completed OR user wants to re-sign, initialize signature
-    // But only if we haven't already initialized and we're not already loading
-    if (((!isStepCompleted(CheckpointStep.SIGNATURE) && !isInitialized) || wantsToResign) && !isLoading && !signatureUid) {
-      console.log("Calling initializeSignature from useEffect");
-      initializeSignature();
-    }
-  }, [isStepCompleted(CheckpointStep.SIGNATURE), wantsToResign]); // Only depend on these two values
-
-  const initializeSignature = async () => {
+  const initializeSignature = useCallback(async () => {
     console.log("initializeSignature called - isLoading:", isLoading, "signatureUid:", signatureUid);
     
     // Prevent multiple simultaneous calls
@@ -75,7 +54,6 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     }
 
     setIsLoading(true);
-    setError(null);
 
     try {
       const authToken = Cookies.get('authToken');
@@ -113,8 +91,10 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
       } else {
         toast.error("Failed to initialize signature session. Please try again.");
       }
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as AxiosError<ApiErrorResponse>;
       console.error("Signature initialization error:", err);
+      
       if (err.response) {
         if (err.response.data?.message) {
           toast.error(`Error: ${err.response.data.message}`);
@@ -138,9 +118,36 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isLoading, signatureUid, isInitializingForQr]);
 
-  const initializeCanvas = () => {
+  // Check if signature is already completed and show toast
+  useEffect(() => {
+    const isSignatureCompleted = isStepCompleted(CheckpointStep.SIGNATURE);
+    console.log("useEffect triggered - isStepCompleted:", isSignatureCompleted, "wantsToResign:", wantsToResign, "isInitialized:", isInitialized, "isLoading:", isLoading);
+    
+    if (isSignatureCompleted && !wantsToResign) {
+      // Signature is already completed and user doesn't want to re-sign
+      if (!isInitialized) {
+        setIsInitialized(true);
+      }
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Signature already submitted! You can proceed or sign again if needed.");
+        hasShownGlobalCompletedToast = true;
+      }
+      return;
+    }
+
+    // If not completed OR user wants to re-sign, initialize signature
+    // But only if we haven't already initialized and we're not already loading
+    if (((!isSignatureCompleted && !isInitialized) || wantsToResign) && !isLoading && !signatureUid) {
+      console.log("Calling initializeSignature from useEffect");
+      initializeSignature();
+    }
+  }, [isStepCompleted, wantsToResign, isInitialized, isLoading, signatureUid, initializeSignature]);
+
+  const initializeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -160,7 +167,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     context.strokeStyle = "black";
     context.lineWidth = 2;
     contextRef.current = context;
-  };
+  }, []);
 
   useEffect(() => {
     if (isInitialized && signatureUid) {
@@ -172,7 +179,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
       window.addEventListener("resize", handleResize);
       return () => window.removeEventListener("resize", handleResize);
     }
-  }, [isInitialized, signatureUid]);
+  }, [isInitialized, signatureUid, initializeCanvas]);
 
   const startDrawing = (
     event:
@@ -251,7 +258,6 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     setSignature(null);
-    setError(null);
   };
 
   const convertDataURLToFile = (dataURL: string, filename: string): File => {
@@ -289,7 +295,6 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
 
     console.log("Starting signature submission...");
     setIsLoading(true);
-    setError(null);
 
     try {
       const authToken = Cookies.get('authToken');
@@ -333,7 +338,8 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
         onNext();
       }, 100);
       
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as AxiosError<ApiErrorResponse>;
       console.error("Signature upload error:", err);
       setIsLoading(false); // Make sure to reset loading state on error
       
@@ -362,7 +368,6 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   };
 
   const handleRetry = () => {
-    setError(null);
     setIsInitialized(false);
     setSignatureUid(null);
     clearSignature();
@@ -375,7 +380,6 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     
     // Clear all states first
     setSignature(null);
-    setError(null);
     setIsDrawing(false);
     
     // Clear canvas if it exists

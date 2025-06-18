@@ -1,14 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import FormHeading from "./FormHeading";
 import { useAuthToken } from "@/hooks/useCheckpoint";
 import { toast } from "sonner";
 
 interface EmailVerificationProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: {
+    email?: string;
+    [key: string]: unknown;
+  };
   isCompleted?: boolean;
+}
+
+interface ApiErrorResponse {
+  error?: {
+    message?: string;
+  };
+  message?: string;
 }
 
 const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificationProps) => {
@@ -123,15 +133,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     };
   }, [resendTimer]);
 
-  // Format time from seconds to MM:SS
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
   const validateEmail = (email: string) => {
     return email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
   };
@@ -180,12 +181,17 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
       toast.success("Email verified successfully!");
       onNext();
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as AxiosError<ApiErrorResponse>;
+      
       // Check for backend error message in different possible locations
       const errorMessage = 
         err.response?.data?.error?.message ||  // {"error":{"message":"Invalid OTP provided"}}
         err.response?.data?.message ||         // {"message":"Invalid OTP provided"}
-        err.response?.data?.error ||           // {"error":"Invalid OTP provided"}
+        (typeof err.response?.data === 'object' && 
+         'error' in err.response.data && 
+         typeof err.response.data.error === 'string' ? 
+         err.response.data.error : null) ||   // {"error":"Invalid OTP provided"}
         "Error verifying code. Please try again."; // fallback
       
       toast.error(errorMessage);
@@ -227,12 +233,17 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as AxiosError<ApiErrorResponse>;
+      
       // Check for backend error message in different possible locations
       const errorMessage = 
         err.response?.data?.error?.message ||  // {"error":{"message":"Some error"}}
         err.response?.data?.message ||         // {"message":"Some error"}
-        err.response?.data?.error ||           // {"error":"Some error"}
+        (typeof err.response?.data === 'object' && 
+         'error' in err.response.data && 
+         typeof err.response.data.error === 'string' ? 
+         err.response.data.error : null) ||   // {"error":"Some error"}
         "Failed to send verification code. Please try again."; // fallback
       
       toast.error(errorMessage);

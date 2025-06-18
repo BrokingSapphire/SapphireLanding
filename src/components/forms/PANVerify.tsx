@@ -12,9 +12,9 @@ interface PANVerifyProps {
 
 const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
   const [panNumber, setPanNumber] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [dob, setDob] = useState("");
-  const [maskedAadhaar, setMaskedAadhaar] = useState("");
+  const [, setFullName] = useState("");
+  const [, setDob] = useState("");
+  const [, setMaskedAadhaar] = useState("");
   const [errors, setErrors] = useState({
     pan: false,
   });

@@ -29,7 +29,13 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
 }) => {
   const [linkingMethod, setLinkingMethod] = useState<string | null>(null);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const [bankData, setBankData] = useState<any>(null);
+  interface BankData {
+    account_no: string;
+    ifsc_code: string;
+    account_type: string;
+    full_name: string;
+  }
+  const [bankData, setBankData] = useState<BankData | null>(null);
 
   // Check screen size on component mount and when window resizes
   useEffect(() => {

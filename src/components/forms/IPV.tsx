@@ -9,9 +9,17 @@ import Cookies from 'js-cookie';
 import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
 import { toast } from "sonner";
 
+/* eslint-disable */
+interface IPVInitialData {
+  // Define the expected properties for initialData here
+  // Example:
+  // uid?: string;
+  // status?: string;
+}
+
 interface IPVVerificationProps {
   onNext: () => void;
-  initialData?: any;
+  initialData?: IPVInitialData;
   isCompleted?: boolean;
 }
 
@@ -20,8 +28,6 @@ let hasShownGlobalCompletedToast = false;
 
 const IPVVerification: React.FC<IPVVerificationProps> = ({ 
   onNext, 
-  initialData, 
-  isCompleted 
 }) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +44,6 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   // Use the checkpoint hook to check for existing IPV data
   const { 
     isStepCompleted,
-    getStepData,
     refetchStep 
   } = useCheckpoint();
 

@@ -39,11 +39,11 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [originalData, setOriginalData] = useState<NomineeData[]>([]);
-  const [editingNomineeId, setEditingNomineeId] = useState<string | null>(null);
+  const [, setEditingNomineeId] = useState<string | null>(null);
 
   // Use the checkpoint hook
   const { 
-    isStepCompleted,
+    // isStepCompleted,
     getStepData,
     refetchStep 
   } = useCheckpoint();
@@ -63,20 +63,22 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   useEffect(() => {
     // First try to get data from hook
     const hookData = getStepData(CheckpointStep.ADD_NOMINEES);
-    let dataToUse = hookData;
+    type RawNominee = { name?: string; govId?: string; gov_id?: string; relation?: string; share?: number };
+    type DataToUse = { nominees?: RawNominee[] } | undefined;
+    let dataToUse: DataToUse = hookData as DataToUse;
 
     // Fallback to initialData if hook data is not available
     if (!dataToUse) {
-      dataToUse = initialData as { nominees?: { name?: string; govId?: string; gov_id?: string; relation?: string; share?: number }[] } | undefined;
+      dataToUse = initialData as DataToUse;
     }
     
     if (dataToUse?.nominees && Array.isArray(dataToUse.nominees) && dataToUse.nominees.length > 0) {
-      const formattedNominees = dataToUse.nominees.map((nominee: any, index: number) => ({
+      const formattedNominees: NomineeData[] = dataToUse.nominees.map((nominee: RawNominee, index: number) => ({
         id: (index + 1).toString(),
         name: nominee.name || "",
         panOrAadhar: nominee.govId || nominee.gov_id || "",
         relationship: nominee.relation || "",
-        sharePercentage: nominee.share?.toString() || "",
+        sharePercentage: nominee.share !== undefined ? nominee.share.toString() : "",
       }));
       
       // Only update if nominees are actually different

@@ -37,11 +37,21 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
   const [showValidation, setShowValidation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [originalData, setOriginalData] = useState<any>(null);
+  interface TradingAccountFormData {
+    occupation: string;
+    is_politically_exposed: boolean;
+  }
+  const [originalData, setOriginalData] = useState<TradingAccountFormData | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
+  // Define the expected API data shape
+  interface ApiTradingAccountData {
+    occupation?: string;
+    is_politically_exposed?: boolean;
+  }
+
   // Map API occupation values back to frontend display values
-  const mapFromApiValues = (data: any) => {
+  const mapFromApiValues = (data: ApiTradingAccountData) => {
     const occupationReverseMapping: Record<string, string> = {
       "self employed": "Business",
       "housewife": "Housewife",
@@ -67,7 +77,10 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
       
       setOccupation(mappedData.occupation);
       setIsPoliticallyExposed(mappedData.is_politically_exposed ?? false);
-      setOriginalData(mappedData);
+      setOriginalData({
+        occupation: mappedData.occupation,
+        is_politically_exposed: mappedData.is_politically_exposed ?? false
+      });
       
       // Show completion toast only once per session
       if (!hasShownGlobalCompletedToast) {

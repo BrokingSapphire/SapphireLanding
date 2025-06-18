@@ -6,7 +6,10 @@ import Cookies from "js-cookie";
 interface MPINProps {
   onNext: (clientId: string) => void;
   clientId?: string;
-  initialData?: any;
+  initialData?: {
+    mpin_already_set?: boolean;
+    // Add other properties as needed based on API response
+  };
   isCompleted?: boolean;
 }
 
@@ -150,24 +153,44 @@ const MPIN: React.FC<MPINProps> = ({
 
       // If successful, proceed to next step with client ID
       onNext(clientId);
-    } catch (err: any) {
-      if (err.response) {
-        if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
-        } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
-        } else if (err.response.status === 400) {
+    } catch (err: unknown) {
+      type AxiosErrorResponse = {
+        response?: {
+          data?: { message?: string; error?: { message?: string } };
+          status?: number;
+        };
+        request?: unknown;
+      };
+
+      const error = err as AxiosErrorResponse;
+
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof error.response === "object"
+      ) {
+        const response = error.response;
+        if (response?.data?.message) {
+          setError(`Error: ${response.data.message}`);
+        } else if (response?.data?.error?.message) {
+          setError(`Error: ${response.data.error.message}`);
+        } else if (response?.status === 400) {
           setError("Invalid MPIN. Please try again.");
-        } else if (err.response.status === 401) {
+        } else if (response?.status === 401) {
           setError("Authentication failed. Please restart the process.");
-        } else if (err.response.status === 403) {
+        } else if (response?.status === 403) {
           setError("Please set password first.");
-        } else if (err.response.status === 422) {
+        } else if (response?.status === 422) {
           setError("MPIN validation failed. Please try again.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          setError(`Server error (${response?.status}). Please try again.`);
         }
-      } else if (err.request) {
+      } else if (
+        typeof err === "object" &&
+        err !== null &&
+        "request" in err
+      ) {
         setError("Network error. Please check your connection and try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
@@ -185,15 +208,15 @@ const MPIN: React.FC<MPINProps> = ({
     }
   };
 
-  const handleReset = () => {
-    setStep('enter');
-    setMpin(["", "", "", ""]);
-    setConfirmMpin(["", "", "", ""]);
-    setError(null);
-    setTimeout(() => {
-      mpinRefs.current[0]?.focus();
-    }, 100);
-  };
+  // const handleReset = () => {
+  //   setStep('enter');
+  //   setMpin(["", "", "", ""]);
+  //   setConfirmMpin(["", "", "", ""]);
+  //   setError(null);
+  //   setTimeout(() => {
+  //     mpinRefs.current[0]?.focus();
+  //   }, 100);
+  // };
 
   const isComplete = () => {
     return mpin.every(digit => digit !== "") && confirmMpin.every(digit => digit !== "");
@@ -314,7 +337,7 @@ const MPIN: React.FC<MPINProps> = ({
         <div className="text-center text-sm text-gray-600">
           <p>
             Your MPIN will be used for secure transactions and account access.
-            Keep it confidential and don't share with anyone.
+            Keep it confidential and don&apos;t share with anyone.
           </p>
         </div>
       </div>

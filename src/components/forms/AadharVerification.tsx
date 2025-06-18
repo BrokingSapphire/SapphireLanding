@@ -18,12 +18,11 @@ let hasShownGlobalCompletedToast = false;
 
 const AadhaarVerification = ({ 
   onNext, 
-  initialData,
   isCompleted,
   panMaskedAadhaar
 }: AadhaarVerificationProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'verifying' | 'mismatch'>('initial');
   const [digilockerUrl, setDigilockerUrl] = useState<string>('');
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
@@ -64,9 +63,15 @@ const AadhaarVerification = ({
       
       // Set mismatch info from the hook data
       setMismatchInfo({
-        pan_masked_aadhaar: existingMismatchData?.pan_masked_aadhaar || panMaskedAadhaar,
-        digilocker_masked_aadhaar: existingMismatchData?.digilocker_masked_aadhaar,
-        requires_manual_review: existingMismatchData?.requires_manual_review
+        pan_masked_aadhaar: typeof existingMismatchData?.pan_masked_aadhaar === 'string'
+          ? existingMismatchData.pan_masked_aadhaar
+          : panMaskedAadhaar,
+        digilocker_masked_aadhaar: typeof existingMismatchData?.digilocker_masked_aadhaar === 'string'
+          ? existingMismatchData.digilocker_masked_aadhaar
+          : undefined,
+        requires_manual_review: typeof existingMismatchData?.requires_manual_review === 'boolean'
+          ? existingMismatchData.requires_manual_review
+          : undefined
       });
       
       // Go directly to mismatch form
@@ -80,7 +85,7 @@ const AadhaarVerification = ({
       // Update mismatch info with PAN masked Aadhaar
       setMismatchInfo(prev => ({
         ...prev,
-        pan_masked_aadhaar: panData.masked_aadhaar
+        pan_masked_aadhaar: typeof panData.masked_aadhaar === 'string' ? panData.masked_aadhaar : undefined
       }));
     }
   }, [isCompleted, hasMismatchData, getMismatchData, isStepCompleted, getStepData, panMaskedAadhaar]);
@@ -296,10 +301,6 @@ const AadhaarVerification = ({
     }));
   };
 
-  const handleRetry = () => {
-    setError(null);
-    setCurrentStep('initial');
-  };
 
   // Handle continue/proceed button click
   const handleContinue = () => {

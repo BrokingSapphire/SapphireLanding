@@ -33,7 +33,7 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
       const nomineeData = getStepData(CheckpointStep.ADD_NOMINEES);
       
       // If there are actual nominees, show the nominee management form
-      if (nomineeData?.nominees && nomineeData.nominees.length > 0) {
+      if (Array.isArray(nomineeData?.nominees) && nomineeData.nominees.length > 0) {
         setShowNomineeForm(true);
       }
       // If step is completed but no nominees, it was skipped - show initial selection
@@ -129,7 +129,7 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
   // Check if step is completed and has actual nominees data
   const stepCompleted = isStepCompleted(CheckpointStep.ADD_NOMINEES);
   const nomineeData = getStepData(CheckpointStep.ADD_NOMINEES);
-  const hasNominees = nomineeData?.nominees && nomineeData.nominees.length > 0;
+  const hasNominees = Array.isArray(nomineeData?.nominees) && nomineeData.nominees.length > 0;
 
   // If completed and has nominees, show the nominee management form
   if (stepCompleted && hasNominees && showNomineeForm) {
@@ -185,7 +185,7 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
       <NomineeManagement 
         onNext={onNext} 
         initialData={nomineeData || initialData} 
-        isCompleted={stepCompleted && hasNominees} 
+        isCompleted={Boolean(stepCompleted && hasNominees)} 
       />
     );
   }

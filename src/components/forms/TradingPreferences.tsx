@@ -33,10 +33,25 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showValidation, setShowValidation] = useState(false);
-  const [originalData, setOriginalData] = useState<any>(null);
+  type OriginalData = {
+    marital_status: MaritalStatus | null;
+    annual_income: IncomeRange | null;
+    trading_exp: ExperienceRange | null;
+    account_settlement: SettlementPreference | null;
+  };
+
+  const [originalData, setOriginalData] = useState<OriginalData | null>(null);
+
+  // Define a type for the API data structure
+  type ApiTradingPreferences = {
+    marital_status?: MaritalStatus;
+    annual_income?: string;
+    trading_exp?: string;
+    acc_settlement?: SettlementPreference;
+  };
 
   // Map API values back to frontend display values
-  const mapFromApiValues = (data: any) => {
+  const mapFromApiValues = (data: ApiTradingPreferences) => {
     const incomeReverseMapping: Record<string, IncomeRange> = {
       "le_1_Lakh": "< 1 Lakh",
       "1_5_Lakh": "1 - 5 Lacs",
@@ -54,10 +69,10 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
     };
 
     return {
-      marital_status: data.marital_status as MaritalStatus,
+      marital_status: data.marital_status ?? null,
       annual_income: data.annual_income ? incomeReverseMapping[data.annual_income] || null : null,
       trading_exp: data.trading_exp ? experienceReverseMapping[data.trading_exp] || null : null,
-      account_settlement: data.acc_settlement as SettlementPreference,
+      account_settlement: data.acc_settlement ?? null,
     };
   };
 

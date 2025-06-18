@@ -106,9 +106,18 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
       } else {
         setError("Failed to initialize UPI verification. Please try again. line 101");
       }
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response?: unknown }).response === "object" &&
+        (err as { response?: unknown }).response !== null &&
+        typeof (err as { response: { data?: unknown } }).response.data === "object" &&
+        (err as { response: { data?: unknown } }).response.data !== null &&
+        "message" in (err as { response: { data: { message?: string } } }).response.data
+      ) {
+        setError(`Error: ${(err as { response: { data: { message?: string } } }).response.data.message}`);
       } else {
         setError("Failed to initialize UPI verification. Please try again. line 107");
       }
@@ -152,16 +161,28 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
       if (response.status === 201) {
         onNext();
       }
-    } catch (err: any) {
-      if (err.response?.status === 204) {
-        // 204 means still pending, continue polling
-        return;
-      } else if (err.response?.status === 406) {
-        // 406 means validation failed
-        setError("UPI verification failed. Please try again or use manual bank details.");
-        setIsPolling(false);
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as { response?: unknown }).response === "object" &&
+        (err as { response?: unknown }).response !== null
+      ) {
+        const response = (err as { response: { status?: number } }).response;
+        if (response.status === 204) {
+          // 204 means still pending, continue polling
+          return;
+        } else if (response.status === 406) {
+          // 406 means validation failed
+          setError("UPI verification failed. Please try again or use manual bank details.");
+          setIsPolling(false);
+        } else {
+          // Other errors, but don't stop polling yet
+          console.error("UPI status check error:", err);
+        }
       } else {
-        // Other errors, but don't stop polling yet
+        // Unknown error structure
         console.error("UPI status check error:", err);
       }
     }
@@ -253,7 +274,9 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
           <div className="flex-1 flex justify-center">
             <div className="bg-white p-4 rounded-lg shadow-sm">
               {qrCodeDataUrl ? (
-                <img 
+                <Image
+                  height={200}
+                  width={200} 
                   src={qrCodeDataUrl} 
                   alt="UPI Payment QR Code"
                   className="w-40 h-40"
@@ -325,7 +348,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
               ₹1 will be debited from your account and refunded within 24 hours.
             </li>
             <li>Scan using any UPI app to complete bank verification.</li>
-            <li>We'll automatically detect once payment is completed.</li>
+            <li>We&apos;ll automatically detect once payment is completed.</li>
           </ul>
         </div>
 

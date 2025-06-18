@@ -32,7 +32,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
   const [originalDocumentType, setOriginalDocumentType] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const { refetchStep, isStepCompleted } = useCheckpoint();
+  const { refetchStep } = useCheckpoint();
 
   // Check income proof status on component mount
   useEffect(() => {
@@ -66,7 +66,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         }
       } catch (error) {
         // If 204 or other error, income proof not uploaded yet
-        console.log("Income proof not yet uploaded");
+        console.log("Income proof not yet uploaded",error);
         setIsIncomeProofCompleted(false);
       }
     };

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Clock, RefreshCw } from "lucide-react";
+import { ArrowLeft, Clock } from "lucide-react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import QRCode from "qrcode";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface SignatureQrCodeProps {
   onBack: () => void;
@@ -19,7 +20,7 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
 }) => {
   const [timeRemaining, setTimeRemaining] = useState<number>(600); // 10 minutes
   const [error, setError] = useState<string | null>(null);
-  const [isChecking, setIsChecking] = useState(false);
+  const [, setIsChecking] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isPolling, setIsPolling] = useState(true);
   const [signatureCompleted, setSignatureCompleted] = useState(false);
@@ -117,36 +118,61 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
           setError("Signature not completed yet. Please complete signature on your mobile device.");
         }
       }
-    } catch (err: any) {
-      if (err.response?.status === 204) {
-        // Signature not uploaded yet (NO_CONTENT from your backend)
-        if (isManualCheck) {
-          setError("Signature not completed yet. Please complete signature on your mobile device.");
-        }
-      } else if (err.response?.data?.message) {
-        const errorMessage = `Error: ${err.response.data.message}`;
-        setError(errorMessage);
-        if (isManualCheck) {
-          toast.error(errorMessage);
-        }
-        // Stop polling on serious errors
-        setIsPolling(false);
-      } else if (err.response?.status === 401) {
-        const errorMessage = "Session expired. Please restart the process.";
-        setError(errorMessage);
-        setIsPolling(false);
-        if (isManualCheck) {
-          toast.error(errorMessage);
+    } catch (err: unknown) {
+      type AxiosErrorResponse = {
+        status: number;
+        data?: { message?: string };
+      };
+      type AxiosError = {
+        response?: AxiosErrorResponse;
+      };
+
+      const isAxiosError = (error: unknown): error is AxiosError =>
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as { response?: unknown }).response === "object";
+
+      if (isAxiosError(err) && err.response) {
+        const response = err.response;
+        if (response.status === 204) {
+          // Signature not uploaded yet (NO_CONTENT from your backend)
+          if (isManualCheck) {
+            setError("Signature not completed yet. Please complete signature on your mobile device.");
+          }
+        } else if (response.data?.message) {
+          const errorMessage = `Error: ${response.data.message}`;
+          setError(errorMessage);
+          if (isManualCheck) {
+            toast.error(errorMessage);
+          }
+          // Stop polling on serious errors
+          setIsPolling(false);
+        } else if (response.status === 401) {
+          const errorMessage = "Session expired. Please restart the process.";
+          setError(errorMessage);
+          setIsPolling(false);
+          if (isManualCheck) {
+            toast.error(errorMessage);
+          }
+        } else {
+          // For other errors during polling, continue silently
+          // Only show error for manual checks
+          if (isManualCheck) {
+            setError("Failed to check status. Please try again.");
+            toast.error("Failed to check status. Please try again.");
+          } else {
+            // Log error but continue polling
+            console.warn("Polling error (continuing):", err);
+          }
         }
       } else {
-        // For other errors during polling, continue silently
-        // Only show error for manual checks
+        // Unknown error shape
         if (isManualCheck) {
-          setError("Failed to check status. Please try again.");
-          toast.error("Failed to check status. Please try again.");
+          setError("An unknown error occurred.");
+          toast.error("An unknown error occurred.");
         } else {
-          // Log error but continue polling
-          console.warn("Polling error (continuing):", err);
+          console.warn("Polling error (unknown shape):", err);
         }
       }
     } finally {
@@ -187,11 +213,6 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
     };
   }, []);
 
-  // Manual check function for button click
-  const handleManualCheck = () => {
-    checkSignatureStatus(true);
-  };
-
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -214,7 +235,9 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
         <div className="border-2 border-gray-300 rounded-lg p-4 flex justify-center items-center">
           <div className="w-64 h-64 flex items-center justify-center">
             {qrCodeDataUrl ? (
-              <img 
+              <Image
+                width={200}
+                height={200}
                 src={qrCodeDataUrl} 
                 alt="QR Code for Signature"
                 className="w-full h-full object-contain"
@@ -243,7 +266,7 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
           <ol className="text-blue-700 text-sm mt-2 text-left space-y-1">
             <li>1. Scan the QR code with your phone camera</li>
             <li>2. Sign on the mobile signature pad</li>
-            <li>3. Wait for automatic completion or click "Check Status"</li>
+            <li>3. Wait for automatic completion or click &quot;Check Status&quot;</li>
           </ol>
         </div>
 

@@ -14,7 +14,7 @@ interface LastStepPageProps {
   isCompleted?: boolean;
 }
 
-// Fix the TypeScript error by including 'completed' in the type
+// Ensure 'completed' is included in the EsignStatus type
 type EsignStatus = 'idle' | 'initializing' | 'signing' | 'completing' | 'completed';
 
 const LastStepPage: React.FC<LastStepPageProps> = ({ 
@@ -388,7 +388,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
             <div>
               <h3 className="text-blue-800 font-medium">eSign Window Opened</h3>
               <p className="text-blue-700 text-sm">
-                Please complete the eSign process in the opened window. We're checking for completion every 3 seconds.
+                Please complete the eSign process in the opened window. We&apos;re checking for completion every 3 seconds.
               </p>
               <p className="text-blue-600 text-xs mt-1">
                 Status: Waiting for eSign completion...
@@ -410,7 +410,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         </div>
       )}
 
-      {esignStatus === 'completed' && (
+      {/* {esignStatus === 'completed' && (
         <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
           <div className="flex items-center">
             <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -422,7 +422,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
             </div>
           </div>
         </div>
-      )}
+      )} */}
       
       <div className="mb-6 flex items-center cursor-pointer" onClick={() => setIsChecked(!isChecked)}>
         <div
