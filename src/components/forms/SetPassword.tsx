@@ -92,7 +92,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/finalize`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/finalize/`,
         {},
         {
           headers:{
@@ -146,7 +146,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
     try {
       // Use the setup-password API directly
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/setup-password`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/setup-password/`,
         {
           password: password,
           confirm_password: confirmPassword

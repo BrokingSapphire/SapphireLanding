@@ -182,7 +182,7 @@ const SignatureContent = () => {
 
       // Use your existing putSignature endpoint
       await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature/${uid}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature/${uid}/`,
         formData,
         {
           headers: {

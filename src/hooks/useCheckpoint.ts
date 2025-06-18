@@ -167,7 +167,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       // Use specific endpoints for special steps
       if (step === CheckpointStep.IPV) {
         response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -193,7 +193,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
         }
       } else if (step === CheckpointStep.SIGNATURE) {
         response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -220,7 +220,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       } else if (step === CheckpointStep.INCOME_PROOF) {
         try {
           response = await axios.get(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -262,7 +262,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
         // For eSign, use the specific esign_complete endpoint with GET request
         try {
           response = await axios.get(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/esign_complete`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/esign_complete/`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -313,7 +313,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       } else {
         // Use the general checkpoint endpoint for all other steps
         response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/${step}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/${step}/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

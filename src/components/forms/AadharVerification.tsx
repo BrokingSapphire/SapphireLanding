@@ -105,7 +105,7 @@ const AadhaarVerification = ({
       }
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
         {
           step: "aadhaar_uri",
           redirect: "https://sapphirebroking.com/signup"
@@ -161,7 +161,7 @@ const AadhaarVerification = ({
       }
       
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
         {
           step: "aadhaar"
         },
@@ -240,7 +240,7 @@ const AadhaarVerification = ({
       }
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
         {
           step: "aadhaar_mismatch_details",
           full_name: mismatchFormData.full_name,

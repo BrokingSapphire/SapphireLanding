@@ -107,7 +107,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
 
       // Use the correct endpoint for IPV initialization
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
         {
           step: "ipv"
         },
@@ -229,7 +229,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
 
       // Use the correct PUT endpoint for IPV upload
       await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/${ipvUid}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/${ipvUid}/`,
         formData,
         {
           headers: {

@@ -139,7 +139,7 @@ const MPIN: React.FC<MPINProps> = ({
     try {
       // Set MPIN using checkpoint API
       await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/setup-mpin`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/setup-mpin/`,
         {
           mpin: mpinString,
           confirm_mpin: confirmMpinString

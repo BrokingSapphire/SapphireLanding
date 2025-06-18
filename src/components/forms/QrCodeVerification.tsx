@@ -84,7 +84,7 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
     try {
       // Use your existing IPV endpoint
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/`,
         { 
           withCredentials: true 
         }

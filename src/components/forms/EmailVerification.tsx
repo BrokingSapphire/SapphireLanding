@@ -158,7 +158,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp/`,
         {
           type: "email",
           email: email,
@@ -211,7 +211,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp/`,
         {
           type: "email",
           email: email,

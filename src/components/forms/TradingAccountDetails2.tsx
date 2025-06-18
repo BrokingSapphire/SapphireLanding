@@ -156,7 +156,7 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
         {
           step: "other_detail",
           occupation: mapOccupationToApi(occupation),

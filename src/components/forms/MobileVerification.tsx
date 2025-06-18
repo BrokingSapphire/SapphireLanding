@@ -128,7 +128,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
 
     try {
       const response = await axios.post<ApiResponse>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp/`,
         {
           type: "phone",
           phone: mobileNumber,
@@ -184,7 +184,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
 
     try {
       const response = await axios.post<ApiResponse>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp/`,
         {
           type: "phone",
           email: email,

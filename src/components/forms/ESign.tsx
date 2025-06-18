@@ -81,7 +81,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
       // Initialize eSign session
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
         {
           step: "esign_initialize",
           redirect_url: redirectUrl
@@ -178,7 +178,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         
         // Check if eSign is completed by calling the correct checkpoint endpoint
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
           {
             step: "esign_complete"
           },

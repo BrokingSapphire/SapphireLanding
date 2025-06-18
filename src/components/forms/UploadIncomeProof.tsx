@@ -39,7 +39,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
     const checkIncomeProofStatus = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/`,
           {
             headers: {
               Authorization: `Bearer ${Cookies.get('authToken')}`
@@ -173,7 +173,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
       const incomeProofType = mapDocumentTypeToApi(selectedOption);
       
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/`,
         {
           step: "income_proof",
           income_proof_type: incomeProofType
@@ -257,7 +257,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         formData.append('pdf', selectedFile);
 
         const response = await axios.put(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/${currentUid}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/${currentUid}/`,
           formData,
           {
             headers: {
