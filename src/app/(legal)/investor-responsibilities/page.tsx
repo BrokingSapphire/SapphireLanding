@@ -460,7 +460,7 @@ const ResponsibilitySection: React.FC<{
 const ResponsibilitiesOfInvestors: React.FC = () => {
   return (
     <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
         Responsibilities of Investors
       </h1>
 
@@ -470,6 +470,7 @@ const ResponsibilitiesOfInvestors: React.FC = () => {
       </p>
 
       <div className="space-y-10">
+        <hr />
         {/* Navigation Links */}
 
         {/* Quick Access Navigation */}

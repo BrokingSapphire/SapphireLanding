@@ -9,8 +9,8 @@ const FormHeading = ({
 }) => {
   return (
     <>
-      <h2 className=" text-3xl sm:text-2xl md:text-3xl font-lexend font-medium mb-3" dangerouslySetInnerHTML={{ __html: title }}></h2>
-      <p className="   text-base sm:text-sm md:text-base text-gray-600  mb-8">{description}</p>
+      <h2 className="  text-3xl sm:text-3xl md:text-3xl font-lexend font-medium mb-3 text-center md:text-left" dangerouslySetInnerHTML={{ __html: title }}></h2>
+      <p className="   text-base sm:text-base md:text-base text-gray-600 text-center md:text-left  mb-8">{description}</p>
     </>
   );
 };

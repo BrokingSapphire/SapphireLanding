@@ -8,7 +8,7 @@ interface RiskDisclosureModalProps {
 
 const RiskDisclosureModal: React.FC<RiskDisclosureModalProps> = ({ onAccept, }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center  p-4">
       <div className="bg-white w-full max-w-full max-h-full md:max-w-2xl md:max-h-[90vh] md:rounded-lg shadow-lg overflow-hidden flex flex-col">
         {/* Header */}
         <div className="p-4 sm:p-6 border-b">

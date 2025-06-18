@@ -1,11 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import { ArrowRight } from "lucide-react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 interface ManualBankDetailsProps {
   onNext: () => void;
   onBack: () => void;
+  initialData?: {
+    bank?: {
+      account_no: string;
+      ifsc_code: string;
+      account_type: string;
+      full_name: string;
+    };
+  };
+  isCompleted?: boolean;
 }
 
 interface FormData {
@@ -20,9 +32,14 @@ interface FormErrors {
   accountType?: string;
 }
 
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
+
 const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   onNext,
   onBack,
+  initialData,
+  isCompleted,
 }) => {
   const [formData, setFormData] = useState<FormData>({
     ifscCode: "",
@@ -31,12 +48,58 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [originalData, setOriginalData] = useState<FormData>({
+    ifscCode: "",
+    accountNumber: "",
+    accountType: "",
+  });
+
+  // Define a type for the bank data received from the API
+  interface ApiBankData {
+    account_no?: string;
+    ifsc_code?: string;
+    account_type?: string;
+    full_name?: string;
+  }
+
+  // Map API account type values back to frontend display values
+  const mapFromApiValues = (data: ApiBankData) => {
+    const accountTypeReverseMapping: Record<string, string> = {
+      "savings": "Savings",
+      "current": "Current"
+    };
+
+    return {
+      ifscCode: data.ifsc_code || "",
+      accountNumber: data.account_no || "",
+      accountType: data.account_type ? accountTypeReverseMapping[data.account_type] || "Savings" : "",
+    };
+  };
+
+  // Prefill data from initialData (API response) and show completion toast
+  useEffect(() => {
+    if (isCompleted && initialData?.bank) {
+      // Map API values back to display values
+      const mappedData = mapFromApiValues(initialData.bank);
+      
+      setFormData(mappedData);
+      setOriginalData(mappedData);
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Bank details already verified! You can modify them or continue.");
+        hasShownGlobalCompletedToast = true;
+      }
+    }
+  }, [initialData, isCompleted]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value.toUpperCase(), // Convert to uppercase for IFSC
     }));
 
     // Clear error when user starts typing
@@ -44,6 +107,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
       ...prev,
       [name]: undefined,
     }));
+    setError(null);
   };
 
   const handleAccountTypeSelect = (accountType: string) => {
@@ -57,6 +121,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
       ...prev,
       accountType: undefined,
     }));
+    setError(null);
   };
 
   const validateForm = () => {
@@ -64,10 +129,16 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
 
     if (!formData.ifscCode) {
       newErrors.ifscCode = "IFSC Code is required";
+    } else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(formData.ifscCode)) {
+      newErrors.ifscCode = "Invalid IFSC Code format";
     }
 
     if (!formData.accountNumber) {
       newErrors.accountNumber = "Account Number is required";
+    } else if (formData.accountNumber.length < 9 || formData.accountNumber.length > 18) {
+      newErrors.accountNumber = "Account Number should be between 9-18 digits";
+    } else if (!/^\d+$/.test(formData.accountNumber)) {
+      newErrors.accountNumber = "Account Number should contain only digits";
     }
 
     if (!formData.accountType) {
@@ -78,12 +149,110 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Check if there are changes that require API call
+  const hasChanges = () => {
+    if (!isCompleted) return true; // Not completed yet, so needs API call
+    return (
+      formData.ifscCode !== originalData.ifscCode ||
+      formData.accountNumber !== originalData.accountNumber ||
+      formData.accountType !== originalData.accountType
+    );
+  };
+
+  const mapAccountTypeToApi = (accountType: string): string => {
+    const mapping: Record<string, string> = {
+      "Savings": "savings",
+      "Current": "current"
+    };
+    return mapping[accountType] || accountType.toLowerCase();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
+    if (isSubmitting) return;
+
+    // If no changes and already completed, just proceed to next step
+    if (!hasChanges() && isCompleted) {
+      console.log("No changes detected, proceeding to next step");
       onNext();
+      return;
+    }
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "bank_validation",
+          validation_type: "bank",
+          bank: {
+            account_number: formData.accountNumber,
+            ifsc_code: formData.ifscCode,
+            account_type: mapAccountTypeToApi(formData.accountType),
+          }
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get('authToken')}`,
+          },
+        }
+      );
+
+      toast.success("Bank details verified successfully!");
+      
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        onNext();
+      }, 2000);
+      
+    } catch (err: unknown) {
+      type AxiosErrorResponse = {
+        response?: {
+          data?: { message?: string };
+          status?: number;
+        };
+      };
+
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as AxiosErrorResponse).response === "object"
+      ) {
+        const response = (err as AxiosErrorResponse).response;
+        if (response?.data?.message) {
+          setError(`Error: ${response.data.message}`);
+        } else if (response?.status === 422) {
+          setError("Bank account does not exist or invalid details provided.");
+        } else if (response?.status === 400) {
+          setError("Invalid bank details. Please check and try again.");
+        } else if (response?.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else {
+          setError("Failed to verify bank account. Please try again.");
+        }
+      } else {
+        setError("Failed to verify bank account. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const getButtonText = () => {
+    if (isSubmitting) return "Verifying...";
+    if (!hasChanges() && isCompleted) return "Continue";
+    return "Continue";
+  };
+
+  const isFormValid = formData.ifscCode && formData.accountNumber && formData.accountType;
 
   return (
     <div className="w-full max-w-2xl mx-auto mt-4 p-4">
@@ -91,6 +260,8 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
         title="Bank Account Details"
         description="Seamlessly link your bank for smooth transactions."
       />
+
+
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div className="space-y-2">
@@ -103,10 +274,12 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
             name="ifscCode"
             value={formData.ifscCode}
             onChange={handleChange}
+            disabled={isSubmitting}
             className={`w-full p-2 border rounded ${
-              errors.ifscCode ? "border-red-500" : "border-gray-300"
-            }`}
-            placeholder="Enter IFSC Code"
+              errors.ifscCode ? "border-red-500" : isCompleted && formData.ifscCode === originalData.ifscCode ? "border-gray-300" : "border-gray-300"
+            } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+            placeholder="Enter IFSC Code (e.g., SBIN0001234)"
+            maxLength={11}
           />
           {errors.ifscCode && (
             <p className="text-xs text-red-500">{errors.ifscCode}</p>
@@ -122,11 +295,28 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
             id="accountNumber"
             name="accountNumber"
             value={formData.accountNumber}
-            onChange={handleChange}
+            onChange={(e) => {
+              const { name, value } = e.target;
+              // Only allow digits
+              const numericValue = value.replace(/\D/g, '');
+              setFormData((prev) => ({
+                ...prev,
+                [name]: numericValue,
+              }));
+              
+              // Clear error when user starts typing
+              setErrors((prev) => ({
+                ...prev,
+                [name]: undefined,
+              }));
+              setError(null);
+            }}
+            disabled={isSubmitting}
             className={`w-full p-2 border rounded ${
-              errors.accountNumber ? "border-red-500" : "border-gray-300"
-            }`}
+              errors.accountNumber ? "border-red-500" : isCompleted && formData.accountNumber === originalData.accountNumber ? "border-gray-300" : "border-gray-300"
+            } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             placeholder="Enter Account Number"
+            maxLength={18}
           />
           {errors.accountNumber && (
             <p className="text-xs text-red-500">{errors.accountNumber}</p>
@@ -139,23 +329,23 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
           </label>
           <div className="flex gap-3">
             <div 
-              onClick={() => handleAccountTypeSelect("Savings")}
+              onClick={() => !isSubmitting && handleAccountTypeSelect("Savings")}
               className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 cursor-pointer ${
                 formData.accountType === "Savings"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
-              }`}
+              } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Savings
             </div>
 
             <div 
-              onClick={() => handleAccountTypeSelect("Current")}
+              onClick={() => !isSubmitting && handleAccountTypeSelect("Current")}
               className={`px-4 py-2 rounded border transition-colors text-xs sm:text-sm hover:border-gray-400 cursor-pointer ${
                 formData.accountType === "Current"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
-              }`}
+              } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Current
             </div>
@@ -165,22 +355,40 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
           )}
         </div>
 
+        {error && (
+          <div className="p-3 bg-red-50 rounded border border-red-200">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
+
         <div className="flex justify-between items-center mt-6">
           <Button
             type="button"
             variant="link"
             onClick={onBack}
+            disabled={isSubmitting}
             className="hidden text-blue-500 sm:flex items-center"
           >
-            Link via UPI <ArrowRight className="ml-1 h-4 w-4" />
+            Go Back <ArrowRight className="h-4 w-4" />
           </Button>
 
-          <Button
+          
+        </div>
+        <Button
             type="submit"
-            className="bg-teal-800 text-white px-6 py-2 rounded hover:bg-teal-900"
+            disabled={isSubmitting || !isFormValid}
+            className={`bg-teal-800 w-full text-white p-6 rounded hover:bg-teal-900 ${
+              (isSubmitting || !isFormValid) ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            Continue
+            {getButtonText()}
           </Button>
+
+        <div className="text-center text-sm text-gray-600 mt-4">
+          <p>
+            We&apos;ll verify your bank account details for secure transactions. 
+            This process may take a few moments.
+          </p>
         </div>
       </form>
     </div>

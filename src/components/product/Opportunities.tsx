@@ -12,12 +12,13 @@ const Opportunities = () => {
       className="relative bg-[#064D51] py-12 pb-0 sm:py-16 overflow-hidden "
       aria-label="Call to action"
     >
-      <div className="absolute right-0 top-0 w-1/4 sm:w-1/3">
+      <div className="absolute select-none right-0 top-0 w-1/4 sm:w-1/3">
         <Image
           src="/products/arrows.svg"
           alt="Arrows pointing right"
           className="ml-auto hidden lg:block  object-cover"
           aria-hidden="true"
+          draggable="false"
           width={350}
           height={350}
         />

@@ -1,18 +1,107 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import FormHeading from "./FormHeading";
+import { useAuthToken } from "@/hooks/useCheckpoint";
+import { toast } from "sonner";
 
-const EmailVerification = ({ onNext }: { onNext: () => void }) => {
+interface EmailVerificationProps {
+  onNext: () => void;
+  initialData?: {
+    email?: string;
+    [key: string]: unknown;
+  };
+  isCompleted?: boolean;
+}
+
+interface ApiErrorResponse {
+  error?: {
+    message?: string;
+  };
+  message?: string;
+}
+
+const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificationProps) => {
   const [email, setEmail] = useState("");
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [otpTimer, setOtpTimer] = useState(600); // 10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const { setAuthToken } = useAuthToken();
+
+  // Prefill email from localStorage or initialData
+  useEffect(() => {
+    if (isCompleted && initialData?.email) {
+      // If step is completed, prefill with data from API
+      setEmail(initialData.email);
+    } else {
+      // Try to get email from localStorage (from previous session)
+      const storedEmail = localStorage.getItem("email") || "";
+      if (storedEmail) {
+        setEmail(storedEmail);
+      }
+    }
+  }, [initialData, isCompleted]);
+
+  // If step is already completed, show completed state
+  useEffect(() => {
+    if (isCompleted) {
+      // Auto-advance to next step after a short delay
+      const timer = setTimeout(() => {
+        onNext();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isCompleted, onNext]);
+
+  // Prevent page reload/refresh
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Show browser's default confirmation dialog
+      e.preventDefault();
+      e.returnValue = ''; // Required for Chrome
+      
+      // Show toast warning (may not be visible due to browser dialog)
+      toast.error("Please don't reload the page during verification process!");
+      
+      return ''; // Some browsers require a return value
+    };
+
+    const handleUnload = () => {
+      // Show toast when user actually tries to leave
+      toast.error("Page reload detected! Please resubmit if verification was interrupted.");
+    };
+
+    // Add event listeners
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('unload', handleUnload);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('unload', handleUnload);
+    };
+  }, []);
+
+  // Also detect when user comes back to the tab (in case they refreshed)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && showOTP) {
+        // User came back to tab during OTP process
+        toast.warning("If you refreshed the page, you may need to request a new OTP code.");
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [showOTP]);
 
   // OTP timer for 10 minutes
   useEffect(() => {
@@ -44,15 +133,6 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
     };
   }, [resendTimer]);
 
-  // Format time from seconds to MM:SS
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
   const validateEmail = (email: string) => {
     return email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
   };
@@ -75,13 +155,8 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
   const handleVerifyOTP = async () => {
     setIsLoading(true);
-    setError(null);
 
     try {
-      // OTP should be in string
-      localStorage.setItem("email", email);
-      console.log("Email OTP:",otp)
-      console.log("Email:",email)
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
         {
@@ -90,14 +165,36 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
           otp: otp.join(""),
         }
       );
-      if (!response) {
-        setError("Failed to verify your code. Please try again.");
-        console.error("Send OTP error, Response :", response);
+
+      if (!response.data) {
+        toast.error("Failed to verify your code. Please try again.");
         return;
       }
+
+      // Store email and auth token
+      localStorage.setItem("email", email);
+      
+      // Store auth token in cookies and axios headers
+      if (response.data.token) {
+        setAuthToken(response.data.token);
+      }
+
+      toast.success("Email verified successfully!");
       onNext();
-    } catch (err) {
-      setError("Error verifying code. Please try again.");
+    } catch (error) {
+      const err = error as AxiosError<ApiErrorResponse>;
+      
+      // Check for backend error message in different possible locations
+      const errorMessage = 
+        err.response?.data?.error?.message ||  // {"error":{"message":"Invalid OTP provided"}}
+        err.response?.data?.message ||         // {"message":"Invalid OTP provided"}
+        (typeof err.response?.data === 'object' && 
+         'error' in err.response.data && 
+         typeof err.response.data.error === 'string' ? 
+         err.response.data.error : null) ||   // {"error":"Invalid OTP provided"}
+        "Error verifying code. Please try again."; // fallback
+      
+      toast.error(errorMessage);
       console.error("Verification error:", err);
     } finally {
       setIsLoading(false);
@@ -106,15 +203,13 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
   const handleSendOTP = async () => {
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address");
+      toast.error("Please enter a valid email address");
       return;
     }
 
     setIsLoading(true);
-    setError(null);
 
     try {
-
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp`,
         {
@@ -122,20 +217,36 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
           email: email,
         }
       );
-      if (!response) {
-        setError("Failed to send verification code. Please try again.");
-        console.error("Send OTP error, Response :", response);
+
+      if (!response.data) {
+        toast.error("Failed to send verification code. Please try again.");
         return;
       }
+
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds
+      
+      toast.success("Verification code sent to your email!");
+      
       // Focus on the first OTP input after showing OTP fields
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
-    } catch (err) {
-      setError("Failed to send verification code. Please try again.");
+    } catch (error) {
+      const err = error as AxiosError<ApiErrorResponse>;
+      
+      // Check for backend error message in different possible locations
+      const errorMessage = 
+        err.response?.data?.error?.message ||  // {"error":{"message":"Some error"}}
+        err.response?.data?.message ||         // {"message":"Some error"}
+        (typeof err.response?.data === 'object' && 
+         'error' in err.response.data && 
+         typeof err.response.data.error === 'string' ? 
+         err.response.data.error : null) ||   // {"error":"Some error"}
+        "Failed to send verification code. Please try again."; // fallback
+      
+      toast.error(errorMessage);
       console.error("Send OTP error:", err);
     } finally {
       setIsLoading(false);
@@ -147,7 +258,6 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
       const newOTP = [...otp];
       newOTP[index] = value;
       setOtp(newOTP);
-      setError(null);
 
       // Move to next input if value is entered
       if (value !== "" && index < 5) {
@@ -184,6 +294,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
   // Get button text based on current state
   const getButtonText = () => {
+    if (isCompleted) return "Completed ✓";
     if (isLoading) {
       return showOTP ? "Verifying..." : "Sending Code...";
     }
@@ -192,10 +303,52 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
 
   // Determine if button should be disabled
   const isButtonDisabled = () => {
+    if (isCompleted) return false;
     if (isLoading) return true;
     if (!showOTP) return !validateEmail(email);
     return !otp.every((digit) => digit !== "");
   };
+
+  // Show completed state
+  if (isCompleted) {
+    return (
+      <div className="mx-auto pt-24">
+        <FormHeading
+          title={"Email Verified Successfully!"}
+          description={"Proceeding to the next step..."}
+        />
+        
+        <div className="mb-8">
+          <label className="block text-gray-700 mb-2">Email Address</label>
+          <div className="flex gap-3">
+            <input
+              type="email"
+              className="flex-1 px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
+              value={email}
+              disabled
+            />
+          </div>
+        </div>
+
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-green-800 font-medium">Email verified successfully!</span>
+          </div>
+        </div>
+
+        <Button
+          onClick={onNext}
+          className="w-full py-6 mb-6 bg-green-600 hover:bg-green-700"
+          variant="ghost"
+        >
+          Continue to Next Step
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto pt-24">
@@ -214,7 +367,6 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
-              setError(null);
             }}
             onKeyDown={handleEmailKeyDown}
             disabled={isLoading || showOTP}
@@ -251,7 +403,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
               />
             ))}
           </div>
-          <div className="flex justify-between text-sm mb-2">
+          <div className="flex w-full justify-end text-sm mb-2">
             <button
               className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSendOTP}
@@ -261,16 +413,8 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
                 ? `Resend Code (${resendTimer}s)`
                 : "Resend Code"}
             </button>
-            <span className="text-gray-500">
-              Code valid for {formatTime(otpTimer)}
-            </span>
+            
           </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 rounded">
-          <p className="text-red-600 text-sm">{error}</p>
         </div>
       )}
 
@@ -280,7 +424,7 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
         disabled={isButtonDisabled()}
         className={`w-full py-6 mb-6 ${
           isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
-        }`}
+        } ${isCompleted ? "bg-green-600 hover:bg-green-700" : ""}`}
         variant="ghost"
       >
         {getButtonText()}
@@ -301,4 +445,4 @@ const EmailVerification = ({ onNext }: { onNext: () => void }) => {
   );
 };
 
-export default EmailVerification
+export default EmailVerification;

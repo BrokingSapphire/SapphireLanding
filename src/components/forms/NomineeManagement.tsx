@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormHeading from "./FormHeading";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
+import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 interface NomineeManagementProps {
   onNext: () => void;
+  initialData?: unknown;
+  isCompleted?: boolean;
 }
 
 interface NomineeData {
@@ -13,7 +20,14 @@ interface NomineeData {
   sharePercentage: string;
 }
 
-const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
+
+const NomineeManagement: React.FC<NomineeManagementProps> = ({ 
+  onNext, 
+  initialData, 
+  isCompleted 
+}) => {
   const [nominees, setNominees] = useState<NomineeData[]>([]);
   const [currentNominee, setCurrentNominee] = useState<NomineeData>({
     id: "1",
@@ -23,6 +37,16 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
     sharePercentage: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [originalData, setOriginalData] = useState<NomineeData[]>([]);
+  const [, setEditingNomineeId] = useState<string | null>(null);
+
+  // Use the checkpoint hook
+  const { 
+    // isStepCompleted,
+    getStepData,
+    refetchStep 
+  } = useCheckpoint();
 
   const relationships = [
     "Spouse",
@@ -34,6 +58,48 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
     "Sister",
     "Other",
   ];
+
+  // Load existing nominees from hook data or initialData and show completion toast
+  useEffect(() => {
+    // First try to get data from hook
+    const hookData = getStepData(CheckpointStep.ADD_NOMINEES);
+    type RawNominee = { name?: string; govId?: string; gov_id?: string; relation?: string; share?: number };
+    type DataToUse = { nominees?: RawNominee[] } | undefined;
+    let dataToUse: DataToUse = hookData as DataToUse;
+
+    // Fallback to initialData if hook data is not available
+    if (!dataToUse) {
+      dataToUse = initialData as DataToUse;
+    }
+    
+    if (dataToUse?.nominees && Array.isArray(dataToUse.nominees) && dataToUse.nominees.length > 0) {
+      const formattedNominees: NomineeData[] = dataToUse.nominees.map((nominee: RawNominee, index: number) => ({
+        id: (index + 1).toString(),
+        name: nominee.name || "",
+        panOrAadhar: nominee.govId || nominee.gov_id || "",
+        relationship: nominee.relation || "",
+        sharePercentage: nominee.share !== undefined ? nominee.share.toString() : "",
+      }));
+      
+      // Only update if nominees are actually different
+      if (nominees.length === 0 || JSON.stringify(nominees) !== JSON.stringify(formattedNominees)) {
+        setNominees(formattedNominees);
+        setOriginalData(formattedNominees);
+        
+        // Update current nominee ID
+        setCurrentNominee(prev => ({
+          ...prev,
+          id: (formattedNominees.length + 1).toString()
+        }));
+
+        // Show completion toast only once per session
+        if (isCompleted && formattedNominees.length > 0 && !hasShownGlobalCompletedToast) {
+          toast.success("Nominees already added! You can modify them or continue.");
+          hasShownGlobalCompletedToast = true;
+        }
+      }
+    }
+  }, [initialData, isCompleted]); // Removed getStepData from dependencies
 
   const handleInputChange = (field: keyof NomineeData, value: string) => {
     setError(null);
@@ -65,6 +131,39 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleNomineeInputChange = (nomineeId: string, field: keyof NomineeData, value: string) => {
+    setError(null);
+    
+    // Special validation for share percentage
+    if (field === "sharePercentage") {
+      const numValue = parseFloat(value);
+      if (numValue > 100) {
+        setError("Share percentage cannot exceed 100%");
+        value = "100";
+      }
+
+      // Calculate available percentage (excluding current nominee's percentage)
+      const otherNomineesTotal = nominees
+        .filter(n => n.id !== nomineeId)
+        .reduce((sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0), 0);
+      
+      const availablePercentage = 100 - otherNomineesTotal;
+      
+      if (numValue > availablePercentage) {
+        value = availablePercentage.toString();
+        setError(`Maximum available percentage is ${availablePercentage}%`);
+      }
+    }
+
+    setNominees((prev) =>
+      prev.map((nominee) =>
+        nominee.id === nomineeId
+          ? { ...nominee, [field]: value }
+          : nominee
+      )
+    );
   };
 
   const validateNominee = () => {
@@ -125,28 +224,34 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
   };
 
   const handleDeleteNominee = (id: string) => {
-    setNominees((prev) => prev.filter((nominee) => nominee.id !== id));
+    const updatedNominees = nominees.filter((nominee) => nominee.id !== id);
     // Adjust the IDs of remaining nominees
-    setNominees((prev) =>
-      prev.map((nominee, index) => ({
-        ...nominee,
-        id: (index + 1).toString(),
-      }))
-    );
+    const reindexedNominees = updatedNominees.map((nominee, index) => ({
+      ...nominee,
+      id: (index + 1).toString(),
+    }));
+    
+    setNominees(reindexedNominees);
+    
     // Update current nominee ID
     setCurrentNominee((prev) => ({
       ...prev,
-      id: nominees.length === 0 ? "1" : nominees.length.toString(),
+      id: (reindexedNominees.length + 1).toString(),
     }));
+    
+    setEditingNomineeId(null);
   };
 
   const totalSharePercentage = nominees.reduce(
     (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0),
     0
-  );
+  ) + (parseFloat(currentNominee.sharePercentage) || 0);
 
-  // Calculate remaining percentage to allocate
-  const remainingPercentage = 100 - totalSharePercentage;
+  // Calculate remaining percentage to allocate (excluding current nominee input)
+  const remainingPercentage = 100 - nominees.reduce(
+    (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0),
+    0
+  );
 
   const isCurrentNomineeComplete =
     currentNominee.name &&
@@ -154,6 +259,152 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
     currentNominee.relationship &&
     currentNominee.sharePercentage;
 
+  // Check if there are changes that require API call
+  const hasChanges = () => {
+    if (!isCompleted) return true; // Not completed yet, so needs API call
+    
+    // Check if nominees have changed
+    if (nominees.length !== originalData.length) return true;
+    
+    return nominees.some((nominee, index) => {
+      const original = originalData[index];
+      return (
+        nominee.name !== original?.name ||
+        nominee.panOrAadhar !== original?.panOrAadhar ||
+        nominee.relationship !== original?.relationship ||
+        nominee.sharePercentage !== original?.sharePercentage
+      );
+    });
+  };
+
+  const handleSubmit = async () => {
+    // If no changes and already completed, just proceed to next step
+    if (!hasChanges() && isCompleted) {
+      console.log("No changes detected, proceeding to next step");
+      onNext();
+      return;
+    }
+
+    if (nominees.length === 0) {
+      setError("Please add at least one nominee");
+      return;
+    }
+
+    // Calculate total including current nominee input if it exists
+    const finalTotal = nominees.reduce(
+      (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0),
+      0
+    ) + (parseFloat(currentNominee.sharePercentage) || 0);
+
+    if (finalTotal !== 100) {
+      setError("Total share percentage must equal 100%");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Format nominees data for API
+      const formattedNominees = nominees.map(nominee => ({
+        name: nominee.name.trim(),
+        gov_id: nominee.panOrAadhar.trim(),
+        relation: nominee.relationship,
+        share: parseFloat(nominee.sharePercentage)
+      }));
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "add_nominees",
+          nominees: formattedNominees
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`
+          }
+        }
+      );
+
+      if (!response.data) {
+        setError("Failed to save nominees. Please try again.");
+        return;
+      }
+
+      toast.success("Nominees saved successfully!");
+
+      // Refetch the nominees step to update the hook
+      refetchStep(CheckpointStep.ADD_NOMINEES);
+
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        onNext();
+      }, 100);
+      
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string; error?: { message?: string } };
+          status?: number;
+        };
+        request?: unknown;
+      };
+
+      console.error("Save nominees error:", err);
+      if (error.response) {
+        if (error.response.data?.message) {
+          setError(`Error: ${error.response.data.message}`);
+        } else if (error.response.data?.error?.message) {
+          setError(`Error: ${error.response.data.error.message}`);
+        } else if (error.response.status === 400) {
+          setError("Invalid nominee details. Please check and try again.");
+        } else if (error.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else if (error.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
+        } else if (error.response.status === 422) {
+          setError("Invalid nominee data or share percentage doesn't equal 100%.");
+        } else {
+          setError(`Server error (${error.response.status}). Please try again.`);
+        }
+      } else if (error.request) {
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getButtonText = () => {
+    if (isLoading) return "Saving Nominees...";
+    if (!hasChanges() && isCompleted) return "Continue";
+    return "Continue";
+  };
+
+  const isButtonDisabled = () => {
+    if (isLoading) return true;
+    if (!hasChanges() && isCompleted) return false;
+    
+    // Calculate total including current nominee input for validation
+    const totalWithCurrent = nominees.reduce(
+      (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0),
+      0
+    ) + (parseFloat(currentNominee.sharePercentage) || 0);
+    
+    return nominees.length === 0 || totalWithCurrent !== 100;
+  };
+
+  // Always show the same UI - whether fresh or completed
   return (
     <div className="mx-auto h-full max-h-[80vh] overflow-y-auto mt-20">
       <div className="sticky top-0 bg-white z-10 pt-0 pb-2">
@@ -166,7 +417,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
       </div>
 
       <div className="space-y-6 mt-2">
-        {/* List of existing nominees */}
+        {/* List of existing nominees - Now editable */}
         {nominees.map((nominee) => (
           <div
             key={nominee.id}
@@ -177,6 +428,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               <button
                 onClick={() => handleDeleteNominee(nominee.id)}
                 className="text-gray-600 hover:text-red-600"
+                disabled={isLoading}
               >
                 <TrashIcon className="w-5 h-5" />
               </button>
@@ -184,48 +436,99 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-gray-600 mb-1">Name</label>
-                <div className="text-sm font-medium">{nominee.name}</div>
+                <label className="block text-sm text-gray-600 mb-1">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={nominee.name}
+                  onChange={(e) => handleNomineeInputChange(nominee.id, "name", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isLoading}
+                  placeholder="Enter nominee name"
+                />
               </div>
 
               <div>
                 <label className="block text-sm text-gray-600 mb-1">
-                  Pan-Aadhar card
+                  PAN<span className="text-red-500">*</span>
                 </label>
-                <div className="text-sm font-medium">{nominee.panOrAadhar}</div>
+                <input
+                  type="text"
+                  value={nominee.panOrAadhar}
+                  onChange={(e) => handleNomineeInputChange(nominee.id, "panOrAadhar", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isLoading}
+                  placeholder="Enter PAN/Aadhar number"
+                />
               </div>
 
               <div>
                 <label className="block text-sm text-gray-600 mb-1">
-                  Relationship
+                  Relationship <span className="text-red-500">*</span>
                 </label>
-                <div className="text-sm font-medium">
-                  {nominee.relationship}
+                <div className="relative">
+                  <select
+                    value={nominee.relationship}
+                    onChange={(e) => handleNomineeInputChange(nominee.id, "relationship", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-10"
+                    disabled={isLoading}
+                  >
+                    <option value="">Select relationship</option>
+                    {relationships.map((rel) => (
+                      <option key={rel} value={rel}>
+                        {rel}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg
+                      className="h-4 w-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm text-gray-600 mb-1">
-                  % Share
+                  % Share <span className="text-red-500">*</span>
                 </label>
-                <div className="text-sm font-medium">
-                  {nominee.sharePercentage}%
-                </div>
+                <input
+                  type="number"
+                  value={nominee.sharePercentage}
+                  onChange={(e) => handleNomineeInputChange(nominee.id, "sharePercentage", e.target.value)}
+                  min="1"
+                  max="100"
+                  step="0.01"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isLoading}
+                  placeholder="Enter share percentage"
+                />
               </div>
             </div>
           </div>
         ))}
 
-        {/* Form for new nominee */}
-        {nominees.length < 5 && (
+        {/* Form for new nominee - Only show if less than 5 nominees AND total is less than 100% */}
+        {nominees.length < 5 && totalSharePercentage < 100 && (
           <div className="bg-white rounded-lg p-4 border border-gray-200 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-medium">Nominee {currentNominee.id}</h3>
             </div>
 
-            <div className="grid grid-cols-2  gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm  mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm mb-1">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -233,6 +536,8 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                   value={currentNominee.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isLoading}
+                  placeholder="Enter nominee name"
                 />
               </div>
 
@@ -247,11 +552,13 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                     handleInputChange("panOrAadhar", e.target.value)
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isLoading}
+                  placeholder="Enter PAN/Aadhar number"
                 />
               </div>
 
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm  mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm mb-1">
                   Relationship <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -261,8 +568,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                       handleInputChange("relationship", e.target.value)
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-10"
+                    disabled={isLoading}
                   >
-                    <option value="">select</option>
+                    <option value="">Select relationship</option>
                     {relationships.map((rel) => (
                       <option key={rel} value={rel}>
                         {rel}
@@ -275,7 +583,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
                         strokeLinecap="round"
@@ -289,7 +596,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
               </div>
 
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm  mb-1">
+                <label className="block text-sm sm:text-xs md:text-sm mb-1">
                   % Share <span className="text-red-500">*</span>
                   {nominees.length > 0 && (
                     <span className="text-xs text-gray-500 ml-1">
@@ -304,7 +611,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                     handleInputChange("sharePercentage", e.target.value)
                   }
                   min="1"
-                  max="100"
+                  max={remainingPercentage || 100}
                   step="0.01"
                   placeholder={
                     nominees.length === 0
@@ -312,6 +619,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
                       : remainingPercentage.toString()
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -321,18 +629,31 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
             <button
               onClick={handleAddNominee}
               disabled={
-                !isCurrentNomineeComplete || totalSharePercentage >= 100
+                !isCurrentNomineeComplete || totalSharePercentage >= 100 || isLoading
               }
-              className={`flex items-center text-blue-500 hover:text-blue-600 mb-0
-                ${
-                  !isCurrentNomineeComplete || totalSharePercentage >= 100
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }`}
+              className={`flex items-center text-blue-500 hover:text-blue-600 mb-0 ${
+                !isCurrentNomineeComplete || totalSharePercentage >= 100 || isLoading
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
             >
               <PlusIcon className="w-5 h-5 mr-1" />
               Add Nominee
             </button>
+          </div>
+        )}
+
+        {/* Message when 100% is allocated */}
+        {totalSharePercentage >= 100 && nominees.length < 5 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-blue-800 text-sm">
+                100% share allocated. To add more nominees, please adjust the existing share percentages.
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -361,18 +682,18 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({ onNext }) => {
         </div>
 
         {/* Continue Button */}
-        <button
-          onClick={onNext}
-          disabled={totalSharePercentage !== 100}
-          className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors
-            ${
-              totalSharePercentage !== 100
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-teal-700"
-            }`}
+        <Button
+        variant='ghost'
+          onClick={handleSubmit}
+          disabled={isButtonDisabled()}
+          className={`w-full  text-white py-6 rounded font-medium transition-colors ${
+            isButtonDisabled()
+              ? "opacity-50 cursor-not-allowed"
+              : ""
+          }`}
         >
-          Continue
-        </button>
+          {getButtonText()}
+        </Button>
       </div>
     </div>
   );
@@ -385,7 +706,6 @@ const TrashIcon = ({ className }: { className?: string }) => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
   >
     <path
       strokeLinecap="round"
@@ -402,7 +722,6 @@ const PlusIcon = ({ className }: { className?: string }) => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
   >
     <path
       strokeLinecap="round"

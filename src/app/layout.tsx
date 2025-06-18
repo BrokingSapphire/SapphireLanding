@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lexend, Poppins, Lobster_Two } from "next/font/google";
 import "./globals.css";
+import { QueryProvider } from '@/providers/QueryProvider';
 import Navbar from "../components/Navbar";
-import { Analytics } from "@vercel/analytics/react";
 import FooterWrapper from "@/components/FooterWrapper";
-
+import { Toaster } from "sonner";
 // Import Google Fonts with Next.js font optimization.
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,10 +63,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${lobsterTwo.variable} ${lexend.variable} font-poppins bg-white text-black antialiased`}
       >
-        <Analytics />
-        <Navbar />
-        {children}
-        <FooterWrapper />
+        <QueryProvider>
+          <Navbar />
+          {children}
+            <Toaster position="top-right" style={{ right: '10px' }}  offset={75} />
+          <FooterWrapper />
+        </QueryProvider>
       </body>
     </html>
   );

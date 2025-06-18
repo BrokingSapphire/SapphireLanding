@@ -1,49 +1,133 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 interface TradingAccountDetailsProps {
   onNext: () => void;
+  initialData?: {
+    father_spouse_name?: string;
+    mother_name?: string;
+    maiden_name?: string;
+    [key: string]: unknown; // Allow extra fields if needed
+  };
+  isCompleted?: boolean;
 }
 
 interface TradingAccountFormData {
-  maritalStatus: string;
-  fatherName: string;
+  fatherSpouseName: string;
   motherName: string;
+  maidenName: string; // Optional field
 }
 
 interface FormErrors {
-  maritalStatus: boolean;
-  fatherName: boolean;
+  fatherSpouseName: boolean;
   motherName: boolean;
 }
 
 const initialFormData: TradingAccountFormData = {
-  maritalStatus: "",
-  fatherName: "",
+  fatherSpouseName: "",
   motherName: "",
+  maidenName: "",
 };
 
 const initialErrors: FormErrors = {
-  maritalStatus: false,
-  fatherName: false,
+  fatherSpouseName: false,
   motherName: false,
 };
 
-const maritalStatusOptions = ["Single", "Married", "Divorced"];
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
 
 const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   onNext,
+  initialData,
+  isCompleted,
 }) => {
-  const [formData, setFormData] =
-    useState<TradingAccountFormData>(initialFormData);
+  const [formData, setFormData] = useState<TradingAccountFormData>(initialFormData);
   const [errors, setErrors] = useState<FormErrors>(initialErrors);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [originalData, setOriginalData] = useState<TradingAccountFormData>(initialFormData);
+
+  // Prefill data from initialData (API response) and show completion toast
+  useEffect(() => {
+    if (isCompleted && initialData) {
+      const prefilledData = {
+        fatherSpouseName: formatName(initialData.father_spouse_name || ""),
+        motherName: formatName(initialData.mother_name || ""),
+        maidenName: formatName(initialData.maiden_name || ""),
+      };
+      
+      setFormData(prefilledData);
+      setOriginalData(prefilledData);
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Parent details already saved! You can modify them or continue.");
+        hasShownGlobalCompletedToast = true;
+      }
+    }
+  }, [initialData, isCompleted]);
+
+  // Helper function to format names properly
+  const formatName = (name: string): string => {
+    if (!name) return '';
+    
+    return name
+      .trim()
+      .split(' ')
+      .map(word => {
+        if (word.length === 0) return '';
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .filter(word => word.length > 0) // Remove empty strings
+      .join(' ');
+  };
+
+  // Also try to prefill father's name from PAN data if available and not already completed
+  useEffect(() => {
+    const fetchPanData = async () => {
+      if (isCompleted) return; // Don't fetch if already completed
+      
+      try {
+        const token = Cookies.get('authToken');
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/pan`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            }
+          }
+        );
+        
+        if (response.data?.data?.full_name) {
+          // Extract father's name from PAN data (typically the middle name)
+          const nameParts = response.data.data.full_name.split(' ');
+          if (nameParts.length >= 3 && !formData.fatherSpouseName) {
+            // Construct father's name from middle name + last name
+            const fatherName = `${nameParts[1]} ${nameParts[nameParts.length - 1]}`;
+            const formattedFatherName = formatName(fatherName);
+            setFormData(prev => ({
+              ...prev,
+              fatherSpouseName: formattedFatherName
+            }));
+          }
+        }
+      } catch (error) {
+        // Silently handle error - PAN data might not be available yet
+        console.log("Could not fetch PAN data for prefilling",error);
+      }
+    };
+    
+    fetchPanData();
+  }, [isCompleted, formData.fatherSpouseName]);
 
   const validateForm = () => {
     const newErrors = {
-      maritalStatus: !formData.maritalStatus,
-      fatherName: !formData.fatherName.trim(),
+      fatherSpouseName: !formData.fatherSpouseName.trim(),
       motherName: !formData.motherName.trim(),
     };
 
@@ -57,93 +141,153 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   ) => {
     if (isSubmitting) return;
 
+    // Format the name as user types
+    const formattedValue = field === 'fatherSpouseName' || field === 'motherName' || field === 'maidenName' 
+      ? formatName(value) 
+      : value;
+
     setFormData((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: formattedValue,
     }));
 
     setErrors((prev) => ({
       ...prev,
       [field]: false,
     }));
+    
+    setError(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Check if there are changes that require API call
+  const hasChanges = () => {
+    if (!isCompleted) return true; // Not completed yet, so needs API call
+    return (
+      formData.fatherSpouseName !== originalData.fatherSpouseName ||
+      formData.motherName !== originalData.motherName ||
+      formData.maidenName !== originalData.maidenName
+    );
+  };
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (isSubmitting) return;
 
-    if (validateForm()) {
-      setIsSubmitting(true);
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulating API call
-        onNext();
-      } catch (err) {
-        console.error("Error during submission:", err);
-      } finally {
-        setIsSubmitting(false);
+    // If no changes and already completed, just proceed to next step
+    if (!hasChanges() && isCompleted) {
+      console.log("No changes detected, proceeding to next step");
+      onNext();
+      return;
+    }
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+    const token = Cookies.get('authToken');
+    
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "user_detail",
+          father_spouse_name: formData.fatherSpouseName.trim(),
+          mother_name: formData.motherName.trim(),
+          maiden_name: formData.maidenName.trim() || undefined,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          }
+        }
+      );
+
+      if (!response.data) {
+        setError("Failed to save parent details. Please try again.");
+        return;
       }
+
+      toast.success("Parent details saved successfully!");
+      
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        onNext();
+      }, 500);
+      
+    } catch (err: unknown) {
+      // Import AxiosError from axios at the top if not already imported
+      // import type { AxiosError } from "axios";
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as import("axios").AxiosError).response === "object"
+      ) {
+        const axiosError = err as import("axios").AxiosError;
+        const response = axiosError.response;
+        if (response?.data && typeof response.data === "object" && "message" in response.data) {
+          setError(`Error: ${(response.data as { message?: string }).message}`);
+        } else if (response?.status === 400) {
+          setError("Invalid details. Please check and try again.");
+        } else if (response?.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else {
+          setError("Failed to save details. Please try again.");
+        }
+      } else {
+        setError("Failed to save details. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const isFormValid =
-    formData.maritalStatus &&
-    formData.fatherName.trim() &&
-    formData.motherName.trim();
+    formData.fatherSpouseName.trim() && formData.motherName.trim();
 
+  const getButtonText = () => {
+    if (isSubmitting) return "Saving...";
+    return "Continue";
+  };
+
+  const isButtonDisabled = () => {
+    if (isSubmitting) return true;
+    return !isFormValid;
+  };
+
+  // Always show the same UI - whether fresh or completed
   return (
     <div className="mx-auto mt-10">
       <FormHeading
-        title={"Trading Account Details"}
-        description={"Set up your trading account in minutes."}
+        title={"Parent Details"}
+        description={"Provide your parent/spouse information for KYC verification."}
       />
+
+     
 
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
           <label className="block mb-2">
-            Marital Status<span className="text-red-500">*</span>
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {maritalStatusOptions.map((status) => (
-              <button
-                key={status}
-                type="button"
-                onClick={() => handleInputChange("maritalStatus", status)}
-                disabled={isSubmitting}
-                className={`px-4 py-2 rounded border transition-colors
-                  ${
-                    formData.maritalStatus === status
-                      ? "border-teal-800 bg-teal-50 text-teal-800"
-                      : "border-gray-300 text-gray-600 hover:border-gray-400"
-                  }
-                  ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
-                `}
-              >
-                {status}
-              </button>
-            ))}
-          </div>
-          {errors.maritalStatus && (
-            <p className="text-red-500 text-sm mt-1">
-              Please select your marital status
-            </p>
-          )}
-        </div>
-
-        <div className="mb-6">
-          <label className="block mb-2">
-            Father&apos;s Name<span className="text-red-500">*</span>
+            Father&apos;s/Spouse Name<span className="text-red-500">*</span>
           </label>
           <input
             type="text"
-            placeholder="Enter your father's full name"
-            value={formData.fatherName}
-            onChange={(e) => handleInputChange("fatherName", e.target.value)}
+            placeholder="Enter father's or spouse's full name"
+            value={formData.fatherSpouseName}
+            onChange={(e) => handleInputChange("fatherSpouseName", e.target.value)}
             disabled={isSubmitting}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+              isCompleted && formData.fatherSpouseName === originalData.fatherSpouseName 
+                ? 'border-gray-300' 
+                : 'border-gray-300'
+            }`}
           />
-          {errors.fatherName && (
+          {errors.fatherSpouseName && (
             <p className="text-red-500 text-sm mt-1">
-              Please enter your father&apos;s name
+              Please enter father&apos;s or spouse&apos;s name
             </p>
           )}
         </div>
@@ -158,7 +302,11 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
             value={formData.motherName}
             onChange={(e) => handleInputChange("motherName", e.target.value)}
             disabled={isSubmitting}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+              isCompleted && formData.motherName === originalData.motherName 
+                ? 'border-gray-300' 
+                : 'border-gray-300'
+            }`}
           />
           {errors.motherName && (
             <p className="text-red-500 text-sm mt-1">
@@ -167,21 +315,25 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           )}
         </div>
 
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 rounded">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
+
         <Button
           variant={"ghost"}
           type="submit"
-          disabled={!isFormValid || isSubmitting}
-          className={`w-full py-6
-            ${
-              isFormValid && !isSubmitting
-                ? ""
-                : "opacity-50 cursor-not-allowed"
-            }`}
+          disabled={isButtonDisabled()}
+          className={`w-full py-6 ${
+            isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          {isSubmitting ? "Please wait..." : "Continue"}
+          {getButtonText()}
         </Button>
 
-        <div className="mt-6 text-sm text-gray-600">
+        <div className="mt-6 text-center text-sm text-gray-600">
           <p className="">
             This information is required for KYC verification and will be kept
             confidential in accordance with our privacy policy.

@@ -3,7 +3,7 @@
 const Home = () => {
   return (
     <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
         TERMS & CONDITIONS
       </h1>
 
@@ -13,6 +13,7 @@ const Home = () => {
       </p>
 
       <div className="space-y-8">
+         <hr />
         <div className="text-gray-500">
           <p className="mb-4">
             These Terms and Conditions ("Terms") constitute a legally binding

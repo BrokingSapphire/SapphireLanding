@@ -1,19 +1,153 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import FormHeading from "./FormHeading";
 import SignatureQrCode from "./SignatureQrCode";
+import axios, { AxiosError } from "axios";
+import Cookies from 'js-cookie';
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
+import { toast } from "sonner";
 
 interface SignatureComponentProps {
   onNext: () => void;
+  initialData?: {
+    [key: string]: unknown;
+  };
+  isCompleted?: boolean;
 }
 
-const SignatureComponent: React.FC<SignatureComponentProps> = ({ onNext }) => {
+interface ApiErrorResponse {
+  data?: {
+    message?: string;
+  };
+  message?: string;
+}
+
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
+
+const SignatureComponent: React.FC<SignatureComponentProps> = ({ 
+  onNext
+}) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
   const [showQrCode, setShowQrCode] = useState(false);
+  const [signatureUid, setSignatureUid] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [wantsToResign, setWantsToResign] = useState(false);
+  const [isInitializingForQr, setIsInitializingForQr] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  const initializeCanvas = () => {
+  // Use the checkpoint hook to check for existing signature data
+  const { 
+    isStepCompleted,
+    refetchStep 
+  } = useCheckpoint();
+
+  const initializeSignature = useCallback(async () => {
+    console.log("initializeSignature called - isLoading:", isLoading, "signatureUid:", signatureUid);
+    
+    // Prevent multiple simultaneous calls
+    if (isLoading || signatureUid) {
+      console.log("Already initializing or UID exists, skipping...");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        toast.error("Authentication token not found. Please restart the process.");
+        return;
+      }
+
+      console.log("Making API call to initialize signature session...");
+
+      // Use the correct endpoint for signature initialization
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "signature"
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`
+          }
+        }
+      );
+
+      if (response.data?.data?.uid) {
+        console.log("Signature session initialized with UID:", response.data.data.uid);
+        setSignatureUid(response.data.data.uid);
+        setIsInitialized(true);
+        
+        // If we were initializing for QR code, show it now
+        if (isInitializingForQr) {
+          setShowQrCode(true);
+          setIsInitializingForQr(false);
+        }
+      } else {
+        toast.error("Failed to initialize signature session. Please try again.");
+      }
+    } catch (error) {
+      const err = error as AxiosError<ApiErrorResponse>;
+      console.error("Signature initialization error:", err);
+      
+      if (err.response) {
+        if (err.response.data?.message) {
+          toast.error(`Error: ${err.response.data.message}`);
+        } else if (err.response.status === 400) {
+          toast.error("Invalid request. Please try again.");
+        } else if (err.response.status === 401) {
+          toast.error("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 403) {
+          toast.error("Access denied. Please check your authentication and try again.");
+        } else {
+          toast.error(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        toast.error("Network error. Please check your connection and try again.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+      
+      // Reset QR initialization state on error
+      setIsInitializingForQr(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoading, signatureUid, isInitializingForQr]);
+
+  // Check if signature is already completed and show toast
+  useEffect(() => {
+    const isSignatureCompleted = isStepCompleted(CheckpointStep.SIGNATURE);
+    console.log("useEffect triggered - isStepCompleted:", isSignatureCompleted, "wantsToResign:", wantsToResign, "isInitialized:", isInitialized, "isLoading:", isLoading);
+    
+    if (isSignatureCompleted && !wantsToResign) {
+      // Signature is already completed and user doesn't want to re-sign
+      if (!isInitialized) {
+        setIsInitialized(true);
+      }
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Signature already submitted! You can proceed or sign again if needed.");
+        hasShownGlobalCompletedToast = true;
+      }
+      return;
+    }
+
+    // If not completed OR user wants to re-sign, initialize signature
+    // But only if we haven't already initialized and we're not already loading
+    if (((!isSignatureCompleted && !isInitialized) || wantsToResign) && !isLoading && !signatureUid) {
+      console.log("Calling initializeSignature from useEffect");
+      initializeSignature();
+    }
+  }, [isStepCompleted, wantsToResign, isInitialized, isLoading, signatureUid, initializeSignature]);
+
+  const initializeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -33,17 +167,19 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({ onNext }) => {
     context.strokeStyle = "black";
     context.lineWidth = 2;
     contextRef.current = context;
-  };
-
-  React.useEffect(() => {
-    initializeCanvas();
-    // Add resize listener to reinitialize canvas when window resizes
-    const handleResize = () => {
-      initializeCanvas();
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    if (isInitialized && signatureUid) {
+      initializeCanvas();
+      // Add resize listener to reinitialize canvas when window resizes
+      const handleResize = () => {
+        initializeCanvas();
+      };
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, [isInitialized, signatureUid, initializeCanvas]);
 
   const startDrawing = (
     event:
@@ -59,6 +195,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({ onNext }) => {
     if ("touches" in event) {
       clientX = event.touches[0].clientX;
       clientY = event.touches[0].clientY;
+      event.preventDefault(); // Prevent scrolling on touch
     } else {
       clientX = event.clientX;
       clientY = event.clientY;
@@ -88,6 +225,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({ onNext }) => {
     if ("touches" in event) {
       clientX = event.touches[0].clientX;
       clientY = event.touches[0].clientY;
+      event.preventDefault(); // Prevent scrolling on touch
     } else {
       clientX = event.clientX;
       clientY = event.clientY;
@@ -122,25 +260,214 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({ onNext }) => {
     setSignature(null);
   };
 
-  const handleSubmit = () => {
-    if (signature) {
+  const convertDataURLToFile = (dataURL: string, filename: string): File => {
+    const arr = dataURL.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
+  const handleSubmit = async () => {
+    console.log("handleSubmit called - isLoading:", isLoading, "signature:", !!signature, "signatureUid:", !!signatureUid);
+    
+    // Prevent multiple submissions
+    if (isLoading) {
+      console.log("Already submitting, please wait...");
+      return;
+    }
+
+    // If already completed and no new signature and not wanting to re-sign, just go to next step
+    if (isStepCompleted(CheckpointStep.SIGNATURE) && !signature && !wantsToResign) {
+      console.log("Step completed, no new signature, proceeding to next step");
       onNext();
+      return;
+    }
+
+    if (!signature || !signatureUid) {
+      console.log("Missing signature or UID, cannot submit");
+      return;
+    }
+
+    console.log("Starting signature submission...");
+    setIsLoading(true);
+
+    try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        toast.error("Authentication token not found. Please restart the process.");
+        return;
+      }
+
+      // Convert canvas signature to file
+      const signatureFile = convertDataURLToFile(signature, "signature.png");
+      
+      const formData = new FormData();
+      formData.append('image', signatureFile);
+
+      console.log("Uploading signature with UID:", signatureUid);
+
+      // Use the correct PUT endpoint for signature upload
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature/${signatureUid}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${authToken}`
+          }
+        }
+      );
+
+      console.log("Signature uploaded successfully");
+      toast.success("Signature submitted successfully!");
+      
+      // Reset re-signing state immediately to prevent further submissions
+      setWantsToResign(false);
+      setIsLoading(false); // Set loading to false immediately
+      
+      // Refetch signature step to update the hook
+      refetchStep(CheckpointStep.SIGNATURE);
+
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        onNext();
+      }, 100);
+      
+    } catch (error) {
+      const err = error as AxiosError<ApiErrorResponse>;
+      console.error("Signature upload error:", err);
+      setIsLoading(false); // Make sure to reset loading state on error
+      
+      if (err.response) {
+        if (err.response.data?.message) {
+          toast.error(`Upload failed: ${err.response.data.message}`);
+        } else if (err.response.status === 401) {
+          toast.error("Session expired. Please try again.");
+          // Re-initialize signature session
+          setIsInitialized(false);
+          setSignatureUid(null);
+          clearSignature();
+        } else if (err.response.status === 422) {
+          toast.error("Invalid signature format. Please try again.");
+        } else if (err.response.status === 403) {
+          toast.error("Access denied. Please check your authentication and try again.");
+        } else {
+          toast.error(`Server error (${err.response.status}). Please try again.`);
+        }
+      } else if (err.request) {
+        toast.error("Network error. Please check your connection and try again.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
+  const handleRetry = () => {
+    setIsInitialized(false);
+    setSignatureUid(null);
+    clearSignature();
+    setWantsToResign(true); // Set intent to re-sign
+    // initializeSignature will be called by useEffect
+  };
+
+  const handleSignAgain = () => {
+    console.log("User wants to sign again");
+    
+    // Clear all states first
+    setSignature(null);
+    setIsDrawing(false);
+    
+    // Clear canvas if it exists
+    if (canvasRef.current && contextRef.current) {
+      contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
+    
+    // Reset initialization states
+    setIsInitialized(false);
+    setSignatureUid(null);
+    
+    // Set the intent to re-sign (this will trigger useEffect)
+    setWantsToResign(true);
+  };
+
   const handleQrCodeClick = () => {
-    setShowQrCode(true);
+    // If we already have a signatureUid, show QR code immediately
+    if (signatureUid) {
+      setShowQrCode(true);
+      return;
+    }
+
+    // If we don't have UID, we need to initialize first
+    toast.info("Initializing signature session for mobile device...");
+    setIsInitializingForQr(true);
+    setWantsToResign(true);
+    
+    // The useEffect will trigger initializeSignature, and once it's done,
+    // it will automatically show the QR code due to isInitializingForQr flag
   };
 
   // Render QR code component if user clicks "Click Here"
-  if (showQrCode) {
+  if (showQrCode && signatureUid) {
     return (
       <SignatureQrCode
         onBack={() => setShowQrCode(false)}
         onComplete={onNext}
+        signatureUid={signatureUid}
       />
     );
   }
+
+  // Show initialization loading
+  if (!isInitialized && isLoading) {
+    return (
+      <div className="mx-auto mt-16">
+        <FormHeading
+          title="Signature"
+          description={isInitializingForQr ? "Setting up mobile signature session..." : "Initializing signature session..."}
+        />
+        <div className="flex items-center justify-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+          <span className="ml-3 text-gray-600">
+            {isInitializingForQr ? "Preparing mobile signature..." : "Setting up signature pad..."}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if initialization failed (but don't show red error box)
+  if (!isInitialized && !isLoading && !signatureUid && !isStepCompleted(CheckpointStep.SIGNATURE)) {
+    return (
+      <div className="mx-auto mt-16">
+        <FormHeading
+          title="Signature"
+          description="Let's set up your signature session."
+        />
+        <div className="flex items-center justify-center h-40">
+          <button
+            onClick={handleRetry}
+            className="px-8 py-6 rounded bg-teal-800 hover:bg-teal-900 text-white"
+          >
+            Initialize Signature
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const getButtonText = () => {
+    if (isLoading) return "Submitting...";
+    if (isStepCompleted(CheckpointStep.SIGNATURE) && !signature && !wantsToResign) return "Continue";
+    return "Submit";
+  };
+
+  const shouldShowCanvas = signatureUid && (wantsToResign || !isStepCompleted(CheckpointStep.SIGNATURE));
+  const shouldShowCompletedState = isStepCompleted(CheckpointStep.SIGNATURE) && !wantsToResign;
 
   return (
     <div className="mx-auto mt-16">
@@ -149,51 +476,102 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({ onNext }) => {
         description="Add your signature to complete the paperwork"
       />
 
+      {/* Show loading message when initializing for re-signing */}
+      {wantsToResign && !signatureUid && isLoading && (
+        <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-200">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+            <p className="text-blue-700 text-sm">
+              {isInitializingForQr ? "Preparing mobile signature session..." : "Initializing new signature session..."}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="mb-6">
         <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center overflow-hidden">
-          <canvas
-            ref={canvasRef}
-            className="w-full h-full bg-white rounded-md touch-none"
-            onMouseDown={startDrawing}
-            onMouseMove={draw}
-            onMouseUp={stopDrawing}
-            onMouseLeave={stopDrawing}
-            onTouchStart={startDrawing}
-            onTouchMove={draw}
-            onTouchEnd={stopDrawing}
-          />
+          {shouldShowCompletedState ? (
+            // Show completed state with option to sign again
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-green-600 font-medium">Signature Already Submitted</p>
+              <p className="text-gray-600 text-sm">Click below to sign again if needed</p>
+              <button
+                onClick={handleSignAgain}
+                className="px-6 py-3 rounded bg-teal-800 hover:bg-teal-900 text-white"
+              >
+                Sign Again
+              </button>
+            </div>
+          ) : (
+            // Show canvas for signing
+            <canvas
+              ref={canvasRef}
+              className={`w-full h-full bg-white rounded-md touch-none ${
+                !shouldShowCanvas ? "opacity-50 cursor-not-allowed" : "cursor-crosshair"
+              }`}
+              onMouseDown={shouldShowCanvas ? startDrawing : undefined}
+              onMouseMove={shouldShowCanvas ? draw : undefined}
+              onMouseUp={shouldShowCanvas ? stopDrawing : undefined}
+              onMouseLeave={shouldShowCanvas ? stopDrawing : undefined}
+              onTouchStart={shouldShowCanvas ? startDrawing : undefined}
+              onTouchMove={shouldShowCanvas ? draw : undefined}
+              onTouchEnd={shouldShowCanvas ? stopDrawing : undefined}
+            />
+          )}
         </div>
 
-        <div className="flex justify-between mt-4">
+        {/* QR Code option */}
+        <div className="text-center mt-4">
           <button
-            onClick={clearSignature}
-            className="px-8 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700"
+            onClick={handleQrCodeClick}
+            className="hidden lg:block text-sm decoration-dotted underline"
+            disabled={isLoading && !isInitializingForQr}
           >
-            Clear
+            Facing issues with your signature? Click here and use your mobile device to complete the Signature.
           </button>
+        </div>
+
+        <div className="flex flex-col gap-y-2 mt-4">
+          {/* Only show clear button when canvas is active */}
+          {shouldShowCanvas && (
+            <button
+              onClick={clearSignature}
+              disabled={isLoading}
+              className={`px-8 py-3 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Clear
+            </button>
+          )}
 
           <button
             onClick={handleSubmit}
-            disabled={!signature}
-            className={`px-8 py-2 rounded bg-teal-800 hover:bg-teal-900 text-white ${
-              !signature ? "opacity-50 cursor-not-allowed" : ""
+            disabled={
+              Boolean((!signature && !shouldShowCompletedState) || 
+              isLoading || 
+              (shouldShowCanvas && !signatureUid))
+            }
+            className={`px-8 py-3 rounded bg-teal-800 hover:bg-teal-900 text-white ${
+              ((!signature && !shouldShowCompletedState) || isLoading || (shouldShowCanvas && !signatureUid)) 
+                ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            Submit
+            {getButtonText()}
           </button>
         </div>
+      </div>
 
-        <div className="hidden sm:block mt-4 text-center">
-          <button
-            className="text-sm bg-transparent border-none cursor-pointer"
-            onClick={handleQrCodeClick}
-          >
-            Problems with Signature?{" "}
-            <span className="text-blue-500 underline font-medium">
-              Click Here
-            </span>
-          </button>
-        </div>
+      <div className="text-center text-sm text-gray-600 mt-4">
+        <p>
+          Please sign clearly within the box above. Your signature will be used for document verification.
+          Session expires in 10 minutes.
+        </p>
       </div>
     </div>
   );

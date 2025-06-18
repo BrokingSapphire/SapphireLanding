@@ -16,7 +16,7 @@ import {
 const InvestorCharter: React.FC = () => {
   return (
     <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
         Investor Charter
       </h1>
 
@@ -26,6 +26,7 @@ const InvestorCharter: React.FC = () => {
       </p>
 
       <div className="space-y-10">
+        <hr />
         {/* Charter Content */}
         <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
           <h3 className="text-2xl font-semibold text-green-heading mb-4">

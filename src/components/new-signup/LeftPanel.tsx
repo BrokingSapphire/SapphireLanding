@@ -61,7 +61,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
     },
     {
       id: 3,
-      label: "Trading Account details",
+      label: "Trading Account Details",
       completed: currentStep > 7,
       active: currentStep <= 7 && currentStep > 4,
     },
@@ -73,7 +73,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
     },
     {
       id: 5,
-      label: "Complete Video Verification",
+      label: "Video Verification",
       completed: currentStep > 9,
       active: currentStep === 9,
     },
@@ -94,6 +94,18 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
       label: "Digitally Sign Documents",
       completed: currentStep > 12,
       active: currentStep === 12,
+    },
+    {
+      id: 10,
+      label: "Set Password",
+      completed: currentStep > 13,
+      active: currentStep === 13,
+    },
+    {
+      id: 11,
+      label: "Set Pin",
+      completed: currentStep > 14,
+      active: currentStep === 14,
     },
   ];
 

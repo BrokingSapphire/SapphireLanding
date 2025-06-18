@@ -7,7 +7,7 @@ import { AdvisoryCard } from "@/components/InvestorAttentionComponents";
 const InvestorAttention: React.FC = () => {
   return (
     <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
         FOR INVESTOR'S ATTENTION
       </h1>
 
@@ -17,6 +17,7 @@ const InvestorAttention: React.FC = () => {
       </p>
 
       <div className="space-y-10">
+        <hr />
         {/* Advisories Section */}
         <div className="space-y-8">
           {advisoryData.map((advisory) => (

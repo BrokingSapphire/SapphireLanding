@@ -1,9 +1,29 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-import axios from "axios";
-// import { headers } from "next/headers";
-const MobileVerification = ({ onNext }: { onNext: () => void }) => {
+import axios, { AxiosError } from "axios";
+import { useAuthToken } from "@/hooks/useCheckpoint";
+
+interface MobileVerificationProps {
+  onNext: () => void;
+  initialData?: {
+    phone?: string;
+    [key: string]: unknown;
+  };
+  isCompleted?: boolean;
+}
+
+interface ApiErrorResponse {
+  message: string;
+  [key: string]: unknown;
+}
+
+interface ApiResponse {
+  token?: string;
+  [key: string]: unknown;
+}
+
+const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerificationProps) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -15,11 +35,35 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [email, setEmail] = useState("");
 
+  const { setAuthToken } = useAuthToken();
+
+  // Prefill data from initialData or localStorage
   useEffect(() => {
+    if (isCompleted && initialData?.phone) {
+      // If step is completed, prefill with data from API
+      setMobileNumber(initialData.phone);
+    } else {
+      // Try to get data from localStorage (from previous session)
+      const storedPhone = localStorage.getItem("verifiedPhone") || "";
+      if (storedPhone) {
+        setMobileNumber(storedPhone);
+      }
+    }
+
     const storedEmail = localStorage.getItem("email") || "";
     setEmail(storedEmail);
-  }, []); // Runs only once when the component mounts
+  }, [initialData, isCompleted]);
 
+  // If step is already completed, show completed state
+  useEffect(() => {
+    if (isCompleted) {
+      // Auto-advance to next step after a short delay
+      const timer = setTimeout(() => {
+        onNext();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isCompleted, onNext]);
 
   // OTP timer for 10 minutes
   useEffect(() => {
@@ -34,7 +78,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [showOTP, otpTimer])
+  }, [showOTP, otpTimer]);
 
   // Resend OTP timer for 30 seconds
   useEffect(() => {
@@ -51,17 +95,8 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
     };
   }, [resendTimer]);
 
-  // Format time from seconds to MM:SS
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
   const validateMobile = (number: string) => {
-    return /^[0-9]{10}$/.test(number);
+    return /^[6-9][0-9]{9}$/.test(number);
   };
 
   const handleButtonClick = async () => {
@@ -83,15 +118,16 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
   const handleVerifyOTP = async () => {
     setIsLoading(true);
     setError(null);
-        if (email === "") {
-          console.error("Verify your email first!");
-          alert("Verify Your Email First!");
-        }
+
+    if (email === "") {
+      console.error("Verify your email first!");
+      alert("Verify Your Email First!");
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      // TODO: Implement actual OTP verification logic here
-      console.log(otp.join(""))
-      const response = await axios.post(
+      const response = await axios.post<ApiResponse>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/verify-otp`,
         {
           type: "phone",
@@ -100,39 +136,31 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
           otp: otp.join(""),
         }
       );
-      const token = response.data.token;
-      console.log("OTP RESPONSE TOKEN:", token)
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${token}`;
 
-      //set this token as bearer header
+      const token = response.data.token;
+      
+      // Set token in axios default headers for all future requests
+      if (token) {
+        setAuthToken(token);
+      }
+
+      // Store verified phone for next step
+      localStorage.setItem("verifiedPhone", mobileNumber);
+
       if (!response) {
         setError("Failed to verify your code. Please try again.");
         console.error("Send OTP error, Response :", response);
         return;
       }
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-        {
-          step: "credentials",
-          email: email,
-          phone: mobileNumber,
-        },
-        {
-          headers: {
-            Authorization : `Bearer ${response.data.token}`
-          },
-        }
-      );
-      if (!res) {
-        setError("Failed to register you as a user. Please try again.");
-        console.error("Send Credential Error, Response:", response);
-        return; 
-      }
+
       onNext();
-    } catch (err) {
-      setError("Error verifying OTP. Please try again.");
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      if (axiosError.response?.data?.message) {
+        setError(axiosError.response.data.message);
+      } else {
+        setError("Error verifying OTP. Please try again.");
+      }
       console.error("Verification error:", err);
     } finally {
       setIsLoading(false);
@@ -144,16 +172,18 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
       setError("Please enter a valid 10-digit mobile number");
       return;
     }
-        if (email === "") {
-          console.error("Verify your email first!");
-          alert("Verify Your Email First!");
-        }
+
+    if (email === "") {
+      console.error("Verify your email first!");
+      alert("Verify Your Email First!");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await axios.post(
+      const response = await axios.post<ApiResponse>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp`,
         {
           type: "phone",
@@ -173,8 +203,13 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
-    } catch (err) {
-      setError("Failed to send OTP. Please try again.");
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<ApiErrorResponse>;
+      if (axiosError.response?.data?.message) {
+        setError(axiosError.response.data.message);
+      } else {
+        setError("Failed to send OTP. Please try again.");
+      }
       console.error("Send OTP error:", err);
     } finally {
       setIsLoading(false);
@@ -222,6 +257,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
 
   // Get button text based on current state
   const getButtonText = () => {
+    if (isCompleted) return "Completed ✓";
     if (isLoading) {
       return showOTP ? "Verifying..." : "Sending OTP...";
     }
@@ -230,10 +266,55 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
 
   // Determine if button should be disabled
   const isButtonDisabled = () => {
+    if (isCompleted) return false;
     if (isLoading) return true;
     if (!showOTP) return !validateMobile(mobileNumber);
     return !otp.every((digit) => digit !== "");
   };
+
+  // Show completed state
+  if (isCompleted) {
+    return (
+      <div className="mx-auto pt-24">
+        <FormHeading
+          title={"Mobile Verified Successfully!"}
+          description={"Proceeding to the next step..."}
+        />
+
+        <div className="mb-8">
+          <label className="block text-gray-700 mb-2">Mobile Number</label>
+          <div className="flex gap-3">
+            <div className="bg-green-50 px-3 py-2 rounded border border-green-300 text-gray-500">
+              +91
+            </div>
+            <input
+              type="tel"
+              className="flex-1 px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
+              value={mobileNumber}
+              disabled
+            />
+          </div>
+        </div>
+
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-green-800 font-medium">Mobile number verified successfully!</span>
+          </div>
+        </div>
+
+        <Button
+          onClick={onNext}
+          className="w-full py-6 mb-6 bg-green-600 hover:bg-green-700"
+          variant="ghost"
+        >
+          Continue to Next Step
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto pt-24">
@@ -255,13 +336,13 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
             value={mobileNumber}
             onChange={(e) => {
               const value = e.target.value.replace(/\D/g, "");
-              if (value.length > 0 && /^[1-5]/.test(value)) return; // Prevent numbers starting with 1-5
+              if (value.length > 10) return;
               setMobileNumber(value);
               setError(null);
             }}
             onKeyDown={handleMobileKeyDown}
             maxLength={10}
-            pattern="[0-9]{10}"
+            pattern="[6-9][0-9]{9}"
             disabled={isLoading || showOTP}
           />
         </div>
@@ -297,7 +378,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
               />
             ))}
           </div>
-          <div className="flex flex-col sm:flex-row justify-between text-sm mb-2 gap-2">
+          <div className="flex flex-col sm:flex-row justify-end text-sm mb-2 gap-2">
             <button
               className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSendOTP}
@@ -305,9 +386,6 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
             >
               {resendTimer > 0 ? `Resend OTP (${resendTimer}s)` : "Resend OTP"}
             </button>
-            <span className="text-gray-500">
-              OTP valid for {formatTime(otpTimer)}
-            </span>
           </div>
         </div>
       )}
@@ -325,7 +403,7 @@ const MobileVerification = ({ onNext }: { onNext: () => void }) => {
         variant="ghost"
         className={`w-full py-6 rounded mb-6 ${
           isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
-        }`}
+        } ${isCompleted ? "bg-green-600 hover:bg-green-700" : ""}`}
       >
         {getButtonText()}
       </Button>
