@@ -73,7 +73,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
     },
     {
       id: 5,
-      label: "Complete Video Verification",
+      label: "Video Verification",
       completed: currentStep > 9,
       active: currentStep === 9,
     },

@@ -322,8 +322,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     return (
       <div className="mx-auto p-4 mt-10">
         <FormHeading
-          title="eSign Completed Successfully!"
-          description="Your documents have been digitally signed and verified."
+          title="Finish account set-up using Aadhar E-sign"
+          description="E-sign and complete your onboarding instantly."
         />
 
         <div className="flex justify-center mb-6">
@@ -355,7 +355,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           onClick={handleButtonClick} 
           className="py-6 w-full"
         >
-          Continue to Next Step
+          Continue
         </Button>
       </div>
     );

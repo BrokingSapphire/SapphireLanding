@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Clock, RefreshCw } from "lucide-react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import QRCode from "qrcode";
+import { toast } from "sonner";
 
 interface SignatureQrCodeProps {
   onBack: () => void;
@@ -20,6 +21,11 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
+  const [isPolling, setIsPolling] = useState(true);
+  const [signatureCompleted, setSignatureCompleted] = useState(false);
+  
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // QR code points to sapphirebroking.com with UUID as parameter
   const qrCodeUrl = `https://sapphirebroking.com/qr-signature?uid=${signatureUid}`;
@@ -40,6 +46,7 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
       } catch (err) {
         console.error('Error generating QR code:', err);
         setError("Failed to generate QR code");
+        toast.error("Failed to generate QR code");
       }
     };
 
@@ -48,12 +55,15 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
     }
   }, [qrCodeUrl, signatureUid]);
 
+  // Countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          setIsPolling(false);
           setError("Session expired. Please try again.");
+          toast.error("Session expired. Please try again.");
           return 0;
         }
         return prev - 1;
@@ -63,9 +73,19 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  const checkSignatureStatus = async () => {
-    setIsChecking(true);
-    setError(null);
+  // Polling function (hidden from UI)
+  const checkSignatureStatus = async (isManualCheck = false) => {
+    if (!isPolling && !isManualCheck) return;
+
+    // Only show loading state for manual checks
+    if (isManualCheck) {
+      setIsChecking(true);
+    }
+    
+    // Only clear error for manual checks to avoid clearing session expired messages
+    if (isManualCheck) {
+      setError(null);
+    }
 
     try {
       // Use your existing getSignature endpoint
@@ -78,24 +98,98 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
 
       // If we get a successful response with data, signature is completed
       if (response.status === 200 && response.data?.data?.url) {
-        onComplete();
+        setSignatureCompleted(true);
+        setIsPolling(false);
+        toast.success("Signature completed successfully!");
+        
+        // Stop polling
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+        }
+        
+        // Auto-complete after a short delay
+        setTimeout(() => {
+          onComplete();
+        }, 1500);
       } else {
-        setError("Signature not completed yet. Please complete signature on your mobile device.");
+        // Only show error for manual checks
+        if (isManualCheck) {
+          setError("Signature not completed yet. Please complete signature on your mobile device.");
+        }
       }
     } catch (err: any) {
       if (err.response?.status === 204) {
         // Signature not uploaded yet (NO_CONTENT from your backend)
-        setError("Signature not completed yet. Please complete signature on your mobile device.");
+        if (isManualCheck) {
+          setError("Signature not completed yet. Please complete signature on your mobile device.");
+        }
       } else if (err.response?.data?.message) {
-        setError(`Error: ${err.response.data.message}`);
+        const errorMessage = `Error: ${err.response.data.message}`;
+        setError(errorMessage);
+        if (isManualCheck) {
+          toast.error(errorMessage);
+        }
+        // Stop polling on serious errors
+        setIsPolling(false);
       } else if (err.response?.status === 401) {
-        setError("Session expired. Please restart the process.");
+        const errorMessage = "Session expired. Please restart the process.";
+        setError(errorMessage);
+        setIsPolling(false);
+        if (isManualCheck) {
+          toast.error(errorMessage);
+        }
       } else {
-        setError("Failed to check status. Please try again.");
+        // For other errors during polling, continue silently
+        // Only show error for manual checks
+        if (isManualCheck) {
+          setError("Failed to check status. Please try again.");
+          toast.error("Failed to check status. Please try again.");
+        } else {
+          // Log error but continue polling
+          console.warn("Polling error (continuing):", err);
+        }
       }
     } finally {
-      setIsChecking(false);
+      if (isManualCheck) {
+        setIsChecking(false);
+      }
     }
+  };
+
+  // Start hidden polling when component mounts
+  useEffect(() => {
+    if (isPolling && qrCodeDataUrl && !signatureCompleted) {
+      // Initial check (silent)
+      checkSignatureStatus(false);
+      
+      // Set up polling interval (check every 3 seconds, silently)
+      pollingIntervalRef.current = setInterval(() => {
+        checkSignatureStatus(false);
+      }, 3000);
+    }
+
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [isPolling, qrCodeDataUrl, signatureCompleted]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Manual check function for button click
+  const handleManualCheck = () => {
+    checkSignatureStatus(true);
   };
 
   const formatTime = (seconds: number): string => {
@@ -149,26 +243,10 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
           <ol className="text-blue-700 text-sm mt-2 text-left space-y-1">
             <li>1. Scan the QR code with your phone camera</li>
             <li>2. Sign on the mobile signature pad</li>
-            <li>3. Click "Check Status" below to verify completion</li>
+            <li>3. Wait for automatic completion or click "Check Status"</li>
           </ol>
         </div>
 
-        <Button
-          onClick={checkSignatureStatus}
-          disabled={isChecking || timeRemaining <= 0 || !qrCodeDataUrl}
-          className={`w-full py-3 mb-4 ${
-            (isChecking || !qrCodeDataUrl) ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
-          {isChecking ? (
-            <div className="flex items-center justify-center">
-              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-              Checking Status...
-            </div>
-          ) : (
-            "Check Signature Status"
-          )}
-        </Button>
       </div>
 
       {error && (
@@ -182,10 +260,20 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
           onClick={onBack}
           variant="link"
           className="flex items-center text-blue-500"
+          disabled={signatureCompleted}
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Go Back
         </Button>
+        
+        {signatureCompleted && (
+          <Button
+            onClick={onComplete}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            Continue
+          </Button>
+        )}
       </div>
     </div>
   );

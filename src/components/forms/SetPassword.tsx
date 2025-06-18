@@ -4,6 +4,7 @@ import FormHeading from "./FormHeading";
 import { Eye, EyeOff, Check, X } from "lucide-react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 interface SetPasswordProps {
   onNext: () => void;
@@ -112,7 +113,14 @@ const SetPassword: React.FC<SetPasswordProps> = ({
   };
 
   const handlePasswordSubmit = async () => {
-    if (!isFormValid()) return;
+    if (!isFormValid()) {
+      // Check specifically for password mismatch
+      if (password !== confirmPassword) {
+        toast.error("Passwords do not match. Please ensure both password fields are identical.");
+        return;
+      }
+      return;
+    }
 
     if (isCompleted && clientId) {
       onNext();
@@ -245,6 +253,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
         </div>
       )}
 
+
       <div className="space-y-4">
         {/* Password Field */}
         <div>
@@ -256,9 +265,13 @@ const SetPassword: React.FC<SetPasswordProps> = ({
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
+              onCut={(e) => e.preventDefault()}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 pr-10"
               placeholder="Enter your password"
               disabled={isLoading}
+              autoComplete="new-password"
             />
             <button
               type="button"
@@ -285,9 +298,13 @@ const SetPassword: React.FC<SetPasswordProps> = ({
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              onCopy={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
+              onCut={(e) => e.preventDefault()}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 pr-10"
               placeholder="Confirm your password"
               disabled={isLoading}
+              autoComplete="new-password"
             />
             <button
               type="button"
@@ -336,23 +353,6 @@ const SetPassword: React.FC<SetPasswordProps> = ({
             ))}
           </div>
         </div>
-
-        {/* Password Match Indicator */}
-        {confirmPassword && (
-          <div className="flex items-center">
-            {password === confirmPassword ? (
-              <>
-                <Check className="h-4 w-4 text-green-500 mr-2" />
-                <span className="text-sm text-green-700">Passwords match</span>
-              </>
-            ) : (
-              <>
-                <X className="h-4 w-4 text-red-500 mr-2" />
-                <span className="text-sm text-red-700">Passwords don't match</span>
-              </>
-            )}
-          </div>
-        )}
 
         {error && (
           <div className="p-3 bg-red-50 rounded border border-red-200">

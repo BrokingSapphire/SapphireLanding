@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { ArrowLeft, Clock, RefreshCw } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { ArrowLeft, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import QRCode from "qrcode";
+import { toast } from "sonner";
 
 interface QrCodeVerificationProps {
   onBack: () => void;
@@ -18,8 +19,12 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
 }) => {
   const [timeRemaining, setTimeRemaining] = useState<number>(600); // 10 minutes
   const [error, setError] = useState<string | null>(null);
-  const [isChecking, setIsChecking] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
+  const [isPolling, setIsPolling] = useState(true);
+  const [verificationStatus, setVerificationStatus] = useState<'waiting' | 'checking' | 'completed' | 'failed'>('waiting');
+  
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // QR code points to sapphirebroking.com with UUID as parameter
   const qrCodeUrl = `https://sapphirebroking.com/qr-ipv?uid=${ipvUid}`;
@@ -40,6 +45,7 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
       } catch (err) {
         console.error('Error generating QR code:', err);
         setError("Failed to generate QR code");
+        toast.error("Failed to generate QR code");
       }
     };
 
@@ -48,12 +54,16 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
     }
   }, [qrCodeUrl, ipvUid]);
 
+  // Countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          setIsPolling(false);
+          setVerificationStatus('failed');
           setError("Session expired. Please try again.");
+          toast.error("Session expired. Please try again.");
           return 0;
         }
         return prev - 1;
@@ -63,8 +73,11 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
     return () => clearInterval(timer);
   }, []);
 
+  // Polling function
   const checkVerificationStatus = async () => {
-    setIsChecking(true);
+    if (!isPolling || verificationStatus === 'completed') return;
+
+    setVerificationStatus('checking');
     setError(null);
 
     try {
@@ -78,31 +91,81 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
 
       // If we get a successful response with data, IPV is completed
       if (response.status === 200 && response.data?.data?.url) {
-        onComplete();
+        setVerificationStatus('completed');
+        setIsPolling(false);
+        toast.success("Verification completed successfully!");
+        
+        // Stop polling and complete after a short delay
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+        }
+        
+        setTimeout(() => {
+          onComplete();
+        }, 1500);
       } else {
-        setError("Verification not completed yet. Please complete verification on your mobile device.");
+        setVerificationStatus('waiting');
       }
     } catch (err: any) {
       if (err.response?.status === 204) {
         // IPV not uploaded yet (NO_CONTENT from your backend)
-        setError("Verification not completed yet. Please complete verification on your mobile device.");
+        setVerificationStatus('waiting');
       } else if (err.response?.data?.message) {
         setError(`Error: ${err.response.data.message}`);
+        setVerificationStatus('failed');
+        setIsPolling(false);
+        toast.error(`Error: ${err.response.data.message}`);
       } else if (err.response?.status === 401) {
         setError("Session expired. Please restart the process.");
+        setVerificationStatus('failed');
+        setIsPolling(false);
+        toast.error("Session expired. Please restart the process.");
       } else {
-        setError("Failed to check status. Please try again.");
+        // For other errors, continue polling but show a warning
+        console.warn("Polling error:", err);
+        setVerificationStatus('waiting');
       }
-    } finally {
-      setIsChecking(false);
     }
   };
+
+  // Start polling when component mounts
+  useEffect(() => {
+    if (isPolling && qrCodeDataUrl) {
+      // Initial check
+      checkVerificationStatus();
+      
+      // Set up polling interval (check every 3 seconds)
+      pollingIntervalRef.current = setInterval(() => {
+        checkVerificationStatus();
+      }, 3000);
+    }
+
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [isPolling, qrCodeDataUrl]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+
 
   return (
     <div className="w-full mx-auto flex flex-col items-start mt-16">
@@ -149,26 +212,10 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
           <ol className="text-blue-700 text-sm mt-2 text-left space-y-1">
             <li>1. Scan the QR code with your phone camera</li>
             <li>2. Take a clear photo of your face on the mobile page</li>
-            <li>3. Click "Check Status" below to verify completion</li>
+            <li>3. Wait for automatic verification (no need to refresh)</li>
           </ol>
         </div>
 
-        <Button
-          onClick={checkVerificationStatus}
-          disabled={isChecking || timeRemaining <= 0 || !qrCodeDataUrl}
-          className={`w-full py-3 mb-4 ${
-            (isChecking || !qrCodeDataUrl) ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
-          {isChecking ? (
-            <div className="flex items-center justify-center">
-              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-              Checking Status...
-            </div>
-          ) : (
-            "Check Verification Status"
-          )}
-        </Button>
       </div>
 
       {error && (
@@ -182,10 +229,20 @@ const QrCodeVerification: React.FC<QrCodeVerificationProps> = ({
           onClick={onBack}
           variant="link"
           className="flex items-center text-blue-500"
+          disabled={verificationStatus === 'completed'}
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Go Back
         </Button>
+        
+        {verificationStatus === 'completed' && (
+          <Button
+            onClick={onComplete}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            Continue
+          </Button>
+        )}
       </div>
     </div>
   );

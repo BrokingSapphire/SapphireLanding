@@ -4,6 +4,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 interface NomineeManagementProps {
   onNext: () => void;
@@ -448,7 +449,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
 
               <div>
                 <label className="block text-sm text-gray-600 mb-1">
-                  Pan/Aadhar card <span className="text-red-500">*</span>
+                  PAN<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -679,17 +680,18 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
         </div>
 
         {/* Continue Button */}
-        <button
+        <Button
+        variant='ghost'
           onClick={handleSubmit}
           disabled={isButtonDisabled()}
-          className={`w-full bg-teal-800 text-white py-3 rounded font-medium transition-colors ${
+          className={`w-full  text-white py-6 rounded font-medium transition-colors ${
             isButtonDisabled()
               ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-teal-700"
+              : ""
           }`}
         >
           {getButtonText()}
-        </button>
+        </Button>
       </div>
     </div>
   );

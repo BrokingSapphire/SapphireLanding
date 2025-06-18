@@ -309,20 +309,9 @@ const MPIN: React.FC<MPINProps> = ({
               {isLoading ? "Setting MPIN..." : "Confirm MPIN"}
             </Button>
           )}
-
-          {step === 'confirm' && (
-            <Button
-              onClick={handleReset}
-              variant="outline"
-              className="w-full py-3"
-              disabled={isLoading}
-            >
-              Start Over
-            </Button>
-          )}
         </div>
 
-        <div className="text-center text-xs text-gray-600">
+        <div className="text-center text-sm text-gray-600">
           <p>
             Your MPIN will be used for secure transactions and account access.
             Keep it confidential and don't share with anyone.

@@ -27,7 +27,8 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [wantsToResign, setWantsToResign] = useState(false); // New state to track re-signing intent
+  const [wantsToResign, setWantsToResign] = useState(false);
+  const [isInitializingForQr, setIsInitializingForQr] = useState(false); // New state for QR initialization
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
@@ -79,7 +80,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     try {
       const authToken = Cookies.get('authToken');
       if (!authToken) {
-        setError("Authentication token not found. Please restart the process.");
+        toast.error("Authentication token not found. Please restart the process.");
         return;
       }
 
@@ -103,28 +104,37 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
         console.log("Signature session initialized with UID:", response.data.data.uid);
         setSignatureUid(response.data.data.uid);
         setIsInitialized(true);
+        
+        // If we were initializing for QR code, show it now
+        if (isInitializingForQr) {
+          setShowQrCode(true);
+          setIsInitializingForQr(false);
+        }
       } else {
-        setError("Failed to initialize signature session. Please try again.");
+        toast.error("Failed to initialize signature session. Please try again.");
       }
     } catch (err: any) {
       console.error("Signature initialization error:", err);
       if (err.response) {
         if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
+          toast.error(`Error: ${err.response.data.message}`);
         } else if (err.response.status === 400) {
-          setError("Invalid request. Please try again.");
+          toast.error("Invalid request. Please try again.");
         } else if (err.response.status === 401) {
-          setError("Authentication failed. Please restart the process.");
+          toast.error("Authentication failed. Please restart the process.");
         } else if (err.response.status === 403) {
-          setError("Access denied. Please check your authentication and try again.");
+          toast.error("Access denied. Please check your authentication and try again.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          toast.error(`Server error (${err.response.status}). Please try again.`);
         }
       } else if (err.request) {
-        setError("Network error. Please check your connection and try again.");
+        toast.error("Network error. Please check your connection and try again.");
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       }
+      
+      // Reset QR initialization state on error
+      setIsInitializingForQr(false);
     } finally {
       setIsLoading(false);
     }
@@ -284,7 +294,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     try {
       const authToken = Cookies.get('authToken');
       if (!authToken) {
-        setError("Authentication token not found. Please restart the process.");
+        toast.error("Authentication token not found. Please restart the process.");
         return;
       }
 
@@ -329,24 +339,24 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
       
       if (err.response) {
         if (err.response.data?.message) {
-          setError(`Upload failed: ${err.response.data.message}`);
+          toast.error(`Upload failed: ${err.response.data.message}`);
         } else if (err.response.status === 401) {
-          setError("Session expired. Please try again.");
+          toast.error("Session expired. Please try again.");
           // Re-initialize signature session
           setIsInitialized(false);
           setSignatureUid(null);
           clearSignature();
         } else if (err.response.status === 422) {
-          setError("Invalid signature format. Please try again.");
+          toast.error("Invalid signature format. Please try again.");
         } else if (err.response.status === 403) {
-          setError("Access denied. Please check your authentication and try again.");
+          toast.error("Access denied. Please check your authentication and try again.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          toast.error(`Server error (${err.response.status}). Please try again.`);
         }
       } else if (err.request) {
-        setError("Network error. Please check your connection and try again.");
+        toast.error("Network error. Please check your connection and try again.");
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       }
     }
   };
@@ -381,17 +391,20 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     setWantsToResign(true);
   };
 
-  const handleQrCodeClick = async () => {
-    // If completed but no UID, initialize new session first
-    if (!signatureUid) {
-      setWantsToResign(true);
-      await initializeSignature();
-      if (!signatureUid) {
-        setError("Failed to initialize signature session for QR code.");
-        return;
-      }
+  const handleQrCodeClick = () => {
+    // If we already have a signatureUid, show QR code immediately
+    if (signatureUid) {
+      setShowQrCode(true);
+      return;
     }
-    setShowQrCode(true);
+
+    // If we don't have UID, we need to initialize first
+    toast.info("Initializing signature session for mobile device...");
+    setIsInitializingForQr(true);
+    setWantsToResign(true);
+    
+    // The useEffect will trigger initializeSignature, and once it's done,
+    // it will automatically show the QR code due to isInitializingForQr flag
   };
 
   // Render QR code component if user clicks "Click Here"
@@ -411,33 +424,34 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
       <div className="mx-auto mt-16">
         <FormHeading
           title="Signature"
-          description="Initializing signature session..."
+          description={isInitializingForQr ? "Setting up mobile signature session..." : "Initializing signature session..."}
         />
         <div className="flex items-center justify-center h-40">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
-          <span className="ml-3 text-gray-600">Setting up signature pad...</span>
+          <span className="ml-3 text-gray-600">
+            {isInitializingForQr ? "Preparing mobile signature..." : "Setting up signature pad..."}
+          </span>
         </div>
       </div>
     );
   }
 
-  // Show error state if initialization failed
-  if (!isInitialized && error) {
+  // Show error state if initialization failed (but don't show red error box)
+  if (!isInitialized && !isLoading && !signatureUid && !isStepCompleted(CheckpointStep.SIGNATURE)) {
     return (
       <div className="mx-auto mt-16">
         <FormHeading
           title="Signature"
-          description="Failed to initialize signature session."
+          description="Let's set up your signature session."
         />
-        <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
-          <p className="text-red-600 text-sm">{error}</p>
+        <div className="flex items-center justify-center h-40">
+          <button
+            onClick={handleRetry}
+            className="px-8 py-6 rounded bg-teal-800 hover:bg-teal-900 text-white"
+          >
+            Initialize Signature
+          </button>
         </div>
-        <button
-          onClick={handleRetry}
-          className="w-full px-8 py-6 rounded bg-teal-800 hover:bg-teal-900 text-white"
-        >
-          Try Again
-        </button>
       </div>
     );
   }
@@ -463,7 +477,9 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
         <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-200">
           <div className="flex items-center">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-            <p className="text-blue-700 text-sm">Initializing new signature session...</p>
+            <p className="text-blue-700 text-sm">
+              {isInitializingForQr ? "Preparing mobile signature session..." : "Initializing new signature session..."}
+            </p>
           </div>
         </div>
       )}
@@ -505,18 +521,12 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
           )}
         </div>
 
-        {error && (
-          <div className="mt-4 p-3 bg-red-50 rounded border border-red-200">
-            <p className="text-red-600 text-sm">{error}</p>
-          </div>
-        )}
-
         {/* QR Code option */}
         <div className="text-center mt-4">
           <button
             onClick={handleQrCodeClick}
-            className="hidden sm:block text-sm decoration-dotted underline"
-            disabled={!shouldShowCanvas && !shouldShowCompletedState}
+            className="hidden lg:block text-sm decoration-dotted underline"
+            disabled={isLoading && !isInitializingForQr}
           >
             Facing issues with your signature? Click here and use your mobile device to complete the Signature.
           </button>

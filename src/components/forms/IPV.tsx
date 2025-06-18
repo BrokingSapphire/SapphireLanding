@@ -474,14 +474,6 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
               <p className="text-gray-600">Camera will open automatically</p>
               {!cameraAutoStarted && shouldShowCamera && (
                 <div className="flex justify-center">
-                  <Button 
-                    onClick={startCamera} 
-                    variant="ghost" 
-                    className="py-3"
-                    disabled={!ipvUid}
-                  >
-                    Open Camera Manually
-                  </Button>
                 </div>
               )}
             </div>
@@ -554,7 +546,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         {getButtonText()}
       </Button>
 
-      <div className="text-center text-xs text-gray-600 mt-4">
+      <div className="text-center text-sm text-gray-600 mt-4">
         <p>
           Please ensure your face is clearly visible and well-lit for successful verification.
           Session expires in 10 minutes.
