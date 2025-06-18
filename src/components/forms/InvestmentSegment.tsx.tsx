@@ -27,6 +27,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [requiresIncomeProof, setRequiresIncomeProof] = useState(false);
   const [incomeProofUid, setIncomeProofUid] = useState<string | null>(null);
+  const [isIncomeProofCompleted, setIsIncomeProofCompleted] = useState(false);
 
   const segments = [
     { id: "Cash", label: "Cash/Mutual Funds" },
@@ -36,12 +37,39 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     { id: "Commodity", label: "Commodity Derivatives", requiresDisclosure: true },
   ];
 
-  // Prefill data from initialData (API response)
+  // Prefill data from initialData (API response) only if the data is valid
   useEffect(() => {
-    if (isCompleted && initialData) {
-      setSelectedSegments(initialData.segments || ["Cash"]);
+    if (isCompleted && initialData && initialData.segments && initialData.segments.length > 0) {
+      setSelectedSegments(initialData.segments);
     }
   }, [initialData, isCompleted]);
+
+  // Check income proof status on component mount
+  useEffect(() => {
+    const checkIncomeProofStatus = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof`,
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get('authToken')}`
+            }
+          }
+        );
+        
+        if (response.status === 200 && response.data?.data?.url) {
+          console.log("Income proof already uploaded:", response.data);
+          setIsIncomeProofCompleted(true);
+        }
+      } catch (error) {
+        // If 204 or other error, income proof not uploaded yet
+        console.log("Income proof not yet uploaded");
+        setIsIncomeProofCompleted(false);
+      }
+    };
+    
+    checkIncomeProofStatus();
+  }, []);
 
   const handleSegmentClick = (segmentId: string, requiresDisclosure: boolean) => {
     if (segmentId === "Cash") return;
@@ -67,9 +95,32 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     setShowUploadIncome(true);
   };
 
+  // Check if step is truly completed (investment segment + income proof if required)
+  const isStepFullyCompleted = () => {
+    // Check if investment segment is completed
+    if (!isCompleted || !initialData || !initialData.segments || initialData.segments.length === 0) {
+      return false;
+    }
+
+    // Check if selected segments require income proof
+    const segmentsRequiringRisk = selectedSegments.filter(segment => 
+      segment === "F&O" || segment === "Currency" || segment === "Commodity"
+    );
+
+    // If risk segments are selected, income proof must be completed
+    if (segmentsRequiringRisk.length > 0) {
+      return isIncomeProofCompleted;
+    }
+
+    // If no risk segments, investment segment completion is sufficient
+    return true;
+  };
+
   // Submit selected investment segments
   const handleSubmitSegments = async () => {
-    if (isCompleted) {
+    // Check if step is truly completed with valid data
+    if (isStepFullyCompleted()) {
+      console.log("Step fully completed, proceeding to next step");
       onNext();
       return;
     }
@@ -89,6 +140,8 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     setError(null);
 
     try {
+      console.log("Submitting investment segments:", selectedSegments);
+      
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
@@ -102,22 +155,37 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         }
       );
 
-      if (!response.data) {
+      console.log("Investment segments response:", response);
+
+      // Validate the response data
+      if (!response.data || !response.data.data) {
         setError("Failed to save investment segments. Please try again.");
+        setIsLoading(false);
         return;
       }
 
       // Check if backend says income proof is required
-      const backendRequiresProof = response.data.data?.requiresIncomeProof;
+      const backendRequiresProof = response.data.data?.requiresIncomeProof === true;
       setRequiresIncomeProof(backendRequiresProof);
 
-      if (backendRequiresProof && hasAcceptedRisk) {
-        // Initialize income proof step
-        await handleInitializeIncomeProof();
+      // If risk segments are selected, income proof is required
+      if (segmentsRequiringRisk.length > 0) {
+        // Check if income proof is already uploaded
+        if (isIncomeProofCompleted) {
+          console.log("Income proof already completed, proceeding to next step");
+          onNext();
+        } else {
+          // Need to upload income proof
+          await handleInitializeIncomeProof();
+        }
       } else {
+        // No risk segments selected, proceed to next step
+        console.log("No risk segments selected, proceeding to next step");
         onNext();
       }
     } catch (err: any) {
+      console.error("Error saving investment segments:", err);
+      
       if (err.response) {
         if (err.response.data?.message) {
           setError(`Error: ${err.response.data.message}`);
@@ -159,18 +227,20 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
 
       if (!response.data?.data?.uid) {
         setError("Failed to initialize income proof. Please try again.");
-        if(response.data?.data==null) {
+        if(response.data?.data == null) {
           setError("Empty data received from server. Please try again.");
         }
         return;
       }
       
-      console.log(response.data);
+      console.log("Income proof initialization response:", response.data);
       
       // Store the UID from backend response
       setIncomeProofUid(response.data.data.uid);
       setShowUploadIncome(true);
     } catch (err: any) {
+      console.error("Error initializing income proof:", err);
+      
       if (err.response) {
         if (err.response.data?.message) {
           setError(`Error: ${err.response.data.message}`);
@@ -191,18 +261,26 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
 
   // Handle upload income proof completion
   const handleIncomeProofNext = async (file?: File) => {
-    // The file upload is handled by UploadIncomeProof component
-    // We just need to proceed to the next step
-    onNext();
+    console.log("Income proof upload completed, proceeding to next step");
+    setIsIncomeProofCompleted(true);
+    
+    // Small delay to ensure state is updated
+    setTimeout(() => {
+      onNext();
+    }, 500);
   };
 
   // Skip income proof upload
   const handleSkipIncomeProof = () => {
+    console.log("Income proof upload skipped, proceeding to next step");
     onNext();
   };
 
   const getButtonText = () => {
-    if (isCompleted) return "Continue";
+    if (isStepFullyCompleted()) {
+      return "Continue";
+    }
+    
     if (isLoading) return "Saving...";
     
     // Check if any selected segments require risk disclosure
@@ -219,7 +297,10 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
 
   const isButtonDisabled = () => {
     if (isLoading) return true;
-    if (isCompleted) return false;
+    if (isStepFullyCompleted()) {
+      return false;
+    }
+    
     return selectedSegments.length === 0;
   };
 
@@ -234,13 +315,13 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     );
   }
 
-  // Show completed state
-  if (isCompleted) {
+  // Show completed state if step is fully completed
+  if (isStepFullyCompleted()) {
     return (
       <div className="w-full max-w-2xl mx-auto p-4">
         <FormHeading 
-          title="Investment Segments Saved Successfully!" 
-          description="Your investment segments have been saved. Click continue to proceed." 
+          title="Investment Segments Completed Successfully!" 
+          description="Your investment segments have been saved and all requirements met. Click continue to proceed." 
         />
 
         <div className="flex flex-wrap gap-2 mb-6">
@@ -259,6 +340,20 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
             );
           })}
         </div>
+
+        {/* Show income proof status if applicable */}
+        {selectedSegments.some(segment => segment === "F&O" || segment === "Currency" || segment === "Commodity") && (
+          <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex items-center">
+              <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-green-800 font-medium">
+                {isIncomeProofCompleted ? "Income proof verified" : "Income proof required segments selected"}
+              </span>
+            </div>
+          </div>
+        )}
 
         <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
           <div className="flex items-center">

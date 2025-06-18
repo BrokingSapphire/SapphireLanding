@@ -1,4 +1,4 @@
-// Updated useCheckpoint hook to properly handle IPV verification
+// Updated useCheckpoint hook with fixed step progression logic
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -10,6 +10,7 @@ export enum CheckpointStep {
   AADHAAR = 'aadhaar',
   AADHAAR_MISMATCH_DETAILS = 'aadhaar_mismatch_details',
   INVESTMENT_SEGMENT = 'investment_segment',
+  INCOME_PROOF = 'income_proof', // Backend step that doesn't have its own UI
   USER_DETAIL = 'user_detail',
   PERSONAL_DETAIL = 'personal_detail',
   OTHER_DETAIL = 'other_detail',
@@ -68,6 +69,7 @@ const API_STEP_ORDER = [
   CheckpointStep.AADHAAR,
   CheckpointStep.AADHAAR_MISMATCH_DETAILS,
   CheckpointStep.INVESTMENT_SEGMENT,
+  CheckpointStep.INCOME_PROOF,
   CheckpointStep.USER_DETAIL,
   CheckpointStep.PERSONAL_DETAIL,
   CheckpointStep.OTHER_DETAIL,
@@ -101,6 +103,8 @@ interface UseCheckpointReturn {
   // New functions for mismatch handling
   hasMismatchData: () => boolean;
   getMismatchData: () => any;
+  // Force next step function for income proof
+  forceNextStep: (currentStepIndex: number) => number;
 }
 
 // Custom hook to manage checkpoint data
@@ -122,40 +126,6 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     return !!getAuthToken();
   };
 
-  // Get client ID from completed checkpoints
-  const getClientId = (): string | null => {
-    const passwordData = checkpointData[CheckpointStep.PASSWORD_SETUP];
-    if (passwordData?.data?.client_id) {
-      return passwordData.data.client_id;
-    }
-    
-    const mpinData = checkpointData[CheckpointStep.MPIN_SETUP];
-    if (mpinData?.data?.client_id) {
-      return mpinData.data.client_id;
-    }
-    
-    for (const step of API_STEP_ORDER) {
-      const stepData = checkpointData[step];
-      if (stepData?.data?.client_id) {
-        return stepData.data.client_id;
-      }
-    }
-    
-    return null;
-  };
-
-  // Check if there's mismatch data in Redis
-  const hasMismatchData = (): boolean => {
-    const mismatchData = checkpointData[CheckpointStep.AADHAAR_MISMATCH_DETAILS];
-    return !!(mismatchData?.data && mismatchData.completed);
-  };
-
-  // Get mismatch data
-  const getMismatchData = (): any => {
-    const mismatchData = checkpointData[CheckpointStep.AADHAAR_MISMATCH_DETAILS];
-    return mismatchData?.data || null;
-  };
-
   // Function to fetch specific checkpoint step
   const fetchCheckpointStep = async (step: CheckpointStep): Promise<CheckpointData> => {
     const token = getAuthToken();
@@ -164,7 +134,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     try {
       let response;
       
-      // Use specific endpoints for IPV, SIGNATURE, and ESIGN
+      // Use specific endpoints for special steps
       if (step === CheckpointStep.IPV) {
         response = await axios.get(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv`,
@@ -216,6 +186,46 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             data: null,
             completed: false,
           };
+        }
+      } else if (step === CheckpointStep.INCOME_PROOF) {
+        try {
+          response = await axios.get(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          
+          // Income proof endpoint returns URL if the file is uploaded
+          if (response.status === 200 && response.data?.data?.url) {
+            console.log("Income proof is completed with data:", response.data);
+            return {
+              step,
+              data: response.data.data,
+              completed: true,
+            };
+          } else {
+            console.log("Income proof endpoint returned success but no data");
+            return {
+              step,
+              data: null,
+              completed: false,
+            };
+          }
+        } catch (error: any) {
+          // Handle 204 No Content specifically
+          if (error.response?.status === 204) {
+            console.log("Income proof endpoint returned 204 No Content");
+            return {
+              step,
+              data: null,
+              completed: false,
+            };
+          }
+          console.error("Error fetching income proof:", error);
+          throw error;
         }
       } else if (step === CheckpointStep.ESIGN) {
         // For eSign, check if esign field exists in checkpoint
@@ -297,75 +307,226 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       return acc;
     }, {} as Record<CheckpointStep, CheckpointData | null>);
 
+  // Get client ID from completed checkpoints
+  const getClientId = (): string | null => {
+    const passwordData = checkpointData[CheckpointStep.PASSWORD_SETUP];
+    if (passwordData?.data?.client_id) {
+      return passwordData.data.client_id;
+    }
+    
+    const mpinData = checkpointData[CheckpointStep.MPIN_SETUP];
+    if (mpinData?.data?.client_id) {
+      return mpinData.data.client_id;
+    }
+    
+    for (const step of API_STEP_ORDER) {
+      const stepData = checkpointData[step];
+      if (stepData?.data?.client_id) {
+        return stepData.data.client_id;
+      }
+    }
+    
+    return null;
+  };
+
+  // Check if there's mismatch data in Redis
+  const hasMismatchData = (): boolean => {
+    const mismatchData = checkpointData[CheckpointStep.AADHAAR_MISMATCH_DETAILS];
+    return !!(mismatchData?.data && mismatchData.completed);
+  };
+
+  // Get mismatch data
+  const getMismatchData = (): any => {
+    const mismatchData = checkpointData[CheckpointStep.AADHAAR_MISMATCH_DETAILS];
+    return mismatchData?.data || null;
+  };
+
+  // Helper function to check if a step has valid data
+  const hasValidData = (step: CheckpointStep): boolean => {
+    const stepData = checkpointData[step];
+    
+    if (!stepData?.completed || !stepData.data) {
+      return false;
+    }
+    
+    // Specific validation rules for different steps
+    switch (step) {
+      case CheckpointStep.INVESTMENT_SEGMENT:
+        return !!(stepData.data.segments && stepData.data.segments.length > 0);
+      
+      case CheckpointStep.INCOME_PROOF:
+        return !!stepData.data.url; // Check for URL presence
+      
+      case CheckpointStep.IPV:
+        return !!stepData.data.url;
+      
+      case CheckpointStep.SIGNATURE:
+        return !!stepData.data.url;
+      
+      // For other steps, just check if there's any data
+      default:
+        return true;
+    }
+  };
+
+  // Function to check if a step is completed, with proper validation
+  const isStepCompleted = (step: CheckpointStep): boolean => {
+    return hasValidData(step);
+  };
+  
+  // Special function to force moving to the next step
+  // This is used when we need to bypass step validation
+  const forceNextStep = (currentStepIndex: number): number => {
+    // If we're on the investment segment step
+    if (currentStepIndex === STEP_TO_COMPONENT_INDEX[AllSteps.INVESTMENT_SEGMENT]) {
+      // Force move to User Detail step
+      return STEP_TO_COMPONENT_INDEX[AllSteps.USER_DETAIL];
+    }
+    return currentStepIndex;
+  };
+
+  // NEW: Enhanced investment segment completion check
+  const isInvestmentSegmentStepComplete = (): boolean => {
+    // First check if investment segment itself is completed
+    const investmentCompleted = isStepCompleted(CheckpointStep.INVESTMENT_SEGMENT);
+    if (!investmentCompleted) {
+      return false;
+    }
+
+    // Get investment segment data to check if income proof is required
+    const investmentData = checkpointData[CheckpointStep.INVESTMENT_SEGMENT];
+    const requiresIncomeProof = investmentData?.data?.requiresIncomeProof === true;
+    
+    // Also check if user selected risk segments that would require income proof
+    const selectedSegments = investmentData?.data?.segments || [];
+    const hasRiskSegments = selectedSegments.some((segment: string) => 
+      segment === "F&O" || segment === "Currency" || segment === "Commodity"
+    );
+    
+    // If income proof is required (either by backend flag or risk segments)
+    if (requiresIncomeProof || hasRiskSegments) {
+      // Check if income proof is also completed
+      const incomeProofCompleted = isStepCompleted(CheckpointStep.INCOME_PROOF);
+      console.log(`Investment segment complete: ${investmentCompleted}, Income proof required: ${requiresIncomeProof || hasRiskSegments}, Income proof completed: ${incomeProofCompleted}`);
+      return incomeProofCompleted;
+    }
+    
+    // If no income proof required, investment segment completion is sufficient
+    console.log(`Investment segment complete: ${investmentCompleted}, No income proof required`);
+    return true;
+  };
+
   // Determine current step considering all steps
   const getCurrentStep = (): number => {
+    console.log("=== CHECKPOINT DATA DEBUG ===");
+    console.log("Investment segment data:", checkpointData[CheckpointStep.INVESTMENT_SEGMENT]);
+    console.log("Income proof data:", checkpointData[CheckpointStep.INCOME_PROOF]);
+    console.log("Investment segment completed:", isStepCompleted(CheckpointStep.INVESTMENT_SEGMENT));
+    console.log("Income proof completed:", isStepCompleted(CheckpointStep.INCOME_PROOF));
+    console.log("Investment segment step complete (with income proof check):", isInvestmentSegmentStepComplete());
+    
     // Check email completion
     if (!isEmailCompleted()) {
+      console.log("Email not completed, returning email step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.EMAIL];
     }
 
     // Check mobile completion
     if (!isMobileCompleted()) {
+      console.log("Mobile not completed, returning mobile step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.MOBILE];
     }
 
     // Check PAN completion
-    const panData = checkpointData[CheckpointStep.PAN];
-    if (!panData?.completed) {
+    if (!isStepCompleted(CheckpointStep.PAN)) {
+      console.log("PAN not completed, returning PAN step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.PAN];
     }
 
     // Check for mismatch data first (this avoids expensive DigiLocker calls)
     const mismatchData = checkpointData[CheckpointStep.AADHAAR_MISMATCH_DETAILS];
     if (mismatchData?.completed) {
+      console.log("Mismatch data found, returning Aadhaar step");
       // There's mismatch data, user needs to fill mismatch form
       return STEP_TO_COMPONENT_INDEX[AllSteps.AADHAAR];
     }
 
     // Check Aadhaar completion
-    const aadhaarData = checkpointData[CheckpointStep.AADHAAR];
-    if (!aadhaarData?.completed) {
+    if (!isStepCompleted(CheckpointStep.AADHAAR)) {
+      console.log("Aadhaar not completed, returning Aadhaar step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.AADHAAR];
     }
 
-    // Check remaining steps
-    const remainingSteps = [
-      CheckpointStep.INVESTMENT_SEGMENT,
-      CheckpointStep.USER_DETAIL,
-      CheckpointStep.PERSONAL_DETAIL,
-      CheckpointStep.OTHER_DETAIL,
-      CheckpointStep.BANK_VALIDATION,
-      CheckpointStep.IPV,
-      CheckpointStep.SIGNATURE,
-      CheckpointStep.ADD_NOMINEES,
-    ];
+    // Check Investment Segment with enhanced validation (includes income proof check)
+    if (!isInvestmentSegmentStepComplete()) {
+      console.log("Investment segment step not complete, returning investment segment step");
+      return STEP_TO_COMPONENT_INDEX[AllSteps.INVESTMENT_SEGMENT];
+    }
     
-    for (const step of remainingSteps) {
-      const stepData = checkpointData[step];
-      if (!stepData?.completed) {
-        return STEP_TO_COMPONENT_INDEX[step as unknown as AllSteps];
-      }
+    console.log("Investment segment step complete, proceeding to user detail");
+    
+    // Check User Detail
+    if (!isStepCompleted(CheckpointStep.USER_DETAIL)) {
+      console.log("User detail not completed, returning user detail step");
+      return STEP_TO_COMPONENT_INDEX[AllSteps.USER_DETAIL];
+    }
+
+    // Check Personal Detail
+    if (!isStepCompleted(CheckpointStep.PERSONAL_DETAIL)) {
+      console.log("Personal detail not completed, returning personal detail step");
+      return STEP_TO_COMPONENT_INDEX[AllSteps.PERSONAL_DETAIL];
+    }
+
+    // Check Other Detail
+    if (!isStepCompleted(CheckpointStep.OTHER_DETAIL)) {
+      console.log("Other detail not completed, returning other detail step");
+      return STEP_TO_COMPONENT_INDEX[AllSteps.OTHER_DETAIL];
+    }
+
+    // Check Bank Validation
+    if (!isStepCompleted(CheckpointStep.BANK_VALIDATION)) {
+      console.log("Bank validation not completed, returning bank validation step");
+      return STEP_TO_COMPONENT_INDEX[AllSteps.BANK_VALIDATION];
+    }
+
+    // Check IPV with enhanced validation
+    if (!isStepCompleted(CheckpointStep.IPV)) {
+      console.log("IPV not completed, returning IPV step");
+      return STEP_TO_COMPONENT_INDEX[AllSteps.IPV];
+    }
+
+    // Check Signature with enhanced validation
+    if (!isStepCompleted(CheckpointStep.SIGNATURE)) {
+      console.log("Signature not completed, returning signature step");
+      return STEP_TO_COMPONENT_INDEX[AllSteps.SIGNATURE];
+    }
+
+    // Check Add Nominees
+    if (!isStepCompleted(CheckpointStep.ADD_NOMINEES)) {
+      console.log("Add nominees not completed, returning add nominees step");
+      return STEP_TO_COMPONENT_INDEX[AllSteps.ADD_NOMINEES];
     }
 
     // Check eSign
-    const esignData = checkpointData[CheckpointStep.ESIGN];
-    if (!esignData?.completed) {
+    if (!isStepCompleted(CheckpointStep.ESIGN)) {
+      console.log("eSign not completed, returning last step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.LAST_STEP];
     }
 
     // Check password setup
-    const passwordData = checkpointData[CheckpointStep.PASSWORD_SETUP];
-    if (!passwordData?.completed) {
+    if (!isStepCompleted(CheckpointStep.PASSWORD_SETUP)) {
+      console.log("Password setup not completed, returning set password step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.SET_PASSWORD];
     }
 
     // Check MPIN setup
-    const mpinData = checkpointData[CheckpointStep.MPIN_SETUP];
-    if (!mpinData?.completed) {
+    if (!isStepCompleted(CheckpointStep.MPIN_SETUP)) {
+      console.log("MPIN setup not completed, returning MPIN step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.MPIN];
     }
 
     // All completed
+    console.log("All steps completed, returning congratulations step");
     return STEP_TO_COMPONENT_INDEX[AllSteps.CONGRATULATIONS];
   };
 
@@ -385,12 +546,13 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       queryClient.invalidateQueries({ queryKey: ['checkpoint'] });
     },
     getStepData: (step: CheckpointStep) => checkpointData[step]?.data,
-    isStepCompleted: (step: CheckpointStep) => checkpointData[step]?.completed || false,
+    isStepCompleted,
     isEmailCompleted,
     isMobileCompleted,
     getClientId,
     hasMismatchData,
     getMismatchData,
+    forceNextStep,
   };
 };
 

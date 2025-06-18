@@ -5,7 +5,8 @@ import FormHeading from "./FormHeading";
 import Image from "next/image";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint'; // Adjust import path as needed
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
+import { toast } from "sonner";
 
 interface LastStepPageProps {
   onNext: () => void;
@@ -32,17 +33,24 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
   // Check if eSign is already completed from the hook
   useEffect(() => {
-    if (isStepCompleted(CheckpointStep.ESIGN)) {
+    const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
+    const stepData = getStepData(CheckpointStep.ESIGN);
+    
+    console.log("eSign step completed:", stepCompleted);
+    console.log("eSign step data:", stepData);
+    
+    if (stepCompleted && stepData) {
       // eSign is already completed
       setEsignStatus('completed');
       return;
     }
-  }, [isStepCompleted]);
+  }, [isStepCompleted, getStepData]);
 
   // Also check initialData as fallback
   useEffect(() => {
     const data = initialData as { esign?: boolean } | undefined;
     if (isCompleted && data?.esign) {
+      console.log("eSign completed from initialData");
       setEsignStatus('completed');
     }
   }, [initialData, isCompleted]);
@@ -66,6 +74,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         return;
       }
 
+      console.log("Initializing eSign...");
+
       // Initialize eSign session
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
@@ -80,6 +90,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           },
         }
       );
+
+      console.log("eSign initialization response:", response.data);
 
       if (response.data?.data?.uri) {
         setEsignStatus('signing');
@@ -142,6 +154,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   };
 
   const startPollingForCompletion = () => {
+    console.log("Starting polling for eSign completion...");
+    
     const pollInterval = setInterval(async () => {
       try {
         setEsignStatus('completing');
@@ -157,7 +171,9 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           return;
         }
         
-        // Check if eSign is completed
+        console.log("Polling for eSign completion...");
+        
+        // Check if eSign is completed by calling esign_complete endpoint
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
           {
@@ -171,11 +187,16 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           }
         );
 
+        console.log("eSign completion check response:", response.status, response.data);
+
         if (response.status === 200) {
           // eSign completed successfully
           clearInterval(pollInterval);
           setEsignStatus('completed');
           setIsLoading(false);
+          
+          console.log("eSign completed successfully!");
+          toast.success("eSign completed successfully!");
           
           // Refetch eSign step to update the hook
           refetchStep(CheckpointStep.ESIGN);
@@ -193,8 +214,10 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           };
         };
 
-        // If error is 401 (not completed yet), continue polling
-        if (error.response?.status === 401) {
+        console.log("eSign polling error:", error.response?.status, error.response?.data);
+
+        // If error is 401 or 404 (not completed yet), continue polling
+        if (error.response?.status === 401 || error.response?.status === 404) {
           setEsignStatus('signing'); // Reset to signing state
           return;
         }
@@ -238,10 +261,13 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       case 'completing':
         return "Verifying eSign completion...";
       case 'completed':
-        return "eSign Completed!";
+        return "eSign Completed - Continue";
       default:
         const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
-        return stepCompleted ? "Continue" : "Proceed to E-sign";
+        if (stepCompleted) {
+          return "Continue to Next Step";
+        }
+        return "Proceed to E-sign";
     }
   };
 
@@ -252,18 +278,29 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   const handleButtonClick = () => {
     const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
     
+    console.log("Button clicked - stepCompleted:", stepCompleted, "esignStatus:", esignStatus);
+    
     if (stepCompleted || esignStatus === 'completed') {
+      console.log("eSign completed, proceeding to next step");
       onNext();
     } else {
+      console.log("Starting eSign process");
       handleEsignInitialize();
     }
   };
 
   // Check if step is completed
   const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
+  const stepData = getStepData(CheckpointStep.ESIGN);
 
-  // Show completed state
-  if (stepCompleted || esignStatus === 'completed') {
+  console.log("Render - stepCompleted:", stepCompleted, "stepData:", stepData, "esignStatus:", esignStatus);
+
+  // Show completed state if step is completed OR if we have valid eSign data OR if status is completed
+  const shouldShowCompletedState = stepCompleted || 
+                                  (stepData && Object.keys(stepData).length > 0) || 
+                                  esignStatus === 'completed';
+
+  if (shouldShowCompletedState) {
     return (
       <div className="mx-auto p-4 mt-10">
         <FormHeading

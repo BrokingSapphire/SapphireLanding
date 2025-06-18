@@ -5,7 +5,7 @@ import { QueryProvider } from '@/providers/QueryProvider';
 import Navbar from "../components/Navbar";
 import { Analytics } from "@vercel/analytics/react";
 import FooterWrapper from "@/components/FooterWrapper";
-
+import { Toaster } from "sonner";
 // Import Google Fonts with Next.js font optimization.
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -68,6 +68,7 @@ export default function RootLayout({
           <Analytics />
           <Navbar />
           {children}
+            <Toaster position="top-right" offset={75} />
           <FooterWrapper />
         </QueryProvider>
       </body>

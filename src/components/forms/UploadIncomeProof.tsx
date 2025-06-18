@@ -1,396 +1,408 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-import { ChevronDown, Upload } from "lucide-react";
+import { ChevronRight, Upload, X, Check, AlertCircle, FileText } from "lucide-react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useCheckpoint, CheckpointStep } from "@/hooks/useCheckpoint";
 
 interface UploadIncomeProofProps {
   onNext: (file?: File) => void;
-  onSkip?: () => void;
-  uid?: string | null; // UID from the income_proof initialization (optional for re-initialization)
+  onSkip: () => void;
+  uid: string | null;
 }
 
-const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({ 
-  onNext,
-  onSkip,
-  uid: initialUid 
-}) => {
+const INCOME_PROOF_TYPES = [
+  { id: "form_16_120k_annual", label: "Form 16 (Income ≥ ₹1.2L annually)" },
+  { id: "itr_120k_annual", label: "ITR (Income ≥ ₹1.2L annually)" },
+  { id: "salary_slip_10k_monthly", label: "Salary Slip (Income ≥ ₹10K monthly)" },
+  { id: "bank_statement_10k_monthly", label: "Bank Statement (Income ≥ ₹10K monthly)" },
+  { id: "demat_statement_10k_holdings", label: "Demat Statement (Holdings ≥ ₹10K)" },
+];
+
+const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({ onNext, onSkip, uid }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedOption, setSelectedOption] = useState<string>("Bank statement (last 6 months) with ₹10,000+ average balance.");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [uid, setUid] = useState<string | null>(initialUid || null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [selectedProofType, setSelectedProofType] = useState<string>("form_16_120k_annual");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      
-      // Validate file type
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-      if (!allowedTypes.includes(file.type)) {
-        setError("Please upload a PDF, JPG, JPEG, or PNG file.");
+  const { refetchStep } = useCheckpoint();
+
+  // Handle file selection
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      // Validate file type (PDF only)
+      if (file.type !== "application/pdf") {
+        setUploadError("Only PDF files are accepted");
         return;
       }
       
-      // Validate file size (max 10MB)
-      const maxSize = 10 * 1024 * 1024; // 10MB
-      if (file.size > maxSize) {
-        setError("File size must be less than 10MB.");
-        return;
-      }
-      
-      setSelectedFile(file);
-      setError(null);
-    }
-  };
-  
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      
-      // Validate file type
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-      if (!allowedTypes.includes(file.type)) {
-        setError("Please upload a PDF, JPG, JPEG, or PNG file.");
-        return;
-      }
-      
-      // Validate file size (max 10MB)
-      const maxSize = 10 * 1024 * 1024; // 10MB
-      if (file.size > maxSize) {
-        setError("File size must be less than 10MB.");
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setUploadError("File size must be less than 5MB");
         return;
       }
       
       setSelectedFile(file);
-      setError(null);
+      setUploadError(null);
     }
   };
-  
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-  
-  const handleBrowseClick = () => {
+
+  // Trigger file input click
+  const handleButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  // Map frontend display options to backend API values
-  const mapDocumentTypeToApi = (displayOption: string): string => {
-    const mapping: Record<string, string> = {
-      "Bank statement (last 6 months) with ₹10,000+ average balance.": "bank_statement",
-      "Latest salary slip with ₹15,000+ gross monthly income.": "salary_slip",
-      "Latest Form 16 with ₹1,20,000+ annual income": "form_16",
-      "Net worth certificate of ₹10,00,000+.": "net_worth_certificate",
-      "Latest demat statement with ₹10,000+ holdings.": "demat_statement"
-    };
-    return mapping[displayOption] || "bank_statement";
+  // Clear selected file
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
-  // Initialize income proof with selected document type
+  // Handle proof type selection
+  const handleProofTypeSelect = (proofTypeId: string) => {
+    setSelectedProofType(proofTypeId);
+  };
+
+  // Initialize income proof with selected type
   const initializeIncomeProof = async () => {
-    setIsInitializing(true);
-    setError(null);
-
     try {
-      const incomeProofType = mapDocumentTypeToApi(selectedOption);
-      
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-        {
-          step: "income_proof",
-          income_proof_type: incomeProofType
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${Cookies.get('authToken')}`
+      // First, check if we already have a valid UID
+      if (!uid) {
+        console.error("No income proof UID provided");
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+          {
+            step: "income_proof",
+            income_proof_type: selectedProofType
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get('authToken')}`
+            }
           }
-        }
-      );
-
-      if (!response.data?.data?.uid) {
-        setError("Failed to initialize income proof. Please try again.");
-        return null;
+        );
+        
+        console.log("Income proof initialization response:", response.data);
+        return response.data.data.uid;
       }
-
-      const newUid = response.data.data.uid;
-      setUid(newUid);
-      return newUid;
-    } catch (err: unknown) {
-      const error = err as {
-        response?: {
-          data?: { message?: string };
-          status?: number;
-        };
-        request?: unknown;
-      };
-
-      if (error.response) {
-        if (error.response.data?.message) {
-          setError(`Initialization failed: ${error.response.data.message}`);
-        } else if (error.response.status === 401) {
-          setError("Authentication failed. Please restart the process.");
-        } else {
-          setError(`Server error (${error.response.status}). Please try again.`);
-        }
-      } else if (error.request) {
-        setError("Network error. Please check your connection and try again.");
+      
+      return uid;
+    } catch (error: any) {
+      console.error("Error initializing income proof:", error);
+      if (error.response?.data?.message) {
+        setUploadError(`Initialization error: ${error.response.data.message}`);
+      } else if (error.response?.data?.error?.message) {
+        setUploadError(`Initialization error: ${error.response.data.error.message}`);
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        setUploadError("Failed to initialize income proof upload. Please try again.");
       }
       return null;
-    } finally {
-      setIsInitializing(false);
     }
   };
 
-  const handleUploadAndContinue = async () => {
+  // Handle file upload
+  const handleUpload = async () => {
     if (!selectedFile) {
-      setError("Please select a file to upload.");
+      setUploadError("Please select a file to upload");
       return;
     }
-
-    let currentUid = uid;
-
-    // Initialize income proof if we don't have a UID or if document type changed
-    if (!currentUid) {
-      currentUid = await initializeIncomeProof();
-      if (!currentUid) {
-        return; // Error already set in initializeIncomeProof
-      }
-    }
-
+    
     setIsUploading(true);
-    setError(null);
-
+    setUploadError(null);
+    
     try {
+      // Initialize income proof if needed
+      const uploadUid = await initializeIncomeProof();
+      
+      if (!uploadUid) {
+        setUploadError("Failed to get upload authorization. Please try again.");
+        setIsUploading(false);
+        return;
+      }
+      
+      // Create form data for file upload
       const formData = new FormData();
-      formData.append('pdf', selectedFile);
-
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/${currentUid}`,
+      formData.append("pdf", selectedFile);
+      
+      console.log(`Uploading to UID: ${uploadUid}`);
+      
+      // Upload the file
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof/${uploadUid}`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${Cookies.get('authToken')}`
           }
         }
       );
-
-      // Call onNext with the file
-      onNext(selectedFile);
-    } catch (err: unknown) {
-      const error = err as {
-        response?: {
-          data?: { message?: string };
-          status?: number;
-        };
-        request?: unknown;
-      };
-
-      if (error.response) {
-        if (error.response.data?.message) {
-          setError(`Upload failed: ${error.response.data.message}`);
-        } else if (error.response.status === 401) {
-          setError("Authentication failed. Please restart the process.");
-        } else if (error.response.status === 422) {
-          setError("Invalid file or upload error. Please try again.");
-        } else {
-          setError(`Server error (${error.response.status}). Please try again.`);
-        }
-      } else if (error.request) {
-        setError("Network error. Please check your connection and try again.");
+      
+      console.log("Upload response:", response.data);
+      
+      if (response.status === 201) {
+        setUploadSuccess(true);
+        
+        // Refetch the income proof status after a short delay
+        setTimeout(() => {
+          refetchStep(CheckpointStep.INCOME_PROOF);
+          
+          // Wait a bit longer before proceeding
+          setTimeout(() => {
+            onNext(selectedFile);
+          }, 2000);
+        }, 1000);
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        setUploadError("Upload failed. Please try again.");
+      }
+    } catch (error: any) {
+      console.error("Error uploading file:", error);
+      if (error.response?.data?.message) {
+        setUploadError(`Upload error: ${error.response.data.message}`);
+      } else if (error.response?.data?.error?.message) {
+        setUploadError(`Upload error: ${error.response.data.error.message}`);
+      } else if (error.response?.status === 401) {
+        setUploadError("Authorization expired. Please try again.");
+        
+        // Try to get a new UID since the current one might be expired
+        try {
+          // Reinitialize the income proof
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+            {
+              step: "income_proof",
+              income_proof_type: selectedProofType
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${Cookies.get('authToken')}`
+              }
+            }
+          );
+          
+          console.log("New income proof initialization:", response.data);
+          
+          if (response.data?.data?.uid) {
+            setUploadError("Authorization refreshed. Please try uploading again.");
+          }
+        } catch (reinitError) {
+          console.error("Error refreshing authorization:", reinitError);
+        }
+      } else {
+        setUploadError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsUploading(false);
     }
   };
 
-  const documentOptions = [
-    "Bank statement (last 6 months) with ₹10,000+ average balance.",
-    "Latest salary slip with ₹15,000+ gross monthly income.",
-    "Latest Form 16 with ₹1,20,000+ annual income",
-    "Net worth certificate of ₹10,00,000+.",
-    "Latest demat statement with ₹10,000+ holdings."
-  ];
+  // Check if income proof is already uploaded
+  useEffect(() => {
+    const checkIncomeProofStatus = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/income-proof`,
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get('authToken')}`
+            }
+          }
+        );
+        
+        if (response.status === 200 && response.data?.data?.url) {
+          console.log("Income proof already uploaded:", response.data);
+          setUploadSuccess(true);
+          
+          // Delay to show the success message briefly
+          setTimeout(() => {
+            onNext();
+          }, 1500);
+        }
+      } catch (error) {
+        // If 204 or other error, income proof not uploaded yet
+        console.log("Income proof not yet uploaded");
+      }
+    };
+    
+    checkIncomeProofStatus();
+  }, [onNext]);
 
-  const getFileIcon = (fileType: string) => {
-    if (fileType === 'application/pdf') {
-      return (
-        <div className="bg-red-100 text-red-800 rounded-full p-2 mb-2">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <line x1="10" y1="9" x2="8" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+  // If upload successful, show success screen
+  if (uploadSuccess) {
+    return (
+      <div className="w-full max-w-2xl mx-auto p-6 text-center">
+        <div className="mb-8 flex justify-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+            <Check className="h-8 w-8 text-green-600" />
+          </div>
         </div>
-      );
-    } else {
-      return (
-        <div className="bg-blue-100 text-blue-800 rounded-full p-2 mb-2">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" strokeWidth="2"/>
-            <polyline points="21,15 16,10 5,21" stroke="currentColor" strokeWidth="2"/>
-          </svg>
-        </div>
-      );
-    }
-  };
-
-  const isProcessing = isUploading || isInitializing;
+        <h2 className="text-2xl font-semibold mb-4">Income Proof Uploaded Successfully!</h2>
+        <p className="text-gray-600 mb-8">
+          Your income proof has been received. We'll proceed with verification.
+        </p>
+        <p className="text-sm text-gray-500 mb-4">
+          You'll be automatically redirected to the next step in a moment...
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-xl mx-auto mt-16">
+    <div className="w-full max-w-2xl mx-auto p-4">
       <FormHeading
         title="Upload Income Proof"
-        description="A small step for you, a big leap towards seamless trading!"
+        description="Please upload a document as proof of your income."
       />
 
-      <div className="mt-6 p-2 bg-[#F7F9FD] rounded">
-        <div className="relative">
-          <div
-            className="border rounded-md p-4 flex justify-between items-center cursor-pointer"
-            onClick={() => !isProcessing && setDropdownOpen(!dropdownOpen)}
-          >
-            <span className="w-[90%] text-center">{selectedOption}</span>
-            <ChevronDown
-              className={`h-5 w-5 transition-transform ${
-                dropdownOpen ? "transform rotate-180" : ""
-              } ${isProcessing ? "opacity-50" : ""}`}
-            />
-          </div>
-
-          {dropdownOpen && !isProcessing && (
-            <div className="absolute z-10 mt-1 bg-white border rounded-md shadow-lg w-full">
-              {documentOptions.map((option, index) => (
+      <div className="mb-6">
+        <h3 className="text-base font-medium mb-3">Select Income Proof Type</h3>
+        <div className="space-y-2">
+          {INCOME_PROOF_TYPES.map((proofType) => (
+            <div key={proofType.id} className="flex items-center">
+              <button
+                type="button"
+                onClick={() => handleProofTypeSelect(proofType.id)}
+                className={`flex items-center w-full p-3 border rounded-lg transition-colors ${
+                  selectedProofType === proofType.id
+                    ? "border-green-600 bg-green-50"
+                    : "border-gray-300 hover:border-gray-400"
+                }`}
+              >
                 <div
-                  key={index}
-                  className="p-3 text-center hover:bg-gray-100 cursor-pointer"
-                  onClick={() => {
-                    setSelectedOption(option);
-                    setDropdownOpen(false);
-                    // Reset UID when document type changes to force re-initialization
-                    if (option !== selectedOption && uid) {
-                      setUid(null);
-                    }
-                  }}
+                  className={`w-5 h-5 flex-shrink-0 border rounded-full mr-3 flex items-center justify-center ${
+                    selectedProofType === proofType.id
+                      ? "border-green-600 bg-white"
+                      : "border-gray-400"
+                  }`}
                 >
-                  <span>{option}</span>
+                  {selectedProofType === proofType.id && (
+                    <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+                  )}
                 </div>
-              ))}
+                <span className="text-sm">{proofType.label}</span>
+              </button>
             </div>
-          )}
+          ))}
         </div>
+      </div>
 
+      <div className="mb-6">
+        <h3 className="text-base font-medium mb-3">Upload Document</h3>
+        
+        {/* File selection area */}
         <div
-          className="mt-4 border-2 border-dashed bg-white border-gray-300 rounded-md p-6 text-center"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
+          className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
+            selectedFile
+              ? "border-green-600 bg-green-50"
+              : "border-gray-300 hover:border-gray-400"
+          }`}
         >
-          {selectedFile ? (
-            <div className="flex flex-col items-center">
-              {getFileIcon(selectedFile.type)}
-              <p className="font-medium">{selectedFile.name}</p>
-              <p className="text-sm text-gray-500">
-                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+          {!selectedFile ? (
+            <div className="flex flex-col items-center justify-center">
+              <Upload className="h-10 w-10 text-gray-400 mb-3" />
+              <p className="text-sm text-gray-600 mb-2">
+                Click to select or drag and drop your PDF file
               </p>
-              <button
-                onClick={() => {
-                  setSelectedFile(null);
-                  setError(null);
-                }}
-                className="mt-2 text-sm text-red-600 hover:text-red-800"
-                disabled={isProcessing}
-              >
-                Remove
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center">
-              <Upload className="h-8 w-8 text-gray-400 mb-2" />
-              <p className="text-gray-600 mb-2">Drag and drop file here or</p>
-              <button
-                onClick={handleBrowseClick}
-                className="text-blue-600 hover:text-blue-800 font-medium"
-                disabled={isProcessing}
-              >
-                Choose file
-              </button>
+              <p className="text-xs text-gray-500">Maximum file size: 5MB</p>
+              
               <input
                 type="file"
                 ref={fileInputRef}
-                onChange={handleFileChange}
                 className="hidden"
-                accept=".pdf,.jpg,.jpeg,.png"
-                disabled={isProcessing}
+                accept="application/pdf"
+                onChange={handleFileChange}
               />
-              <p className="text-xs text-gray-500 mt-2">
-                Supported formats: PDF, JPG, JPEG, PNG (Max 10MB)
-              </p>
+              
+              <Button
+                variant="outline"
+                onClick={handleButtonClick}
+                className="mt-4"
+                type="button"
+              >
+                Select File
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <FileText className="h-8 w-8 text-green-600 mr-3" />
+                <div>
+                  <p className="text-sm font-medium truncate max-w-[200px]">
+                    {selectedFile.name}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                onClick={clearSelectedFile}
+                className="p-1 h-auto"
+                type="button"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </Button>
             </div>
           )}
         </div>
-
-        {error && (
-          <div className="mt-4 p-3 bg-red-50 rounded border border-red-200">
-            <p className="text-red-600 text-sm">{error}</p>
-          </div>
-        )}
-
-        {/* Show selected document type info */}
-        <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-          <p className="text-blue-800 text-sm">
-            <strong>Selected document type:</strong> {mapDocumentTypeToApi(selectedOption).replace(/_/g, ' ').toUpperCase()}
-          </p>
-        </div>
       </div>
 
-      <div className="flex gap-3 mt-4">
-        {onSkip && (
-          <Button
-            variant="outline"
-            onClick={onSkip}
-            disabled={isProcessing}
-            className="flex-1 py-6"
-          >
-            Skip for now
-          </Button>
-        )}
-        
+      {/* Error message */}
+      {uploadError && (
+        <div className="mb-6 p-3 bg-red-50 rounded flex items-start">
+          <AlertCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-red-600">{uploadError}</p>
+        </div>
+      )}
+
+      <div className="flex gap-4 mt-6">
         <Button
+          onClick={handleUpload}
+          disabled={!selectedFile || isUploading}
           variant="ghost"
-          onClick={selectedFile ? handleUploadAndContinue : () => onNext()}
-          disabled={isProcessing}
-          className={`${onSkip ? 'flex-1' : 'w-full'} py-6 ${
-            isProcessing ? "opacity-50 cursor-not-allowed" : ""
+          className={`py-6 px-8 ${
+            (!selectedFile || isUploading)
+              ? "opacity-50 cursor-not-allowed"
+              : ""
           }`}
         >
-          {isInitializing ? "Initializing..." : isUploading ? "Uploading..." : selectedFile ? "Upload & Continue" : "Continue"}
+          {isUploading ? "Uploading..." : "Upload Document"}
+        </Button>
+        
+        <Button
+          onClick={onSkip}
+          variant="outline"
+          className="py-6"
+          type="button"
+        >
+          Skip for Now
         </Button>
       </div>
-
-      <div className="text-center text-xs text-gray-600 mt-4">
-        <p>
-          Upload any of the above documents to verify your income eligibility for derivative trading.
-        </p>
-        <p className="mt-1 text-blue-600">
-          Document type will be sent to backend: <strong>{mapDocumentTypeToApi(selectedOption)}</strong>
-        </p>
+      
+      <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+        <div className="flex items-start">
+          <AlertCircle className="h-5 w-5 text-amber-600 mr-3 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm text-amber-800 font-medium mb-1">
+              Important Information
+            </p>
+            <p className="text-xs text-amber-700">
+              Providing valid income proof is mandatory for F&O, Currency, and
+              Commodity segments as per regulations. You may skip now, but you
+              won't be able to trade in these segments until income proof is
+              verified.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
