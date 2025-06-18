@@ -51,6 +51,7 @@ jobs:
             fi
             
             mv static .next/
+            echo """${{ secrets.ENV }}""" > .env
             
             echo "Starting landing..."
             screen -S sapphire-landing -d -m $(which node) server.js
