@@ -3,6 +3,8 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
+
 interface TradingAccountDetailsProps {
   onNext: () => void;
   initialData?: any;
@@ -31,6 +33,9 @@ const initialErrors: FormErrors = {
   motherName: false,
 };
 
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
+
 const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   onNext,
   initialData,
@@ -40,17 +45,80 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   const [errors, setErrors] = useState<FormErrors>(initialErrors);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [originalData, setOriginalData] = useState<TradingAccountFormData>(initialFormData);
 
-  // Prefill data from initialData (API response)
+  // Prefill data from initialData (API response) and show completion toast
   useEffect(() => {
     if (isCompleted && initialData) {
-      setFormData({
-        fatherSpouseName: initialData.father_spouse_name || "",
-        motherName: initialData.mother_name || "",
-        maidenName: initialData.maiden_name || "",
-      });
+      const prefilledData = {
+        fatherSpouseName: formatName(initialData.father_spouse_name || ""),
+        motherName: formatName(initialData.mother_name || ""),
+        maidenName: formatName(initialData.maiden_name || ""),
+      };
+      
+      setFormData(prefilledData);
+      setOriginalData(prefilledData);
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Parent details already saved! You can modify them or continue.");
+        hasShownGlobalCompletedToast = true;
+      }
     }
   }, [initialData, isCompleted]);
+
+  // Helper function to format names properly
+  const formatName = (name: string): string => {
+    if (!name) return '';
+    
+    return name
+      .trim()
+      .split(' ')
+      .map(word => {
+        if (word.length === 0) return '';
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .filter(word => word.length > 0) // Remove empty strings
+      .join(' ');
+  };
+
+  // Also try to prefill father's name from PAN data if available and not already completed
+  useEffect(() => {
+    const fetchPanData = async () => {
+      if (isCompleted) return; // Don't fetch if already completed
+      
+      try {
+        const token = Cookies.get('authToken');
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/pan`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            }
+          }
+        );
+        
+        if (response.data?.data?.full_name) {
+          // Extract father's name from PAN data (typically the middle name)
+          const nameParts = response.data.data.full_name.split(' ');
+          if (nameParts.length >= 3 && !formData.fatherSpouseName) {
+            // Construct father's name from middle name + last name
+            const fatherName = `${nameParts[1]} ${nameParts[nameParts.length - 1]}`;
+            const formattedFatherName = formatName(fatherName);
+            setFormData(prev => ({
+              ...prev,
+              fatherSpouseName: formattedFatherName
+            }));
+          }
+        }
+      } catch (error) {
+        // Silently handle error - PAN data might not be available yet
+        console.log("Could not fetch PAN data for prefilling");
+      }
+    };
+    
+    fetchPanData();
+  }, [isCompleted, formData.fatherSpouseName]);
 
   const validateForm = () => {
     const newErrors = {
@@ -68,9 +136,14 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   ) => {
     if (isSubmitting) return;
 
+    // Format the name as user types
+    const formattedValue = field === 'fatherSpouseName' || field === 'motherName' || field === 'maidenName' 
+      ? formatName(value) 
+      : value;
+
     setFormData((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: formattedValue,
     }));
 
     setErrors((prev) => ({
@@ -81,11 +154,23 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     setError(null);
   };
 
+  // Check if there are changes that require API call
+  const hasChanges = () => {
+    if (!isCompleted) return true; // Not completed yet, so needs API call
+    return (
+      formData.fatherSpouseName !== originalData.fatherSpouseName ||
+      formData.motherName !== originalData.motherName ||
+      formData.maidenName !== originalData.maidenName
+    );
+  };
+
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (isSubmitting) return;
 
-    if (isCompleted) {
+    // If no changes and already completed, just proceed to next step
+    if (!hasChanges() && isCompleted) {
+      console.log("No changes detected, proceeding to next step");
       onNext();
       return;
     }
@@ -97,6 +182,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     setIsSubmitting(true);
     setError(null);
     const token = Cookies.get('authToken');
+    
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
@@ -108,8 +194,8 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         },
         {
           headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           }
         }
       );
@@ -119,7 +205,13 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         return;
       }
 
-      onNext();
+      toast.success("Parent details saved successfully!");
+      
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        onNext();
+      }, 500);
+      
     } catch (err: any) {
       if (err.response?.data?.message) {
         setError(`Error: ${err.response.data.message}`);
@@ -139,78 +231,24 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     formData.fatherSpouseName.trim() && formData.motherName.trim();
 
   const getButtonText = () => {
-    if (isCompleted) return "Continue";
     if (isSubmitting) return "Saving...";
     return "Continue";
   };
 
   const isButtonDisabled = () => {
     if (isSubmitting) return true;
-    if (isCompleted) return false;
     return !isFormValid;
   };
 
-  // Show completed state
-  if (isCompleted) {
-    return (
-      <div className="mx-auto mt-10">
-        <FormHeading
-          title={"Parent Details Saved Successfully!"}
-          description={"Your parent details have been saved. Click continue to proceed."}
-        />
-
-        <div className="mb-6">
-          <label className="block text-gray-700 mb-2">
-            Father's/Spouse Name<span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
-            value={formData.fatherSpouseName}
-            disabled
-          />
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-gray-700 mb-2">
-            Mother's Name<span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
-            value={formData.motherName}
-            disabled
-          />
-        </div>
-
-        
-
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-green-800 font-medium">Parent details saved successfully!</span>
-          </div>
-        </div>
-
-        <Button
-          onClick={handleSubmit}
-          className="w-full py-6"
-          variant="ghost"
-        >
-          Continue to Next Step
-        </Button>
-      </div>
-    );
-  }
-
+  // Always show the same UI - whether fresh or completed
   return (
     <div className="mx-auto mt-10">
       <FormHeading
         title={"Parent Details"}
         description={"Provide your parent/spouse information for KYC verification."}
       />
+
+     
 
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
@@ -223,7 +261,11 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
             value={formData.fatherSpouseName}
             onChange={(e) => handleInputChange("fatherSpouseName", e.target.value)}
             disabled={isSubmitting}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+              isCompleted && formData.fatherSpouseName === originalData.fatherSpouseName 
+                ? 'border-gray-300' 
+                : 'border-gray-300'
+            }`}
           />
           {errors.fatherSpouseName && (
             <p className="text-red-500 text-sm mt-1">
@@ -242,7 +284,11 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
             value={formData.motherName}
             onChange={(e) => handleInputChange("motherName", e.target.value)}
             disabled={isSubmitting}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+              isCompleted && formData.motherName === originalData.motherName 
+                ? 'border-gray-300' 
+                : 'border-gray-300'
+            }`}
           />
           {errors.motherName && (
             <p className="text-red-500 text-sm mt-1">
@@ -269,7 +315,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           {getButtonText()}
         </Button>
 
-        <div className="mt-6 text-sm text-gray-600">
+        <div className="mt-6 text-center text-sm text-gray-600">
           <p className="">
             This information is required for KYC verification and will be kept
             confidential in accordance with our privacy policy.

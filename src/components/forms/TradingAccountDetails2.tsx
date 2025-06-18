@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 interface TradingAccountDetails2Props {
   onNext: () => void;
@@ -23,28 +24,56 @@ const occupationOptions = [
   "Others",
 ];
 
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
+
 const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({ 
   onNext, 
   initialData, 
   isCompleted 
 }) => {
   const [occupation, setOccupation] = useState("");
-  const [isPoliticallyExposed, setIsPoliticallyExposed] = useState<boolean | null>(null);
+  const [isPoliticallyExposed, setIsPoliticallyExposed] = useState<boolean>(false);
   const [showValidation, setShowValidation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [originalData, setOriginalData] = useState<any>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Prefill data from initialData (API response)
-  useEffect(() => {
-    const data = initialData as {
-      occupation?: string;
-      is_politically_exposed?: boolean;
-    } | undefined;
+  // Map API occupation values back to frontend display values
+  const mapFromApiValues = (data: any) => {
+    const occupationReverseMapping: Record<string, string> = {
+      "self employed": "Business",
+      "housewife": "Housewife",
+      "student": "Student",
+      "private sector": "Professional", // Note: Both "Professional" and "Private Sector" map to "private sector"
+      "govt servant": "Government Service", // Note: Both "Government Service" and "Public Sector" map to "govt servant"
+      "agriculturalist": "Agriculturist",
+      "retired": "Retired",
+      "other": "Others"
+    };
 
-    if (isCompleted && data) {
-      setOccupation(data.occupation || "");
-      setIsPoliticallyExposed(data.is_politically_exposed ?? null);
+    return {
+      occupation: data.occupation ? occupationReverseMapping[data.occupation] || "Others" : "",
+      is_politically_exposed: data.is_politically_exposed
+    };
+  };
+
+  // Prefill data from initialData (API response) and show completion toast
+  useEffect(() => {
+    if (isCompleted && initialData) {
+      // Map API values back to display values
+      const mappedData = mapFromApiValues(initialData);
+      
+      setOccupation(mappedData.occupation);
+      setIsPoliticallyExposed(mappedData.is_politically_exposed ?? false);
+      setOriginalData(mappedData);
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Other details already saved! You can modify them or continue.");
+        hasShownGlobalCompletedToast = true;
+      }
     }
   }, [initialData, isCompleted]);
 
@@ -63,9 +92,18 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
   };
 
   const validateForm = () => {
-    const isValid = occupation !== "" && isPoliticallyExposed !== null;
+    const isValid = occupation !== "";
     setShowValidation(!isValid);
     return isValid;
+  };
+
+  // Check if there are changes that require API call
+  const hasChanges = () => {
+    if (!isCompleted || !originalData) return true; // Not completed yet, so needs API call
+    return (
+      occupation !== originalData.occupation ||
+      isPoliticallyExposed !== originalData.is_politically_exposed
+    );
   };
 
   // Map frontend occupation values to API values - Fixed to match backend validation
@@ -89,7 +127,9 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
     if (e) e.preventDefault();
     if (isSubmitting) return;
 
-    if (isCompleted) {
+    // If no changes and already completed, just proceed to next step
+    if (!hasChanges() && isCompleted) {
+      console.log("No changes detected, proceeding to next step");
       onNext();
       return;
     }
@@ -122,7 +162,13 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
         return;
       }
 
-      onNext();
+      toast.success("Other details saved successfully!");
+      
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        onNext();
+      }, 500);
+      
     } catch (err: unknown) {
       const error = err as {
         response?: {
@@ -145,70 +191,19 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
     }
   };
 
-  const isFormValid = occupation !== "" && isPoliticallyExposed !== null;
+  const isFormValid = occupation !== "";
 
   const getButtonText = () => {
-    if (isCompleted) return "Continue";
     if (isSubmitting) return "Saving...";
     return "Continue";
   };
 
   const isButtonDisabled = () => {
     if (isSubmitting) return true;
-    if (isCompleted) return false;
     return !isFormValid;
   };
 
-  // Show completed state
-  if (isCompleted) {
-    return (
-      <div className="mx-auto mt-14">
-        <FormHeading
-          title={"Other Details Saved Successfully!"}
-          description={"Your other details have been saved. Click continue to proceed."}
-        />
-
-        <div className="mb-6">
-          <label className="block mb-2">
-            Occupation<span className="text-red-500">*</span>
-          </label>
-          <div className="p-3 bg-green-50 border border-green-300 rounded">
-            <span className="text-green-800 font-medium">{occupation}</span>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label className="block mb-2">
-            Are you a politically exposed person?
-            <span className="text-red-500">*</span>
-          </label>
-          <div className="p-3 bg-green-50 border border-green-300 rounded">
-            <span className="text-green-800 font-medium">
-              {isPoliticallyExposed ? "Yes" : "No"}
-            </span>
-          </div>
-        </div>
-
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-green-800 font-medium">Other details saved successfully!</span>
-          </div>
-        </div>
-
-        <Button
-          variant={"ghost"}
-          onClick={handleSubmit}
-          className="w-full py-6"
-        >
-          Continue to Next Step
-        </Button>
-      </div>
-    );
-  }
-
+  // Always show the same UI - whether fresh or completed
   return (
     <div className="mx-auto mt-14">
       <FormHeading
@@ -216,19 +211,21 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
         description={"Provide additional information for your trading account."}
       />
 
+
       <form ref={formRef} onSubmit={handleSubmit}>
         <div className="mb-6">
-          <label className="block mb-2">
+          <label className="block text-gray-700 font-medium mb-2">
             Occupation<span className="text-red-500">*</span>
           </label>
-          <div className="flex flex-wrap gap-2">
+          {/* Using consistent grid layout like TradingPreferences */}
+          <div className="grid grid-cols-2 gap-2">
             {occupationOptions.map((option) => (
               <button
                 key={option}
                 type="button"
                 onClick={() => handleOccupationSelect(option)}
                 disabled={isSubmitting}
-                className={`px-4 py-2 rounded border transition-colors text-sm
+                className={`px-4 py-2 rounded border transition-colors text-center
                   ${
                     occupation === option
                       ? "border-teal-800 bg-teal-50 text-teal-800"
@@ -249,43 +246,42 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
         </div>
 
         <div className="mb-6">
-          <label className="block mb-2">
+          <label className="block text-gray-700 font-medium mb-2">
             Are you a politically exposed person?
             <span className="text-red-500">*</span>
           </label>
-          <div className="flex gap-4">
-            <label
-              className={`flex items-center ${
-                isSubmitting ? "cursor-not-allowed" : "cursor-pointer"
-              }`}
+          {/* Using consistent grid layout */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => handlePoliticallyExposedChange(true)}
+              disabled={isSubmitting}
+              className={`px-4 py-2 rounded border transition-colors text-center
+                ${
+                  isPoliticallyExposed === true
+                    ? "border-teal-800 bg-teal-50 text-teal-800"
+                    : "border-gray-300 text-gray-600 hover:border-gray-400"
+                }
+                ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
+              `}
             >
-              <input
-                type="radio"
-                className="w-4 h-4 text-teal-800 border-gray-300 focus:ring-teal-800"
-                checked={isPoliticallyExposed === true}
-                onChange={() => handlePoliticallyExposedChange(true)}
-                disabled={isSubmitting}
-              />
-              <span className={`ml-2 ${isSubmitting ? "opacity-50" : ""}`}>
-                Yes
-              </span>
-            </label>
-            <label
-              className={`flex items-center ${
-                isSubmitting ? "cursor-not-allowed" : "cursor-pointer"
-              }`}
+              Yes
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePoliticallyExposedChange(false)}
+              disabled={isSubmitting}
+              className={`px-4 py-2 rounded border transition-colors text-center
+                ${
+                  isPoliticallyExposed === false
+                    ? "border-teal-800 bg-teal-50 text-teal-800"
+                    : "border-gray-300 text-gray-600 hover:border-gray-400"
+                }
+                ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
+              `}
             >
-              <input
-                type="radio"
-                className="w-4 h-4 text-teal-800 border-gray-300 focus:ring-teal-800"
-                checked={isPoliticallyExposed === false}
-                onChange={() => handlePoliticallyExposedChange(false)}
-                disabled={isSubmitting}
-              />
-              <span className={`ml-2 ${isSubmitting ? "opacity-50" : ""}`}>
-                No
-              </span>
-            </label>
+              No
+            </button>
           </div>
           {showValidation && isPoliticallyExposed === null && (
             <p className="text-red-500 text-sm mt-1">Please select an option</p>

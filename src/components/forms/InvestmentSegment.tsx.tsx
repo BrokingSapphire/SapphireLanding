@@ -6,12 +6,16 @@ import RiskDisclosureModal from "../new-signup/RiskDisclosure";
 import UploadIncomeProof from "./UploadIncomeProof";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 interface InvestmentSegmentProps {
   onNext: () => void;
   initialData?: any;
   isCompleted?: boolean;
 }
+
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
 
 const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ 
   onNext, 
@@ -37,10 +41,16 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     { id: "Commodity", label: "Commodity Derivatives", requiresDisclosure: true },
   ];
 
-  // Prefill data from initialData (API response) only if the data is valid
+  // Prefill data from initialData (API response) and show completion toast
   useEffect(() => {
     if (isCompleted && initialData && initialData.segments && initialData.segments.length > 0) {
       setSelectedSegments(initialData.segments);
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Investment segments already configured! You can modify them or continue.");
+        hasShownGlobalCompletedToast = true;
+      }
     }
   }, [initialData, isCompleted]);
 
@@ -118,13 +128,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
 
   // Submit selected investment segments
   const handleSubmitSegments = async () => {
-    // Check if step is truly completed with valid data
-    if (isStepFullyCompleted()) {
-      console.log("Step fully completed, proceeding to next step");
-      onNext();
-      return;
-    }
-
     // Check if any selected segments require risk disclosure
     const segmentsRequiringRisk = selectedSegments.filter(segment => 
       segment === "F&O" || segment === "Currency" || segment === "Commodity"
@@ -173,7 +176,11 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         // Check if income proof is already uploaded
         if (isIncomeProofCompleted) {
           console.log("Income proof already completed, proceeding to next step");
-          onNext();
+          toast.success("Investment segments saved successfully!");
+          // Auto-advance after 2 seconds
+          setTimeout(() => {
+            onNext();
+          }, 2000);
         } else {
           // Need to upload income proof
           await handleInitializeIncomeProof();
@@ -181,7 +188,11 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
       } else {
         // No risk segments selected, proceed to next step
         console.log("No risk segments selected, proceeding to next step");
-        onNext();
+        toast.success("Investment segments saved successfully!");
+        // Auto-advance after 2 seconds
+        setTimeout(() => {
+          onNext();
+        }, 2000);
       }
     } catch (err: any) {
       console.error("Error saving investment segments:", err);
@@ -277,10 +288,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   };
 
   const getButtonText = () => {
-    if (isStepFullyCompleted()) {
-      return "Continue";
-    }
-    
     if (isLoading) return "Saving...";
     
     // Check if any selected segments require risk disclosure
@@ -289,18 +296,14 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     );
     
     if (segmentsRequiringRisk.length > 0 && !hasAcceptedRisk) {
-      return "Accept Risk & Continue";
+      return "Continue";
     }
     
-    return "Next";
+    return "Continue";
   };
 
   const isButtonDisabled = () => {
     if (isLoading) return true;
-    if (isStepFullyCompleted()) {
-      return false;
-    }
-    
     return selectedSegments.length === 0;
   };
 
@@ -315,66 +318,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     );
   }
 
-  // Show completed state if step is fully completed
-  if (isStepFullyCompleted()) {
-    return (
-      <div className="w-full max-w-2xl mx-auto p-4">
-        <FormHeading 
-          title="Investment Segments Completed Successfully!" 
-          description="Your investment segments have been saved and all requirements met. Click continue to proceed." 
-        />
-
-        <div className="flex flex-wrap gap-2 mb-6">
-          {selectedSegments.map((segmentId) => {
-            const segment = segments.find(s => s.id === segmentId);
-            return (
-              <div
-                key={segmentId}
-                className="px-4 py-2 border border-green-600 bg-green-50 rounded flex items-center gap-3"
-              >
-                <span className="whitespace-nowrap">{segment?.label || segmentId}</span>
-                <div className="h-6 w-6 flex items-center justify-center border-2 border-green-600 bg-white rounded-lg">
-                  <Check className="h-4 w-4 text-green-600" />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Show income proof status if applicable */}
-        {selectedSegments.some(segment => segment === "F&O" || segment === "Currency" || segment === "Commodity") && (
-          <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-            <div className="flex items-center">
-              <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-green-800 font-medium">
-                {isIncomeProofCompleted ? "Income proof verified" : "Income proof required segments selected"}
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-green-800 font-medium">Investment segments saved successfully!</span>
-          </div>
-        </div>
-
-        <Button 
-          onClick={handleSubmitSegments}
-          variant="ghost" 
-          className="mt-6 py-6 px-10"
-        >
-          Continue to Next Step
-        </Button>
-      </div>
-    );
-  }
-
+  // Always show the same UI - whether fresh or completed
   return (
     <div className="w-full max-w-2xl mx-auto p-4">
       <FormHeading 
@@ -382,13 +326,14 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         description="Choose where you want to invest and trade." 
       />
 
+
       <div className="flex flex-wrap gap-2 mb-6">
         {segments.map((segment) => (
           <button
             key={segment.id}
             onClick={() => handleSegmentClick(segment.id, !!segment.requiresDisclosure)}
             disabled={isLoading}
-            className={`px-4 py-2 border rounded flex items-center gap-3 transition-colors
+            className={`px-4 py-2 border rounded flex items-center gap-5 transition-colors
               ${segment.id === "Cash" ? "cursor-default" : "cursor-pointer"}
               ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
               ${selectedSegments.includes(segment.id) ? "border-green-600 bg-green-50" : "border-gray-300 hover:border-green-600"}`}
@@ -405,6 +350,18 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         ))}
       </div>
 
+      {/* Show income proof status if applicable */}
+      {selectedSegments.some(segment => segment === "F&O" || segment === "Currency" || segment === "Commodity") && isIncomeProofCompleted && (
+        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-green-800 font-medium">Income proof already verified</span>
+          </div>
+        </div>
+      )}
+
       {error && (
         <div className="mb-4 p-3 bg-red-50 rounded">
           <p className="text-red-600 text-sm">{error}</p>
@@ -415,12 +372,18 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         onClick={handleSubmitSegments}
         disabled={isButtonDisabled()}
         variant="ghost" 
-        className={`mt-6 py-6 px-10 ${
+        className={`mt-6 w-full py-6 px-10 ${
           isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         {getButtonText()}
       </Button>
+
+      <div className="text-center text-sm text-gray-600 space-y-3 mt-8">
+        <p>
+          If you choose the F&O, Currency, or Commodity Derivatives segment, you will be required to upload your income proof.
+        </p>
+      </div>
 
       {showRiskModal && (
         <RiskDisclosureModal

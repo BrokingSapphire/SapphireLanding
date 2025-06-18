@@ -1,4 +1,4 @@
-// Updated OnboardingCarousel with proper step progression logic
+// Updated OnboardingCarousel with localStorage for client ID management
 
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
@@ -30,7 +30,6 @@ const OnboardingCarousel = () => {
   const [direction, setDirection] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [clientId, setClientId] = useState<string | undefined>(undefined);
   const [forceProgress, setForceProgress] = useState(false);
 
   // Use checkpoint hook to manage state
@@ -51,17 +50,23 @@ const OnboardingCarousel = () => {
 
   const TOTAL_STEPS = 16;
 
-  // Initialize current step from checkpoint data
+  // Initialize current step from checkpoint data and client ID from localStorage
   useEffect(() => {
     if (!checkpointLoading && !isInitialized) {
       console.log('Resuming from step:', resumeStep);
       setCurrentStep(resumeStep);
       
-      // Initialize clientId from checkpoint data if available
-      const existingClientId = getClientId();
-      if (existingClientId) {
-        setClientId(existingClientId);
-        console.log('Found existing client ID:', existingClientId);
+      // Check localStorage for existing client ID
+      const storedClientId = localStorage.getItem('clientId');
+      if (storedClientId) {
+        console.log('Found existing client ID in localStorage:', storedClientId);
+      } else {
+        // Try to get client ID from checkpoint data and save to localStorage
+        const existingClientId = getClientId();
+        if (existingClientId) {
+          localStorage.setItem('clientId', existingClientId);
+          console.log('Saved client ID from checkpoint to localStorage:', existingClientId);
+        }
       }
       
       setIsInitialized(true);
@@ -109,6 +114,11 @@ const OnboardingCarousel = () => {
       checkIncomeProof();
     }
   }, [currentStep, forceProgress, refetchStep]);
+
+  // Helper function to get client ID from localStorage
+  const getStoredClientId = (): string | null => {
+    return localStorage.getItem('clientId');
+  };
 
   // Check if the current step is completed
   const isCurrentStepCompleted = () => {
@@ -459,9 +469,9 @@ const OnboardingCarousel = () => {
       id: "Set Password", 
       component: (
         <SetPassword 
-          onNext={(newClientId) => {
-            console.log('SetPassword completed with client ID:', newClientId);
-            setClientId(newClientId);
+          onNext={() => {
+            console.log('SetPassword completed');
+            // Client ID is now handled in localStorage within SetPassword component
             handleStepCompletion(CheckpointStep.PASSWORD_SETUP);
           }}
           initialData={getStepData(CheckpointStep.PASSWORD_SETUP)}
@@ -473,12 +483,12 @@ const OnboardingCarousel = () => {
       id: "MPIN", 
       component: (
         <MPIN 
-          onNext={(passedClientId) => {
-            console.log('MPIN completed with client ID:', passedClientId);
-            setClientId(passedClientId);
+          onNext={() => {
+            console.log('MPIN completed');
+            // Client ID is now retrieved from localStorage within MPIN component
             handleStepCompletion(CheckpointStep.MPIN_SETUP);
           }}
-          clientId={clientId}
+          clientId={getStoredClientId()} // Pass client ID from localStorage
           initialData={getStepData(CheckpointStep.MPIN_SETUP)}
           isCompleted={isStepCompleted(CheckpointStep.MPIN_SETUP)}
         />
@@ -489,7 +499,7 @@ const OnboardingCarousel = () => {
       component: (
         <CongratulationsPage 
           onNext={() => handleNext(true)}
-          clientId={clientId}
+          clientId={getStoredClientId()} // Pass client ID from localStorage
         />
       ),
     },

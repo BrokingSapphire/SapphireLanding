@@ -21,7 +21,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Prefill data from initialData (API response)
+  // Prefill data from initialData (API response) - always editable
   useEffect(() => {
     const data = initialData as {
       pan_number?: string;
@@ -31,8 +31,10 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
     } | undefined;
 
     if (isCompleted && data) {
-      // If step is completed, prefill with data from API
+      // If step is completed, only prefill PAN number
+      console.log("Prefilling PAN data:", data);
       setPanNumber(data.pan_number || "");
+      // Store other data but don't show in UI
       setFullName(data.full_name || "");
       setDob(data.dob || "");
       setMaskedAadhaar(data.masked_aadhaar || "");
@@ -84,6 +86,22 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
       return;
     }
 
+    // If already completed and PAN hasn't changed, just proceed to next step
+    if (isCompleted && initialData) {
+      const data = initialData as {
+        pan_number?: string;
+        full_name?: string;
+        dob?: string;
+        masked_aadhaar?: string;
+      } | undefined;
+      
+      if (data?.pan_number === panNumber) {
+        console.log("PAN unchanged, proceeding to next step without API call");
+        onNext();
+        return;
+      }
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -95,6 +113,8 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
         setIsLoading(false);
         return;
       }
+
+      console.log("Submitting PAN:", panNumber);
 
       // Call checkpoint API with PAN step
       const response = await axios.post(
@@ -111,6 +131,8 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
         }
       );
 
+      console.log("PAN submission response:", response.data);
+
       if (!response.data) {
         setError("Failed to verify PAN details. Please try again.");
         return;
@@ -125,6 +147,8 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
         };
         request?: unknown;
       };
+
+      console.error("PAN submission error:", err);
 
       if (error.response) {
         // Handle specific error messages from the server
@@ -155,7 +179,6 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
 
   // Get button text based on current state
   const getButtonText = () => {
-    if (isCompleted) return "Continue";
     if (isLoading) return "Verifying PAN...";
     return "Continue";
   };
@@ -163,94 +186,10 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
   // Determine if button should be disabled
   const isButtonDisabled = () => {
     if (isLoading) return true;
-    if (isCompleted) return false;
     return !validatePan(panNumber);
   };
 
-  // Handle continue for completed state
-  const handleContinue = () => {
-    if (isCompleted) {
-      onNext();
-      return;
-    }
-    handleSubmit();
-  };
-
-  // Show completed state - but don't auto-advance
-  if (isCompleted) {
-    return (
-      <div className="mx-auto max-w-full px-4">
-        <FormHeading
-          title={"PAN Verified Successfully!"}
-          description={"Your PAN details have been verified. Click continue to proceed."}
-        />
-
-        <div className="mb-6">
-          <label className="block text-gray-700 mb-2">PAN Number</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
-            value={panNumber}
-            disabled
-          />
-        </div>
-
-        {fullName && (
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Full Name</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
-              value={fullName}
-              disabled
-            />
-          </div>
-        )}
-
-        {dob && (
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Date of Birth</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
-              value={new Date(dob).toLocaleDateString()}
-              disabled
-            />
-          </div>
-        )}
-
-        {maskedAadhaar && (
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Aadhaar (Masked)</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
-              value={maskedAadhaar}
-              disabled
-            />
-          </div>
-        )}
-
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-green-800 font-medium">PAN verified successfully!</span>
-          </div>
-        </div>
-
-        <Button
-          onClick={handleContinue}
-          className="w-full py-6 bg-green-600 hover:bg-green-700"
-          variant="ghost"
-        >
-          Continue to Next Step
-        </Button>
-      </div>
-    );
-  }
-
+  // Always show the same UI, just with prefilled PAN number if completed
   return (
     <div className="mx-auto max-w-full px-4">
       <FormHeading
@@ -276,9 +215,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
             Please enter a valid PAN number
           </p>
         )}
-        <p className="text-gray-500 text-xs mt-1">
-          Format: ABCDE1234F (5 letters, 4 numbers, 1 letter)
-        </p>
+      
       </div>
 
       {error && (
@@ -288,7 +225,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
       )}
 
       <Button
-        onClick={handleContinue}
+        onClick={handleSubmit}
         variant="ghost"
         className={`w-full py-6 ${
           isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""

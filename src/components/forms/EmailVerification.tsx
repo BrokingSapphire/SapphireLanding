@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import axios from "axios";
 import FormHeading from "./FormHeading";
 import { useAuthToken } from "@/hooks/useCheckpoint";
+import { toast } from "sonner";
 
 interface EmailVerificationProps {
   onNext: () => void;
@@ -14,7 +15,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   const [email, setEmail] = useState("");
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [otpTimer, setOtpTimer] = useState(600); // 10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
@@ -47,6 +47,51 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       return () => clearTimeout(timer);
     }
   }, [isCompleted, onNext]);
+
+  // Prevent page reload/refresh
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Show browser's default confirmation dialog
+      e.preventDefault();
+      e.returnValue = ''; // Required for Chrome
+      
+      // Show toast warning (may not be visible due to browser dialog)
+      toast.error("Please don't reload the page during verification process!");
+      
+      return ''; // Some browsers require a return value
+    };
+
+    const handleUnload = () => {
+      // Show toast when user actually tries to leave
+      toast.error("Page reload detected! Please resubmit if verification was interrupted.");
+    };
+
+    // Add event listeners
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('unload', handleUnload);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('unload', handleUnload);
+    };
+  }, []);
+
+  // Also detect when user comes back to the tab (in case they refreshed)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && showOTP) {
+        // User came back to tab during OTP process
+        toast.warning("If you refreshed the page, you may need to request a new OTP code.");
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [showOTP]);
 
   // OTP timer for 10 minutes
   useEffect(() => {
@@ -109,7 +154,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
   const handleVerifyOTP = async () => {
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await axios.post(
@@ -122,7 +166,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       );
 
       if (!response.data) {
-        setError("Failed to verify your code. Please try again.");
+        toast.error("Failed to verify your code. Please try again.");
         return;
       }
 
@@ -134,13 +178,17 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         setAuthToken(response.data.token);
       }
 
+      toast.success("Email verified successfully!");
       onNext();
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError("Error verifying code. Please try again.");
-      }
+      // Check for backend error message in different possible locations
+      const errorMessage = 
+        err.response?.data?.error?.message ||  // {"error":{"message":"Invalid OTP provided"}}
+        err.response?.data?.message ||         // {"message":"Invalid OTP provided"}
+        err.response?.data?.error ||           // {"error":"Invalid OTP provided"}
+        "Error verifying code. Please try again."; // fallback
+      
+      toast.error(errorMessage);
       console.error("Verification error:", err);
     } finally {
       setIsLoading(false);
@@ -149,12 +197,11 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
   const handleSendOTP = async () => {
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address");
+      toast.error("Please enter a valid email address");
       return;
     }
 
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await axios.post(
@@ -166,7 +213,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       );
 
       if (!response.data) {
-        setError("Failed to send verification code. Please try again.");
+        toast.error("Failed to send verification code. Please try again.");
         return;
       }
 
@@ -174,16 +221,21 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds
       
+      toast.success("Verification code sent to your email!");
+      
       // Focus on the first OTP input after showing OTP fields
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError("Failed to send verification code. Please try again.");
-      }
+      // Check for backend error message in different possible locations
+      const errorMessage = 
+        err.response?.data?.error?.message ||  // {"error":{"message":"Some error"}}
+        err.response?.data?.message ||         // {"message":"Some error"}
+        err.response?.data?.error ||           // {"error":"Some error"}
+        "Failed to send verification code. Please try again."; // fallback
+      
+      toast.error(errorMessage);
       console.error("Send OTP error:", err);
     } finally {
       setIsLoading(false);
@@ -195,7 +247,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       const newOTP = [...otp];
       newOTP[index] = value;
       setOtp(newOTP);
-      setError(null);
 
       // Move to next input if value is entered
       if (value !== "" && index < 5) {
@@ -305,7 +356,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
-              setError(null);
             }}
             onKeyDown={handleEmailKeyDown}
             disabled={isLoading || showOTP}
@@ -354,12 +404,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
             </button>
             
           </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 rounded">
-          <p className="text-red-600 text-sm">{error}</p>
         </div>
       )}
 

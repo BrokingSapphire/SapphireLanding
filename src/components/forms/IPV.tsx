@@ -6,13 +6,17 @@ import FormHeading from "./FormHeading";
 import QrCodeVerification from "./QrCodeVerification";
 import axios from "axios";
 import Cookies from 'js-cookie';
-import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint'; // Adjust import path as needed
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
+import { toast } from "sonner";
 
 interface IPVVerificationProps {
   onNext: () => void;
   initialData?: any;
   isCompleted?: boolean;
 }
+
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
 
 const IPVVerification: React.FC<IPVVerificationProps> = ({ 
   onNext, 
@@ -26,9 +30,10 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   const [showCamera, setShowCamera] = useState(false);
   const [ipvUid, setIpvUid] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [cameraAutoStarted, setCameraAutoStarted] = useState(false);
+  const [wantsToReverify, setWantsToReverify] = useState(false); // New state to track re-verification intent
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Use the checkpoint hook to check for existing IPV data
   const { 
@@ -37,30 +42,52 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     refetchStep 
   } = useCheckpoint();
 
-  // Check if IPV is already completed from the hook
+  // Check if IPV is already completed and show toast
   useEffect(() => {
-    if (isStepCompleted(CheckpointStep.IPV)) {
-      // IPV is already completed, no need to initialize
-      setIsInitialized(true);
+    console.log("useEffect triggered - isStepCompleted:", isStepCompleted(CheckpointStep.IPV), "wantsToReverify:", wantsToReverify, "isInitialized:", isInitialized, "isLoading:", isLoading);
+    
+    if (isStepCompleted(CheckpointStep.IPV) && !wantsToReverify) {
+      // IPV is already completed and user doesn't want to re-verify
+      if (!isInitialized) {
+        setIsInitialized(true);
+      }
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("IPV verification already completed! You can proceed or re-verify if needed.");
+        hasShownGlobalCompletedToast = true;
+      }
       return;
     }
 
-    // If not completed and not initialized, initialize IPV
-    if (!isInitialized) {
+    // If not completed OR user wants to re-verify, initialize IPV
+    // But only if we haven't already initialized and we're not already loading
+    if (((!isStepCompleted(CheckpointStep.IPV) && !isInitialized) || wantsToReverify) && !isLoading && !ipvUid) {
+      console.log("Calling initializeIPV from useEffect");
       initializeIPV();
     }
-  }, [isStepCompleted, isInitialized]);
+  }, [isStepCompleted(CheckpointStep.IPV), wantsToReverify]); // Only depend on these two values
 
-  // Check if there's existing IPV data
+  // Auto-start camera after initialization is complete
   useEffect(() => {
-    const ipvData = getStepData(CheckpointStep.IPV);
-    if (ipvData?.url) {
-      // IPV already exists
-      setIsInitialized(true);
+    if (isInitialized && ipvUid && !cameraAutoStarted && (wantsToReverify || !isStepCompleted(CheckpointStep.IPV))) {
+      // Small delay to ensure everything is ready
+      setTimeout(() => {
+        startCamera();
+        setCameraAutoStarted(true);
+      }, 500);
     }
-  }, [getStepData]);
+  }, [isInitialized, ipvUid, cameraAutoStarted, wantsToReverify, isStepCompleted]);
 
   const initializeIPV = async () => {
+    console.log("initializeIPV called - isLoading:", isLoading, "ipvUid:", ipvUid);
+    
+    // Prevent multiple simultaneous calls
+    if (isLoading || ipvUid) {
+      console.log("Already initializing or UID exists, skipping...");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -68,9 +95,10 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       const authToken = Cookies.get('authToken');
       if (!authToken) {
         setError("Authentication token not found. Please restart the process.");
-        setIsLoading(false);
         return;
       }
+
+      console.log("Making API call to initialize IPV session...");
 
       // Use the correct endpoint for IPV initialization
       const response = await axios.post(
@@ -87,6 +115,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       );
 
       if (response.data?.data?.uid) {
+        console.log("IPV session initialized with UID:", response.data.data.uid);
         setIpvUid(response.data.data.uid);
         setIsInitialized(true);
       } else {
@@ -156,38 +185,28 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     }
   };
 
-  const validateAndSetImage = (file: File) => {
-    setError(null);
-
-    if (!file.type.startsWith("image/")) {
-      setError("Please upload a valid image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image size should be less than 5MB");
-      return;
-    }
-
-    setImageFile(file);
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      validateAndSetImage(file);
-    }
-  };
-
   const handleSubmit = async () => {
-    // If already completed, just go to next step
-    if (isStepCompleted(CheckpointStep.IPV)) {
+    console.log("handleSubmit called - isLoading:", isLoading, "imageFile:", !!imageFile, "ipvUid:", !!ipvUid);
+    
+    // Prevent multiple submissions
+    if (isLoading) {
+      console.log("Already submitting, please wait...");
+      return;
+    }
+
+    // If already completed and no new image and not wanting to re-verify, just go to next step
+    if (isStepCompleted(CheckpointStep.IPV) && !imageFile && !wantsToReverify) {
+      console.log("Step completed, no new image, proceeding to next step");
       onNext();
       return;
     }
 
-    if (!imageFile || isLoading || !ipvUid) return;
+    if (!imageFile || !ipvUid) {
+      console.log("Missing image or UID, cannot submit");
+      return;
+    }
 
+    console.log("Starting IPV submission...");
     setIsLoading(true);
     setError(null);
 
@@ -195,12 +214,13 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       const authToken = Cookies.get('authToken');
       if (!authToken) {
         setError("Authentication token not found. Please restart the process.");
-        setIsLoading(false);
         return;
       }
 
       const formData = new FormData();
       formData.append('image', imageFile);
+
+      console.log("Uploading IPV with UID:", ipvUid);
 
       // Use the correct PUT endpoint for IPV upload
       await axios.put(
@@ -214,13 +234,25 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         }
       );
 
+      console.log("IPV uploaded successfully");
+      toast.success("IPV verification completed successfully!");
+      
+      // Reset re-verification state immediately to prevent further submissions
+      setWantsToReverify(false);
+      setIsLoading(false); // Set loading to false immediately
+      
       // Refetch IPV step to update the hook
       refetchStep(CheckpointStep.IPV);
 
-      // If successful, proceed to next step
-      onNext();
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        onNext();
+      }, 2000);
+      
     } catch (err: any) {
       console.error("IPV upload error:", err);
+      setIsLoading(false); // Make sure to reset loading state on error
+      
       if (err.response) {
         if (err.response.data?.message) {
           setError(`Upload failed: ${err.response.data.message}`);
@@ -229,6 +261,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
           // Re-initialize IPV
           setIsInitialized(false);
           setIpvUid(null);
+          setCameraAutoStarted(false);
         } else if (err.response.status === 422) {
           setError("Invalid image format. Please try again.");
         } else if (err.response.status === 403) {
@@ -241,8 +274,6 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -251,7 +282,28 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     setError(null);
     setIsInitialized(false);
     setIpvUid(null);
-    initializeIPV();
+    setCameraAutoStarted(false);
+    setWantsToReverify(true); // Set intent to re-verify
+  };
+
+  const handleVerifyAgain = () => {
+    console.log("User wants to verify again");
+    
+    // Clear all states first
+    setImageFile(null);
+    setError(null);
+    setShowCamera(false);
+    setCameraAutoStarted(false);
+    
+    // Stop camera if running
+    stopCamera();
+    
+    // Reset initialization states
+    setIsInitialized(false);
+    setIpvUid(null);
+    
+    // Set the intent to re-verify (this will trigger useEffect)
+    setWantsToReverify(true);
   };
 
   // Initialize camera when showCamera becomes true
@@ -274,7 +326,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
           }
         } catch (err) {
           console.error("Camera access error:", err);
-          setError("Camera access failed. Please enable permissions.");
+          setError("Camera access failed. Please enable permissions or use the mobile camera option.");
           setShowCamera(false);
         }
       }
@@ -302,38 +354,10 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     }
   };
 
-  // Show completed state
-  if (isStepCompleted(CheckpointStep.IPV)) {
-    return (
-      <div className="mx-auto mt-16">
-        <FormHeading
-          title="IPV Verification Completed!"
-          description="Your video verification has been completed successfully."
-        />
+  const shouldShowCamera = ipvUid && (wantsToReverify || !isStepCompleted(CheckpointStep.IPV));
+  const shouldShowCompletedState = isStepCompleted(CheckpointStep.IPV) && !wantsToReverify;
 
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <div>
-              <h3 className="text-green-800 font-medium">IPV Verification Successful!</h3>
-              <p className="text-green-700 text-sm">Your identity has been verified through video.</p>
-            </div>
-          </div>
-        </div>
-
-        <Button
-          onClick={handleSubmit}
-          variant="ghost"
-          className="w-full py-6"
-        >
-          Continue to Next Step
-        </Button>
-      </div>
-    );
-  }
-
+  // Always show the same UI - whether fresh or completed
   if (showQrCode && ipvUid) {
     return (
       <QrCodeVerification
@@ -382,6 +406,12 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     );
   }
 
+  const getButtonText = () => {
+    if (isLoading) return "Uploading...";
+    if (isStepCompleted(CheckpointStep.IPV) && !imageFile && !wantsToReverify) return "Continue";
+    return "Continue";
+  };
+
   return (
     <div className="mx-auto mt-16">
       <FormHeading
@@ -389,15 +419,37 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         description="A quick face-to-face verification for security."
       />
 
-      {!ipvUid && (
-        <div className="mb-4 p-3 bg-yellow-50 rounded border border-yellow-200">
-          <p className="text-yellow-600 text-sm">Verification session not ready. Please wait...</p>
+      {/* Show loading message when initializing for re-verification */}
+      {wantsToReverify && !ipvUid && isLoading && (
+        <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-200">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+            <p className="text-blue-700 text-sm">Initializing new verification session...</p>
+          </div>
         </div>
       )}
 
       <div className="mb-6">
         <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg flex flex-col items-center justify-center overflow-hidden">
-          {showCamera ? (
+          {shouldShowCompletedState ? (
+            // Show completed state with option to verify again
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-green-600 font-medium">IPV Verification Completed</p>
+              <p className="text-gray-600 text-sm">Click below to verify again if needed</p>
+              <Button
+                onClick={handleVerifyAgain}
+                variant="ghost"
+                className="py-3"
+              >
+                Verify Again
+              </Button>
+            </div>
+          ) : showCamera ? (
             <video
               ref={videoRef}
               autoPlay
@@ -419,34 +471,19 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
           ) : (
             <div className="text-center space-y-4">
               <Camera className="w-16 h-16 mx-auto text-gray-400" />
-              <p className="text-gray-600">Use camera for verification</p>
-              <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                <Button 
-                  onClick={startCamera} 
-                  variant="ghost" 
-                  className="py-3"
-                  disabled={!ipvUid}
-                >
-                  Open Camera
-                </Button>
-
-                <Button
-                  onClick={() => fileInputRef.current?.click()}
-                  variant="outline"
-                  className="py-3"
-                  disabled={!ipvUid}
-                >
-                  Upload Image
-                </Button>
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-              </div>
+              <p className="text-gray-600">Camera will open automatically</p>
+              {!cameraAutoStarted && shouldShowCamera && (
+                <div className="flex justify-center">
+                  <Button 
+                    onClick={startCamera} 
+                    variant="ghost" 
+                    className="py-3"
+                    disabled={!ipvUid}
+                  >
+                    Open Camera Manually
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -456,7 +493,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         {showCamera && (
           <div className="flex justify-center mt-4 gap-4">
             <Button onClick={capturePhoto} variant="ghost" className="py-2">
-              Capture
+              Capture Photo
             </Button>
             <Button onClick={stopCamera} variant="outline" className="py-2">
               Cancel
@@ -464,12 +501,14 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
           </div>
         )}
 
-        {imageFile && (
+        {imageFile && shouldShowCamera && (
           <div className="flex justify-center mt-4">
             <Button
               onClick={() => {
                 setImageFile(null);
                 setError(null);
+                // Auto-restart camera
+                setTimeout(() => startCamera(), 100);
               }}
               variant="outline"
               className="py-2"
@@ -485,27 +524,34 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
           </div>
         )}
 
-        {/* QR Code option */}
-        <div className="text-center mt-4">
-          <button
-            onClick={() => setShowQrCode(true)}
-            className="text-sm text-blue-600 hover:text-blue-800 underline"
-            disabled={!ipvUid}
-          >
-            Problems with Webcam? Use Mobile Camera
-          </button>
-        </div>
+        {/* QR Code option - only show when camera should be available */}
+        {shouldShowCamera && (
+          <div className="text-center mt-4">
+            <button
+              onClick={() => setShowQrCode(true)}
+              className="text-sm text-blue-600 hover:text-blue-800 underline"
+              disabled={!ipvUid}
+            >
+              Problems with Webcam? Use Mobile Camera
+            </button>
+          </div>
+        )}
       </div>
 
       <Button
         onClick={handleSubmit}
-        disabled={!imageFile || isLoading || !ipvUid}
+        disabled={
+          !!((!imageFile && !shouldShowCompletedState) || 
+          isLoading || 
+          (shouldShowCamera && !ipvUid))
+        }
         variant="ghost"
         className={`w-full py-6 ${
-          (!imageFile || isLoading || !ipvUid) ? "opacity-50 cursor-not-allowed" : ""
+          ((!imageFile && !shouldShowCompletedState) || isLoading || (shouldShowCamera && !ipvUid)) 
+            ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
-        {isLoading ? "Uploading..." : "Continue"}
+        {getButtonText()}
       </Button>
 
       <div className="text-center text-xs text-gray-600 mt-4">

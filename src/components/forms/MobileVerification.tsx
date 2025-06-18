@@ -372,7 +372,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
               />
             ))}
           </div>
-          <div className="flex flex-col sm:flex-row justify-between text-sm mb-2 gap-2">
+          <div className="flex flex-col sm:flex-row justify-end text-sm mb-2 gap-2">
             <button
               className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleSendOTP}
@@ -380,9 +380,6 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
             >
               {resendTimer > 0 ? `Resend OTP (${resendTimer}s)` : "Resend OTP"}
             </button>
-            <span className="text-gray-500">
-              OTP valid for {formatTime(otpTimer)}
-            </span>
           </div>
         </div>
       )}

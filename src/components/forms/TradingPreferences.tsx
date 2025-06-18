@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 interface TradingPreferencesProps {
   onNext: () => void;
@@ -17,6 +18,9 @@ type SettlementPreference = "Quarterly" | "Monthly";
 
 const maritalStatusOptions: MaritalStatus[] = ["Single", "Married", "Divorced"];
 
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
+
 const TradingPreferences: React.FC<TradingPreferencesProps> = ({
   onNext,
   initialData,
@@ -29,21 +33,51 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showValidation, setShowValidation] = useState(false);
+  const [originalData, setOriginalData] = useState<any>(null);
 
-  // Prefill data from initialData (API response)
+  // Map API values back to frontend display values
+  const mapFromApiValues = (data: any) => {
+    const incomeReverseMapping: Record<string, IncomeRange> = {
+      "le_1_Lakh": "< 1 Lakh",
+      "1_5_Lakh": "1 - 5 Lacs",
+      "5_10_Lakh": "5 - 10 Lacs",
+      "10_25_Lakh": "10 - 25 Lacs",
+      "25_1_Cr": "25 - 1 Cr",
+      "Ge_1_Cr": "> 1Cr"
+    };
+
+    const experienceReverseMapping: Record<string, ExperienceRange> = {
+      "1": "No Experience",  // Note: Both "No Experience" and "< 1 year" map to "1"
+      "1-5": "1 - 5 years",
+      "5-10": "5 - 10 years",
+      "10": "10+ years"
+    };
+
+    return {
+      marital_status: data.marital_status as MaritalStatus,
+      annual_income: data.annual_income ? incomeReverseMapping[data.annual_income] || null : null,
+      trading_exp: data.trading_exp ? experienceReverseMapping[data.trading_exp] || null : null,
+      account_settlement: data.acc_settlement as SettlementPreference,
+    };
+  };
+
+  // Prefill data from initialData (API response) and show completion toast
   useEffect(() => {
-    const data = initialData as {
-      marital_status?: MaritalStatus;
-      annual_income?: IncomeRange;
-      trading_exp?: ExperienceRange;
-      account_settlement?: SettlementPreference;
-    } | undefined;
-
-    if (isCompleted && data) {
-      setMaritalStatus(data.marital_status || null);
-      setSelectedIncome(data.annual_income || null);
-      setSelectedExperience(data.trading_exp || null);
-      setSelectedSettlement(data.account_settlement || "Quarterly");
+    if (isCompleted && initialData) {
+      // Map API values back to display values
+      const mappedData = mapFromApiValues(initialData);
+      
+      setMaritalStatus(mappedData.marital_status || null);
+      setSelectedIncome(mappedData.annual_income || null);
+      setSelectedExperience(mappedData.trading_exp || null);
+      setSelectedSettlement(mappedData.account_settlement || "Quarterly");
+      setOriginalData(mappedData);
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Personal details already saved! You can modify them or continue.");
+        hasShownGlobalCompletedToast = true;
+      }
     }
   }, [initialData, isCompleted]);
 
@@ -81,6 +115,17 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
     return isValid;
   };
 
+  // Check if there are changes that require API call
+  const hasChanges = () => {
+    if (!isCompleted || !originalData) return true; // Not completed yet, so needs API call
+    return (
+      maritalStatus !== originalData.marital_status ||
+      selectedIncome !== originalData.annual_income ||
+      selectedExperience !== originalData.trading_exp ||
+      selectedSettlement !== originalData.account_settlement
+    );
+  };
+
   // Map frontend values to API values - Fixed to match backend validation
   const mapToApiValues = () => {
     const incomeMapping: Record<IncomeRange, string> = {
@@ -112,7 +157,9 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
     if (e) e.preventDefault();
     if (isSubmitting) return;
 
-    if (isCompleted) {
+    // If no changes and already completed, just proceed to next step
+    if (!hasChanges() && isCompleted) {
+      console.log("No changes detected, proceeding to next step");
       onNext();
       return;
     }
@@ -146,7 +193,13 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
         return;
       }
 
-      onNext();
+      toast.success("Personal details saved successfully!");
+      
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        onNext();
+      }, 500);
+      
     } catch (err: unknown) {
       const error = err as {
         response?: {
@@ -172,76 +225,16 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
   const isFormValid = maritalStatus && selectedIncome && selectedExperience && selectedSettlement;
 
   const getButtonText = () => {
-    if (isCompleted) return "Continue";
     if (isSubmitting) return "Saving...";
     return "Continue";
   };
 
   const isButtonDisabled = () => {
     if (isSubmitting) return true;
-    if (isCompleted) return false;
     return !isFormValid;
   };
 
-  // Show completed state
-  if (isCompleted) {
-    return (
-      <div className="w-full mx-auto mt-8">
-        <FormHeading
-          title="Personal Details Saved Successfully!"
-          description="Your personal details have been saved. Click continue to proceed."
-        />
-
-        <div className="space-y-6 mt-6">
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Marital Status</label>
-            <div className="p-3 bg-green-50 border border-green-300 rounded">
-              <span className="text-green-800 font-medium">{maritalStatus}</span>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Annual Income</label>
-            <div className="p-3 bg-green-50 border border-green-300 rounded">
-              <span className="text-green-800 font-medium">{selectedIncome}</span>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Trading Experience</label>
-            <div className="p-3 bg-green-50 border border-green-300 rounded">
-              <span className="text-green-800 font-medium">{selectedExperience}</span>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Account Settlement Preference</label>
-            <div className="p-3 bg-green-50 border border-green-300 rounded">
-              <span className="text-green-800 font-medium">{selectedSettlement}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200 mt-6">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-green-800 font-medium">Personal details saved successfully!</span>
-          </div>
-        </div>
-
-        <Button
-          onClick={handleSubmit}
-          variant={"ghost"}
-          className="py-6 mt-8 w-full"
-        >
-          Continue to Next Step
-        </Button>
-      </div>
-    );
-  }
-
+  // Always show the same UI - whether fresh or completed
   return (
     <div className="w-full mx-auto mt-8">
       <FormHeading
@@ -249,20 +242,21 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
         description="Provide your personal information for account setup."
       />
 
+
       <div className="space-y-6 mt-6">
         {/* Marital Status */}
         <div>
           <label className="block text-gray-700 font-medium mb-2">
             Marital Status<span className="text-red-500">*</span>
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {maritalStatusOptions.map((status) => (
               <button
                 key={status}
                 type="button"
                 onClick={() => handleMaritalStatusSelect(status)}
                 disabled={isSubmitting}
-                className={`px-4 py-2 rounded border transition-colors
+                className={`px-4 py-2 rounded border transition-colors text-center
                   ${
                     maritalStatus === status
                       ? "border-teal-800 bg-teal-50 text-teal-800"
@@ -285,12 +279,12 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
           <label className="block text-gray-700 font-medium mb-2">
             Annual Income<span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={() => handleIncomeSelect("< 1 Lakh")}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-center hover:border-gray-400 ${
                 selectedIncome === "< 1 Lakh"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-700 hover:border-gray-400"
@@ -302,7 +296,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleIncomeSelect("1 - 5 Lacs")}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-center hover:border-gray-400 ${
                 selectedIncome === "1 - 5 Lacs"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -314,7 +308,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleIncomeSelect("5 - 10 Lacs")}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-center hover:border-gray-400 ${
                 selectedIncome === "5 - 10 Lacs"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -326,7 +320,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleIncomeSelect("10 - 25 Lacs")}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-center hover:border-gray-400 ${
                 selectedIncome === "10 - 25 Lacs"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -338,7 +332,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleIncomeSelect("25 - 1 Cr")}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-center hover:border-gray-400 ${
                 selectedIncome === "25 - 1 Cr"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -350,7 +344,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleIncomeSelect("> 1Cr")}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-center hover:border-gray-400 ${
                 selectedIncome === "> 1Cr"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -369,12 +363,12 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
           <label className="block text-gray-700 font-medium mb-2">
             Trading Experience<span className="text-red-500">*</span>
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={() => handleExperienceSelect("No Experience")}
               disabled={isSubmitting}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-4 border rounded-md transition-colors text-center hover:border-gray-400 ${
                 selectedExperience === "No Experience"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -386,7 +380,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleExperienceSelect("< 1 year")}
               disabled={isSubmitting}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-4 border rounded-md transition-colors text-center hover:border-gray-400 ${
                 selectedExperience === "< 1 year"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -398,7 +392,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleExperienceSelect("1 - 5 years")}
               disabled={isSubmitting}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-4 border rounded-md transition-colors text-center hover:border-gray-400 ${
                 selectedExperience === "1 - 5 years"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -410,7 +404,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleExperienceSelect("5 - 10 years")}
               disabled={isSubmitting}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-4 border rounded-md transition-colors text-center hover:border-gray-400 ${
                 selectedExperience === "5 - 10 years"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -422,7 +416,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleExperienceSelect("10+ years")}
               disabled={isSubmitting}
-              className={`py-2 px-1 sm:px-3 text-xs sm:text-xs md:text-sm border rounded-md hover:border-gray-400 ${
+              className={`py-2 px-4 border rounded-md transition-colors text-center hover:border-gray-400 ${
                 selectedExperience === "10+ years"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -447,7 +441,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleSettlementSelect("Quarterly")}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-center hover:border-gray-400 ${
                 selectedSettlement === "Quarterly"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"
@@ -459,7 +453,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
               type="button"
               onClick={() => handleSettlementSelect("Monthly")}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-xs sm:text-xs md:text-sm hover:border-gray-400 ${
+              className={`px-4 py-2 rounded border transition-colors text-center hover:border-gray-400 ${
                 selectedSettlement === "Monthly"
                   ? "border-teal-800 bg-teal-50 text-teal-800"
                   : "border-gray-300 text-gray-600 hover:border-gray-400"

@@ -1,12 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import { ArrowRight } from "lucide-react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
+
 interface ManualBankDetailsProps {
   onNext: () => void;
   onBack: () => void;
+  initialData?: {
+    bank?: {
+      account_no: string;
+      ifsc_code: string;
+      account_type: string;
+      full_name: string;
+    };
+  };
+  isCompleted?: boolean;
 }
 
 interface FormData {
@@ -21,9 +32,14 @@ interface FormErrors {
   accountType?: string;
 }
 
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
+
 const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   onNext,
   onBack,
+  initialData,
+  isCompleted,
 }) => {
   const [formData, setFormData] = useState<FormData>({
     ifscCode: "",
@@ -34,6 +50,42 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [originalData, setOriginalData] = useState<FormData>({
+    ifscCode: "",
+    accountNumber: "",
+    accountType: "",
+  });
+
+  // Map API account type values back to frontend display values
+  const mapFromApiValues = (data: any) => {
+    const accountTypeReverseMapping: Record<string, string> = {
+      "savings": "Savings",
+      "current": "Current"
+    };
+
+    return {
+      ifscCode: data.ifsc_code || "",
+      accountNumber: data.account_no || "",
+      accountType: data.account_type ? accountTypeReverseMapping[data.account_type] || "Savings" : "",
+    };
+  };
+
+  // Prefill data from initialData (API response) and show completion toast
+  useEffect(() => {
+    if (isCompleted && initialData?.bank) {
+      // Map API values back to display values
+      const mappedData = mapFromApiValues(initialData.bank);
+      
+      setFormData(mappedData);
+      setOriginalData(mappedData);
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Bank details already verified! You can modify them or continue.");
+        hasShownGlobalCompletedToast = true;
+      }
+    }
+  }, [initialData, isCompleted]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -89,17 +141,36 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  // Check if there are changes that require API call
+  const hasChanges = () => {
+    if (!isCompleted) return true; // Not completed yet, so needs API call
+    return (
+      formData.ifscCode !== originalData.ifscCode ||
+      formData.accountNumber !== originalData.accountNumber ||
+      formData.accountType !== originalData.accountType
+    );
+  };
+
   const mapAccountTypeToApi = (accountType: string): string => {
     const mapping: Record<string, string> = {
       "Savings": "savings",
       "Current": "current"
     };
-    return mapping[accountType] || accountType.toUpperCase();
+    return mapping[accountType] || accountType.toLowerCase();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm() || isSubmitting) {
+    if (isSubmitting) return;
+
+    // If no changes and already completed, just proceed to next step
+    if (!hasChanges() && isCompleted) {
+      console.log("No changes detected, proceeding to next step");
+      onNext();
+      return;
+    }
+
+    if (!validateForm()) {
       return;
     }
 
@@ -122,11 +193,17 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${Cookies.get('authToken')}`,
-          },}
+          },
+        }
       );
 
-      // If successful, proceed to next step
-      onNext();
+      toast.success("Bank details verified successfully!");
+      
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        onNext();
+      }, 2000);
+      
     } catch (err: any) {
       if (err.response?.data?.message) {
         setError(`Error: ${err.response.data.message}`);
@@ -144,12 +221,22 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     }
   };
 
+  const getButtonText = () => {
+    if (isSubmitting) return "Verifying...";
+    if (!hasChanges() && isCompleted) return "Continue";
+    return "Continue";
+  };
+
+  const isFormValid = formData.ifscCode && formData.accountNumber && formData.accountType;
+
   return (
     <div className="w-full max-w-2xl mx-auto mt-4 p-4">
       <FormHeading
         title="Bank Account Details"
         description="Seamlessly link your bank for smooth transactions."
       />
+
+
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div className="space-y-2">
@@ -164,7 +251,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
             onChange={handleChange}
             disabled={isSubmitting}
             className={`w-full p-2 border rounded ${
-              errors.ifscCode ? "border-red-500" : "border-gray-300"
+              errors.ifscCode ? "border-red-500" : isCompleted && formData.ifscCode === originalData.ifscCode ? "border-gray-300" : "border-gray-300"
             } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             placeholder="Enter IFSC Code (e.g., SBIN0001234)"
             maxLength={11}
@@ -201,7 +288,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
             }}
             disabled={isSubmitting}
             className={`w-full p-2 border rounded ${
-              errors.accountNumber ? "border-red-500" : "border-gray-300"
+              errors.accountNumber ? "border-red-500" : isCompleted && formData.accountNumber === originalData.accountNumber ? "border-gray-300" : "border-gray-300"
             } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             placeholder="Enter Account Number"
             maxLength={18}
@@ -257,21 +344,22 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
             disabled={isSubmitting}
             className="hidden text-blue-500 sm:flex items-center"
           >
-            Link via UPI <ArrowRight className="ml-1 h-4 w-4" />
+            Go Back <ArrowRight className="h-4 w-4" />
           </Button>
 
-          <Button
+          
+        </div>
+        <Button
             type="submit"
-            disabled={isSubmitting}
-            className={`bg-teal-800 text-white px-6 py-2 rounded hover:bg-teal-900 ${
-              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            disabled={isSubmitting || !isFormValid}
+            className={`bg-teal-800 w-full text-white p-6 rounded hover:bg-teal-900 ${
+              (isSubmitting || !isFormValid) ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            {isSubmitting ? "Verifying..." : "Continue"}
+            {getButtonText()}
           </Button>
-        </div>
 
-        <div className="text-center text-xs text-gray-600 mt-4">
+        <div className="text-center text-sm text-gray-600 mt-4">
           <p>
             We'll verify your bank account details for secure transactions. 
             This process may take a few moments.

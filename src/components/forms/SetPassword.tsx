@@ -6,7 +6,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 interface SetPasswordProps {
-  onNext: (clientId: string) => void;
+  onNext: () => void;
   initialData?: any;
   isCompleted?: boolean;
 }
@@ -42,10 +42,23 @@ const SetPassword: React.FC<SetPasswordProps> = ({
     hasSpecialChar: false,
   });
 
-  // Prefill data from initialData (API response)
+  // Prefill data from initialData (API response) and localStorage
   useEffect(() => {
+    // Check localStorage first
+    const storedClientId = localStorage.getItem('clientId');
+    if (storedClientId) {
+      setClientId(storedClientId);
+      console.log('Found client ID in localStorage:', storedClientId);
+    }
+
+    // Also check initialData
     if (isCompleted && initialData?.client_id) {
       setClientId(initialData.client_id);
+      // Save to localStorage if not already there
+      if (!storedClientId) {
+        localStorage.setItem('clientId', initialData.client_id);
+        console.log('Saved client ID to localStorage:', initialData.client_id);
+      }
     }
   }, [initialData, isCompleted]);
 
@@ -83,8 +96,11 @@ const SetPassword: React.FC<SetPasswordProps> = ({
       );
 
       if (response.data?.data?.clientId) {
-        setClientId(response.data.data.clientId);
-        console.log('Finalize successful, Client ID:', response.data.data.clientId);
+        const newClientId = response.data.data.clientId;
+        setClientId(newClientId);
+        // Save to localStorage
+        localStorage.setItem('clientId', newClientId);
+        console.log('Finalize successful, Client ID saved to localStorage:', newClientId);
       }
     } catch (err: any) {
       console.warn('Finalize API failed (non-blocking):', err.response?.data?.message || err.message);
@@ -99,7 +115,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
     if (!isFormValid()) return;
 
     if (isCompleted && clientId) {
-      onNext(clientId);
+      onNext();
       return;
     }
 
@@ -108,7 +124,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
 
     try {
       // Use the setup-password API directly
-      await axios.post(
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/setup-password`,
         {
           password: password,
@@ -121,18 +137,28 @@ const SetPassword: React.FC<SetPasswordProps> = ({
         }
       );
 
-      // If we have a client ID from finalize, use it
-      // Otherwise, we'll need to get it somehow or continue without it
-      if (clientId) {
-        onNext(clientId);
-      } else {
-        // Try to get client ID from another source or continue with a placeholder
-        // You might need to call another API or handle this differently
-        console.log('Password set successfully, but no client ID available');
-        onNext('pending'); // Or handle this case differently
+      // Check if response contains client_id and save to localStorage
+      if (response.data?.data?.client_id) {
+        const newClientId = response.data.data.client_id;
+        setClientId(newClientId);
+        localStorage.setItem('clientId', newClientId);
+        console.log('Password setup successful, Client ID saved to localStorage:', newClientId);
       }
+
+      // Proceed to next step
+      onNext();
     } catch (err: any) {
       if (err.response) {
+        // Handle "Password already set" error specifically
+        if (err.response.status === 400 && 
+            (err.response.data?.message?.includes("Password already set") || 
+             err.response.data?.error?.message?.includes("Password already set"))) {
+          console.log("Password already set, proceeding to next step");
+          // If password is already set, just proceed to next step
+          onNext();
+          return;
+        }
+        
         if (err.response.data?.message) {
           setError(`Error: ${err.response.data.message}`);
         } else if (err.response.data?.error?.message) {
@@ -191,7 +217,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
         </div>
 
         <Button
-          onClick={() => onNext(clientId)}
+          onClick={onNext}
           variant="ghost"
           className="w-full py-6"
         >
@@ -216,22 +242,6 @@ const SetPassword: React.FC<SetPasswordProps> = ({
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
             <p className="text-blue-700 text-sm">Setting up your account...</p>
           </div>
-        </div>
-      )}
-
-      {clientId && (
-        <div className="mb-4 p-3 bg-green-50 rounded border border-green-200">
-          <p className="text-green-700 text-sm">
-            <strong>Client ID:</strong> {clientId}
-          </p>
-        </div>
-      )}
-
-      {finalizeError && !clientId && (
-        <div className="mb-4 p-3 bg-yellow-50 rounded border border-yellow-200">
-          <p className="text-yellow-700 text-sm">
-            <strong>Note:</strong> Account setup is still in progress. You can continue setting your password.
-          </p>
         </div>
       )}
 

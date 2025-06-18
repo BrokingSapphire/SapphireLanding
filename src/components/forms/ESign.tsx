@@ -14,6 +14,9 @@ interface LastStepPageProps {
   isCompleted?: boolean;
 }
 
+// Fix the TypeScript error by including 'completed' in the type
+type EsignStatus = 'idle' | 'initializing' | 'signing' | 'completing' | 'completed';
+
 const LastStepPage: React.FC<LastStepPageProps> = ({ 
   onNext, 
   initialData, 
@@ -22,7 +25,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   const [isChecked, setIsChecked] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [esignStatus, setEsignStatus] = useState<'idle' | 'initializing' | 'signing' | 'completing' | 'completed'>('idle');
+  const [esignStatus, setEsignStatus] = useState<EsignStatus>('idle');
 
   // Use the checkpoint hook to check for existing eSign data
   const { 
@@ -173,7 +176,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         
         console.log("Polling for eSign completion...");
         
-        // Check if eSign is completed by calling esign_complete endpoint
+        // Check if eSign is completed by calling the correct checkpoint endpoint
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
           {
@@ -189,13 +192,14 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
         console.log("eSign completion check response:", response.status, response.data);
 
-        if (response.status === 200) {
-          // eSign completed successfully
+        // Check if we got a successful response with URL (even if empty, it means eSign is completed)
+        if (response.status === 200 && response.data?.data?.url !== undefined) {
+          // eSign completed successfully - even empty URL means completion
           clearInterval(pollInterval);
           setEsignStatus('completed');
           setIsLoading(false);
           
-          console.log("eSign completed successfully!");
+          console.log("eSign completed successfully! URL:", response.data.data.url);
           toast.success("eSign completed successfully!");
           
           // Refetch eSign step to update the hook
@@ -209,25 +213,39 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       } catch (err: unknown) {
         const error = err as {
           response?: {
-            data?: { message?: string };
+            data?: { message?: string; error?: { message?: string } };
             status?: number;
           };
         };
 
         console.log("eSign polling error:", error.response?.status, error.response?.data);
 
-        // If error is 401 or 404 (not completed yet), continue polling
-        if (error.response?.status === 401 || error.response?.status === 404) {
-          setEsignStatus('signing'); // Reset to signing state
+        // Handle specific eSign polling errors
+        if (error.response?.status === 401) {
+          // 401 means eSign not completed yet - continue polling
+          console.log("eSign not completed yet (401), continuing to poll...");
+          setEsignStatus('signing');
+          return;
+        } else if (error.response?.status === 404) {
+          // 404 means endpoint not found or no eSign record - continue polling
+          console.log("eSign endpoint not found (404), continuing to poll...");
+          setEsignStatus('signing');
+          return;
+        } else if (error.response?.status === 500) {
+          // 500 server error - continue polling for a bit
+          console.log("Server error (500), continuing to poll...");
+          setEsignStatus('signing');
           return;
         }
         
-        // For other errors, stop polling and show error
+        // For other critical errors, stop polling and show error
         clearInterval(pollInterval);
         setEsignStatus('idle');
         setIsLoading(false);
         
-        if (error.response?.data?.message) {
+        if (error.response?.data?.error?.message) {
+          setError(`eSign error: ${error.response.data.error.message}`);
+        } else if (error.response?.data?.message) {
           setError(`eSign error: ${error.response.data.message}`);
         } else {
           setError("eSign verification failed. Please try again.");
@@ -369,7 +387,12 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
             <div>
               <h3 className="text-blue-800 font-medium">eSign Window Opened</h3>
-              <p className="text-blue-700 text-sm">Please complete the eSign process in the opened window.</p>
+              <p className="text-blue-700 text-sm">
+                Please complete the eSign process in the opened window. We're checking for completion every 3 seconds.
+              </p>
+              <p className="text-blue-600 text-xs mt-1">
+                Status: Waiting for eSign completion...
+              </p>
             </div>
           </div>
         </div>

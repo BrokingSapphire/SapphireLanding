@@ -3,7 +3,8 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from 'js-cookie';
-import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint'; // Adjust import path as needed
+import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
+import { toast } from "sonner";
 
 interface AadhaarVerificationProps {
   onNext: () => void;
@@ -11,6 +12,9 @@ interface AadhaarVerificationProps {
   isCompleted?: boolean;
   panMaskedAadhaar?: string; // Masked Aadhaar from PAN verification
 }
+
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
 
 const AadhaarVerification = ({ 
   onNext, 
@@ -20,7 +24,7 @@ const AadhaarVerification = ({
 }: AadhaarVerificationProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'verifying' | 'completed' | 'mismatch'>('initial');
+  const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'verifying' | 'mismatch'>('initial');
   const [digilockerUrl, setDigilockerUrl] = useState<string>('');
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   
@@ -47,15 +51,10 @@ const AadhaarVerification = ({
 
   // Check for existing states on component mount
   useEffect(() => {
-    if (isCompleted) {
-      setCurrentStep('completed');
-      return;
-    }
-
-    // Check if Aadhaar is already completed
-    if (isStepCompleted(CheckpointStep.AADHAAR)) {
-      setCurrentStep('completed');
-      return;
+    // Check if Aadhaar is already completed - only show toast once per session
+    if ((isCompleted || isStepCompleted(CheckpointStep.AADHAAR)) && !hasShownGlobalCompletedToast) {
+      toast.success("Aadhaar already verified! You can proceed or verify again if needed.");
+      hasShownGlobalCompletedToast = true;
     }
 
     // Check if there's existing mismatch data in Redis
@@ -95,7 +94,7 @@ const AadhaarVerification = ({
       const authToken = Cookies.get('authToken');
       
       if (!authToken) {
-        setError("Authentication token not found. Please restart the process.");
+        toast.error("Authentication token not found. Please restart the process.");
         setIsLoading(false);
         return;
       }
@@ -115,29 +114,26 @@ const AadhaarVerification = ({
       );
       
       if (!response.data?.data?.uri) {
-        setError("Failed to generate DigiLocker URI. Please try again.");
+        toast.error("Failed to generate DigiLocker URI. Please try again.");
         return;
       }
 
       setDigilockerUrl(response.data.data.uri);
       setCurrentStep('digilocker_pending');
       
+      toast.success("DigiLocker opened! Complete verification and return here.");
+      
       // Open DigiLocker in new tab
       window.open(response.data.data.uri, '_blank');
 
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string }; status?: number } };
-      if (error.response?.data?.message) {
-        setError(`Error: ${error.response.data.message}`);
-      } else if (error.response?.status === 400) {
-        setError("Invalid request. Please try again. Err: 400");
-      } else if (error.response?.status === 401) {
-        setError("Authentication failed. Please restart the process. Err: 401");
-      } else if (error.response?.status === 403) {
-        setError("Access denied. Please check your authentication and try again. Err: 403");
-      } else {
-        setError("Failed to initialize DigiLocker. Please try again.");
-      }
+      const error = err as { response?: { data?: { message?: string; error?: { message?: string } }; status?: number } };
+      const errorMessage = 
+        error.response?.data?.error?.message ||
+        error.response?.data?.message ||
+        "Failed to initialize DigiLocker. Please try again.";
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +150,7 @@ const AadhaarVerification = ({
       const authToken = Cookies.get('authToken');
       
       if (!authToken) {
-        setError("Authentication token expired. Please restart the process.");
+        toast.error("Authentication token expired. Please restart the process.");
         setCurrentStep('digilocker_pending');
         return;
       }
@@ -181,12 +177,17 @@ const AadhaarVerification = ({
         });
         setCurrentStep('mismatch');
         
+        toast.warning("Aadhaar mismatch detected. Please provide additional details.");
+        
         // Refetch the mismatch checkpoint to update the hook
         refetchStep(CheckpointStep.AADHAAR_MISMATCH_DETAILS);
         return;
       }
 
-      setCurrentStep('completed');
+      // Reset to initial state but show success
+      setCurrentStep('initial');
+      
+      toast.success("Aadhaar verified successfully via DigiLocker!");
       
       // Refetch the Aadhaar checkpoint to update the hook
       refetchStep(CheckpointStep.AADHAAR);
@@ -197,20 +198,21 @@ const AadhaarVerification = ({
       }, 2000);
 
     } catch (err: unknown) {
-      const error = err as { response?: { status?: number; data?: { message?: string } } };
+      const error = err as { response?: { status?: number; data?: { message?: string; error?: { message?: string } } } };
+      
       if (error.response?.status === 401) {
         // DigiLocker not completed yet
-        setError("DigiLocker verification not completed yet. Please complete the verification in DigiLocker and try again.");
+        toast.error("DigiLocker verification not completed yet. Please complete the verification in DigiLocker and try again.");
         setCurrentStep('digilocker_pending');
         return;
       }
 
-      if (error.response?.data?.message) {
-        setError(`Error: ${error.response.data.message}`);
-      } else {
-        setError("Failed to verify DigiLocker completion. Please try again.");
-      }
+      const errorMessage = 
+        error.response?.data?.error?.message ||
+        error.response?.data?.message ||
+        "Failed to verify DigiLocker completion. Please try again.";
       
+      toast.error(errorMessage);
       setCurrentStep('digilocker_pending');
     } finally {
       setIsCheckingStatus(false);
@@ -227,7 +229,7 @@ const AadhaarVerification = ({
       const authToken = Cookies.get('authToken');
       
       if (!authToken) {
-        setError("Authentication token not found. Please restart the process.");
+        toast.error("Authentication token not found. Please restart the process.");
         setIsSubmittingMismatch(false);
         return;
       }
@@ -252,7 +254,15 @@ const AadhaarVerification = ({
           ...prev,
           requires_manual_review: response.data.data?.requires_manual_review
         }));
-        setCurrentStep('completed');
+        
+        // Reset to initial state
+        setCurrentStep('initial');
+        
+        toast.success(
+          response.data.data?.requires_manual_review
+            ? "Details submitted! Manual review required due to name verification."
+            : "Additional details submitted successfully!"
+        );
         
         // Refetch both checkpoints to update the hook
         refetchStep(CheckpointStep.AADHAAR_MISMATCH_DETAILS);
@@ -263,20 +273,17 @@ const AadhaarVerification = ({
           onNext();
         }, 2000);
       } else {
-        setError("Failed to submit additional details. Please try again.");
+        toast.error("Failed to submit additional details. Please try again.");
       }
 
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string }; status?: number } };
-      if (error.response?.data?.message) {
-        setError(`Error: ${error.response.data.message}`);
-      } else if (error.response?.status === 401) {
-        setError("Authentication failed. Please restart the process.");
-      } else if (error.response?.status === 403) {
-        setError("Access denied. Please check your authentication and try again.");
-      } else {
-        setError("Failed to submit additional details. Please try again.");
-      }
+      const error = err as { response?: { data?: { message?: string; error?: { message?: string } }; status?: number } };
+      const errorMessage = 
+        error.response?.data?.error?.message ||
+        error.response?.data?.message ||
+        "Failed to submit additional details. Please try again.";
+      
+      toast.error(errorMessage);
     } finally {
       setIsSubmittingMismatch(false);
     }
@@ -294,9 +301,16 @@ const AadhaarVerification = ({
     setCurrentStep('initial');
   };
 
-  // Skip DigiLocker button for mismatch cases
-  const handleSkipToMismatch = () => {
-    setCurrentStep('mismatch');
+  // Handle continue/proceed button click
+  const handleContinue = () => {
+    // Always start the DigiLocker process regardless of completion status
+    // Handle based on current step
+    if (currentStep === 'digilocker_pending') {
+      checkDigilockerCompletion();
+      return;
+    }
+    
+    handleGetDigilockerUri();
   };
 
   const getButtonText = () => {
@@ -307,8 +321,6 @@ const AadhaarVerification = ({
         return isCheckingStatus ? "Checking Status..." : "Check Verification Status";
       case 'verifying':
         return "Verifying Aadhaar...";
-      case 'completed':
-        return "Continue";
       case 'mismatch':
         return "Submit Additional Details";
       default:
@@ -318,19 +330,6 @@ const AadhaarVerification = ({
 
   const isButtonDisabled = () => {
     return isLoading || isCheckingStatus || currentStep === 'verifying';
-  };
-
-  // Handle continue for completed state
-  const handleContinue = () => {
-    if (currentStep === 'completed') {
-      onNext();
-      return;
-    }
-    if (currentStep === 'digilocker_pending') {
-      checkDigilockerCompletion();
-      return;
-    }
-    handleGetDigilockerUri();
   };
 
   // Show Aadhaar mismatch form
@@ -392,12 +391,6 @@ const AadhaarVerification = ({
             />
           </div>
 
-          {error && (
-            <div className="p-3 bg-red-50 rounded border border-red-200">
-              <p className="text-red-600 text-sm">{error}</p>
-            </div>
-          )}
-
           <Button
             type="submit"
             variant="ghost"
@@ -415,59 +408,7 @@ const AadhaarVerification = ({
     );
   }
 
-  // Show completed state
-  if (currentStep === 'completed') {
-    return (
-      <div className="mx-auto pt-20">
-        <FormHeading
-          title={"Aadhaar Verified Successfully!"}
-          description={
-            mismatchInfo.requires_manual_review 
-              ? "Your verification is complete but requires manual review due to name verification."
-              : "Your DigiLocker verification is complete."
-          }
-        />
-
-        <div className={`mb-6 p-4 rounded-lg border ${
-          mismatchInfo.requires_manual_review 
-            ? 'bg-yellow-50 border-yellow-200'
-            : 'bg-green-50 border-green-200'
-        }`}>
-          <div className="flex items-center">
-            <svg className={`w-6 h-6 mr-3 ${
-              mismatchInfo.requires_manual_review ? 'text-yellow-600' : 'text-green-600'
-            }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <div>
-              <span className={`font-medium ${
-                mismatchInfo.requires_manual_review ? 'text-yellow-800' : 'text-green-800'
-              }`}>
-                {mismatchInfo.requires_manual_review 
-                  ? 'Aadhaar verified - Manual review required'
-                  : 'Aadhaar verified successfully via DigiLocker!'
-                }
-              </span>
-              {mismatchInfo.requires_manual_review && (
-                <p className="text-yellow-700 text-sm mt-1">
-                  Your application will be reviewed manually due to name verification requirements.
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <Button
-          onClick={handleContinue}
-          className="w-full"
-          variant="ghost"
-        >
-          Continue to Next Step
-        </Button>
-      </div>
-    );
-  }
-
+  // Always show the same UI - whether fresh or completed
   return (
     <div className="mx-auto pt-20">
       <FormHeading
@@ -537,24 +478,16 @@ const AadhaarVerification = ({
         </div>
       </div>
 
-      {/* Show alternative option for users who already know about mismatch */}
-      {currentStep === 'initial' && (mismatchInfo.pan_masked_aadhaar || panMaskedAadhaar) && (
-        <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-          <div className="flex items-start">
-            <svg className="w-6 h-6 text-amber-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {/* Show additional info for completed users */}
+      {(isCompleted || isStepCompleted(CheckpointStep.AADHAAR)) && (
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex items-center">
+            <svg className="w-6 h-6 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <div className="flex-1">
-              <h3 className="font-semibold text-amber-800 mb-1">Already know about Aadhaar mismatch?</h3>
-              <p className="text-amber-700 text-sm mb-3">
-                If you're aware that your PAN and Aadhaar don't match, you can skip DigiLocker and provide manual verification details.
-              </p>
-              <button
-                onClick={handleSkipToMismatch}
-                className="text-blue-600 hover:text-blue-700 text-sm underline font-medium"
-              >
-                Skip to Manual Verification →
-              </button>
+            <div>
+              <p className="text-gray-800 font-medium">Aadhaar Already Verified</p>
+              <p className="text-gray-600 text-sm">You can proceed to the next step or verify again if needed.</p>
             </div>
           </div>
         </div>
@@ -596,20 +529,6 @@ const AadhaarVerification = ({
         </div>
       )}
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 rounded border border-red-200">
-          <p className="text-red-600 text-sm">{error}</p>
-          {currentStep !== 'verifying' && (
-            <button
-              onClick={handleRetry}
-              className="mt-2 text-blue-600 hover:text-blue-700 text-sm underline"
-            >
-              Try Again
-            </button>
-          )}
-        </div>
-      )}
-
       <Button
         onClick={handleContinue}
         variant="ghost"
@@ -621,25 +540,9 @@ const AadhaarVerification = ({
         {getButtonText()}
       </Button>
 
-      {/* Instructions for DigiLocker pending state */}
-      {currentStep === 'digilocker_pending' && (
-        <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-          <h4 className="font-medium text-amber-800 mb-2">📋 Next Steps:</h4>
-          <ol className="text-sm text-amber-700 space-y-1 list-decimal ml-4">
-            <li>Complete the verification process in the DigiLocker window</li>
-            <li>Once finished, return to this page</li>
-            <li>Click &quot;Check Verification Status&quot; to verify completion</li>
-          </ol>
-        </div>
-      )}
-
-      <div className="text-center text-xs text-gray-600 mt-8 sm:mt-0 md:mt-8 space-y-3">
+      <div className="text-center text-sm text-gray-600 space-y-3">
         <p>I authorise Sapphire to fetch my KYC information from DigiLocker.</p>
-        <p>
-          If you are looking to open a HUF, Corporate, Partnership, or NRI
-          account, you have to{" "}
-          <span className="text-blue-400 cursor-pointer">click here.</span>
-        </p>
+      
       </div>
     </div>
   );

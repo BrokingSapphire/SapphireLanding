@@ -1,4 +1,4 @@
-// Updated useCheckpoint hook with fixed step progression logic
+// Updated useCheckpoint hook with fixed step progression logic and eSign handling
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -228,28 +228,55 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           throw error;
         }
       } else if (step === CheckpointStep.ESIGN) {
-        // For eSign, check if esign field exists in checkpoint
-        response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        // For eSign, use the specific esign_complete endpoint with GET request
+        try {
+          response = await axios.get(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/esign_complete`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          
+          console.log("eSign complete response:", response.data);
+          
+          // If we get a 200 response with data, eSign is completed
+          if (response.status === 200 && response.data?.data?.url) {
+            console.log("eSign completed successfully with URL:", response.data.data.url);
+            return {
+              step,
+              data: { url: response.data.data.url },
+              completed: true,
+            };
+          } else {
+            console.log("eSign complete endpoint returned success but no URL");
+            return {
+              step,
+              data: null,
+              completed: false,
+            };
           }
-        );
-        
-        if (response.data?.data?.esign) {
-          return {
-            step,
-            data: { esign: response.data.data.esign },
-            completed: true,
-          };
-        } else {
-          return {
-            step,
-            data: null,
-            completed: false,
-          };
+        } catch (error: any) {
+          console.log("eSign complete error:", error.response?.status, error.response?.data);
+          // Handle specific error cases
+          if (error.response?.status === 404) {
+            console.log("eSign endpoint not found");
+            return {
+              step,
+              data: null,
+              completed: false,
+            };
+          } else if (error.response?.status === 401) {
+            console.log("eSign not authorized or expired - not completed yet");
+            return {
+              step,
+              data: null,
+              completed: false,
+            };
+          }
+          // For other errors, re-throw
+          throw error;
         }
       } else {
         // Use the general checkpoint endpoint for all other steps
@@ -277,6 +304,20 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           completed: false,
         };
       }
+      
+      // Special handling for PASSWORD_SETUP step
+      if (step === CheckpointStep.PASSWORD_SETUP && error.response?.status === 400) {
+        const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || '';
+        if (errorMessage.includes('Password already set')) {
+          console.log("Password already set - treating as completed");
+          return {
+            step,
+            data: { password_set: true },
+            completed: true,
+          };
+        }
+      }
+      
       throw error;
     }
   };
@@ -345,6 +386,12 @@ export const useCheckpoint = (): UseCheckpointReturn => {
   const hasValidData = (step: CheckpointStep): boolean => {
     const stepData = checkpointData[step];
     
+    console.log(`Validating step ${step}:`, {
+      stepData,
+      completed: stepData?.completed,
+      data: stepData?.data
+    });
+    
     if (!stepData?.completed || !stepData.data) {
       return false;
     }
@@ -362,6 +409,20 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       
       case CheckpointStep.SIGNATURE:
         return !!stepData.data.url;
+      
+      case CheckpointStep.ESIGN:
+        // For eSign, check if we have step data with url field (even empty string means completed)
+        const hasUrlField = stepData.data && ('url' in stepData.data);
+        console.log(`eSign validation - hasUrlField: ${hasUrlField}, url value:`, stepData.data?.url);
+        return hasUrlField;
+      
+      case CheckpointStep.PASSWORD_SETUP:
+        // For password setup, check if we have data (including "password already set" case)
+        return !!stepData.data;
+      
+      case CheckpointStep.MPIN_SETUP:
+        // For MPIN setup, check if we have data
+        return !!stepData.data;
       
       // For other steps, just check if there's any data
       default:
@@ -421,8 +482,10 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     console.log("=== CHECKPOINT DATA DEBUG ===");
     console.log("Investment segment data:", checkpointData[CheckpointStep.INVESTMENT_SEGMENT]);
     console.log("Income proof data:", checkpointData[CheckpointStep.INCOME_PROOF]);
+    console.log("eSign data:", checkpointData[CheckpointStep.ESIGN]);
     console.log("Investment segment completed:", isStepCompleted(CheckpointStep.INVESTMENT_SEGMENT));
     console.log("Income proof completed:", isStepCompleted(CheckpointStep.INCOME_PROOF));
+    console.log("eSign completed:", isStepCompleted(CheckpointStep.ESIGN));
     console.log("Investment segment step complete (with income proof check):", isInvestmentSegmentStepComplete());
     
     // Check email completion
@@ -510,6 +573,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     // Check eSign
     if (!isStepCompleted(CheckpointStep.ESIGN)) {
       console.log("eSign not completed, returning last step");
+      console.log("eSign step data:", checkpointData[CheckpointStep.ESIGN]);
       return STEP_TO_COMPONENT_INDEX[AllSteps.LAST_STEP];
     }
 
