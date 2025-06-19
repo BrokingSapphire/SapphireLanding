@@ -1,4 +1,4 @@
-// Updated OnboardingCarousel with localStorage for client ID management
+// Updated OnboardingCarousel with proper navigation restrictions
 
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
@@ -193,15 +193,44 @@ const OnboardingCarousel = () => {
     }
   };
 
-  // Determine if going back to a step is allowed
+  // ENHANCED: Determine if going back to a step is allowed
   const isBackNavigationAllowed = (targetStep: number): boolean => {
-    // Never allow going back before PAN if email and mobile are completed
-    if (targetStep < 2 && isEmailCompleted() && isMobileCompleted()) {
-      toast.error("Email and phone verification are already completed.");
+    // Never allow going back to email if it's completed
+    if (targetStep === 0 && isEmailCompleted()) {
+      toast.error("Email verification is already completed.");
       return false;
     }
     
+    // Never allow going back to mobile if email and mobile are completed
+    if (targetStep === 1 && isEmailCompleted() && isMobileCompleted()) {
+      toast.error("Mobile verification is already completed.");
+      return false;
+    }
+    
+    // Allow going back to PAN from Aadhaar and later steps - PAN can be edited
+    // Don't restrict PAN navigation since users might need to correct PAN details
+    
     return true;
+  };
+
+  // Check if back navigation should be disabled (for UI styling)
+  const isBackNavigationDisabled = (): boolean => {
+    // Disable back button on email step (step 0)
+    if (currentStep === 0) {
+      return true;
+    }
+    
+    // Disable back button on mobile step (step 1) if email is completed
+    if (currentStep === 1 && isEmailCompleted()) {
+      return true;
+    }
+    
+    // Disable back button on PAN step (step 2) - fade the up arrow
+    if (currentStep === 2) {
+      return true;
+    }
+    
+    return false;
   };
 
   // NEW: Enhanced handleNext that handles step completion properly
@@ -286,6 +315,7 @@ const OnboardingCarousel = () => {
       icon: <ChevronUp size={18} />,
       onClick: handlePrevious,
       ariaLabel: "Previous step",
+      disabled: isBackNavigationDisabled(), // NEW: Add disabled property
     },
     {
       icon: <ChevronDown size={18} />,
@@ -664,7 +694,7 @@ const OnboardingCarousel = () => {
               key={index}
               className={`px-3 py-2 flex items-center justify-center ${
                 button.disabled 
-                  ? "bg-gray-400 cursor-not-allowed" 
+                  ? "bg-gray-400 cursor-not-allowed opacity-50" 
                   : "bg-green-heading hover:bg-white hover:text-green-heading"
               } transition-all duration-300 ease-in-out border ${
                 button.disabled 

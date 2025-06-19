@@ -4,6 +4,7 @@ import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint'; // Adjust import path as needed
+import { Button } from "../ui/button";
 
 interface NomineeSelectionProps {
   onNext: () => void;
@@ -161,12 +162,13 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
         </div>
 
         <div className="flex flex-col gap-4">
-          <button
+          <Button
+          variant='ghost'
             onClick={handleAddNominees}
-            className="text-white py-3 px-2 rounded-md transition-all duration-300 ease-in-out bg-green-600 hover:bg-white border-2 border-green-600 hover:text-green-600"
+            className="text-white py-3 px-2 rounded-md "
           >
             Add nominees now
-          </button>
+          </Button>
 
           <button
             onClick={onNext}

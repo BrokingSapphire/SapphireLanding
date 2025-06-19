@@ -52,6 +52,21 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [originalData, setOriginalData] = useState<TradingAccountFormData>(initialFormData);
 
+  // Helper function to format names properly (only used when needed)
+  const formatName = (name: string): string => {
+    if (!name) return '';
+    
+    return name
+      .trim()
+      .split(' ')
+      .map(word => {
+        if (word.length === 0) return '';
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .filter(word => word.length > 0) // Remove empty strings
+      .join(' ');
+  };
+
   // Prefill data from initialData (API response) and show completion toast
   useEffect(() => {
     if (isCompleted && initialData) {
@@ -71,21 +86,6 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
       }
     }
   }, [initialData, isCompleted]);
-
-  // Helper function to format names properly
-  const formatName = (name: string): string => {
-    if (!name) return '';
-    
-    return name
-      .trim()
-      .split(' ')
-      .map(word => {
-        if (word.length === 0) return '';
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      })
-      .filter(word => word.length > 0) // Remove empty strings
-      .join(' ');
-  };
 
   // Also try to prefill father's name from PAN data if available and not already completed
   useEffect(() => {
@@ -118,37 +118,34 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         }
       } catch (error) {
         // Silently handle error - PAN data might not be available yet
-        console.log("Could not fetch PAN data for prefilling",error);
+        console.log("Could not fetch PAN data for prefilling", error);
       }
     };
     
     fetchPanData();
   }, [isCompleted, formData.fatherSpouseName]);
 
-  const validateForm = () => {
-    const newErrors = {
-      fatherSpouseName: !formData.fatherSpouseName.trim(),
-      motherName: !formData.motherName.trim(),
-    };
+  // const validateForm = () => {
+  //   const newErrors = {
+  //     fatherSpouseName: !formData.fatherSpouseName.trim(),
+  //     motherName: !formData.motherName.trim(),
+  //   };
 
-    setErrors(newErrors);
-    return !Object.values(newErrors).some((error) => error);
-  };
+  //   setErrors(newErrors);
+  //   return !Object.values(newErrors).some((error) => error);
+  // };
 
+  // FIXED: Allow normal typing without formatting on every keystroke
   const handleInputChange = (
     field: keyof TradingAccountFormData,
     value: string
   ) => {
     if (isSubmitting) return;
 
-    // Format the name as user types
-    const formattedValue = field === 'fatherSpouseName' || field === 'motherName' || field === 'maidenName' 
-      ? formatName(value) 
-      : value;
-
+    // Don't format on every keystroke - just store the raw value
     setFormData((prev) => ({
       ...prev,
-      [field]: formattedValue,
+      [field]: value,
     }));
 
     setErrors((prev) => ({
@@ -157,6 +154,23 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     }));
     
     setError(null);
+  };
+
+  // NEW: Format name when user finishes typing (onBlur)
+  const handleInputBlur = (
+    field: keyof TradingAccountFormData,
+    value: string
+  ) => {
+    if (isSubmitting) return;
+
+    // Only format name fields
+    if (field === 'fatherSpouseName' || field === 'motherName' || field === 'maidenName') {
+      const formattedValue = formatName(value);
+      setFormData((prev) => ({
+        ...prev,
+        [field]: formattedValue,
+      }));
+    }
   };
 
   // Check if there are changes that require API call
@@ -173,6 +187,16 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     if (e) e.preventDefault();
     if (isSubmitting) return;
 
+    // Format all name fields before validation and submission
+    const formattedData = {
+      fatherSpouseName: formatName(formData.fatherSpouseName),
+      motherName: formatName(formData.motherName),
+      maidenName: formatName(formData.maidenName),
+    };
+
+    // Update form data with formatted values
+    setFormData(formattedData);
+
     // If no changes and already completed, just proceed to next step
     if (!hasChanges() && isCompleted) {
       console.log("No changes detected, proceeding to next step");
@@ -180,7 +204,14 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
       return;
     }
 
-    if (!validateForm()) {
+    // Validate with formatted data
+    const newErrors = {
+      fatherSpouseName: !formattedData.fatherSpouseName.trim(),
+      motherName: !formattedData.motherName.trim(),
+    };
+
+    setErrors(newErrors);
+    if (Object.values(newErrors).some((error) => error)) {
       return;
     }
 
@@ -193,9 +224,9 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "user_detail",
-          father_spouse_name: formData.fatherSpouseName.trim(),
-          mother_name: formData.motherName.trim(),
-          maiden_name: formData.maidenName.trim() || undefined,
+          father_spouse_name: formattedData.fatherSpouseName.trim(),
+          mother_name: formattedData.motherName.trim(),
+          maiden_name: formattedData.maidenName.trim() || undefined,
         },
         {
           headers: {
@@ -212,14 +243,11 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
 
       toast.success("Parent details saved successfully!");
       
-      // Auto-advance after 2 seconds
       setTimeout(() => {
         onNext();
-      }, 500);
+      }, 100);
       
     } catch (err: unknown) {
-      // Import AxiosError from axios at the top if not already imported
-      // import type { AxiosError } from "axios";
       if (
         typeof err === "object" &&
         err !== null &&
@@ -266,8 +294,6 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         description={"Provide your parent/spouse information for KYC verification."}
       />
 
-     
-
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
           <label className="block mb-2">
@@ -278,6 +304,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
             placeholder="Enter father's or spouse's full name"
             value={formData.fatherSpouseName}
             onChange={(e) => handleInputChange("fatherSpouseName", e.target.value)}
+            onBlur={(e) => handleInputBlur("fatherSpouseName", e.target.value)}
             disabled={isSubmitting}
             className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500 ${
               isCompleted && formData.fatherSpouseName === originalData.fatherSpouseName 
@@ -301,6 +328,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
             placeholder="Enter your mother's full name"
             value={formData.motherName}
             onChange={(e) => handleInputChange("motherName", e.target.value)}
+            onBlur={(e) => handleInputBlur("motherName", e.target.value)}
             disabled={isSubmitting}
             className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500 ${
               isCompleted && formData.motherName === originalData.motherName 

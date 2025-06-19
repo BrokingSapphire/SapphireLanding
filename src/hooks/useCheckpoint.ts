@@ -1,4 +1,4 @@
-// Updated useCheckpoint hook with fixed step progression logic and eSign handling
+// Updated useCheckpoint hook with proper IPV handling for both mobile and PC uploads
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
@@ -166,56 +166,88 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       
       // Use specific endpoints for special steps
       if (step === CheckpointStep.IPV) {
-        response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        try {
+          response = await axios.get(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          
+          // IPV endpoint returns 200 OK with data when completed
+          if (response.status === 200 && response.data?.data?.url) {
+            console.log("IPV completed successfully with URL:", response.data.data.url);
+            return {
+              step,
+              data: response.data.data as StepDataWithUrl,
+              completed: true,
+            };
+          } else {
+            // If no URL in response, IPV is not completed
+            console.log("IPV endpoint returned 200 but no URL data");
+            return {
+              step,
+              data: null,
+              completed: false,
+            };
           }
-        );
-        
-        // IPV endpoint returns 200 OK with data when completed, 204 NO_CONTENT when not uploaded
-        // We need to check if we actually got data
-        if (response.status === 200 && response.data?.data?.url) {
-          return {
-            step,
-            data: response.data.data as StepDataWithUrl,
-            completed: true,
-          };
-        } else {
-          // If no data or empty response, IPV is not completed
-          return {
-            step,
-            data: null,
-            completed: false,
-          };
+        } catch (error) {
+          const err = error as AxiosError;
+          // Handle 204 No Content specifically (IPV not uploaded)
+          if (err.response?.status === 204) {
+            console.log("IPV endpoint returned 204 No Content - not uploaded yet");
+            return {
+              step,
+              data: null,
+              completed: false,
+            };
+          }
+          // For other errors, re-throw to be handled by outer catch
+          throw error;
         }
       } else if (step === CheckpointStep.SIGNATURE) {
-        response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        try {
+          response = await axios.get(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          
+          // Signature endpoint returns 200 OK with data when completed
+          if (response.status === 200 && response.data?.data?.url) {
+            console.log("Signature completed successfully with URL:", response.data.data.url);
+            return {
+              step,
+              data: response.data.data as StepDataWithUrl,
+              completed: true,
+            };
+          } else {
+            // If no URL in response, signature is not completed
+            console.log("Signature endpoint returned 200 but no URL data");
+            return {
+              step,
+              data: null,
+              completed: false,
+            };
           }
-        );
-        
-        // Signature endpoint returns 200 OK with data when completed, 204 NO_CONTENT when not uploaded
-        // We need to check if we actually got data
-        if (response.status === 200 && response.data?.data?.url) {
-          return {
-            step,
-            data: response.data.data as StepDataWithUrl,
-            completed: true,
-          };
-        } else {
-          // If no data or empty response, signature is not completed
-          return {
-            step,
-            data: null,
-            completed: false,
-          };
+        } catch (error) {
+          const err = error as AxiosError;
+          // Handle 204 No Content specifically (signature not uploaded)
+          if (err.response?.status === 204) {
+            console.log("Signature endpoint returned 204 No Content - not uploaded yet");
+            return {
+              step,
+              data: null,
+              completed: false,
+            };
+          }
+          // For other errors, re-throw to be handled by outer catch
+          throw error;
         }
       } else if (step === CheckpointStep.INCOME_PROOF) {
         try {
@@ -230,7 +262,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           
           // Income proof endpoint returns URL if the file is uploaded
           if (response.status === 200 && response.data?.data?.url) {
-            console.log("Income proof is completed with data:", response.data);
+            console.log("Income proof is completed with data:", response.data.data.url);
             return {
               step,
               data: response.data.data as StepDataWithUrl,
@@ -445,12 +477,16 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       
       case CheckpointStep.IPV: {
         const data = stepData.data as StepDataWithUrl;
-        return !!data.url;
+        const isValid = !!data.url;
+        console.log(`IPV validation - URL exists: ${isValid}, URL value:`, data.url);
+        return isValid;
       }
       
       case CheckpointStep.SIGNATURE: {
         const data = stepData.data as StepDataWithUrl;
-        return !!data.url;
+        const isValid = !!data.url;
+        console.log(`Signature validation - URL exists: ${isValid}, URL value:`, data.url);
+        return isValid;
       }
       
       case CheckpointStep.ESIGN: {
@@ -527,9 +563,11 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     console.log("=== CHECKPOINT DATA DEBUG ===");
     console.log("Investment segment data:", checkpointData[CheckpointStep.INVESTMENT_SEGMENT]);
     console.log("Income proof data:", checkpointData[CheckpointStep.INCOME_PROOF]);
+    console.log("IPV data:", checkpointData[CheckpointStep.IPV]);
     console.log("eSign data:", checkpointData[CheckpointStep.ESIGN]);
     console.log("Investment segment completed:", isStepCompleted(CheckpointStep.INVESTMENT_SEGMENT));
     console.log("Income proof completed:", isStepCompleted(CheckpointStep.INCOME_PROOF));
+    console.log("IPV completed:", isStepCompleted(CheckpointStep.IPV));
     console.log("eSign completed:", isStepCompleted(CheckpointStep.ESIGN));
     console.log("Investment segment step complete (with income proof check):", isInvestmentSegmentStepComplete());
     
