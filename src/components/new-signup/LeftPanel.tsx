@@ -167,7 +167,7 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
                   key={index}
                   className="flex items-start"
                   style={{
-                    animation: `fadeIn 0.5s ease-out ${
+                    animation: `fadeIn 1s ease-out ${
                       0.5 + index * 0.2
                     }s both`,
                   }}
@@ -311,22 +311,25 @@ const LeftPanel = ({ currentStep }: { currentStep: number }) => {
       </div>
 
       <footer className="w-full pt-6 animate-[fadeIn_0.5s_ease-out_1.2s_both]">
-        <div className="flex items-center justify-between  text-[10px] md:text-[11px] lg:text-sm text-gray-500">
-          <div>© Sapphire Broking</div>
-          <div className="flex items-center space-x-2">
-            <Link target="_blank" href="/privacy-policy">
-              Privacy Policy
-            </Link>
-            <span>•</span>
-            <Link target="_blank" href="/terms-and-conditions">
-              T&C
-            </Link>
-            <span>•</span>
-            <Link target="_blank" href="/contact">
-              Contact Us
-            </Link>
-          </div>
-        </div>
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 text-[10px] sm:text-[11px] lg:text-[12px] xl:text-[13px] text-gray-500 p-2">
+  <Link target="_blank" href="/" className="text-center sm:text-left">
+    © Sapphire Broking
+  </Link>
+  
+  <div className="flex items-center justify-center sm:justify-end space-x-2 text-center">
+    <Link target="_blank" href="/privacy-policy" className="hover:text-gray-700 transition-colors">
+      Privacy Policy
+    </Link>
+    <span className="text-gray-400">•</span>
+    <Link target="_blank" href="/terms-and-conditions" className="hover:text-gray-700 transition-colors">
+      T&C
+    </Link>
+    <span className="text-gray-400">•</span>
+    <Link target="_blank" href="/contact" className="hover:text-gray-700 transition-colors">
+      Contact Us
+    </Link>
+  </div>
+</div>
       </footer>
 
       {/* Add global keyframes for custom animations */}

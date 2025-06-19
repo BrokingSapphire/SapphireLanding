@@ -687,7 +687,55 @@ const OnboardingCarousel = () => {
           ))}
         </div>
 
-        {/* Navigation Arrows - Properly positioned for mobile */}
+        {/* Logout Button - Hide on email screen, position after left panel on desktop, beside arrows on mobile */}
+        {currentStep > 0 && (
+          <div className="fixed bottom-4 lg:bottom-6 left-1/2 transform translate-x-1/2 lg:left-[41%] lg:transform-none">
+            <button
+              onClick={() => {
+                // Clear localStorage
+                localStorage.removeItem('email');
+                localStorage.removeItem('verifiedPhone');
+                localStorage.removeItem('clientId');
+                
+                // Clear auth token from cookies
+                Cookies.remove('authToken');
+                
+                // Clear axios default headers
+                delete axios.defaults.headers.common['Authorization'];
+                
+                // Show confirmation toast
+                toast.success("Logged out successfully!");
+                
+                // Reset to first step after a brief delay
+                setTimeout(() => {
+                  setCurrentStep(0);
+                  setIsInitialized(false);
+                }, 1000);
+              }}
+              className="px-3 py-2 flex items-center justify-center bg-red-500 hover:bg-red-600 transition-all duration-300 ease-in-out border border-red-500 text-white shadow-lg rounded-md mr-2 lg:mr-0"
+              aria-label="Logout"
+              title="Logout"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="18" 
+                height="18" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16,17 21,12 16,7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </button>
+          </div>
+        )}
+
+        {/* Navigation Arrows - Positioned on right */}
         <div className="fixed bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 lg:left-auto lg:transform-none lg:right-6 flex gap-1">
           {navigationButtons.map((button, index) => (
             <button

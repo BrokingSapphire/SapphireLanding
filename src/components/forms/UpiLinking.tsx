@@ -68,7 +68,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
         pollingInterval = setInterval(() => {
           checkUpiStatus();
         }, 3000); // Poll every 3 seconds
-      }, 10000);
+      }, 20000);
     }
 
     return () => {

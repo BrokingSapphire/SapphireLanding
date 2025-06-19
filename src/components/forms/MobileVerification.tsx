@@ -293,19 +293,18 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
             </div>
             <input
               type="tel"
-              className="flex-1 px-3 py-2 borderrounded focus:outline-none"
+              className="flex-1 px-3 py-2 border rounded focus:outline-none"
               value={mobileNumber}
               disabled
             />
           </div>
         </div>
-
         <Button
           onClick={onNext}
-          className="w-full py-6 mb-6 "
+          className="w-full py-6 mb-6"
           variant="ghost"
         >
-          Continue
+          Continue to Next Step
         </Button>
       </div>
     );
@@ -398,7 +397,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
         variant="ghost"
         className={`w-full py-6 rounded mb-6 ${
           isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
-        } ${isCompleted && hasManuallyVerified ? "bg-green-600 hover:bg-green-700" : ""}`}
+        } ${isCompleted && hasManuallyVerified ? "" : ""}`}
       >
         {getButtonText()}
       </Button>
