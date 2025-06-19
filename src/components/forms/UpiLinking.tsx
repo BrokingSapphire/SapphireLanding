@@ -310,35 +310,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
               />
             </div>
 
-            {/* UPI App Quick Links */}
-            {upiData?.ios_links && (
-              <div className="grid grid-cols-2 gap-2 w-full max-w-xs">
-                <button
-                  onClick={() => handleUpiAppClick(upiData.ios_links.gpay)}
-                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
-                >
-                  GPay <ExternalLink className="ml-1 h-3 w-3" />
-                </button>
-                <button
-                  onClick={() => handleUpiAppClick(upiData.ios_links.phonepe)}
-                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
-                >
-                  PhonePe <ExternalLink className="ml-1 h-3 w-3" />
-                </button>
-                <button
-                  onClick={() => handleUpiAppClick(upiData.ios_links.paytm)}
-                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
-                >
-                  Paytm <ExternalLink className="ml-1 h-3 w-3" />
-                </button>
-                <button
-                  onClick={() => handleUpiAppClick(upiData.ios_links.bhim)}
-                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
-                >
-                  BHIM <ExternalLink className="ml-1 h-3 w-3" />
-                </button>
-              </div>
-            )}
+
           </div>
         </div>
         <div className="bg-[#F7F9FD] p-3 rounded mt-6 space-y-1 text-sm">

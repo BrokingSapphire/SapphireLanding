@@ -44,6 +44,13 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     { id: "Commodity", label: "Commodity Derivatives", requiresDisclosure: true },
   ];
 
+  // Helper function to check if segments require income proof
+  const getSegmentsRequiringProof = (segments: string[]) => {
+    return segments.filter(segment => 
+      segment === "F&O" || segment === "Currency" || segment === "Commodity"
+    );
+  };
+
   // Prefill data from initialData (API response) and show completion toast
   useEffect(() => {
     if (isCompleted && initialData && initialData.segments && initialData.segments.length > 0) {
@@ -104,28 +111,17 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     setHasAcceptedRisk(true);
     setShowRiskModal(false);
     
-    // After accepting risk, show upload income proof
-    setShowUploadIncome(true);
+    // Continue with the submission after accepting risk
+    handleSubmitSegmentsAfterRisk();
   };
 
-  // Submit selected investment segments
-  const handleSubmitSegments = async () => {
-    // Check if any selected segments require risk disclosure
-    const segmentsRequiringRisk = selectedSegments.filter(segment => 
-      segment === "F&O" || segment === "Currency" || segment === "Commodity"
-    );
-
-    // If risk-requiring segments are selected but risk not accepted, show modal
-    if (segmentsRequiringRisk.length > 0 && !hasAcceptedRisk) {
-      setShowRiskModal(true);
-      return;
-    }
-
+  // Submit segments after risk acceptance
+  const handleSubmitSegmentsAfterRisk = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log("Submitting investment segments:", selectedSegments);
+      console.log("Submitting investment segments after risk acceptance:", selectedSegments);
       
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
@@ -142,32 +138,37 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
 
       console.log("Investment segments response:", response);
 
-      // Validate the response data
-      if (!response.data || !response.data.data) {
+      // Check the response data structure
+      if (!response.data) {
         setError("Failed to save investment segments. Please try again.");
         setIsLoading(false);
         return;
       }
 
-      // If risk segments are selected, income proof is required
-      if (segmentsRequiringRisk.length > 0) {
+      // Check if income proof is required from the server response
+      const requiresIncomeProof = response.data.data?.requiresIncomeProof || false;
+      const segmentsRequiringProof = response.data.data?.segmentsRequiringProof || [];
+
+      console.log("Server response - requiresIncomeProof:", requiresIncomeProof);
+      console.log("Server response - segmentsRequiringProof:", segmentsRequiringProof);
+
+      if (requiresIncomeProof && segmentsRequiringProof.length > 0) {
         // Check if income proof is already uploaded
         if (isIncomeProofCompleted) {
           console.log("Income proof already completed, proceeding to next step");
           toast.success("Investment segments saved successfully!");
-          // Auto-advance after 2 seconds
           setTimeout(() => {
             onNext();
           }, 100);
         } else {
           // Need to upload income proof
+          toast.success("Investment segments saved! Income proof required for selected segments.");
           await handleInitializeIncomeProof();
         }
       } else {
-        // No risk segments selected, proceed to next step
-        console.log("No risk segments selected, proceeding to next step");
+        // No income proof required
+        console.log("No income proof required, proceeding to next step");
         toast.success("Investment segments saved successfully!");
-        // Auto-advance after 2 seconds
         setTimeout(() => {
           onNext();
         }, 100);
@@ -184,6 +185,8 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
           setError("Invalid investment segments. Please try again.");
         } else if (err.response.status === 401) {
           setError("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 403) {
+          setError(err.response.data?.error?.message || "Please complete previous steps first.");
         } else if (err.response.status === 422) {
           setError("Invalid segment selection. Please try again.");
         } else {
@@ -199,6 +202,24 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     }
   };
 
+  // Submit selected investment segments
+  const handleSubmitSegments = async () => {
+    // Check if any selected segments require risk disclosure
+    const segmentsRequiringRisk = getSegmentsRequiringProof(selectedSegments);
+
+    console.log("Selected segments:", selectedSegments);
+    console.log("Segments requiring risk:", segmentsRequiringRisk);
+
+    // If risk-requiring segments are selected but risk not accepted, show modal
+    if (segmentsRequiringRisk.length > 0 && !hasAcceptedRisk) {
+      setShowRiskModal(true);
+      return;
+    }
+
+    // If risk already accepted or no risk segments, proceed directly
+    await handleSubmitSegmentsAfterRisk();
+  };
+
   // Initialize income proof step
   const handleInitializeIncomeProof = async () => {
     try {
@@ -206,6 +227,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "income_proof",
+          income_proof_type: "pdf" // Add default income proof type
         },
         {
           headers:{
@@ -269,12 +291,10 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     if (isLoading) return "Saving...";
     
     // Check if any selected segments require risk disclosure
-    const segmentsRequiringRisk = selectedSegments.filter(segment => 
-      segment === "F&O" || segment === "Currency" || segment === "Commodity"
-    );
+    const segmentsRequiringRisk = getSegmentsRequiringProof(selectedSegments);
     
     if (segmentsRequiringRisk.length > 0 && !hasAcceptedRisk) {
-      return "Continue";
+      return "Continue & Accept Risk Disclosure";
     }
     
     return "Continue";
@@ -304,7 +324,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         description="Choose where you want to invest and trade." 
       />
 
-
       <div className="flex flex-wrap gap-2 mb-6">
         {segments.map((segment) => (
           <button
@@ -327,18 +346,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
           </button>
         ))}
       </div>
-
-      {/* Show income proof status if applicable */}
-      {selectedSegments.some(segment => segment === "F&O" || segment === "Currency" || segment === "Commodity") && isIncomeProofCompleted && (
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="text-green-800 font-medium">Income proof already verified</span>
-          </div>
-        </div>
-      )}
 
       {error && (
         <div className="mb-4 p-3 bg-red-50 rounded">

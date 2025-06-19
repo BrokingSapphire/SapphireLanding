@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import FormHeading from "./FormHeading";
@@ -14,8 +14,8 @@ interface LastStepPageProps {
   isCompleted?: boolean;
 }
 
-// Ensure 'completed' is included in the EsignStatus type
-type EsignStatus = 'idle' | 'initializing' | 'signing' | 'completing' | 'completed';
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
 
 const LastStepPage: React.FC<LastStepPageProps> = ({ 
   onNext, 
@@ -25,7 +25,10 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   const [isChecked, setIsChecked] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [esignStatus, setEsignStatus] = useState<EsignStatus>('idle');
+  const [esignUrl, setEsignUrl] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const esignWindowRef = useRef<Window | null>(null);
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use the checkpoint hook to check for existing eSign data
   const { 
@@ -34,34 +37,64 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     refetchStep 
   } = useCheckpoint();
 
-  // Check if eSign is already completed from the hook
+  // Check if eSign is already completed and show toast
   useEffect(() => {
-    const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
-    const stepData = getStepData(CheckpointStep.ESIGN);
-    
-    console.log("eSign step completed:", stepCompleted);
-    console.log("eSign step data:", stepData);
-    
-    if (stepCompleted && stepData) {
+    if (isStepCompleted(CheckpointStep.ESIGN)) {
       // eSign is already completed
-      setEsignStatus('completed');
+      if (!isInitialized) {
+        setIsInitialized(true);
+      }
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("eSign already completed! You can proceed to the next step.");
+        hasShownGlobalCompletedToast = true;
+      }
       return;
     }
-  }, [isStepCompleted, getStepData]);
+
+    // If not completed, initialize eSign
+    if (!isInitialized && !isLoading && !esignUrl) {
+      console.log("Calling initializeEsign from useEffect");
+      initializeEsign();
+    }
+  }, [isStepCompleted(CheckpointStep.ESIGN)]); // Only depend on step completion
 
   // Also check initialData as fallback
   useEffect(() => {
     const data = initialData as { esign?: boolean } | undefined;
     if (isCompleted && data?.esign) {
       console.log("eSign completed from initialData");
-      setEsignStatus('completed');
+      setIsInitialized(true);
     }
   }, [initialData, isCompleted]);
 
-  const handleEsignInitialize = async () => {
+  // Start background polling after initialization
+  useEffect(() => {
+    if (isInitialized && esignUrl && !isStepCompleted(CheckpointStep.ESIGN)) {
+      startBackgroundPolling();
+    }
+
+    // Cleanup polling on unmount
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
+    };
+  }, [isInitialized, esignUrl, isStepCompleted]);
+
+  const initializeEsign = async () => {
+    console.log("initializeEsign called - isLoading:", isLoading, "esignUrl:", esignUrl);
+    
+    // Prevent multiple simultaneous calls
+    if (isLoading || esignUrl) {
+      console.log("Already initializing or URL exists, skipping...");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
-    setEsignStatus('initializing');
 
     try {
       // Create redirect URL - this should be your app's URL where user returns after eSign
@@ -72,12 +105,10 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       if (!authToken) {
         setError("Authentication token not found. Please restart the process.");
-        setEsignStatus('idle');
-        setIsLoading(false);
         return;
       }
 
-      console.log("Initializing eSign...");
+      console.log("Making API call to initialize eSign session...");
 
       // Initialize eSign session
       const response = await axios.post(
@@ -97,27 +128,11 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       console.log("eSign initialization response:", response.data);
 
       if (response.data?.data?.uri) {
-        setEsignStatus('signing');
-        
-        // Open eSign URL in new window/tab
-        const esignWindow = window.open(
-          response.data.data.uri,
-          'esign',
-          'width=800,height=600,scrollbars=yes,resizable=yes'
-        );
-
-        if (!esignWindow) {
-          setError("Please allow popups for eSign to work. Then try again.");
-          setEsignStatus('idle');
-          setIsLoading(false);
-          return;
-        }
-
-        // Start polling for completion
-        startPollingForCompletion();
+        console.log("eSign session initialized with URL:", response.data.data.uri);
+        setEsignUrl(response.data.data.uri);
+        setIsInitialized(true);
       } else {
         setError("Failed to initialize eSign. Please try again.");
-        setEsignStatus('idle');
       }
     } catch (err: unknown) {
       const error = err as {
@@ -150,31 +165,34 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
-      setEsignStatus('idle');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const startPollingForCompletion = () => {
-    console.log("Starting polling for eSign completion...");
+  const startBackgroundPolling = () => {
+    console.log("Starting background polling for eSign completion...");
     
-    const pollInterval = setInterval(async () => {
+    // Clear any existing polling interval
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+    }
+    
+    pollIntervalRef.current = setInterval(async () => {
       try {
-        setEsignStatus('completing');
-        
         // Get the auth token for polling
         const authToken = Cookies.get('authToken');
         
         if (!authToken) {
-          clearInterval(pollInterval);
-          setError("Authentication token expired. Please restart the process.");
-          setEsignStatus('idle');
-          setIsLoading(false);
+          console.log("No auth token, stopping polling");
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+          }
           return;
         }
         
-        console.log("Polling for eSign completion...");
+        console.log("Background polling for eSign completion...");
         
         // Check if eSign is completed by calling the correct checkpoint endpoint
         const response = await axios.post(
@@ -194,18 +212,25 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
         // Check if we got a successful response with URL (even if empty, it means eSign is completed)
         if (response.status === 200 && response.data?.data?.url !== undefined) {
-          // eSign completed successfully - even empty URL means completion
-          clearInterval(pollInterval);
-          setEsignStatus('completed');
-          setIsLoading(false);
+          // eSign completed successfully
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+          }
           
           console.log("eSign completed successfully! URL:", response.data.data.url);
           toast.success("eSign completed successfully!");
           
+          // Close the eSign window if it's still open
+          if (esignWindowRef.current && !esignWindowRef.current.closed) {
+            esignWindowRef.current.close();
+            esignWindowRef.current = null;
+          }
+          
           // Refetch eSign step to update the hook
           refetchStep(CheckpointStep.ESIGN);
           
-          // Small delay before proceeding to next step
+          // Auto-advance after 2 seconds
           setTimeout(() => {
             onNext();
           }, 2000);
@@ -224,99 +249,126 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         if (error.response?.status === 401) {
           // 401 means eSign not completed yet - continue polling
           console.log("eSign not completed yet (401), continuing to poll...");
-          setEsignStatus('signing');
           return;
         } else if (error.response?.status === 404) {
           // 404 means endpoint not found or no eSign record - continue polling
           console.log("eSign endpoint not found (404), continuing to poll...");
-          setEsignStatus('signing');
           return;
         } else if (error.response?.status === 500) {
           // 500 server error - continue polling for a bit
           console.log("Server error (500), continuing to poll...");
-          setEsignStatus('signing');
           return;
         }
         
-        // For other critical errors, stop polling and show error
-        clearInterval(pollInterval);
-        setEsignStatus('idle');
-        setIsLoading(false);
-        
-        if (error.response?.data?.error?.message) {
-          setError(`eSign error: ${error.response.data.error.message}`);
-        } else if (error.response?.data?.message) {
-          setError(`eSign error: ${error.response.data.message}`);
-        } else {
-          setError("eSign verification failed. Please try again.");
+        // For other critical errors, stop polling
+        console.error("Critical eSign polling error:", err);
+        if (pollIntervalRef.current) {
+          clearInterval(pollIntervalRef.current);
+          pollIntervalRef.current = null;
         }
       }
     }, 3000); // Poll every 3 seconds
 
-    // Stop polling after 10 minutes (timeout)
+    // Stop polling after 15 minutes (timeout)
     setTimeout(() => {
-      clearInterval(pollInterval);
-      if (esignStatus === 'signing' || esignStatus === 'completing') {
-        setEsignStatus('idle');
-        setIsLoading(false);
-        setError("eSign session timed out. Please try again.");
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+        console.log("eSign polling timeout after 15 minutes");
       }
-    }, 10 * 60 * 1000);
+    }, 15 * 60 * 1000);
+  };
+
+  const handleEsignClick = () => {
+    if (!esignUrl) {
+      setError("eSign URL not available. Please try again.");
+      return;
+    }
+
+    console.log("Opening eSign URL:", esignUrl);
+
+    // Open eSign URL in new window/tab
+    const esignWindow = window.open(
+      esignUrl,
+      'esign',
+      'width=800,height=600,scrollbars=yes,resizable=yes'
+    );
+
+    if (!esignWindow) {
+      setError("Please allow popups for eSign to work. Then try again.");
+      return;
+    }
+
+    // Store reference to the window
+    esignWindowRef.current = esignWindow;
+
+    // Optional: Monitor if the window is closed manually
+    const checkClosed = setInterval(() => {
+      if (esignWindow.closed) {
+        clearInterval(checkClosed);
+        esignWindowRef.current = null;
+        console.log("eSign window was closed");
+      }
+    }, 1000);
   };
 
   const handleRetry = () => {
     setError(null);
-    setEsignStatus('idle');
-    setIsLoading(false);
-  };
-
-  const getButtonText = () => {
-    switch (esignStatus) {
-      case 'initializing':
-        return "Initializing eSign...";
-      case 'signing':
-        return "Complete eSign in the opened window";
-      case 'completing':
-        return "Verifying eSign completion...";
-      case 'completed':
-        return "eSign Completed - Continue";
-      default:
-        const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
-        if (stepCompleted) {
-          return "Continue to Next Step";
-        }
-        return "Proceed to E-sign";
+    setEsignUrl(null);
+    setIsInitialized(false);
+    
+    // Clear any existing polling
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+    
+    // Close any open eSign window
+    if (esignWindowRef.current && !esignWindowRef.current.closed) {
+      esignWindowRef.current.close();
+      esignWindowRef.current = null;
     }
   };
 
-  const isButtonDisabled = () => {
-    return isLoading || esignStatus === 'signing' || esignStatus === 'completing';
-  };
+  const shouldShowCompletedState = isStepCompleted(CheckpointStep.ESIGN);
 
-  const handleButtonClick = () => {
-    const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
-    
-    console.log("Button clicked - stepCompleted:", stepCompleted, "esignStatus:", esignStatus);
-    
-    if (stepCompleted || esignStatus === 'completed') {
-      console.log("eSign completed, proceeding to next step");
-      onNext();
-    } else {
-      console.log("Starting eSign process");
-      handleEsignInitialize();
-    }
-  };
+  // Show initialization loading
+  if (!isInitialized && isLoading) {
+    return (
+      <div className="mx-auto p-4 mt-10">
+        <FormHeading
+          title="Finish account set-up using Aadhar E-sign"
+          description="Initializing eSign session..."
+        />
+        <div className="flex items-center justify-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+          <span className="ml-3 text-gray-600">Setting up eSign...</span>
+        </div>
+      </div>
+    );
+  }
 
-  // Check if step is completed
-  const stepCompleted = isStepCompleted(CheckpointStep.ESIGN);
-  const stepData = getStepData(CheckpointStep.ESIGN);
-
-  console.log("Render - stepCompleted:", stepCompleted, "stepData:", stepData, "esignStatus:", esignStatus);
-
-  // Show completed state if step is completed OR if we have valid eSign data OR if status is completed
-  const shouldShowCompletedState = stepCompleted || 
-                                  (stepData && Object.keys(stepData).length > 0) || 
-                                  esignStatus === 'completed';
+  // Show error state if initialization failed
+  if (!isInitialized && error) {
+    return (
+      <div className="mx-auto p-4 mt-10">
+        <FormHeading
+          title="Finish account set-up using Aadhar E-sign"
+          description="Failed to initialize eSign session."
+        />
+        <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
+          <p className="text-red-600 text-sm">{error}</p>
+        </div>
+        <Button
+          onClick={handleRetry}
+          variant="ghost"
+          className="w-full py-6"
+        >
+          Try Again
+        </Button>
+      </div>
+    );
+  }
 
   if (shouldShowCompletedState) {
     return (
@@ -352,7 +404,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
         <Button 
           variant="ghost"
-          onClick={handleButtonClick} 
+          onClick={onNext} 
           className="py-6 w-full"
         >
           Continue
@@ -379,50 +431,6 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           />
         </div>
       </div>
-
-      {/* Status indicators */}
-      {esignStatus === 'signing' && (
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
-            <div>
-              <h3 className="text-blue-800 font-medium">eSign Window Opened</h3>
-              <p className="text-blue-700 text-sm">
-                Please complete the eSign process in the opened window. We&apos;re checking for completion every 3 seconds.
-              </p>
-              <p className="text-blue-600 text-xs mt-1">
-                Status: Waiting for eSign completion...
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {esignStatus === 'completing' && (
-        <div className="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-          <div className="flex items-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-600 mr-3"></div>
-            <div>
-              <h3 className="text-yellow-800 font-medium">Verifying eSign</h3>
-              <p className="text-yellow-700 text-sm">Please wait while we verify your digital signature...</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* {esignStatus === 'completed' && (
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <div>
-              <h3 className="text-green-800 font-medium">eSign Completed!</h3>
-              <p className="text-green-700 text-sm">Proceeding to the next step...</p>
-            </div>
-          </div>
-        </div>
-      )} */}
       
       <div className="mb-6 flex items-center cursor-pointer" onClick={() => setIsChecked(!isChecked)}>
         <div
@@ -450,23 +458,21 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       <Button 
         variant="ghost"
-        onClick={handleButtonClick} 
-        disabled={isButtonDisabled()}
+        onClick={handleEsignClick} 
+        disabled={!esignUrl}
         className={`py-6 w-full ${
-          isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
+          !esignUrl ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
-        {getButtonText()}
+        Proceed to E-sign
       </Button>
 
-      {esignStatus === 'signing' && (
-        <div className="mt-4 text-center text-xs text-gray-600">
-          <p>
-            If the eSign window doesn&apos;t open, please check your popup blocker settings.
-            The process will timeout after 10 minutes.
-          </p>
-        </div>
-      )}
+      <div className="mt-4 text-center text-xs text-gray-600">
+        <p>
+          Clicking the button will open eSign in a new window. 
+          Complete the process there and this page will automatically proceed to the next step.
+        </p>
+      </div>
     </div>
   );
 };

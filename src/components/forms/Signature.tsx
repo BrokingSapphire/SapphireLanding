@@ -5,6 +5,7 @@ import axios, { AxiosError } from "axios";
 import Cookies from 'js-cookie';
 import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 interface SignatureComponentProps {
   onNext: () => void;
@@ -517,12 +518,13 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
               </div>
               <p className="text-green-600 font-medium">Signature Already Submitted</p>
               <p className="text-gray-600 text-sm">Click below to sign again if needed</p>
-              <button
+              <Button
+              variant={"ghost"}
                 onClick={handleSignAgain}
-                className="px-6 py-3 rounded bg-teal-800 hover:bg-teal-900 text-white"
+                className="px-6 py-3 "
               >
                 Sign Again
-              </button>
+              </Button>
             </div>
           ) : (
             // Show canvas for signing
@@ -542,8 +544,10 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
           )}
         </div>
 
+
+          {/* disable Late on */}
         {/* QR Code option */}
-        <div className="text-center mt-4">
+        {/* <div className="text-center mt-4">
           <button
             onClick={handleQrCodeClick}
             className="hidden lg:block text-sm decoration-dotted underline"
@@ -551,7 +555,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
           >
             Facing issues with your signature? Click here and use your mobile device to complete the Signature.
           </button>
-        </div>
+        </div> */}
 
         <div className="flex flex-col gap-y-2 mt-4">
           {/* Only show clear button when canvas is active */}

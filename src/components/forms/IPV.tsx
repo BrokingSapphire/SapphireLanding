@@ -467,7 +467,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
                 <Image
                   src={URL.createObjectURL(imageFile)}
                   alt="IPV Preview"
-                  className="object-contain rounded"
+                  className="object-cover rounded"
                   fill
                   priority
                 />
@@ -522,7 +522,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         )}
 
         {/* QR Code option - only show when camera should be available */}
-        {shouldShowCamera && (
+        {/* {shouldShowCamera && (
           <div className="text-center mt-4">
             <button
               onClick={() => setShowQrCode(true)}
@@ -532,7 +532,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
               Problems with Webcam? Use Mobile Camera
             </button>
           </div>
-        )}
+        )} */}
       </div>
 
       <Button
