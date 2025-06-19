@@ -3,9 +3,103 @@ import { ArrowLeft, Clock } from "lucide-react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
-import QRCode from "qrcode";
 import { toast } from "sonner";
-import Image from "next/image";
+import Cookies from "js-cookie";
+
+// Define QRCode component interface
+interface QRCodeProps {
+  value: string;
+  size?: number;
+  bgColor?: string;
+  fgColor?: string;
+  level?: 'L' | 'M' | 'Q' | 'H';
+  includeMargin?: boolean;
+}
+
+// QR Code display component using the existing qrcode library
+const QRCodeDisplay: React.FC<QRCodeProps> = ({ 
+  value, 
+  size = 200, 
+  bgColor = '#FFFFFF', 
+  fgColor = '#000000' 
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [qrDataUrl, setQrDataUrl] = useState<string>("");
+
+  useEffect(() => {
+    const generateQR = async () => {
+      try {
+        // Use the existing qrcode library that's already in your project
+        const QRCode = await import('qrcode');
+        
+        const dataUrl = await QRCode.toDataURL(value, {
+          width: size,
+          margin: 2,
+          color: {
+            dark: fgColor,
+            light: bgColor
+          },
+          errorCorrectionLevel: 'M'
+        });
+        
+        setQrDataUrl(dataUrl);
+      } catch (error) {
+        console.error('Error generating QR code:', error);
+        
+        // Fallback: Create a simple placeholder
+        if (canvasRef.current) {
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Draw a simple placeholder
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, size, size);
+            ctx.fillStyle = fgColor;
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('QR Code', size / 2, size / 2 - 10);
+            ctx.fillText('Loading...', size / 2, size / 2 + 10);
+            
+            setQrDataUrl(canvas.toDataURL());
+          }
+        }
+      }
+    };
+
+    if (value) {
+      generateQR();
+    }
+  }, [value, size, bgColor, fgColor]);
+
+  return (
+    <div className="qr-code-container">
+      {qrDataUrl ? (
+        <img
+          src={qrDataUrl}
+          alt="QR Code"
+          style={{ width: size, height: size }}
+          className="qr-code-image"
+        />
+      ) : (
+        <div 
+          style={{ width: size, height: size }}
+          className="qr-code-loading bg-gray-200 flex items-center justify-center rounded"
+        >
+          <span className="text-gray-500 text-sm">Generating...</span>
+        </div>
+      )}
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'none' }}
+        width={size}
+        height={size}
+      />
+    </div>
+  );
+};
 
 interface SignatureQrCodeProps {
   onBack: () => void;
@@ -20,41 +114,15 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
 }) => {
   const [timeRemaining, setTimeRemaining] = useState<number>(600); // 10 minutes
   const [error, setError] = useState<string | null>(null);
-  const [, setIsChecking] = useState(false);
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isPolling, setIsPolling] = useState(true);
   const [signatureCompleted, setSignatureCompleted] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<'waiting' | 'checking' | 'completed' | 'failed'>('waiting');
   
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // QR code points to sapphirebroking.com with UUID as parameter
   const qrCodeUrl = `https://sapphirebroking.com/qr-signature?uid=${signatureUid}`;
-  
-  // Generate QR code when component mounts
-  useEffect(() => {
-    const generateQR = async () => {
-      try {
-        const dataUrl = await QRCode.toDataURL(qrCodeUrl, {
-          width: 200,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
-        });
-        setQrCodeDataUrl(dataUrl);
-      } catch (err) {
-        console.error('Error generating QR code:', err);
-        setError("Failed to generate QR code");
-        toast.error("Failed to generate QR code");
-      }
-    };
-
-    if (signatureUid) {
-      generateQR();
-    }
-  }, [qrCodeUrl, signatureUid]);
 
   // Countdown timer
   useEffect(() => {
@@ -63,6 +131,7 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
         if (prev <= 1) {
           clearInterval(timer);
           setIsPolling(false);
+          setVerificationStatus('failed');
           setError("Session expired. Please try again.");
           toast.error("Session expired. Please try again.");
           return 0;
@@ -74,32 +143,36 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Polling function (hidden from UI)
-  const checkSignatureStatus = async (isManualCheck = false) => {
-    if (!isPolling && !isManualCheck) return;
+  // Polling function
+  const checkSignatureStatus = async () => {
+    if (!isPolling || verificationStatus === 'completed') return;
 
-    // Only show loading state for manual checks
-    if (isManualCheck) {
-      setIsChecking(true);
-    }
-    
-    // Only clear error for manual checks to avoid clearing session expired messages
-    if (isManualCheck) {
-      setError(null);
-    }
+    setVerificationStatus('checking');
+    setError(null);
 
     try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        setError("Authentication token not found. Please restart the process.");
+        setVerificationStatus('failed');
+        setIsPolling(false);
+        return;
+      }
+
       // Use your existing getSignature endpoint
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/signature`,
         { 
-          withCredentials: true 
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          }
         }
       );
 
       // If we get a successful response with data, signature is completed
       if (response.status === 200 && response.data?.data?.url) {
         setSignatureCompleted(true);
+        setVerificationStatus('completed');
         setIsPolling(false);
         toast.success("Signature completed successfully!");
         
@@ -111,12 +184,9 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
         // Auto-complete after a short delay
         setTimeout(() => {
           onComplete();
-        }, 1500);
+        }, 500);
       } else {
-        // Only show error for manual checks
-        if (isManualCheck) {
-          setError("Signature not completed yet. Please complete signature on your mobile device.");
-        }
+        setVerificationStatus('waiting');
       }
     } catch (err: unknown) {
       type AxiosErrorResponse = {
@@ -137,60 +207,41 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
         const response = err.response;
         if (response.status === 204) {
           // Signature not uploaded yet (NO_CONTENT from your backend)
-          if (isManualCheck) {
-            setError("Signature not completed yet. Please complete signature on your mobile device.");
-          }
+          setVerificationStatus('waiting');
         } else if (response.data?.message) {
           const errorMessage = `Error: ${response.data.message}`;
           setError(errorMessage);
-          if (isManualCheck) {
-            toast.error(errorMessage);
-          }
-          // Stop polling on serious errors
+          setVerificationStatus('failed');
           setIsPolling(false);
+          toast.error(errorMessage);
         } else if (response.status === 401) {
           const errorMessage = "Session expired. Please restart the process.";
           setError(errorMessage);
+          setVerificationStatus('failed');
           setIsPolling(false);
-          if (isManualCheck) {
-            toast.error(errorMessage);
-          }
+          toast.error(errorMessage);
         } else {
-          // For other errors during polling, continue silently
-          // Only show error for manual checks
-          if (isManualCheck) {
-            setError("Failed to check status. Please try again.");
-            toast.error("Failed to check status. Please try again.");
-          } else {
-            // Log error but continue polling
-            console.warn("Polling error (continuing):", err);
-          }
+          // For other errors, continue polling but show a warning
+          console.warn("Polling error:", err);
+          setVerificationStatus('waiting');
         }
       } else {
         // Unknown error shape
-        if (isManualCheck) {
-          setError("An unknown error occurred.");
-          toast.error("An unknown error occurred.");
-        } else {
-          console.warn("Polling error (unknown shape):", err);
-        }
-      }
-    } finally {
-      if (isManualCheck) {
-        setIsChecking(false);
+        console.warn("Unknown error during polling:", err);
+        setVerificationStatus('waiting');
       }
     }
   };
 
-  // Start hidden polling when component mounts
+  // Start polling when component mounts
   useEffect(() => {
-    if (isPolling && qrCodeDataUrl && !signatureCompleted) {
-      // Initial check (silent)
-      checkSignatureStatus(false);
+    if (isPolling && signatureUid) {
+      // Initial check
+      checkSignatureStatus();
       
-      // Set up polling interval (check every 3 seconds, silently)
+      // Set up polling interval (check every 3 seconds)
       pollingIntervalRef.current = setInterval(() => {
-        checkSignatureStatus(false);
+        checkSignatureStatus();
       }, 3000);
     }
 
@@ -199,7 +250,7 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, [isPolling, qrCodeDataUrl, signatureCompleted]);
+  }, [isPolling, signatureUid]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -234,17 +285,16 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
         
         <div className="border-2 border-gray-300 rounded-lg p-4 flex justify-center items-center">
           <div className="w-64 h-64 flex items-center justify-center">
-            {qrCodeDataUrl ? (
-              <Image
-                width={200}
-                height={200}
-                src={qrCodeDataUrl} 
-                alt="QR Code for Signature"
-                className="w-full h-full object-contain"
+            {signatureUid ? (
+              <QRCodeDisplay
+                value={qrCodeUrl}
+                size={200}
+                bgColor="#FFFFFF"
+                fgColor="#000000"
               />
             ) : (
               <div className="animate-pulse bg-gray-200 w-48 h-48 rounded flex items-center justify-center">
-                <span className="text-gray-500">Generating QR...</span>
+                <span className="text-gray-500">Loading...</span>
               </div>
             )}
           </div>
@@ -266,10 +316,24 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
           <ol className="text-blue-700 text-sm mt-2 text-left space-y-1">
             <li>1. Scan the QR code with your phone camera</li>
             <li>2. Sign on the mobile signature pad</li>
-            <li>3. Wait for automatic completion or click &quot;Check Status&quot;</li>
+            <li>3. Wait for automatic completion</li>
           </ol>
         </div>
 
+        {/* Status indicator */}
+        <div className="mb-4">
+          <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
+            verificationStatus === 'waiting' ? 'bg-yellow-100 text-yellow-800' :
+            verificationStatus === 'checking' ? 'bg-blue-100 text-blue-800' :
+            verificationStatus === 'completed' ? 'bg-green-100 text-green-800' :
+            'bg-red-100 text-red-800'
+          }`}>
+            {verificationStatus === 'waiting' && '⏳ Waiting for signature...'}
+            {verificationStatus === 'checking' && '🔍 Checking status...'}
+            {verificationStatus === 'completed' && '✅ Signature completed!'}
+            {verificationStatus === 'failed' && '❌ Signature failed'}
+          </div>
+        </div>
       </div>
 
       {error && (
@@ -298,6 +362,14 @@ const SignatureQrCode: React.FC<SignatureQrCodeProps> = ({
           </Button>
         )}
       </div>
+
+      <style jsx>{`
+        .qr-code-image {
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: crisp-edges;
+          image-rendering: pixelated;
+        }
+      `}</style>
     </div>
   );
 };
