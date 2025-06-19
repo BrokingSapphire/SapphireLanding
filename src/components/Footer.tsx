@@ -86,7 +86,7 @@ const LegalSection = () => {
   }
 
   return (
-    <div className="text-xs sm:text-[14px] space-y-4 border-t border-teal-800 pt-6">
+    <div className="text-xs sm:text-[14px] space-y-4 border-t border-teal-800 pt-6 ">
       <div className="grid gap-4">
         {/* Legal Name */}
         <p>
@@ -194,8 +194,8 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="bg-[#064D51] text-white p-4 sm:py-8 sm:px-20">
-        <div className="max-w-7xl mx-5">
+      <footer className="bg-[#064D51] text-white p-4 sm:py-8 sm:px-20 max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-5 xl:max-w-7xl mx-auto">
           {/* Mobile Layout (hidden on sm and above) */}
           <div className="sm:hidden">
             {/* Full Width Sapphire Address */}

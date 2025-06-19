@@ -50,7 +50,7 @@ const LocationSection = () => {
   }
 
   return (
-    <div className="relative mx-auto w-full bg-gray-50 py-12 pb-20 px-6">
+    <div className="relative mx-auto w-full bg-gray-50 py-12 pb-20 px-6 max-w-7xl mx-auto">
       <div className="max-w-6xl mx-auto">
         {/* Heading */}
         <h2 className="text-2xl sm:text-[36px] text-center font-bold leading-tight">

@@ -93,7 +93,7 @@ const ContactCards: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#F5F7FA] py-6 sm:py-8 md:py-11 px-9 sm:px-6 md:px-8">
+    <div className="bg-[#F5F7FA] py-6 sm:py-8 md:py-11 px-9 sm:px-6 md:px-8 max-w-7xl mx-auto">
       <div className="max-w-6xl mx-auto">
         {/* Layout for lg+ screens: Original 3+2 layout */}
         <div className="hidden lg:block">
