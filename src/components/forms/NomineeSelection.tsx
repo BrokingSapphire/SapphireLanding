@@ -209,13 +209,14 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
       )}
 
       <div className="flex flex-col gap-4">
-        <button
+        <Button
+        variant='ghost'
           onClick={handleAddNominees}
-          className="text-white py-3 px-2 rounded-md transition-all duration-300 ease-in-out bg-green-600 hover:bg-white border-2 border-green-600 hover:text-green-600"
+          className="text-white py-6 px-2 rounded-md"
           disabled={isLoading}
         >
           Add nominee now (Recommended)
-        </button>
+        </Button>
 
         <button
           onClick={handleSkip}

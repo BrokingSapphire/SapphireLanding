@@ -265,13 +265,6 @@ const MPIN: React.FC<MPINProps> = ({
         }
       />
 
-      {clientId && (
-        <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-200">
-          <p className="text-blue-700 text-sm">
-            <strong>Client ID:</strong> {clientId}
-          </p>
-        </div>
-      )}
 
       <div className="space-y-6">
         {/* MPIN Input */}

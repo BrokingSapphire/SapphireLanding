@@ -245,7 +245,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   const totalSharePercentage = nominees.reduce(
     (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0),
     0
-  ) + (parseFloat(currentNominee.sharePercentage) || 0);
+  );
 
   // Calculate remaining percentage to allocate (excluding current nominee input)
   const remainingPercentage = 100 - nominees.reduce(
@@ -253,11 +253,17 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
     0
   );
 
+  // Calculate total including current nominee input for real-time validation
+  const totalWithCurrentInput = totalSharePercentage + (parseFloat(currentNominee.sharePercentage) || 0);
+
   const isCurrentNomineeComplete =
     currentNominee.name &&
     currentNominee.panOrAadhar &&
     currentNominee.relationship &&
     currentNominee.sharePercentage;
+
+  // Check if adding current nominee would exceed 100%
+  const wouldExceed100 = totalWithCurrentInput > 100;
 
   // Check if there are changes that require API call
   const hasChanges = () => {
@@ -290,11 +296,11 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       return;
     }
 
-    // Calculate total including current nominee input if it exists
+    // Calculate total percentage from saved nominees only
     const finalTotal = nominees.reduce(
       (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0),
       0
-    ) + (parseFloat(currentNominee.sharePercentage) || 0);
+    );
 
     if (finalTotal !== 100) {
       setError("Total share percentage must equal 100%");
@@ -395,13 +401,19 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
     if (isLoading) return true;
     if (!hasChanges() && isCompleted) return false;
     
-    // Calculate total including current nominee input for validation
-    const totalWithCurrent = nominees.reduce(
+    // Calculate total from saved nominees only
+    const totalFromSaved = nominees.reduce(
       (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0),
       0
-    ) + (parseFloat(currentNominee.sharePercentage) || 0);
+    );
     
-    return nominees.length === 0 || totalWithCurrent !== 100;
+    // If we have nominees and total is exactly 100%, enable the button
+    if (nominees.length > 0 && totalFromSaved === 100) return false;
+    
+    // If we have current nominee input and total with input is exactly 100%, enable the button
+    if (nominees.length > 0 && totalWithCurrentInput === 100 && isCurrentNomineeComplete) return false;
+    
+    return nominees.length === 0 || totalFromSaved !== 100;
   };
 
   // Always show the same UI - whether fresh or completed
@@ -519,8 +531,8 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
           </div>
         ))}
 
-        {/* Form for new nominee - Only show if less than 5 nominees AND total is less than 100% */}
-        {nominees.length < 5 && totalSharePercentage < 100 && (
+        {/* Form for new nominee - Only show if less than 5 nominees AND remaining percentage > 0 */}
+        {nominees.length < 5 && remainingPercentage > 0 && (
           <div className="bg-white rounded-lg p-4 border border-gray-200 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-medium">Nominee {currentNominee.id}</h3>
@@ -598,11 +610,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
               <div>
                 <label className="block text-sm sm:text-xs md:text-sm mb-1">
                   % Share <span className="text-red-500">*</span>
-                  {nominees.length > 0 && (
-                    <span className="text-xs text-gray-500 ml-1">
-                      (Available: {remainingPercentage}%)
-                    </span>
-                  )}
+                  <span className="text-xs text-gray-500 ml-1">
+                    (Available: {remainingPercentage}%)
+                  </span>
                 </label>
                 <input
                   type="number"
@@ -611,13 +621,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                     handleInputChange("sharePercentage", e.target.value)
                   }
                   min="1"
-                  max={remainingPercentage || 100}
+                  max={remainingPercentage}
                   step="0.01"
-                  placeholder={
-                    nominees.length === 0
-                      ? "100"
-                      : remainingPercentage.toString()
-                  }
+                  placeholder={remainingPercentage.toString()}
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
                   disabled={isLoading}
                 />
@@ -626,31 +632,33 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
 
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-            <button
-              onClick={handleAddNominee}
-              disabled={
-                !isCurrentNomineeComplete || totalSharePercentage >= 100 || isLoading
-              }
-              className={`flex items-center text-blue-500 hover:text-blue-600 mb-0 ${
-                !isCurrentNomineeComplete || totalSharePercentage >= 100 || isLoading
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
-            >
-              <PlusIcon className="w-5 h-5 mr-1" />
-              Add Nominee
-            </button>
+            <div className="flex justify-center">
+              <button
+                onClick={handleAddNominee}
+                disabled={
+                  !isCurrentNomineeComplete || remainingPercentage === 0 || isLoading || wouldExceed100
+                }
+                className={`flex items-center text-blue-500 hover:text-blue-600 mb-0 ${
+                  !isCurrentNomineeComplete || remainingPercentage === 0 || isLoading || wouldExceed100
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+              >
+                <PlusIcon className="w-5 h-5 mr-1" />
+                Add Nominee
+              </button>
+            </div>
           </div>
         )}
 
         {/* Message when 100% is allocated */}
-        {totalSharePercentage >= 100 && nominees.length < 5 && (
+        {remainingPercentage === 0 && nominees.length < 5 && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-blue-800 text-sm">
+              <p className="text-blue-800 text-sm text-center">
                 100% share allocated. To add more nominees, please adjust the existing share percentages.
               </p>
             </div>
@@ -665,18 +673,23 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
           <span className="text-gray-600">Total Share Percentage: </span>
           <span
             className={
-              totalSharePercentage > 100
+              totalWithCurrentInput > 100
                 ? "text-red-600 font-medium"
-                : totalSharePercentage === 100
+                : totalWithCurrentInput === 100
                 ? "text-green-600 font-medium"
                 : "text-gray-900"
             }
           >
-            {totalSharePercentage}%
+            {totalWithCurrentInput}%
           </span>
-          {totalSharePercentage < 100 && (
+          {totalWithCurrentInput < 100 && (
             <span className="ml-2 text-amber-600">
               (Need to allocate exactly 100%)
+            </span>
+          )}
+          {totalWithCurrentInput > 100 && (
+            <span className="ml-2 text-red-600">
+              (Exceeds 100% - please adjust)
             </span>
           )}
         </div>

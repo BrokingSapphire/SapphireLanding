@@ -10,7 +10,7 @@ const SapphireJourney = () => {
         height={1500}
         alt="journey"
         draggable={false} // ✅ disables drag
-        className="select-none" // optional: prevents image from being selected
+        className="select-none mx-auto" // optional: prevents image from being selected
       />
     </>
   );

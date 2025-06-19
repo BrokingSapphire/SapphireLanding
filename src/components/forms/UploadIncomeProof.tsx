@@ -278,7 +278,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
             // Wait a bit longer before proceeding
             setTimeout(() => {
               onNext(selectedFile);
-            }, 2000);
+            }, 1000);
           }, 1000);
         } else {
           setError("Upload failed. Please try again.");
@@ -318,7 +318,7 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         toast.success("Document type updated successfully!");
         setTimeout(() => {
           onNext();
-        }, 1500);
+        }, 1000);
       } else {
         onNext();
       }

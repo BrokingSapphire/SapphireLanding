@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-import { ArrowRight, Clock, ExternalLink } from "lucide-react";
+import { ArrowRight, Clock } from "lucide-react";
 import Image from "next/image";
 import axios from "axios";
 import QRCode from "qrcode";
@@ -68,7 +68,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
         pollingInterval = setInterval(() => {
           checkUpiStatus();
         }, 3000); // Poll every 3 seconds
-      }, 10000);
+      }, 20000);
     }
 
     return () => {
@@ -188,9 +188,9 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
     }
   };
 
-  const handleUpiAppClick = (appLink: string) => {
-    window.open(appLink, '_blank');
-  };
+  // const handleUpiAppClick = (appLink: string) => {
+  //   window.open(appLink, '_blank');
+  // };
 
   const handleRetry = () => {
     setTimeLeft(300);
@@ -310,35 +310,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
               />
             </div>
 
-            {/* UPI App Quick Links */}
-            {upiData?.ios_links && (
-              <div className="grid grid-cols-2 gap-2 w-full max-w-xs">
-                <button
-                  onClick={() => handleUpiAppClick(upiData.ios_links.gpay)}
-                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
-                >
-                  GPay <ExternalLink className="ml-1 h-3 w-3" />
-                </button>
-                <button
-                  onClick={() => handleUpiAppClick(upiData.ios_links.phonepe)}
-                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
-                >
-                  PhonePe <ExternalLink className="ml-1 h-3 w-3" />
-                </button>
-                <button
-                  onClick={() => handleUpiAppClick(upiData.ios_links.paytm)}
-                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
-                >
-                  Paytm <ExternalLink className="ml-1 h-3 w-3" />
-                </button>
-                <button
-                  onClick={() => handleUpiAppClick(upiData.ios_links.bhim)}
-                  className="flex items-center justify-center p-2 text-xs border rounded hover:bg-gray-50"
-                >
-                  BHIM <ExternalLink className="ml-1 h-3 w-3" />
-                </button>
-              </div>
-            )}
+
           </div>
         </div>
         <div className="bg-[#F7F9FD] p-3 rounded mt-6 space-y-1 text-sm">

@@ -31,6 +31,7 @@ const OnboardingCarousel = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [forceProgress, setForceProgress] = useState(false);
+  const [hasReachedEsign, setHasReachedEsign] = useState(false);
 
   // Use checkpoint hook to manage state
   const { 
@@ -53,6 +54,13 @@ const OnboardingCarousel = () => {
       console.log('Resuming from step:', resumeStep);
       setCurrentStep(resumeStep);
       
+      // Check if user has reached esign step (step 12) or beyond
+      if (resumeStep >= 12) {
+        setHasReachedEsign(true);
+        // Clear localStorage and cookies when reaching esign
+        clearStorageAndCookies();
+      }
+      
       // Check localStorage for existing client ID
       if (typeof window !== 'undefined') {
         const storedClientId = localStorage.getItem('clientId');
@@ -71,6 +79,19 @@ const OnboardingCarousel = () => {
       setIsInitialized(true);
     }
   }, [checkpointLoading, resumeStep, isInitialized, getClientId]);
+
+  // Function to clear localStorage and cookies
+  const clearStorageAndCookies = () => {
+    if (typeof window !== 'undefined') {
+      // Clear specific localStorage items (but keep clientId for MPIN)
+      localStorage.removeItem('email');
+      localStorage.removeItem('verifiedPhone');
+      
+      // Clear specific cookies but keep authToken for API calls
+      // We'll keep the authToken until the very end of the process
+      console.log('Cleared localStorage and specific cookies at esign step');
+    }
+  };
 
   // Special effect to handle income proof progress
   useEffect(() => {
@@ -207,6 +228,12 @@ const OnboardingCarousel = () => {
       return false;
     }
     
+    // Never allow going back once esign step (12) is reached
+    if (hasReachedEsign || currentStep >= 12) {
+      toast.error("Cannot go back after reaching the esign step.");
+      return false;
+    }
+    
     // Allow going back to PAN from Aadhaar and later steps - PAN can be edited
     // Don't restrict PAN navigation since users might need to correct PAN details
     
@@ -230,12 +257,43 @@ const OnboardingCarousel = () => {
       return true;
     }
     
+    // Disable back button once esign step (12) is reached or beyond
+    if (hasReachedEsign || currentStep >= 12) {
+      return true;
+    }
+    
+    return false;
+  };
+
+  // Check if forward navigation should be disabled
+  const isForwardNavigationDisabled = (): boolean => {
+    // Disable forward navigation on congratulations page (step 15)
+    if (currentStep === 15) {
+      return true;
+    }
+    
+    // Disable if current step is not completed
+    if (!isCurrentStepCompleted()) {
+      return true;
+    }
+    
     return false;
   };
 
   // NEW: Enhanced handleNext that handles step completion properly
   const handleNext = useCallback(async (forceNext = false) => {
     if (isAnimating) return;
+    
+    // Don't allow next on congratulations page (step 15)
+    if (currentStep === 15) {
+      return;
+    }
+    
+    // Set hasReachedEsign flag and clear storage when reaching esign step
+    if (currentStep === 11 && !hasReachedEsign) { // Moving from step 11 to 12 (esign)
+      setHasReachedEsign(true);
+      clearStorageAndCookies();
+    }
     
     // Special case for investment segment with income proof
     if (currentStep === 4 && isStepCompleted(CheckpointStep.INCOME_PROOF)) {
@@ -268,7 +326,7 @@ const OnboardingCarousel = () => {
         setIsAnimating(false);
       }, 100);
     }, 400);
-  }, [isAnimating, TOTAL_STEPS, isCurrentStepCompleted, currentStep, isStepCompleted]);
+  }, [isAnimating, TOTAL_STEPS, isCurrentStepCompleted, currentStep, isStepCompleted, hasReachedEsign]);
 
   const handlePrevious = useCallback(() => {
     if (isAnimating) return;
@@ -276,6 +334,11 @@ const OnboardingCarousel = () => {
     // Don't allow going back from the first step
     if (currentStep === 0) {
       toast.error("You're already at the first step.");
+      return;
+    }
+    
+    // Don't allow going back on congratulations page
+    if (currentStep === 15) {
       return;
     }
     
@@ -315,14 +378,13 @@ const OnboardingCarousel = () => {
       icon: <ChevronUp size={18} />,
       onClick: handlePrevious,
       ariaLabel: "Previous step",
-      disabled: isBackNavigationDisabled(), // NEW: Add disabled property
+      disabled: isBackNavigationDisabled(),
     },
     {
       icon: <ChevronDown size={18} />,
       onClick: () => handleNext(false),
       ariaLabel: "Next step",
-      // Disable next button when current step is not completed
-      disabled: !isCurrentStepCompleted(),
+      disabled: isForwardNavigationDisabled(),
     },
   ];
 
@@ -528,7 +590,13 @@ const OnboardingCarousel = () => {
       id: "congratulations",
       component: (
         <CongratulationsPage 
-          onNext={() => handleNext(true)}
+          onNext={() => {
+            // Clear all remaining localStorage and cookies on congratulations
+            localStorage.clear();
+            Cookies.remove('authToken');
+            delete axios.defaults.headers.common['Authorization'];
+            console.log('Congratulations reached - cleared all storage');
+          }}
           clientId={getStoredClientId() ?? undefined} // Pass client ID from localStorage, convert null to undefined
         />
       ),
@@ -537,6 +605,11 @@ const OnboardingCarousel = () => {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent): void => {
+      // Disable keyboard navigation on congratulations page
+      if (currentStep === 15) {
+        return;
+      }
+      
       if (e.key === "ArrowUp") {
         handlePrevious();
       } else if (e.key === "ArrowDown") {
@@ -552,7 +625,7 @@ const OnboardingCarousel = () => {
       window.removeEventListener("keydown", handleKeyPress);
       document.body.style.overflow = "";
     };
-  }, [handleNext, handlePrevious]);
+  }, [handleNext, handlePrevious, currentStep]);
 
   const getAnimationStyles = () => {
     if (!isAnimating) {
@@ -687,30 +760,81 @@ const OnboardingCarousel = () => {
           ))}
         </div>
 
-        {/* Navigation Arrows - Properly positioned for mobile */}
-        <div className="fixed bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 lg:left-auto lg:transform-none lg:right-6 flex gap-1">
-          {navigationButtons.map((button, index) => (
+        {/* Logout Button - Hide on email screen and congratulations page */}
+        {currentStep > 0 && currentStep !== 15 && (
+          <div className="fixed bottom-4 lg:bottom-6 left- transform translate-x-1/2 lg:left-[41%] lg:transform-none">
             <button
-              key={index}
-              className={`px-3 py-2 flex items-center justify-center ${
-                button.disabled 
-                  ? "bg-gray-400 cursor-not-allowed opacity-50" 
-                  : "bg-green-heading hover:bg-white hover:text-green-heading"
-              } transition-all duration-300 ease-in-out border ${
-                button.disabled 
-                  ? "border-gray-400" 
-                  : "border-green-heading"
-              } text-white shadow-lg ${
-                index === 0 ? "rounded-l-md" : "rounded-r-md"
-              } ${isAnimating ? "opacity-50 cursor-not-allowed" : ""}`}
-              onClick={button.onClick}
-              disabled={isAnimating || button.disabled}
-              aria-label={button.ariaLabel}
+              onClick={() => {
+                // Clear localStorage
+                localStorage.removeItem('email');
+                localStorage.removeItem('verifiedPhone');
+                localStorage.removeItem('clientId');
+                
+                // Clear auth token from cookies
+                Cookies.remove('authToken');
+                
+                // Clear axios default headers
+                delete axios.defaults.headers.common['Authorization'];
+                
+                // Show confirmation toast
+                toast.success("Logged out successfully!");
+                
+                // Reset to first step after a brief delay
+                setTimeout(() => {
+                  setCurrentStep(0);
+                  setIsInitialized(false);
+                  setHasReachedEsign(false);
+                }, 1000);
+              }}
+              className="px-3 py-2 flex items-center justify-center bg-red-500 hover:bg-red-600 transition-all duration-300 ease-in-out border border-red-500 text-white shadow-lg rounded-md mr-2 lg:mr-0"
+              aria-label="Logout"
+              title="Logout"
             >
-              {button.icon}
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="18" 
+                height="18" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16,17 21,12 16,7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
             </button>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {/* Navigation Arrows - Hide on congratulations page */}
+        {currentStep !== 15 && (
+          <div className="fixed bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 lg:left-auto lg:transform-none lg:right-6 flex gap-1">
+            {navigationButtons.map((button, index) => (
+              <button
+                key={index}
+                className={`px-3 py-2 flex items-center justify-center ${
+                  button.disabled 
+                    ? "bg-gray-400 cursor-not-allowed opacity-50" 
+                    : "bg-green-heading hover:bg-white hover:text-green-heading"
+                } transition-all duration-300 ease-in-out border ${
+                  button.disabled 
+                    ? "border-gray-400" 
+                    : "border-green-heading"
+                } text-white shadow-lg ${
+                  index === 0 ? "rounded-l-md" : "rounded-r-md"
+                } ${isAnimating ? "opacity-50 cursor-not-allowed" : ""}`}
+                onClick={button.onClick}
+                disabled={isAnimating || button.disabled}
+                aria-label={button.ariaLabel}
+              >
+                {button.icon}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Global style to prevent scrolling */}
