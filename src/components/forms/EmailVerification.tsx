@@ -28,6 +28,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   const [isLoading, setIsLoading] = useState(false);
   const [otpTimer, setOtpTimer] = useState(600); // 10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
+  const [hasManuallyVerified, setHasManuallyVerified] = useState(false); // NEW: Track manual verification
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -47,16 +48,16 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     }
   }, [initialData, isCompleted]);
 
-  // If step is already completed, show completed state
+  // MODIFIED: Only auto-advance if manually verified in this session
   useEffect(() => {
-    if (isCompleted) {
-      // Auto-advance to next step after a short delay
+    if (isCompleted && hasManuallyVerified) {
+      // Auto-advance to next step after a short delay, only if manually verified
       const timer = setTimeout(() => {
         onNext();
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [isCompleted, onNext]);
+  }, [isCompleted, hasManuallyVerified, onNext]);
 
   // Prevent page reload/refresh
   useEffect(() => {
@@ -179,6 +180,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         setAuthToken(response.data.token);
       }
 
+      // MODIFIED: Mark as manually verified before proceeding
+      setHasManuallyVerified(true);
+
       toast.success("Email verified successfully!");
       onNext();
     } catch (error) {
@@ -294,7 +298,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
   // Get button text based on current state
   const getButtonText = () => {
-    if (isCompleted) return "Completed ✓";
+    if (isCompleted && hasManuallyVerified) return "Completed ✓";
     if (isLoading) {
       return showOTP ? "Verifying..." : "Sending Code...";
     }
@@ -303,14 +307,14 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
   // Determine if button should be disabled
   const isButtonDisabled = () => {
-    if (isCompleted) return false;
+    if (isCompleted && hasManuallyVerified) return false;
     if (isLoading) return true;
     if (!showOTP) return !validateEmail(email);
     return !otp.every((digit) => digit !== "");
   };
 
-  // Show completed state
-  if (isCompleted) {
+  // MODIFIED: Show completed state only if manually verified
+  if (isCompleted && hasManuallyVerified) {
     return (
       <div className="mx-auto pt-24">
         <FormHeading
@@ -323,25 +327,17 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
           <div className="flex gap-3">
             <input
               type="email"
-              className="flex-1 px-3 py-2 border border-green-300 bg-green-50 rounded focus:outline-none"
+              className="flex-1 px-3 py-2 border  rounded focus:outline-none"
               value={email}
               disabled
             />
           </div>
         </div>
 
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-green-800 font-medium">Email verified successfully!</span>
-          </div>
-        </div>
 
         <Button
           onClick={onNext}
-          className="w-full py-6 mb-6 bg-green-600 hover:bg-green-700"
+          className="w-full py-6 mb-6 "
           variant="ghost"
         >
           Continue to Next Step
@@ -387,6 +383,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
                   inputRefs.current[index] = el;
                 }}
                 type="text"
+                inputMode="numeric"
                 maxLength={1}
                 value={digit}
                 onChange={(e) => handleOTPChange(index, e.target.value)}
@@ -413,7 +410,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
                 ? `Resend Code (${resendTimer}s)`
                 : "Resend Code"}
             </button>
-            
           </div>
         </div>
       )}
@@ -424,7 +420,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         disabled={isButtonDisabled()}
         className={`w-full py-6 mb-6 ${
           isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
-        } ${isCompleted ? "bg-green-600 hover:bg-green-700" : ""}`}
+        } ${isCompleted && hasManuallyVerified ? "bg-green-600 hover:bg-green-700" : ""}`}
         variant="ghost"
       >
         {getButtonText()}

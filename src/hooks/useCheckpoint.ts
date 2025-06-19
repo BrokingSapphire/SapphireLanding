@@ -230,14 +230,14 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           
           // Income proof endpoint returns URL if the file is uploaded
           if (response.status === 200 && response.data?.data?.url) {
-            console.log("Income proof is completed with data:", response.data);
+            // console.log("Income proof is completed with data:", response.data);
             return {
               step,
               data: response.data.data as StepDataWithUrl,
               completed: true,
             };
           } else {
-            console.log("Income proof endpoint returned success but no data");
+            // console.log("Income proof endpoint returned success but no data");
             return {
               step,
               data: null,
@@ -248,14 +248,14 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           const err = error as AxiosError;
           // Handle 204 No Content specifically
           if (err.response?.status === 204) {
-            console.log("Income proof endpoint returned 204 No Content");
+            // console.log("Income proof endpoint returned 204 No Content");
             return {
               step,
               data: null,
               completed: false,
             };
           }
-          console.error("Error fetching income proof:", error);
+          // console.error("Error fetching income proof:", error);
           throw error;
         }
       } else if (step === CheckpointStep.ESIGN) {
@@ -270,18 +270,18 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             }
           );
           
-          console.log("eSign complete response:", response.data);
+          // console.log("eSign complete response:", response.data);
           
           // If we get a 200 response with data, eSign is completed
           if (response.status === 200 && response.data?.data?.url) {
-            console.log("eSign completed successfully with URL:", response.data.data.url);
+            // console.log("eSign completed successfully with URL:", response.data.data.url);
             return {
               step,
               data: { url: response.data.data.url } as StepDataWithUrl,
               completed: true,
             };
           } else {
-            console.log("eSign complete endpoint returned success but no URL");
+            // console.log("eSign complete endpoint returned success but no URL");
             return {
               step,
               data: null,
@@ -290,17 +290,17 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           }
         } catch (error) {
           const err = error as AxiosError;
-          console.log("eSign complete error:", err.response?.status, err.response?.data);
+          // console.log("eSign complete error:", err.response?.status, err.response?.data);
           // Handle specific error cases
           if (err.response?.status === 404) {
-            console.log("eSign endpoint not found");
+            // console.log("eSign endpoint not found");
             return {
               step,
               data: null,
               completed: false,
             };
           } else if (err.response?.status === 401) {
-            console.log("eSign not authorized or expired - not completed yet");
+            // console.log("eSign not authorized or expired - not completed yet");
             return {
               step,
               data: null,
@@ -342,7 +342,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       if (step === CheckpointStep.PASSWORD_SETUP && err.response?.status === 400) {
         const errorMessage = err.response?.data?.error?.message || err.response?.data?.message || '';
         if (errorMessage.includes('Password already set')) {
-          console.log("Password already set - treating as completed");
+          // console.log("Password already set - treating as completed");
           return {
             step,
             data: { password_set: true } as PasswordSetupData,
@@ -421,11 +421,11 @@ export const useCheckpoint = (): UseCheckpointReturn => {
   const hasValidData = (step: CheckpointStep): boolean => {
     const stepData = checkpointData[step];
     
-    console.log(`Validating step ${step}:`, {
-      stepData,
-      completed: stepData?.completed,
-      data: stepData?.data
-    });
+    // console.log(`Validating step ${step}:`, {
+    //   stepData,
+    //   completed: stepData?.completed,
+    //   data: stepData?.data
+    // });
     
     if (!stepData?.completed || !stepData.data) {
       return false;
@@ -456,7 +456,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       case CheckpointStep.ESIGN: {
         // For eSign, check if we have step data with url field (even empty string means completed)
         const hasUrlField = stepData.data && typeof stepData.data === 'object' && 'url' in stepData.data;
-        console.log(`eSign validation - hasUrlField: ${hasUrlField}, url value:`, (stepData.data as StepDataWithUrl)?.url);
+        // console.log(`eSign validation - hasUrlField: ${hasUrlField}, url value:`, (stepData.data as StepDataWithUrl)?.url);
         return hasUrlField;
       }
       
@@ -513,129 +513,129 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     if (requiresIncomeProof || hasRiskSegments) {
       // Check if income proof is also completed
       const incomeProofCompleted = isStepCompleted(CheckpointStep.INCOME_PROOF);
-      console.log(`Investment segment complete: ${investmentCompleted}, Income proof required: ${requiresIncomeProof || hasRiskSegments}, Income proof completed: ${incomeProofCompleted}`);
+      // console.log(`Investment segment complete: ${investmentCompleted}, Income proof required: ${requiresIncomeProof || hasRiskSegments}, Income proof completed: ${incomeProofCompleted}`);
       return incomeProofCompleted;
     }
     
     // If no income proof required, investment segment completion is sufficient
-    console.log(`Investment segment complete: ${investmentCompleted}, No income proof required`);
+    // console.log(`Investment segment complete: ${investmentCompleted}, No income proof required`);
     return true;
   };
 
   // Determine current step considering all steps
   const getCurrentStep = (): number => {
-    console.log("=== CHECKPOINT DATA DEBUG ===");
-    console.log("Investment segment data:", checkpointData[CheckpointStep.INVESTMENT_SEGMENT]);
-    console.log("Income proof data:", checkpointData[CheckpointStep.INCOME_PROOF]);
-    console.log("eSign data:", checkpointData[CheckpointStep.ESIGN]);
-    console.log("Investment segment completed:", isStepCompleted(CheckpointStep.INVESTMENT_SEGMENT));
-    console.log("Income proof completed:", isStepCompleted(CheckpointStep.INCOME_PROOF));
-    console.log("eSign completed:", isStepCompleted(CheckpointStep.ESIGN));
-    console.log("Investment segment step complete (with income proof check):", isInvestmentSegmentStepComplete());
+    // console.log("=== CHECKPOINT DATA DEBUG ===");
+    // console.log("Investment segment data:", checkpointData[CheckpointStep.INVESTMENT_SEGMENT]);
+    // console.log("Income proof data:", checkpointData[CheckpointStep.INCOME_PROOF]);
+    // console.log("eSign data:", checkpointData[CheckpointStep.ESIGN]);
+    // console.log("Investment segment completed:", isStepCompleted(CheckpointStep.INVESTMENT_SEGMENT));
+    // console.log("Income proof completed:", isStepCompleted(CheckpointStep.INCOME_PROOF));
+    // console.log("eSign completed:", isStepCompleted(CheckpointStep.ESIGN));
+    // console.log("Investment segment step complete (with income proof check):", isInvestmentSegmentStepComplete());
     
     // Check email completion
     if (!isEmailCompleted()) {
-      console.log("Email not completed, returning email step");
+      // console.log("Email not completed, returning email step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.EMAIL];
     }
 
     // Check mobile completion
     if (!isMobileCompleted()) {
-      console.log("Mobile not completed, returning mobile step");
+      // console.log("Mobile not completed, returning mobile step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.MOBILE];
     }
 
     // Check PAN completion
     if (!isStepCompleted(CheckpointStep.PAN)) {
-      console.log("PAN not completed, returning PAN step");
+      // console.log("PAN not completed, returning PAN step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.PAN];
     }
 
     // Check for mismatch data first (this avoids expensive DigiLocker calls)
     const mismatchData = checkpointData[CheckpointStep.AADHAAR_MISMATCH_DETAILS];
     if (mismatchData?.completed) {
-      console.log("Mismatch data found, returning Aadhaar step");
+      // console.log("Mismatch data found, returning Aadhaar step");
       // There's mismatch data, user needs to fill mismatch form
       return STEP_TO_COMPONENT_INDEX[AllSteps.AADHAAR];
     }
 
     // Check Aadhaar completion
     if (!isStepCompleted(CheckpointStep.AADHAAR)) {
-      console.log("Aadhaar not completed, returning Aadhaar step");
+      // console.log("Aadhaar not completed, returning Aadhaar step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.AADHAAR];
     }
 
     // Check Investment Segment with enhanced validation (includes income proof check)
     if (!isInvestmentSegmentStepComplete()) {
-      console.log("Investment segment step not complete, returning investment segment step");
+      // console.log("Investment segment step not complete, returning investment segment step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.INVESTMENT_SEGMENT];
     }
     
-    console.log("Investment segment step complete, proceeding to user detail");
+    // console.log("Investment segment step complete, proceeding to user detail");
     
     // Check User Detail
     if (!isStepCompleted(CheckpointStep.USER_DETAIL)) {
-      console.log("User detail not completed, returning user detail step");
+      // console.log("User detail not completed, returning user detail step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.USER_DETAIL];
     }
 
     // Check Personal Detail
     if (!isStepCompleted(CheckpointStep.PERSONAL_DETAIL)) {
-      console.log("Personal detail not completed, returning personal detail step");
+      // console.log("Personal detail not completed, returning personal detail step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.PERSONAL_DETAIL];
     }
 
     // Check Other Detail
     if (!isStepCompleted(CheckpointStep.OTHER_DETAIL)) {
-      console.log("Other detail not completed, returning other detail step");
+      // console.log("Other detail not completed, returning other detail step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.OTHER_DETAIL];
     }
 
     // Check Bank Validation
     if (!isStepCompleted(CheckpointStep.BANK_VALIDATION)) {
-      console.log("Bank validation not completed, returning bank validation step");
+      // console.log("Bank validation not completed, returning bank validation step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.BANK_VALIDATION];
     }
 
     // Check IPV with enhanced validation
     if (!isStepCompleted(CheckpointStep.IPV)) {
-      console.log("IPV not completed, returning IPV step");
+      // console.log("IPV not completed, returning IPV step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.IPV];
     }
 
     // Check Signature with enhanced validation
     if (!isStepCompleted(CheckpointStep.SIGNATURE)) {
-      console.log("Signature not completed, returning signature step");
+      // console.log("Signature not completed, returning signature step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.SIGNATURE];
     }
 
     // Check Add Nominees
     if (!isStepCompleted(CheckpointStep.ADD_NOMINEES)) {
-      console.log("Add nominees not completed, returning add nominees step");
+      // console.log("Add nominees not completed, returning add nominees step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.ADD_NOMINEES];
     }
 
     // Check eSign
     if (!isStepCompleted(CheckpointStep.ESIGN)) {
-      console.log("eSign not completed, returning last step");
-      console.log("eSign step data:", checkpointData[CheckpointStep.ESIGN]);
+      // console.log("eSign not completed, returning last step");
+      // console.log("eSign step data:", checkpointData[CheckpointStep.ESIGN]);
       return STEP_TO_COMPONENT_INDEX[AllSteps.LAST_STEP];
     }
 
     // Check password setup
     if (!isStepCompleted(CheckpointStep.PASSWORD_SETUP)) {
-      console.log("Password setup not completed, returning set password step");
+      // console.log("Password setup not completed, returning set password step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.SET_PASSWORD];
     }
 
     // Check MPIN setup
     if (!isStepCompleted(CheckpointStep.MPIN_SETUP)) {
-      console.log("MPIN setup not completed, returning MPIN step");
+      // console.log("MPIN setup not completed, returning MPIN step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.MPIN];
     }
 
     // All completed
-    console.log("All steps completed, returning congratulations step");
+    // console.log("All steps completed, returning congratulations step");
     return STEP_TO_COMPONENT_INDEX[AllSteps.CONGRATULATIONS];
   };
 

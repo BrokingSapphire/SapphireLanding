@@ -158,7 +158,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
           // Auto-advance after 2 seconds
           setTimeout(() => {
             onNext();
-          }, 2000);
+          }, 100);
         } else {
           // Need to upload income proof
           await handleInitializeIncomeProof();
@@ -170,7 +170,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         // Auto-advance after 2 seconds
         setTimeout(() => {
           onNext();
-        }, 2000);
+        }, 100);
       }
     } catch (err: unknown) {
       console.error("Error saving investment segments:", err);
