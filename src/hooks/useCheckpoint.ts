@@ -1,8 +1,9 @@
-// Updated useCheckpoint hook with proper IPV handling for both mobile and PC uploads
+// Updated useCheckpoint hook with proper localStorage initialization
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
+import { useState, useEffect } from 'react';
 
 // Define checkpoint steps that exist in your backend API
 export enum CheckpointStep {
@@ -135,25 +136,45 @@ interface UseCheckpointReturn {
   getMismatchData: () => CheckpointData['data'];
   // Force next step function for income proof
   forceNextStep: (currentStepIndex: number) => number;
+  // Client-side initialization state
+  isClientInitialized: boolean;
 }
 
 // Custom hook to manage checkpoint data
 export const useCheckpoint = (): UseCheckpointReturn => {
   const queryClient = useQueryClient();
+  const [isClientInitialized, setIsClientInitialized] = useState(false);
+  
+  // Initialize client-side state
+  useEffect(() => {
+    setIsClientInitialized(true);
+  }, []);
   
   // Get auth token from cookies
   const getAuthToken = () => {
     return Cookies.get('authToken') || '';
   };
 
-  // Check if email is completed
+  // Check if email is completed - Fixed to handle SSR
   const isEmailCompleted = () => {
-    return typeof window !== "undefined" && !!localStorage.getItem('email');
+    if (!isClientInitialized) {
+      console.log("Client not initialized yet, email check returning false");
+      return false;
+    }
+    const emailExists = !!localStorage.getItem('email');
+    console.log("Email completed check:", emailExists, "Email value:", localStorage.getItem('email'));
+    return emailExists;
   };
 
-  // Check if mobile is completed
+  // Check if mobile is completed - Fixed to handle SSR
   const isMobileCompleted = () => {
-    return !!getAuthToken();
+    if (!isClientInitialized) {
+      console.log("Client not initialized yet, mobile check returning false");
+      return false;
+    }
+    const tokenExists = !!getAuthToken();
+    console.log("Mobile completed check:", tokenExists, "Token exists:", !!getAuthToken());
+    return tokenExists;
   };
 
   // Function to fetch specific checkpoint step
@@ -393,7 +414,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     useQuery({
       queryKey: ['checkpoint', step],
       queryFn: () => fetchCheckpointStep(step),
-      enabled: !!getAuthToken(), // Only fetch if we have a token
+      enabled: !!getAuthToken() && isClientInitialized, // Only fetch if we have a token AND client is initialized
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes
       retry: (failureCount, error) => {
@@ -560,7 +581,14 @@ export const useCheckpoint = (): UseCheckpointReturn => {
 
   // Determine current step considering all steps
   const getCurrentStep = (): number => {
+    // Don't calculate step if client is not initialized
+    if (!isClientInitialized) {
+      console.log("Client not initialized, returning email step");
+      return STEP_TO_COMPONENT_INDEX[AllSteps.EMAIL];
+    }
+
     console.log("=== CHECKPOINT DATA DEBUG ===");
+    console.log("Client initialized:", isClientInitialized);
     console.log("Investment segment data:", checkpointData[CheckpointStep.INVESTMENT_SEGMENT]);
     console.log("Income proof data:", checkpointData[CheckpointStep.INCOME_PROOF]);
     console.log("IPV data:", checkpointData[CheckpointStep.IPV]);
@@ -700,6 +728,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     hasMismatchData,
     getMismatchData,
     forceNextStep,
+    isClientInitialized, // Export this for external use
   };
 };
 

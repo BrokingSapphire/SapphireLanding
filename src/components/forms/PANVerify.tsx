@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
 
 interface PANVerifyProps {
   onNext: () => void;
@@ -19,7 +20,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
     pan: false,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   // Prefill data from initialData (API response) - always editable
   useEffect(() => {
@@ -82,7 +83,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
       setErrors({
         pan: !validatePan(panNumber),
       });
-      setError("Please enter a valid PAN number");
+      toast.error("Please enter a valid PAN number");
       return;
     }
 
@@ -109,7 +110,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
       const authToken = Cookies.get('authToken');
       
       if (!authToken) {
-        setError("Authentication token not found. Please restart the process.");
+        toast.error("Authentication token not found. Please restart the process.");
         setIsLoading(false);
         return;
       }
@@ -134,10 +135,11 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
       console.log("PAN submission response:", response.data);
 
       if (!response.data) {
-        setError("Failed to verify PAN details. Please try again.");
+        toast.error("Failed to verify PAN details. Please try again.");
         return;
       }
 
+      toast.success("PAN verified successfully!");
       onNext();
     } catch (err: unknown) {
       const error = err as {
@@ -153,24 +155,24 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
       if (error.response) {
         // Handle specific error messages from the server
         if (error.response.data?.message) {
-          setError(`Error: ${error.response.data.message}`);
+          toast.error(`Error: ${error.response.data.message}`);
         } else if (error.response.data?.error?.message) {
-          setError(`Error: ${error.response.data.error.message}`);
+          toast.error(`Error: ${error.response.data.error.message}`);
         } else if (error.response.status === 400) {
-          setError("Invalid PAN details or request. Please check and try again.");
+          toast.error("Invalid PAN details or request. Please check and try again.");
         } else if (error.response.status === 401) {
-          setError("Authentication failed. Please restart the process.");
+          toast.error("Authentication failed. Please restart the process.");
         } else if (error.response.status === 403) {
-          setError("Access denied. Please check your authentication and try again.");
+          toast.error("Access denied. Please check your authentication and try again.");
         } else if (error.response.status === 422) {
-          setError("Invalid PAN format or PAN already exists.");
+          toast.error("Invalid PAN format or PAN already exists.");
         } else {
-          setError(`Server error (${error.response.status}). Please try again.`);
+          toast.error(`Server error (${error.response.status}). Please try again.`);
         }
       } else if (error.request) {
-        setError("Network error. Please check your connection and try again.");
+        toast.error("Network error. Please check your connection and try again.");
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -218,12 +220,6 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
       
       </div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 rounded">
-          <p className="text-red-600 text-sm">{error}</p>
-        </div>
-      )}
-
       <Button
         onClick={handleSubmit}
         variant="ghost"
@@ -235,7 +231,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
         {getButtonText()}
       </Button>
 
-      <div className="mt-6 text-sm text-center text-gray-600">
+      <div className="hidden md:block mt-6 text-sm text-center text-gray-600">
         <p className="mb-4 text-center">
           By continuing, you agree to verify your PAN details with the Income
           Tax Department. Your PAN will be used for KYC verification purposes

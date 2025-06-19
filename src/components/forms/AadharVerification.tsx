@@ -115,10 +115,9 @@ const AadhaarVerification = ({
       // Refetch the Aadhaar checkpoint to update the hook
       refetchStep(CheckpointStep.AADHAAR);
       
-      // Auto-advance after 2 seconds
       setTimeout(() => {
         onNext();
-      }, 2000);
+      }, 100);
 
     } catch (err: unknown) {
       const error = err as { response?: { status?: number; data?: { message?: string; error?: { message?: string } } } };
@@ -149,7 +148,7 @@ const AadhaarVerification = ({
       // Then poll every 3 seconds
       pollingIntervalRef.current = setInterval(() => {
         checkAadhaarStatus();
-      }, 3000);
+      }, 2500);
     }, 4000);
   }, [checkAadhaarStatus]);
 
@@ -258,7 +257,7 @@ const AadhaarVerification = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "aadhaar_uri",
-          redirect: `${window.location.origin}/signup/aadhaar-success` // Add redirect URL
+          redirect: `https://sapphirebroking.com/signup`
         },
         {
           headers: {
@@ -432,10 +431,7 @@ const AadhaarVerification = ({
                 The Aadhaar number linked to your PAN doesn&apos;t match the one from DigiLocker verification.
               </p>
               {(mismatchInfo.pan_masked_aadhaar || panMaskedAadhaar) && mismatchInfo.digilocker_masked_aadhaar && (
-                <div className="text-sm text-yellow-700">
-                  <p>PAN Linked Aadhaar: {mismatchInfo.pan_masked_aadhaar || panMaskedAadhaar}</p>
-                  <p>DigiLocker Aadhaar: {mismatchInfo.digilocker_masked_aadhaar}</p>
-                </div>
+                <div></div>
               )}
             </div>
           </div>
