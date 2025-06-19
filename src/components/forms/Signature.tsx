@@ -181,6 +181,17 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     }
   }, [isInitialized, signatureUid, initializeCanvas]);
 
+  // Additional effect to reinitialize canvas when returning from QR screen
+  useEffect(() => {
+    if (!showQrCode && isInitialized && signatureUid && canvasRef.current) {
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        initializeCanvas();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showQrCode, isInitialized, signatureUid, initializeCanvas]);
+
   const startDrawing = (
     event:
       | React.MouseEvent<HTMLCanvasElement>
@@ -333,7 +344,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
       // Refetch signature step to update the hook
       refetchStep(CheckpointStep.SIGNATURE);
 
-      // Auto-advance after 2 seconds
+      // Auto-advance after a short delay
       setTimeout(() => {
         onNext();
       }, 100);
@@ -415,7 +426,13 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   if (showQrCode && signatureUid) {
     return (
       <SignatureQrCode
-        onBack={() => setShowQrCode(false)}
+        onBack={() => {
+          setShowQrCode(false);
+          // Force canvas reinitialization when returning from QR screen
+          setTimeout(() => {
+            initializeCanvas();
+          }, 100);
+        }}
         onComplete={onNext}
         signatureUid={signatureUid}
       />

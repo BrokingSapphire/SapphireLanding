@@ -252,7 +252,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       // Auto-advance after 2 seconds
       setTimeout(() => {
         onNext();
-      }, 2000);
+      }, 100);
       
     } catch (err: any) {
       console.error("IPV upload error:", err);
