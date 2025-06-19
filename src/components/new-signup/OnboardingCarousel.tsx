@@ -1,4 +1,4 @@
-// Updated OnboardingCarousel with proper navigation restrictions
+// Updated OnboardingCarousel with proper client initialization
 
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
@@ -44,14 +44,16 @@ const OnboardingCarousel = () => {
     isMobileCompleted,
     getClientId,
     refetchStep,
+    isClientInitialized, // New flag from useCheckpoint
   } = useCheckpoint();
 
   const TOTAL_STEPS = 16;
 
   // Initialize current step from checkpoint data and client ID from localStorage
   useEffect(() => {
-    if (!checkpointLoading && !isInitialized) {
-      console.log('Resuming from step:', resumeStep);
+    // Wait for both checkpoint loading AND client initialization
+    if (!checkpointLoading && isClientInitialized && !isInitialized) {
+      console.log('Client initialized, resuming from step:', resumeStep);
       setCurrentStep(resumeStep);
       
       // Check if user has reached esign step (step 12) or beyond
@@ -78,7 +80,7 @@ const OnboardingCarousel = () => {
       
       setIsInitialized(true);
     }
-  }, [checkpointLoading, resumeStep, isInitialized, getClientId]);
+  }, [checkpointLoading, resumeStep, isInitialized, getClientId, isClientInitialized]);
 
   // Function to clear localStorage and cookies
   const clearStorageAndCookies = () => {
@@ -644,13 +646,15 @@ const OnboardingCarousel = () => {
     };
   };
 
-  // Show loading state while fetching checkpoint data
-  if (checkpointLoading && !isInitialized) {
+  // Show loading state while fetching checkpoint data OR waiting for client initialization
+  if ((checkpointLoading || !isClientInitialized) && !isInitialized) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your progress...</p>
+          <p className="text-gray-600">
+            {!isClientInitialized ? "Initializing..." : "Loading your progress..."}
+          </p>
         </div>
       </div>
     );

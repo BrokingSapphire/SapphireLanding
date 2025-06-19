@@ -32,7 +32,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   const [hasAcceptedRisk, setHasAcceptedRisk] = useState(false);
   const [showUploadIncome, setShowUploadIncome] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [incomeProofUid, setIncomeProofUid] = useState<string | null>(null);
   const [isIncomeProofCompleted, setIsIncomeProofCompleted] = useState(false);
 
@@ -43,6 +43,12 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     { id: "Currency", label: "Currency", requiresDisclosure: true },
     { id: "Commodity", label: "Commodity Derivatives", requiresDisclosure: true },
   ];
+
+  // ✅ Fixed income proof type mapping
+  const getDefaultIncomeProofType = () => {
+    // Use the most common/recommended option as default
+    return "bank_statement_6m_10k"; // Bank statement for 6 months with 10k balance
+  };
 
   // Helper function to check if segments require income proof
   const getSegmentsRequiringProof = (segments: string[]) => {
@@ -140,7 +146,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
 
       // Check the response data structure
       if (!response.data) {
-        setError("Failed to save investment segments. Please try again.");
+        toast.error("Failed to save investment segments. Please try again.");
         setIsLoading(false);
         return;
       }
@@ -178,24 +184,24 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
       
       if (axios.isAxiosError(err) && err.response) {
         if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
+          toast.error(`Error: ${err.response.data.message}`);
         } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
+          toast.error(`Error: ${err.response.data.error.message}`);
         } else if (err.response.status === 400) {
-          setError("Invalid investment segments. Please try again.");
+          toast.error("Invalid investment segments. Please try again.");
         } else if (err.response.status === 401) {
-          setError("Authentication failed. Please restart the process.");
+          toast.error("Authentication failed. Please restart the process.");
         } else if (err.response.status === 403) {
-          setError(err.response.data?.error?.message || "Please complete previous steps first.");
+          toast.error(err.response.data?.error?.message || "Please complete previous steps first.");
         } else if (err.response.status === 422) {
-          setError("Invalid segment selection. Please try again.");
+          toast.error("Invalid segment selection. Please try again.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          toast.error(`Server error (${err.response.status}). Please try again.`);
         }
       } else if (axios.isAxiosError(err) && err.request) {
-        setError("Network error. Please check your connection and try again.");
+        toast.error("Network error. Please check your connection and try again.");
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -220,14 +226,14 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     await handleSubmitSegmentsAfterRisk();
   };
 
-  // Initialize income proof step
+  // ✅ Fixed income proof initialization with correct type
   const handleInitializeIncomeProof = async () => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "income_proof",
-          income_proof_type: "pdf" // Add default income proof type
+          income_proof_type: getDefaultIncomeProofType() // ✅ Use valid enum value
         },
         {
           headers:{
@@ -237,9 +243,9 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
       );
 
       if (!response.data?.data?.uid) {
-        setError("Failed to initialize income proof. Please try again.");
+        toast.error("Failed to initialize income proof. Please try again.");
         if(response.data?.data == null) {
-          setError("Empty data received from server. Please try again.");
+          toast.error("Empty data received from server. Please try again.");
         }
         return;
       }
@@ -254,18 +260,20 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
       
       if (axios.isAxiosError(err) && err.response) {
         if (err.response.data?.message) {
-          setError(`Error: ${err.response.data.message}`);
+          toast.error(`Error: ${err.response.data.message}`);
         } else if (err.response.data?.error?.message) {
-          setError(`Error: ${err.response.data.error.message}`);
+          toast.error(`Error: ${err.response.data.error.message}`);
         } else if (err.response.status === 401) {
-          setError("Authentication failed. Please restart the process.");
+          toast.error("Authentication failed. Please restart the process.");
+        } else if (err.response.status === 422) {
+          toast.error("Invalid income proof type. Please try again.");
         } else {
-          setError(`Server error (${err.response.status}). Please try again.`);
+          toast.error(`Server error (${err.response.status}). Please try again.`);
         }
       } else if (axios.isAxiosError(err) && err.request) {
-        setError("Network error. Please check your connection and try again.");
+        toast.error("Network error. Please check your connection and try again.");
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        toast.error("An unexpected error occurred. Please try again.");
       }
     }
   };
@@ -294,7 +302,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     const segmentsRequiringRisk = getSegmentsRequiringProof(selectedSegments);
     
     if (segmentsRequiringRisk.length > 0 && !hasAcceptedRisk) {
-      return "Continue & Accept Risk Disclosure";
+      return "Continue";
     }
     
     return "Continue";
@@ -347,12 +355,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         ))}
       </div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 rounded">
-          <p className="text-red-600 text-sm">{error}</p>
-        </div>
-      )}
-
       <Button 
         onClick={handleSubmitSegments}
         disabled={isButtonDisabled()}
@@ -364,7 +366,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         {getButtonText()}
       </Button>
 
-      <div className="text-center text-sm text-gray-600 space-y-3 mt-8">
+      <div className="hidden md:block text-center text-sm text-gray-600 space-y-3 mt-8">
         <p>
           If you choose the F&O, Currency, or Commodity Derivatives segment, you will be required to upload your income proof.
         </p>

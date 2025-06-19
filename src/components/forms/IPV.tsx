@@ -169,7 +169,10 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       if (ctx) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Flip the image back to normal orientation when capturing
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
 
         canvas.toBlob((blob) => {
           if (blob) {
@@ -459,7 +462,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
               ref={videoRef}
               autoPlay
               playsInline
-              className="w-full h-full object-cover rounded"
+              className="w-full h-full object-cover rounded transform scale-x-[-1]"
             />
           ) : imageFile ? (
             <div className="space-y-4 w-full flex flex-col items-center">
@@ -551,7 +554,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         {getButtonText()}
       </Button>
 
-      <div className="text-center text-sm text-gray-600 mt-4">
+      <div className="hidden md:block text-center text-sm text-gray-600 mt-4">
         <p>
           Please ensure your face is clearly visible and well-lit for successful verification.
           Session expires in 10 minutes.

@@ -267,7 +267,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           pollIntervalRef.current = null;
         }
       }
-    }, 3000); // Poll every 3 seconds
+    }, 2000); // Poll every 3 seconds
 
     // Stop polling after 15 minutes (timeout)
     setTimeout(() => {
@@ -276,7 +276,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         pollIntervalRef.current = null;
         console.log("eSign polling timeout after 15 minutes");
       }
-    }, 15 * 60 * 1000);
+    }, 7 * 60 * 1000);
   };
 
   const handleEsignClick = () => {
@@ -467,7 +467,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         Proceed to E-sign
       </Button>
 
-      <div className="mt-4 text-center text-xs text-gray-600">
+      <div className="hidden sm:block mt-4 text-center text-xs text-gray-600">
         <p>
           Clicking the button will open eSign in a new window. 
           Complete the process there and this page will automatically proceed to the next step.

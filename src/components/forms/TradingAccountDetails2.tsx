@@ -24,8 +24,8 @@ const occupationOptions = [
   "Others",
 ];
 
-// Global flag to track if completion toast has been shown in this session
-let hasShownGlobalCompletedToast = false;
+// Global flag to track if completion toast has been shown in this session for this component
+let hasShownGlobalCompletedToastForOtherDetails = false;
 
 const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({ 
   onNext, 
@@ -37,6 +37,7 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
   const [showValidation, setShowValidation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasJustSubmitted, setHasJustSubmitted] = useState(false);
   interface TradingAccountFormData {
     occupation: string;
     is_politically_exposed: boolean;
@@ -71,7 +72,7 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
 
   // Prefill data from initialData (API response) and show completion toast
   useEffect(() => {
-    if (isCompleted && initialData) {
+    if (isCompleted && initialData && !isSubmitting && !hasJustSubmitted) {
       // Map API values back to display values
       const mappedData = mapFromApiValues(initialData);
       
@@ -82,13 +83,13 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
         is_politically_exposed: mappedData.is_politically_exposed ?? false
       });
       
-      // Show completion toast only once per session
-      if (!hasShownGlobalCompletedToast) {
+      // Show completion toast only once per session and only if not currently submitting
+      if (!hasShownGlobalCompletedToastForOtherDetails) {
         toast.success("Other details already saved! You can modify them or continue.");
-        hasShownGlobalCompletedToast = true;
+        hasShownGlobalCompletedToastForOtherDetails = true;
       }
     }
-  }, [initialData, isCompleted]);
+  }, [initialData, isCompleted, isSubmitting, hasJustSubmitted]);
 
   const handleOccupationSelect = (selected: string) => {
     if (isSubmitting) return;
@@ -177,6 +178,9 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
 
       toast.success("Other details saved successfully!");
       
+      // Mark that we just submitted to prevent the "already saved" toast
+      setHasJustSubmitted(true);
+      
       // Auto-advance after 2 seconds
       setTimeout(() => {
         onNext();
@@ -224,13 +228,12 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
         description={"Provide additional information for your trading account."}
       />
 
-
       <form ref={formRef} onSubmit={handleSubmit}>
         <div className="mb-6">
-          <label className="block text-gray-700 font-medium mb-2">
+          <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
             Occupation<span className="text-red-500">*</span>
           </label>
-          {/* Using consistent grid layout like TradingPreferences */}
+          {/* Using consistent grid layout like TradingPreferences with responsive design */}
           <div className="grid grid-cols-2 gap-2">
             {occupationOptions.map((option) => (
               <button
@@ -238,7 +241,7 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
                 type="button"
                 onClick={() => handleOccupationSelect(option)}
                 disabled={isSubmitting}
-                className={`px-4 py-2 rounded border transition-colors text-center
+                className={`px-2 sm:px-4 py-2 rounded border transition-colors text-center text-xs sm:text-sm
                   ${
                     occupation === option
                       ? "border-teal-800 bg-teal-50 text-teal-800"
@@ -252,24 +255,24 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
             ))}
           </div>
           {showValidation && !occupation && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-500 text-xs sm:text-sm mt-1">
               Please select your occupation
             </p>
           )}
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 font-medium mb-2">
+          <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
             Are you a politically exposed person?
             <span className="text-red-500">*</span>
           </label>
-          {/* Using consistent grid layout */}
+          {/* Using consistent grid layout with responsive design */}
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => handlePoliticallyExposedChange(true)}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-center
+              className={`px-2 sm:px-4 py-2 rounded border transition-colors text-center text-xs sm:text-sm
                 ${
                   isPoliticallyExposed === true
                     ? "border-teal-800 bg-teal-50 text-teal-800"
@@ -284,7 +287,7 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
               type="button"
               onClick={() => handlePoliticallyExposedChange(false)}
               disabled={isSubmitting}
-              className={`px-4 py-2 rounded border transition-colors text-center
+              className={`px-2 sm:px-4 py-2 rounded border transition-colors text-center text-xs sm:text-sm
                 ${
                   isPoliticallyExposed === false
                     ? "border-teal-800 bg-teal-50 text-teal-800"
@@ -297,13 +300,13 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
             </button>
           </div>
           {showValidation && isPoliticallyExposed === null && (
-            <p className="text-red-500 text-sm mt-1">Please select an option</p>
+            <p className="text-red-500 text-xs sm:text-sm mt-1">Please select an option</p>
           )}
         </div>
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 rounded">
-            <p className="text-red-600 text-sm">{error}</p>
+            <p className="text-red-600 text-xs sm:text-sm">{error}</p>
           </div>
         )}
 

@@ -20,8 +20,8 @@ interface NomineeData {
   sharePercentage: string;
 }
 
-// Global flag to track if completion toast has been shown in this session
-let hasShownGlobalCompletedToast = false;
+// Global flag to track if completion toast has been shown in this session for this component
+let hasShownGlobalCompletedToastForNominees = false;
 
 const NomineeManagement: React.FC<NomineeManagementProps> = ({ 
   onNext, 
@@ -40,6 +40,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [originalData, setOriginalData] = useState<NomineeData[]>([]);
   const [, setEditingNomineeId] = useState<string | null>(null);
+  const [hasJustSubmitted, setHasJustSubmitted] = useState(false);
 
   // Use the checkpoint hook
   const { 
@@ -92,14 +93,14 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
           id: (formattedNominees.length + 1).toString()
         }));
 
-        // Show completion toast only once per session
-        if (isCompleted && formattedNominees.length > 0 && !hasShownGlobalCompletedToast) {
+        // Show completion toast only once per session and only if not currently submitting
+        if (isCompleted && formattedNominees.length > 0 && !hasShownGlobalCompletedToastForNominees && !hasJustSubmitted) {
           toast.success("Nominees already added! You can modify them or continue.");
-          hasShownGlobalCompletedToast = true;
+          hasShownGlobalCompletedToastForNominees = true;
         }
       }
     }
-  }, [initialData, isCompleted]); // Removed getStepData from dependencies
+  }, [initialData, isCompleted, hasJustSubmitted]); // Removed getStepData from dependencies
 
   const handleInputChange = (field: keyof NomineeData, value: string) => {
     setError(null);
@@ -291,13 +292,19 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       return;
     }
 
-    if (nominees.length === 0) {
+    // Auto-add current nominee if form is complete and total would be 100%
+    let nomineesToSubmit = [...nominees];
+    if (isCurrentNomineeComplete && totalWithCurrentInput === 100 && !wouldExceed100) {
+      nomineesToSubmit = [...nominees, currentNominee];
+    }
+
+    if (nomineesToSubmit.length === 0) {
       setError("Please add at least one nominee");
       return;
     }
 
-    // Calculate total percentage from saved nominees only
-    const finalTotal = nominees.reduce(
+    // Calculate total percentage from nominees to submit
+    const finalTotal = nomineesToSubmit.reduce(
       (sum, nominee) => sum + (parseFloat(nominee.sharePercentage) || 0),
       0
     );
@@ -319,7 +326,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       }
 
       // Format nominees data for API
-      const formattedNominees = nominees.map(nominee => ({
+      const formattedNominees = nomineesToSubmit.map(nominee => ({
         name: nominee.name.trim(),
         gov_id: nominee.panOrAadhar.trim(),
         relation: nominee.relationship,
@@ -346,6 +353,9 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       }
 
       toast.success("Nominees saved successfully!");
+
+      // Mark that we just submitted to prevent the "already saved" toast
+      setHasJustSubmitted(true);
 
       // Refetch the nominees step to update the hook
       refetchStep(CheckpointStep.ADD_NOMINEES);
@@ -407,13 +417,13 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       0
     );
     
-    // If we have nominees and total is exactly 100%, enable the button
+    // If we have saved nominees and total is exactly 100%, enable the button
     if (nominees.length > 0 && totalFromSaved === 100) return false;
     
-    // If we have current nominee input and total with input is exactly 100%, enable the button
-    if (nominees.length > 0 && totalWithCurrentInput === 100 && isCurrentNomineeComplete) return false;
+    // If we have current nominee input that's complete and total with input is exactly 100%, enable the button
+    if (isCurrentNomineeComplete && totalWithCurrentInput === 100 && !wouldExceed100) return false;
     
-    return nominees.length === 0 || totalFromSaved !== 100;
+    return true;
   };
 
   // Always show the same UI - whether fresh or completed
@@ -436,7 +446,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
             className="mb-6 bg-white rounded-lg p-4 border border-gray-200"
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium">Nominee {nominee.id}</h3>
+              <h3 className="font-medium text-sm sm:text-base">Nominee {nominee.id}</h3>
               <button
                 onClick={() => handleDeleteNominee(nominee.id)}
                 className="text-gray-600 hover:text-red-600"
@@ -448,42 +458,42 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-gray-600 mb-1">
+                <label className="block text-xs sm:text-sm text-gray-600 mb-1">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={nominee.name}
                   onChange={(e) => handleNomineeInputChange(nominee.id, "name", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm"
                   disabled={isLoading}
                   placeholder="Enter nominee name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-600 mb-1">
+                <label className="block text-xs sm:text-sm text-gray-600 mb-1">
                   PAN<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={nominee.panOrAadhar}
                   onChange={(e) => handleNomineeInputChange(nominee.id, "panOrAadhar", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm"
                   disabled={isLoading}
                   placeholder="Enter PAN/Aadhar number"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-600 mb-1">
+                <label className="block text-xs sm:text-sm text-gray-600 mb-1">
                   Relationship <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <select
                     value={nominee.relationship}
                     onChange={(e) => handleNomineeInputChange(nominee.id, "relationship", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-10"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-10 text-xs sm:text-sm"
                     disabled={isLoading}
                   >
                     <option value="">Select relationship</option>
@@ -512,7 +522,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm text-gray-600 mb-1">
+                <label className="block text-xs sm:text-sm text-gray-600 mb-1">
                   % Share <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -522,7 +532,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                   min="1"
                   max="100"
                   step="0.01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm"
                   disabled={isLoading}
                   placeholder="Enter share percentage"
                 />
@@ -535,26 +545,26 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
         {nominees.length < 5 && remainingPercentage > 0 && (
           <div className="bg-white rounded-lg p-4 border border-gray-200 mb-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium">Nominee {currentNominee.id}</h3>
+              <h3 className="font-medium text-sm sm:text-base">Nominee {currentNominee.id}</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm mb-1">
+                <label className="block text-xs sm:text-sm mb-1">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={currentNominee.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm"
                   disabled={isLoading}
                   placeholder="Enter nominee name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm mb-1">
+                <label className="block text-xs sm:text-sm mb-1">
                   Pan/Aadhar card <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -563,14 +573,14 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                   onChange={(e) =>
                     handleInputChange("panOrAadhar", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm"
                   disabled={isLoading}
                   placeholder="Enter PAN/Aadhar number"
                 />
               </div>
 
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm mb-1">
+                <label className="block text-xs sm:text-sm mb-1">
                   Relationship <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -579,7 +589,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                     onChange={(e) =>
                       handleInputChange("relationship", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-10"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 appearance-none pr-10 text-xs sm:text-sm"
                     disabled={isLoading}
                   >
                     <option value="">Select relationship</option>
@@ -608,7 +618,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm sm:text-xs md:text-sm mb-1">
+                <label className="block text-xs sm:text-sm mb-1">
                   % Share <span className="text-red-500">*</span>
                   <span className="text-xs text-gray-500 ml-1">
                     (Available: {remainingPercentage}%)
@@ -624,13 +634,13 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                   max={remainingPercentage}
                   step="0.01"
                   placeholder={remainingPercentage.toString()}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm"
                   disabled={isLoading}
                 />
               </div>
             </div>
 
-            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+            {error && <p className="text-red-500 text-xs sm:text-sm mb-4">{error}</p>}
 
             <div className="flex justify-center">
               <button
@@ -638,7 +648,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                 disabled={
                   !isCurrentNomineeComplete || remainingPercentage === 0 || isLoading || wouldExceed100
                 }
-                className={`flex items-center text-blue-500 hover:text-blue-600 mb-0 ${
+                className={`flex items-center text-blue-500 hover:text-blue-600 mb-0 text-xs sm:text-sm ${
                   !isCurrentNomineeComplete || remainingPercentage === 0 || isLoading || wouldExceed100
                     ? "opacity-50 cursor-not-allowed"
                     : ""
@@ -658,7 +668,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
               <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-blue-800 text-sm text-center">
+              <p className="text-blue-800 text-xs sm:text-sm text-center">
                 100% share allocated. To add more nominees, please adjust the existing share percentages.
               </p>
             </div>
@@ -669,7 +679,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       {/* Sticky footer with total percentage and continue button */}
       <div className="sticky bottom-0 bg-white pt-4 pb-0 border-t border-gray-200 mt-4">
         {/* Total share percentage indicator */}
-        <div className="text-sm mb-4">
+        <div className="text-xs sm:text-sm mb-4">
           <span className="text-gray-600">Total Share Percentage: </span>
           <span
             className={

@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios, { AxiosError } from "axios";
 import { useAuthToken } from "@/hooks/useCheckpoint";
+import { toast } from "sonner";
 
 interface MobileVerificationProps {
   onNext: () => void;
@@ -27,7 +28,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
   const [mobileNumber, setMobileNumber] = useState("");
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [otpTimer, setOtpTimer] = useState(600); //  10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
@@ -41,8 +42,9 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
   // Prefill data from initialData or localStorage
   useEffect(() => {
     if (isCompleted && initialData?.phone) {
-      // If step is completed, prefill with data from API
+      // If step is completed, prefill with data from API AND save to localStorage
       setMobileNumber(initialData.phone);
+      localStorage.setItem("verifiedPhone", initialData.phone);
     } else {
       // Try to get data from localStorage (from previous session)
       const storedPhone = localStorage.getItem("verifiedPhone") || "";
@@ -122,7 +124,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
 
     if (email === "") {
       console.error("Verify your email first!");
-      alert("Verify Your Email First!");
+      toast.error("Verify Your Email First!");
       setIsLoading(false);
       return;
     }
@@ -145,25 +147,26 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
         setAuthToken(token);
       }
 
-      // Store verified phone for next step
+      // FIXED: Always store verified phone in localStorage, regardless of verification state
       localStorage.setItem("verifiedPhone", mobileNumber);
       
       // MODIFIED: Mark as manually verified before proceeding
       setHasManuallyVerified(true);
 
       if (!response) {
-        setError("Failed to verify your code. Please try again.");
+        toast.error("Failed to verify your code. Please try again.");
         console.error("Send OTP error, Response :", response);
         return;
       }
 
+      toast.success("Mobile number verified successfully!");
       onNext();
     } catch (err: unknown) {
       const axiosError = err as AxiosError<ApiErrorResponse>;
       if (axiosError.response?.data?.message) {
-        setError(axiosError.response.data.message);
+        toast.error(axiosError.response.data.message);
       } else {
-        setError("Error verifying OTP. Please try again.");
+        toast.error("Error verifying OTP. Please try again.");
       }
       console.error("Verification error:", err);
     } finally {
@@ -173,13 +176,13 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
 
   const handleSendOTP = async () => {
     if (!validateMobile(mobileNumber)) {
-      setError("Please enter a valid 10-digit mobile number");
+      toast.error("Please enter a valid 10-digit mobile number");
       return;
     }
 
     if (email === "") {
       console.error("Verify your email first!");
-      alert("Verify Your Email First!");
+      toast.error("Verify Your Email First!");
       return;
     }
 
@@ -196,13 +199,18 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
         }
       );
       if (!response) {
-        setError("Failed to send verification code. Please try again.");
+        toast.error("Failed to send verification code. Please try again.");
         console.error("Send OTP error, Response :", response);
         return;
       }
+
+      // FIXED: Save mobile number to localStorage as soon as OTP is sent
+      localStorage.setItem("verifiedPhone", mobileNumber);
+
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds
+      toast.success("OTP sent successfully to your mobile number!");
       // Focus on the first OTP input after showing OTP fields
       setTimeout(() => {
         inputRefs.current[0]?.focus();
@@ -210,9 +218,9 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     } catch (err: unknown) {
       const axiosError = err as AxiosError<ApiErrorResponse>;
       if (axiosError.response?.data?.message) {
-        setError(axiosError.response.data.message);
+        toast.error(axiosError.response.data.message);
       } else {
-        setError("Failed to send OTP. Please try again.");
+        toast.error("Failed to send OTP. Please try again.");
       }
       console.error("Send OTP error:", err);
     } finally {
@@ -381,12 +389,6 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
               {resendTimer > 0 ? `Resend OTP (${resendTimer}s)` : "Resend OTP"}
             </button>
           </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 rounded">
-          <p className="text-red-600 text-sm">{error}</p>
         </div>
       )}
 

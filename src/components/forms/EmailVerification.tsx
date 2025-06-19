@@ -37,8 +37,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   // Prefill email from localStorage or initialData
   useEffect(() => {
     if (isCompleted && initialData?.email) {
-      // If step is completed, prefill with data from API
+      // If step is completed, prefill with data from API AND save to localStorage
       setEmail(initialData.email);
+      localStorage.setItem("email", initialData.email);
     } else {
       // Try to get email from localStorage (from previous session)
       const storedEmail = localStorage.getItem("email") || "";
@@ -172,7 +173,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         return;
       }
 
-      // Store email and auth token
+      // FIXED: Always store email in localStorage, regardless of verification state
       localStorage.setItem("email", email);
       
       // Store auth token in cookies and axios headers
@@ -226,6 +227,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         toast.error("Failed to send verification code. Please try again.");
         return;
       }
+
+      // FIXED: Save email to localStorage as soon as OTP is sent
+      localStorage.setItem("email", email);
 
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
@@ -426,7 +430,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         {getButtonText()}
       </Button>
 
-      <div className="text-center text-xs text-gray-600 mt-8 space-y-3">
+      <div className="hidden md:block text-center text-xs text-gray-600 mt-8 space-y-3">
         <p>
           I authorise Sapphire to fetch my KYC information from the C-KYC
           registry with my PAN.
