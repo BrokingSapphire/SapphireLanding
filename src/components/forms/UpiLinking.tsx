@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-import { ArrowRight, Clock, ExternalLink } from "lucide-react";
+import { ArrowRight, Clock } from "lucide-react";
 import Image from "next/image";
 import axios from "axios";
 import QRCode from "qrcode";
@@ -188,9 +188,9 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
     }
   };
 
-  const handleUpiAppClick = (appLink: string) => {
-    window.open(appLink, '_blank');
-  };
+  // const handleUpiAppClick = (appLink: string) => {
+  //   window.open(appLink, '_blank');
+  // };
 
   const handleRetry = () => {
     setTimeLeft(300);

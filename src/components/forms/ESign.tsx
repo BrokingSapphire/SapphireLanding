@@ -33,7 +33,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   // Use the checkpoint hook to check for existing eSign data
   const { 
     isStepCompleted,
-    getStepData,
+    // getStepData,
     refetchStep 
   } = useCheckpoint();
 

@@ -25,7 +25,7 @@ const AadhaarVerification = ({
   const [, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'mismatch'>('initial');
   const [digilockerUrl, setDigilockerUrl] = useState<string>('');
-  const [isPolling, setIsPolling] = useState(false);
+  const [, setIsPolling] = useState(false);
   const digilockerTabRef = useRef<Window | null>(null);
   
   // Aadhaar mismatch form state
@@ -582,7 +582,7 @@ const AadhaarVerification = ({
             </svg>
             <div>
               <p className="text-blue-800 font-medium">DigiLocker Opened</p>
-              <p className="text-blue-700 text-sm">Complete the verification in DigiLocker. We'll automatically detect when you're done!</p>
+              <p className="text-blue-700 text-sm">Complete the verification in DigiLocker. We&apos;ll automatically detect when you&apos;re done!</p>
             </div>
           </div>
           {digilockerUrl && (

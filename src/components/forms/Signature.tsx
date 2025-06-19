@@ -407,21 +407,22 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     setWantsToResign(true);
   };
 
-  const handleQrCodeClick = () => {
-    // If we already have a signatureUid, show QR code immediately
-    if (signatureUid) {
-      setShowQrCode(true);
-      return;
-    }
+  // const handleQrCodeClick = () => {
+  //   // If we already have a signatureUid, show QR code immediately
+  //   if (signatureUid) {
+  //     setShowQrCode(true);
+  //     return;
+  //   }
+  //   console.log("QR code clicked - initializing for mobile signature", handleQrCodeClick);
 
-    // If we don't have UID, we need to initialize first
-    toast.info("Initializing signature session for mobile device...");
-    setIsInitializingForQr(true);
-    setWantsToResign(true);
+  //   // If we don't have UID, we need to initialize first
+  //   toast.info("Initializing signature session for mobile device...");
+  //   setIsInitializingForQr(true);
+  //   setWantsToResign(true);
     
-    // The useEffect will trigger initializeSignature, and once it's done,
-    // it will automatically show the QR code due to isInitializingForQr flag
-  };
+  //   // The useEffect will trigger initializeSignature, and once it's done,
+  //   // it will automatically show the QR code due to isInitializingForQr flag
+  // };
 
   // Render QR code component if user clicks "Click Here"
   if (showQrCode && signatureUid) {
