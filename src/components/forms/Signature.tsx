@@ -588,8 +588,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
           </button>
         </div>
       </div>
-
-      <div className="text-center text-sm text-gray-600 mt-4">
+      <div className="hidden lg:block text-center text-sm text-gray-600 mt-4">
         <p>
           Please sign clearly within the box above. Your signature will be used for document verification.
           Session expires in 10 minutes.

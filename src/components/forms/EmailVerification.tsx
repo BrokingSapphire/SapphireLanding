@@ -435,7 +435,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         {getButtonText()}
       </Button>
 
-      <div className="hidden md:block text-center text-xs text-gray-600 mt-8 space-y-3">
+      <div className="hidden lg:block text-center text-xs text-gray-600 mt-8 space-y-3">
         <p>
           I authorise Sapphire to fetch my KYC information from the C-KYC
           registry with my PAN.

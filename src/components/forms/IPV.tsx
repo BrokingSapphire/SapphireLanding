@@ -554,7 +554,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         {getButtonText()}
       </Button>
 
-      <div className="hidden md:block text-center text-sm text-gray-600 mt-4">
+      <div className="hidden lg:block text-center text-sm text-gray-600 mt-4">
         <p>
           Please ensure your face is clearly visible and well-lit for successful verification.
           Session expires in 10 minutes.

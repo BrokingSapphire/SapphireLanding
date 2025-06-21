@@ -366,7 +366,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         {getButtonText()}
       </Button>
 
-      <div className="hidden md:block text-center text-sm text-gray-600 space-y-3 mt-8">
+      <div className="hidden lg:block text-center text-sm text-gray-600 space-y-3 mt-8">
         <p>
           If you choose the F&O, Currency, or Commodity Derivatives segment, you will be required to upload your income proof.
         </p>

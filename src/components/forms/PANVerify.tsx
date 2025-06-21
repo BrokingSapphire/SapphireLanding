@@ -265,7 +265,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
         {getButtonText()}
       </Button>
 
-      <div className="hidden md:block mt-6 text-sm text-center text-gray-600">
+      <div className="hidden lg:block mt-6 text-sm text-center text-gray-600">
         <p className="mb-4 text-center">
           By continuing, you agree to verify your PAN details with the Income
           Tax Department. Your PAN will be used for KYC verification purposes
