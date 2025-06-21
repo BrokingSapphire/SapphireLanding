@@ -21,6 +21,9 @@ interface ApiErrorResponse {
   message?: string;
 }
 
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
+
 const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificationProps) => {
   const [email, setEmail] = useState("");
   const [showOTP, setShowOTP] = useState(false);
@@ -28,28 +31,53 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   const [isLoading, setIsLoading] = useState(false);
   const [otpTimer, setOtpTimer] = useState(600); // 10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
-  const [hasManuallyVerified, setHasManuallyVerified] = useState(false); // NEW: Track manual verification
+  const [hasManuallyVerified, setHasManuallyVerified] = useState(false); // Track manual verification
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const { setAuthToken } = useAuthToken();
 
-  // Prefill email from localStorage or initialData
+  // Helper function to get email from localStorage with expiry check
+  const getStoredEmail = () => {
+    try {
+      const stored = localStorage.getItem("email");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.expiry && Date.now() < parsed.expiry) {
+          return parsed.value;
+        } else {
+          // Remove expired email
+          localStorage.removeItem("email");
+        }
+      }
+    } catch (error) {
+      console.warn("Error reading stored email:", error);
+      localStorage.removeItem("email");
+    }
+    return null;
+  };
+
+  // Prefill email from initialData or localStorage (only if previously verified)
   useEffect(() => {
     if (isCompleted && initialData?.email) {
-      // If step is completed, prefill with data from API AND save to localStorage
+      // If step is completed, prefill with data from API 
       setEmail(initialData.email);
-      localStorage.setItem("email", initialData.email);
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Email already verified! You can proceed or verify a different email.");
+        hasShownGlobalCompletedToast = true;
+      }
     } else {
-      // Try to get email from localStorage (from previous session)
-      const storedEmail = localStorage.getItem("email") || "";
+      // Try to get email from localStorage (only if previously verified and not expired)
+      const storedEmail = getStoredEmail();
       if (storedEmail) {
         setEmail(storedEmail);
       }
     }
   }, [initialData, isCompleted]);
 
-  // MODIFIED: Only auto-advance if manually verified in this session
+  // Only auto-advance if manually verified in this session
   useEffect(() => {
     if (isCompleted && hasManuallyVerified) {
       // Auto-advance to next step after a short delay, only if manually verified
@@ -59,51 +87,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       return () => clearTimeout(timer);
     }
   }, [isCompleted, hasManuallyVerified, onNext]);
-
-  // Prevent page reload/refresh
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      // Show browser's default confirmation dialog
-      e.preventDefault();
-      e.returnValue = ''; // Required for Chrome
-      
-      // Show toast warning (may not be visible due to browser dialog)
-      toast.error("Please don't reload the page during verification process!");
-      
-      return ''; // Some browsers require a return value
-    };
-
-    const handleUnload = () => {
-      // Show toast when user actually tries to leave
-      toast.error("Page reload detected! Please resubmit if verification was interrupted.");
-    };
-
-    // Add event listeners
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('unload', handleUnload);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('unload', handleUnload);
-    };
-  }, []);
-
-  // Also detect when user comes back to the tab (in case they refreshed)
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && showOTP) {
-        // User came back to tab during OTP process
-        toast.warning("If you refreshed the page, you may need to request a new OTP code.");
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [showOTP]);
 
   // OTP timer for 10 minutes
   useEffect(() => {
@@ -173,15 +156,16 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         return;
       }
 
-      // FIXED: Always store email in localStorage, regardless of verification state
-      localStorage.setItem("email", email);
+      // ONLY save email to localStorage after successful verification
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem("email", JSON.stringify({ value: email, expiry }));
       
       // Store auth token in cookies and axios headers
       if (response.data.token) {
         setAuthToken(response.data.token);
       }
 
-      // MODIFIED: Mark as manually verified before proceeding
+      // Mark as manually verified before proceeding
       setHasManuallyVerified(true);
 
       toast.success("Email verified successfully!");
@@ -228,9 +212,8 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         return;
       }
 
-      // FIXED: Save email to localStorage as soon as OTP is sent
-      localStorage.setItem("email", email);
-
+      // DO NOT save email to localStorage yet - only after verification
+      
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds
@@ -317,10 +300,10 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     return !otp.every((digit) => digit !== "");
   };
 
-  // MODIFIED: Show completed state only if manually verified
+  // Show completed state only if manually verified
   if (isCompleted && hasManuallyVerified) {
     return (
-      <div className="mx-auto pt-24">
+      <div className="mx-auto -mt-28 sm:mt-0 pt-24">
         <FormHeading
           title={"Email Verified Successfully!"}
           description={"Proceeding to the next step..."}
@@ -331,17 +314,16 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
           <div className="flex gap-3">
             <input
               type="email"
-              className="flex-1 px-3 py-2 border  rounded focus:outline-none"
+              className="flex-1 px-3 py-2 border rounded focus:outline-none"
               value={email}
               disabled
             />
           </div>
         </div>
 
-
         <Button
           onClick={onNext}
-          className="w-full py-6 mb-6 "
+          className="w-full py-6 mb-6"
           variant="ghost"
         >
           Continue to Next Step
@@ -351,7 +333,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   }
 
   return (
-    <div className="mx-auto pt-24">
+    <div className="mx-auto -mt-28 sm:mt-0 pt-24">
       <FormHeading
         title={"Hi, Welcome to Sapphire!"}
         description={"Get started in just a few easy steps!"}
@@ -430,7 +412,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         {getButtonText()}
       </Button>
 
-      <div className="hidden md:block text-center text-xs text-gray-600 mt-8 space-y-3">
+      <div className="hidden lg:block text-center text-xs text-gray-600 mt-8 space-y-3">
         <p>
           I authorise Sapphire to fetch my KYC information from the C-KYC
           registry with my PAN.

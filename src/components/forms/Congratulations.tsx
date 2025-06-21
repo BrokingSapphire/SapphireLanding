@@ -42,13 +42,6 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
   return (
     <div className="w-full mx-auto text-center text-xl">
       <div className="mb-8">
-        {/* <Image
-          src="/congratulations-illustration.svg"
-          alt="Congratulations"
-          width={300}
-          height={200}
-          className="mx-auto"
-        /> */}
       </div>
 
       <h1 className="text-4xl font-bold mb-4">Congratulations!</h1>

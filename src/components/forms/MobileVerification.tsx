@@ -32,32 +32,98 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
   const [isLoading, setIsLoading] = useState(false);
   const [otpTimer, setOtpTimer] = useState(600); //  10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
-  const [hasManuallyVerified, setHasManuallyVerified] = useState(false); // NEW: Track manual verification
+  const [hasManuallyVerified, setHasManuallyVerified] = useState(false); // Track manual verification
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [email, setEmail] = useState("");
+  const [, setEmail] = useState("");
 
   const { setAuthToken } = useAuthToken();
+
+  // Enhanced function to get email from localStorage with JSON parsing
+  const getEmailFromStorage = (): string => {
+    try {
+      const storedEmail = localStorage.getItem("email");
+      if (!storedEmail) return "";
+      
+      // Try to parse as JSON first (new format)
+      try {
+        const parsedEmail = JSON.parse(storedEmail);
+        if (typeof parsedEmail === 'object' && parsedEmail.value) {
+          // Check if email has expired
+          if (parsedEmail.expiry && Date.now() > parsedEmail.expiry) {
+            localStorage.removeItem("email");
+            return "";
+          }
+          return parsedEmail.value;
+        }
+      } catch {
+        // If JSON parsing fails, treat as plain string (old format)
+        return storedEmail;
+      }
+      
+      return "";
+    } catch (error) {
+      console.error("Error retrieving email from localStorage:", error);
+      return "";
+    }
+  };
+
+  // Enhanced function to get phone from localStorage with JSON parsing
+  const getPhoneFromStorage = (): string => {
+    try {
+      const storedPhone = localStorage.getItem("verifiedPhone");
+      if (!storedPhone) return "";
+      
+      // Try to parse as JSON first (new format)
+      try {
+        const parsedPhone = JSON.parse(storedPhone);
+        if (typeof parsedPhone === 'object' && parsedPhone.value) {
+          // Check if phone has expired
+          if (parsedPhone.expiry && Date.now() > parsedPhone.expiry) {
+            localStorage.removeItem("verifiedPhone");
+            return "";
+          }
+          return parsedPhone.value;
+        }
+      } catch {
+        // If JSON parsing fails, treat as plain string (old format)
+        return storedPhone;
+      }
+      
+      return "";
+    } catch (error) {
+      console.error("Error retrieving phone from localStorage:", error);
+      return "";
+    }
+  };
 
   // Prefill data from initialData or localStorage
   useEffect(() => {
     if (isCompleted && initialData?.phone) {
       // If step is completed, prefill with data from API AND save to localStorage
       setMobileNumber(initialData.phone);
-      localStorage.setItem("verifiedPhone", initialData.phone);
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem(
+        "verifiedPhone",
+        JSON.stringify({ value: initialData.phone, expiry })
+      );
     } else {
       // Try to get data from localStorage (from previous session)
-      const storedPhone = localStorage.getItem("verifiedPhone") || "";
+      const storedPhone = getPhoneFromStorage();
       if (storedPhone) {
         setMobileNumber(storedPhone);
       }
     }
 
-    const storedEmail = localStorage.getItem("email") || "";
+    // Get email from localStorage with enhanced parsing
+    const storedEmail = getEmailFromStorage();
     setEmail(storedEmail);
+    
+    // Debug logging
+    console.log("Mobile verification - Retrieved email from localStorage:", storedEmail);
   }, [initialData, isCompleted]);
 
-  // MODIFIED: Only auto-advance if manually verified in this session
+  // Only auto-advance if manually verified in this session
   useEffect(() => {
     if (isCompleted && hasManuallyVerified) {
       // Auto-advance to next step after a short delay, only if manually verified
@@ -122,9 +188,12 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     setIsLoading(true);
     setError(null);
 
-    if (email === "") {
+    // Re-check email from localStorage in case it was updated
+    const currentEmail = getEmailFromStorage();
+    
+    if (!currentEmail) {
       console.error("Verify your email first!");
-      toast.error("Verify Your Email First!");
+      toast.error("Please verify your email first!");
       setIsLoading(false);
       return;
     }
@@ -135,7 +204,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
         {
           type: "phone",
           phone: mobileNumber,
-          email: email,
+          email: currentEmail,
           otp: otp.join(""),
         }
       );
@@ -147,10 +216,14 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
         setAuthToken(token);
       }
 
-      // FIXED: Always store verified phone in localStorage, regardless of verification state
-      localStorage.setItem("verifiedPhone", mobileNumber);
+      // Always store verified phone in localStorage as JSON with expiry
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem(
+        "verifiedPhone",
+        JSON.stringify({ value: mobileNumber, expiry })
+      );
       
-      // MODIFIED: Mark as manually verified before proceeding
+      // Mark as manually verified before proceeding
       setHasManuallyVerified(true);
 
       if (!response) {
@@ -180,9 +253,12 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
       return;
     }
 
-    if (email === "") {
+    // Re-check email from localStorage in case it was updated
+    const currentEmail = getEmailFromStorage();
+    
+    if (!currentEmail) {
       console.error("Verify your email first!");
-      toast.error("Verify Your Email First!");
+      toast.error("Please verify your email first!");
       return;
     }
 
@@ -194,7 +270,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/request-otp`,
         {
           type: "phone",
-          email: email,
+          email: currentEmail,
           phone: mobileNumber,
         }
       );
@@ -204,8 +280,12 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
         return;
       }
 
-      // FIXED: Save mobile number to localStorage as soon as OTP is sent
-      localStorage.setItem("verifiedPhone", mobileNumber);
+      // Save mobile number to localStorage as JSON with expiry
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem(
+        "verifiedPhone",
+        JSON.stringify({ value: mobileNumber, expiry })
+      );
 
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
@@ -280,14 +360,19 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
   const isButtonDisabled = () => {
     if (isCompleted && hasManuallyVerified) return false;
     if (isLoading) return true;
+    
+    // Check if email is available for mobile verification
+    const currentEmail = getEmailFromStorage();
+    if (!currentEmail) return true;
+    
     if (!showOTP) return !validateMobile(mobileNumber);
     return !otp.every((digit) => digit !== "");
   };
 
-  // MODIFIED: Show completed state only if manually verified
+  // Show completed state only if manually verified
   if (isCompleted && hasManuallyVerified) {
     return (
-      <div className="mx-auto pt-24">
+      <div className="mx-auto -mt-28 lg:mt-0 pt-24">
         <FormHeading
           title={"Mobile Verified Successfully!"}
           description={"Proceeding to the next step..."}
@@ -319,11 +404,23 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
   }
 
   return (
-    <div className="mx-auto pt-24">
+    <div className="mx-auto -mt-28 lg:mt-0 pt-24">
       <FormHeading
         title={"Verify your Mobile"}
         description={"Please enter your mobile for verification."}
       />
+
+      {/* Show email status for debugging - can be removed in production */}
+      {!getEmailFromStorage() && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center text-yellow-800 text-sm">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <span>Please verify your email first before proceeding with mobile verification.</span>
+          </div>
+        </div>
+      )}
 
       <div className="mb-8">
         <label className="block text-gray-700 mb-2">Mobile Number</label>
@@ -404,7 +501,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
         {getButtonText()}
       </Button>
 
-      <div className="text-center text-xs text-gray-600 mt-8 space-y-3">
+      <div className="hidden lg:block text-center text-xs text-gray-600 mt-8 space-y-3">
         <p>
           I authorise Sapphire to fetch my KYC information from the C-KYC
           registry with my PAN.

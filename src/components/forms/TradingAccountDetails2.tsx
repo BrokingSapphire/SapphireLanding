@@ -215,7 +215,7 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
 
   // Always show the same UI - whether fresh or completed
   return (
-    <div className="mx-auto mt-14">
+    <div className="mx-auto -mt-28 sm:mt-14">
       <FormHeading
         title={"Other Details"}
         description={"Provide additional information for your trading account."}

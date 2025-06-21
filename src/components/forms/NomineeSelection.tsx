@@ -146,7 +146,7 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
   // If completed but no nominees (skipped), show skip confirmation
   if (stepCompleted && !hasNominees && !showNomineeForm) {
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl -mt-28 sm:mt-0 mx-auto">
         <FormHeading
           title={"Nominees Skipped"}
           description={"You have chosen to skip adding nominees. You can add them later from your account settings."}
@@ -194,7 +194,7 @@ const NomineeSelection: React.FC<NomineeSelectionProps> = ({
 
   // Default: Show initial selection
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl -mt-28 sm:mt-0 mx-auto">
       <FormHeading
         title={"Nominees"}
         description={

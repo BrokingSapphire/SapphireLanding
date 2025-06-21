@@ -1,4 +1,4 @@
-// Updated OnboardingCarousel with proper client initialization
+// Enhanced OnboardingCarousel with smart reload protection and TanStack Query cache management
 
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
@@ -24,6 +24,7 @@ import SetPassword from "../forms/SetPassword";
 import { toast } from "sonner";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { queryClient } from "@/providers/QueryProvider"; // Adjust the path as needed to where your queryClient is exported
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -48,6 +49,133 @@ const OnboardingCarousel = () => {
   } = useCheckpoint();
 
   const TOTAL_STEPS = 16;
+
+  // ENHANCED: Complete cleanup utility function
+  const performCompleteCleanup = useCallback(async () => {
+    try {
+      console.log('Performing complete cleanup...');
+      
+      // Clear localStorage
+      localStorage.clear();
+      
+      // Clear all cookies
+      Cookies.remove('authToken');
+      Object.keys(Cookies.get()).forEach(cookieName => {
+        Cookies.remove(cookieName);
+      });
+      
+      // Clear axios headers
+      delete axios.defaults.headers.common['Authorization'];
+      
+      // Clear TanStack Query cache completely
+      queryClient.clear();
+      queryClient.invalidateQueries();
+      queryClient.removeQueries();
+      
+      console.log('Complete cleanup performed successfully');
+      return true;
+    } catch (error) {
+      console.error('Error during complete cleanup:', error);
+      return false;
+    }
+  }, []);
+
+  // ENHANCED: Logout handler with proper cache clearing
+  const handleLogout = useCallback(async () => {
+    try {
+      // Perform complete cleanup
+      const success = await performCompleteCleanup();
+      
+      if (success) {
+        // Show confirmation toast
+        toast.success("Logged out successfully!");
+        
+        // Reset component state after clearing everything
+        setTimeout(() => {
+          setCurrentStep(0);
+          setIsInitialized(false);
+          setHasReachedEsign(false);
+        }, 500);
+      } else {
+        toast.error("Error during logout. Please refresh the page.");
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      toast.error("Error during logout. Please refresh the page.");
+    }
+  }, [performCompleteCleanup]);
+
+  // ENHANCED: Congratulations completion handler with cache clearing
+  const handleCongratulationsComplete = useCallback(async () => {
+    try {
+      console.log('Congratulations reached - performing complete cleanup');
+      
+      // Perform complete cleanup
+      await performCompleteCleanup();
+      
+      // Optional: Redirect to home page or login page
+      // window.location.href = '/login'; // Uncomment if you want to redirect
+      
+    } catch (error) {
+      console.error('Error clearing data on congratulations:', error);
+    }
+  }, [performCompleteCleanup]);
+
+  // Smart reload protection - Allow reload only on email (step 0) and mobile (step 1) steps
+  useEffect(() => {
+    const isEmailOrMobileStep = currentStep === 0 || currentStep === 1;
+    
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Only show warning for steps other than email and mobile
+      if (!isEmailOrMobileStep && isInitialized) {
+        // Show browser's default confirmation dialog
+        e.preventDefault();
+        e.returnValue = 'Are you sure you want to leave? Your progress may be lost.'; // Required for Chrome
+        
+        // Show toast warning (may not be visible due to browser dialog)
+        toast.error("Please don't reload the page during the verification process!");
+        
+        return 'Are you sure you want to leave? Your progress may be lost.'; // Some browsers require a return value
+      }
+    };
+
+    const handleUnload = () => {
+      // Show toast when user actually tries to leave (only for protected steps)
+      if (!isEmailOrMobileStep && isInitialized) {
+        toast.error("Page reload detected! Please resubmit if verification was interrupted.");
+      }
+    };
+
+    // Add event listeners only for protected steps
+    if (!isEmailOrMobileStep && isInitialized) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener('unload', handleUnload);
+    }
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('unload', handleUnload);
+    };
+  }, [currentStep, isInitialized]);
+
+  // Detect when user comes back to the tab (for protected steps only)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const isEmailOrMobileStep = currentStep === 0 || currentStep === 1;
+      
+      if (document.visibilityState === 'visible' && !isEmailOrMobileStep && isInitialized) {
+        // User came back to tab during a protected step
+        toast.warning("If you refreshed the page, you may need to restart the verification process.");
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [currentStep, isInitialized]);
 
   // Initialize current step from checkpoint data and client ID from localStorage
   useEffect(() => {
@@ -592,13 +720,7 @@ const OnboardingCarousel = () => {
       id: "congratulations",
       component: (
         <CongratulationsPage 
-          onNext={() => {
-            // Clear all remaining localStorage and cookies on congratulations
-            localStorage.clear();
-            Cookies.remove('authToken');
-            delete axios.defaults.headers.common['Authorization'];
-            console.log('Congratulations reached - cleared all storage');
-          }}
+          onNext={handleCongratulationsComplete} // Use the enhanced completion handler
           clientId={getStoredClientId() ?? undefined} // Pass client ID from localStorage, convert null to undefined
         />
       ),
@@ -764,32 +886,11 @@ const OnboardingCarousel = () => {
           ))}
         </div>
 
-        {/* Logout Button - Hide on email screen and congratulations page */}
+        {/* ENHANCED: Logout Button with proper cache clearing */}
         {currentStep > 0 && currentStep !== 15 && (
-          <div className="fixed bottom-4 lg:bottom-6 left- transform translate-x-1/2 lg:left-[41%] lg:transform-none">
+          <div className={`fixed bottom-4 lg:bottom-6 ${currentStep !== 15 ? "left-1/2 -translate-x-1/2" : ""} lg:left-[41%] lg:translate-x-0`}>
             <button
-              onClick={() => {
-                // Clear localStorage
-                localStorage.removeItem('email');
-                localStorage.removeItem('verifiedPhone');
-                localStorage.removeItem('clientId');
-                
-                // Clear auth token from cookies
-                Cookies.remove('authToken');
-                
-                // Clear axios default headers
-                delete axios.defaults.headers.common['Authorization'];
-                
-                // Show confirmation toast
-                toast.success("Logged out successfully!");
-                
-                // Reset to first step after a brief delay
-                setTimeout(() => {
-                  setCurrentStep(0);
-                  setIsInitialized(false);
-                  setHasReachedEsign(false);
-                }, 1000);
-              }}
+              onClick={handleLogout}
               className="px-3 py-2 flex items-center justify-center bg-red-500 hover:bg-red-600 transition-all duration-300 ease-in-out border border-red-500 text-white shadow-lg rounded-md mr-2 lg:mr-0"
               aria-label="Logout"
               title="Logout"
@@ -815,7 +916,7 @@ const OnboardingCarousel = () => {
 
         {/* Navigation Arrows - Hide on congratulations page */}
         {currentStep !== 15 && (
-          <div className="fixed bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 lg:left-auto lg:transform-none lg:right-6 flex gap-1">
+          <div className="hidden lg:flex fixed bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 lg:left-auto lg:transform-none lg:right-6  gap-1">
             {navigationButtons.map((button, index) => (
               <button
                 key={index}
@@ -837,7 +938,7 @@ const OnboardingCarousel = () => {
                 {button.icon}
               </button>
             ))}
-          </div>
+          </div> 
         )}
       </div>
 

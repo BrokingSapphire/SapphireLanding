@@ -18,8 +18,9 @@ type SettlementPreference = "Quarterly" | "Monthly";
 
 const maritalStatusOptions: MaritalStatus[] = ["Single", "Married", "Divorced"];
 
-// Global flag to track if completion toast has been shown in this session
+// Global flags to track toast states in this session
 let hasShownGlobalCompletedToast = false;
+let hasShownSubmissionSuccessToast = false;
 
 const TradingPreferences: React.FC<TradingPreferencesProps> = ({
   onNext,
@@ -34,6 +35,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showValidation, setShowValidation] = useState(false);
   const [hasJustSubmitted, setHasJustSubmitted] = useState(false);
+  
   type OriginalData = {
     marital_status: MaritalStatus | null;
     annual_income: IncomeRange | null;
@@ -93,6 +95,8 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
       if (!hasShownGlobalCompletedToast) {
         toast.success("Personal details already saved! You can modify them or continue.");
         hasShownGlobalCompletedToast = true;
+        // Also set the submission success flag to prevent duplicate success messages
+        hasShownSubmissionSuccessToast = true;
       }
     }
   }, [initialData, isCompleted, isSubmitting, hasJustSubmitted]);
@@ -209,7 +213,11 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
         return;
       }
 
-      toast.success("Personal details saved successfully!");
+      // Only show success toast if we haven't shown it already in this session
+      if (!hasShownSubmissionSuccessToast) {
+        toast.success("Personal details saved successfully!");
+        hasShownSubmissionSuccessToast = true;
+      }
       
       // Mark that we just submitted to prevent the "already saved" toast
       setHasJustSubmitted(true);
@@ -255,7 +263,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
 
   // Always show the same UI - whether fresh or completed
   return (
-    <div className="w-full mx-auto mt-8">
+    <div className="w-full  -mt-28 sm:mt-8 mx-auto">
       <FormHeading
         title="Personal Details"
         description="Provide your personal information for account setup."

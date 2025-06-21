@@ -444,7 +444,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   // Show initialization loading
   if (!isInitialized && isLoading) {
     return (
-      <div className="mx-auto mt-16">
+      <div className="mx-auto -mt-28 sm:mt-16">
         <FormHeading
           title="Signature"
           description={isInitializingForQr ? "Setting up mobile signature session..." : "Initializing signature session..."}
@@ -462,7 +462,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   // Show error state if initialization failed (but don't show red error box)
   if (!isInitialized && !isLoading && !signatureUid && !isStepCompleted(CheckpointStep.SIGNATURE)) {
     return (
-      <div className="mx-auto mt-16">
+      <div className="mx-auto -mt-28 sm:mt-16">
         <FormHeading
           title="Signature"
           description="Let's set up your signature session."
@@ -489,7 +489,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
   const shouldShowCompletedState = isStepCompleted(CheckpointStep.SIGNATURE) && !wantsToResign;
 
   return (
-    <div className="mx-auto mt-16">
+    <div className="mx-auto -mt-28 sm:mt-16">
       <FormHeading
         title="Signature"
         description="Add your signature to complete the paperwork"
@@ -588,8 +588,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
           </button>
         </div>
       </div>
-
-      <div className="text-center text-sm text-gray-600 mt-4">
+      <div className="hidden lg:block text-center text-sm text-gray-600 mt-4">
         <p>
           Please sign clearly within the box above. Your signature will be used for document verification.
           Session expires in 10 minutes.

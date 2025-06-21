@@ -26,11 +26,30 @@ const AadhaarVerification = ({
   const [, setIsPolling] = useState(false);
   const digilockerTabRef = useRef<Window | null>(null);
   
-  // Aadhaar mismatch form state
+  // ENHANCED: Robust full_name retrieval with multiple fallback sources
+  const getFullNameFromStorage = () => {
+    // Try multiple sources for full_name
+    const sources = [
+      localStorage.getItem("full_name"),
+    ];
+    
+    for (const source of sources) {
+      if (source && source.trim()) {
+        console.log("Found full_name from storage:", source);
+        return source.trim();
+      }
+    }
+    
+    console.log("No full_name found in storage, using empty string");
+    return "";
+  };
+
+  // Aadhaar mismatch form state with enhanced full_name handling
   const [mismatchFormData, setMismatchFormData] = useState({
-    full_name: '',
+    full_name: getFullNameFromStorage(),
     dob: ''
   });
+  
   const [isSubmittingMismatch, setIsSubmittingMismatch] = useState(false);
   const [mismatchInfo, setMismatchInfo] = useState<{
     pan_masked_aadhaar?: string;
@@ -51,6 +70,64 @@ const AadhaarVerification = ({
     getStepData,
     refetchStep 
   } = useCheckpoint();
+
+  // ENHANCED: Monitor localStorage changes and update full_name
+  useEffect(() => {
+    const checkForFullName = () => {
+      const currentFullName = getFullNameFromStorage();
+      if (currentFullName && currentFullName !== mismatchFormData.full_name) {
+        console.log("Updating full_name from storage:", currentFullName);
+        setMismatchFormData(prev => ({
+          ...prev,
+          full_name: currentFullName
+        }));
+      }
+    };
+
+    // Check immediately
+    checkForFullName();
+
+    // Set up interval to periodically check for full_name updates
+    const fullNameCheckInterval = setInterval(checkForFullName, 1000);
+
+    // Listen for storage events (when localStorage changes in other tabs/components)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'full_name' && e.newValue) {
+        console.log("full_name updated via storage event:", e.newValue);
+        setMismatchFormData(prev => ({
+          ...prev,
+          full_name: e.newValue || ""
+        }));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(fullNameCheckInterval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [mismatchFormData.full_name]);
+
+  // ENHANCED: Also get full_name from PAN step data if available
+  useEffect(() => {
+    const panData = getStepData(CheckpointStep.PAN);
+    if (panData?.full_name && typeof panData.full_name === 'string') {
+      const panFullName = panData.full_name.trim();
+      console.log("Found full_name from PAN step data:", panFullName);
+      
+      // Save to localStorage for future use
+      localStorage.setItem("full_name", panFullName);
+      
+      // Update form data if current full_name is empty or different
+      if (!mismatchFormData.full_name || mismatchFormData.full_name !== panFullName) {
+        setMismatchFormData(prev => ({
+          ...prev,
+          full_name: panFullName
+        }));
+      }
+    }
+  }, [getStepData, mismatchFormData.full_name]);
 
   // Silent polling function - memoized to prevent recreation
   const checkAadhaarStatus = useCallback(async () => {
@@ -232,68 +309,74 @@ const AadhaarVerification = ({
     stopPolling
   ]);
 
-  // Step 1: Get DigiLocker URI (without redirect to prevent new tab opening)
-  const handleGetDigilockerUri = async () => {
-    setIsLoading(true);
-    setError(null);
+  // Step 1: Get DigiLocker URI and close current tab
+// Step 1: Get DigiLocker URI and close current tab
+const handleGetDigilockerUri = async () => {
+  setIsLoading(true);
+  setError(null);
 
-    try {
-      const authToken = Cookies.get('authToken');
-      
-      if (!authToken) {
-        toast.error("Authentication token not found. Please restart the process.");
-        setIsLoading(false);
-        return;
-      }
-
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-        {
-          step: "aadhaar_uri",
-          redirect: `https://sapphirebroking.com/signup`
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`,
-          }
-        }
-      );
-      
-      if (!response.data?.data?.uri) {
-        toast.error("Failed to generate DigiLocker URI. Please try again.");
-        return;
-      }
-
-      setDigilockerUrl(response.data.data.uri);
-      setCurrentStep('digilocker_pending');
-      
-      toast.success("DigiLocker opened! Complete verification and we'll detect it automatically.");
-      
-      // Open DigiLocker in new tab and store reference
-      digilockerTabRef.current = window.open(response.data.data.uri, '_blank');
-
-      // Start polling if not already started
-      if (!isPollingRef.current) {
-        startPolling();
-      }
-
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string; error?: { message?: string } }; status?: number } };
-      const errorMessage = 
-        error.response?.data?.error?.message ||
-        error.response?.data?.message ||
-        "Failed to initialize DigiLocker. Please try again.";
-      
-      toast.error(errorMessage);
-    } finally {
+  try {
+    const authToken = Cookies.get('authToken');
+    
+    if (!authToken) {
+      toast.error("Authentication token not found. Please restart the process.");
       setIsLoading(false);
+      return;
     }
-  };
+
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+      {
+        step: "aadhaar_uri",
+        redirect: `https://sapphirebroking.com/signup`
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+        }
+      }
+    );
+    
+    if (!response.data?.data?.uri) {
+      toast.error("Failed to generate DigiLocker URI. Please try again.");
+      return;
+    }
+
+    setDigilockerUrl(response.data.data.uri);
+    setCurrentStep('digilocker_pending');
+    
+    
+    // Open DigiLocker in the same tab (this will navigate away from current page)
+    window.location.href = response.data.data.uri;
+
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string; error?: { message?: string } }; status?: number } };
+    const errorMessage = 
+      error.response?.data?.error?.message ||
+      error.response?.data?.message ||
+      "Failed to initialize DigiLocker. Please try again.";
+    
+    toast.error(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Handle Aadhaar mismatch form submission
   const handleMismatchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!mismatchFormData.full_name.trim()) {
+      toast.error("Please enter your full name");
+      return;
+    }
+    
+    if (!mismatchFormData.dob) {
+      toast.error("Please select your date of birth");
+      return;
+    }
+    
     setIsSubmittingMismatch(true);
     setError(null);
 
@@ -310,7 +393,7 @@ const AadhaarVerification = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "aadhaar_mismatch_details",
-          full_name: mismatchFormData.full_name,
+          full_name: mismatchFormData.full_name.trim(),
           dob: mismatchFormData.dob
         },
         {
@@ -407,7 +490,7 @@ const AadhaarVerification = ({
   // Show Aadhaar mismatch form
   if (currentStep === 'mismatch') {
     return (
-      <div className="mx-auto pt-20">
+      <div className="mx-auto -mt-28 sm:mt-0 pt-20">
         <FormHeading
           title={"Additional Verification Required"}
           description={"We detected a mismatch between your PAN and Aadhaar details. Please provide additional information to complete verification."}
@@ -464,7 +547,7 @@ const AadhaarVerification = ({
             type="submit"
             variant="ghost"
             className={`w-full py-6 ${isSubmittingMismatch ? "opacity-50 cursor-not-allowed" : ""}`}
-            disabled={isSubmittingMismatch}
+            disabled={isSubmittingMismatch || !mismatchFormData.full_name.trim() || !mismatchFormData.dob}
           >
             {isSubmittingMismatch ? "Submitting..." : "Submit Additional Details"}
           </Button>
@@ -479,7 +562,7 @@ const AadhaarVerification = ({
 
   // Always show the same UI - whether fresh or completed
   return (
-    <div className="mx-auto pt-20">
+    <div className="mx-auto -mt-28 sm:mt-0 pt-20">
       <FormHeading
         title={"Verify Aadhaar (DigiLocker)"}
         description={"Fast and easy Aadhaar-based verification."}
