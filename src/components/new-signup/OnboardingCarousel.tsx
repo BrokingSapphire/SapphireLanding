@@ -836,7 +836,7 @@ const OnboardingCarousel = () => {
 
         {/* Logout Button - Hide on email screen and congratulations page */}
         {currentStep > 0 && currentStep !== 15 && (
-          <div className="fixed bottom-4 lg:bottom-6 left- transform translate-x-1/2 lg:left-[41%] lg:transform-none">
+          <div className={`fixed bottom-4 lg:bottom-6 ${currentStep !== 15 ? "left-1/2 -translate-x-1/2" : ""} lg:left-[41%] lg:translate-x-0`}>
             <button
               onClick={() => {
                 // Clear localStorage
@@ -885,7 +885,7 @@ const OnboardingCarousel = () => {
 
         {/* Navigation Arrows - Hide on congratulations page */}
         {currentStep !== 15 && (
-          <div className="fixed bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 lg:left-auto lg:transform-none lg:right-6 flex gap-1">
+          <div className="hidden lg:block fixed bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 lg:left-auto lg:transform-none lg:right-6 flex gap-1">
             {navigationButtons.map((button, index) => (
               <button
                 key={index}
@@ -907,7 +907,7 @@ const OnboardingCarousel = () => {
                 {button.icon}
               </button>
             ))}
-          </div>
+          </div> 
         )}
       </div>
 
