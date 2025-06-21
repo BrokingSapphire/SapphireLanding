@@ -158,22 +158,22 @@ export const useCheckpoint = (): UseCheckpointReturn => {
   // Check if email is completed - Fixed to handle SSR
   const isEmailCompleted = () => {
     if (!isClientInitialized) {
-      console.log("Client not initialized yet, email check returning false");
+      // console.log("Client not initialized yet, email check returning false");
       return false;
     }
     const emailExists = !!localStorage.getItem('email');
-    console.log("Email completed check:", emailExists, "Email value:", localStorage.getItem('email'));
+    // console.log("Email completed check:", emailExists, "Email value:", localStorage.getItem('email'));
     return emailExists;
   };
 
   // Check if mobile is completed - Fixed to handle SSR
   const isMobileCompleted = () => {
     if (!isClientInitialized) {
-      console.log("Client not initialized yet, mobile check returning false");
+      // console.log("Client not initialized yet, mobile check returning false");
       return false;
     }
     const tokenExists = !!getAuthToken();
-    console.log("Mobile completed check:", tokenExists, "Token exists:", !!getAuthToken());
+    // console.log("Mobile completed check:", tokenExists, "Token exists:", !!getAuthToken());
     return tokenExists;
   };
 

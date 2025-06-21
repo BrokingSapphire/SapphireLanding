@@ -1,3 +1,4 @@
+// Enhanced BankAccountLinking component with name validation
 "use client"
 import React, { useState, useEffect } from "react";
 import FormHeading from "./FormHeading";
@@ -5,6 +6,8 @@ import ManualBankDetails from "./ManualBankDetails";
 import UpiLinking from "./UpiLinking";
 import Image from "next/image";
 import { toast } from "sonner";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 interface BankAccountLinkingProps {
   onNext: () => void;
@@ -19,6 +22,13 @@ interface BankAccountLinkingProps {
   isCompleted?: boolean;
 }
 
+interface BankData {
+  account_no: string;
+  ifsc_code: string;
+  account_type: string;
+  full_name: string;
+}
+
 // Global flag to track if completion toast has been shown in this session
 let hasShownGlobalCompletedToast = false;
 
@@ -29,13 +39,8 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
 }) => {
   const [linkingMethod, setLinkingMethod] = useState<string | null>(null);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  interface BankData {
-    account_no: string;
-    ifsc_code: string;
-    account_type: string;
-    full_name: string;
-  }
   const [bankData, setBankData] = useState<BankData | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
 
   // Check screen size on component mount and when window resizes
   useEffect(() => {
@@ -75,6 +80,145 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
     }
   }, [initialData, isCompleted]);
 
+  // Get stored full name from localStorage (try multiple possible keys)
+  const getStoredFullName = (): string | null => {
+    if (typeof window === 'undefined') return null;
+    
+    // Try common localStorage keys for full name
+    const possibleKeys = ['full_name', 'fullName', 'name', 'user_name', 'userName'];
+    
+    for (const key of possibleKeys) {
+      const value = localStorage.getItem(key);
+      if (value) {
+        try {
+          // Try parsing as JSON first (in case it's stored as an object)
+          const parsed = JSON.parse(value);
+          if (typeof parsed === 'string') {
+            return parsed;
+          } else if (typeof parsed === 'object' && parsed.name) {
+            return parsed.name;
+          } else if (typeof parsed === 'object' && parsed.full_name) {
+            return parsed.full_name;
+          }
+        } catch {
+          // If JSON parsing fails, treat as string
+          return value;
+        }
+      }
+    }
+    
+    return null;
+  };
+
+  // Validate bank details and full name match
+  const validateBankDetails = async (): Promise<boolean> => {
+    setIsValidating(true);
+    
+    try {
+      // Get bank details from API
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/bank_validation`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('authToken')}`
+          }
+        }
+      );
+
+      if (response.data?.data?.bank?.full_name) {
+        const apiBankName = response.data.data.bank.full_name.toLowerCase().trim();
+        const storedName = getStoredFullName()?.toLowerCase().trim();
+        
+        if (!storedName) {
+          toast.error("Unable to verify identity. Please restart the process.");
+          return false;
+        }
+
+        // Compare names (allowing for minor variations)
+        const namesMatch = compareNames(apiBankName, storedName);
+        
+        if (!namesMatch) {
+          toast.error("Account holder name doesn't match with your official Government ID. Please try again with the correct bank account.");
+          
+          // Reset to main component to allow retry
+          setLinkingMethod(null);
+          setBankData(null);
+          
+          return false;
+        }
+        
+        // Names match, proceed
+        return true;
+      } else {
+        toast.error("Unable to fetch bank account details. Please try again.");
+        return false;
+      }
+      
+    } catch (error: any) {
+      console.error("Error validating bank details:", error);
+      
+      if (error.response?.status === 404) {
+        toast.error("Bank account details not found. Please complete bank validation first.");
+      } else {
+        toast.error("Error validating bank details. Please try again.");
+      }
+      
+      return false;
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  // Enhanced name comparison function
+  const compareNames = (name1: string, name2: string): boolean => {
+    // Remove common prefixes/suffixes and normalize
+    const normalize = (name: string) => {
+      return name
+        .toLowerCase()
+        .replace(/\b(mr|mrs|ms|dr|prof|shri|smt|kumari)\b\.?/g, '')
+        .replace(/[.,\-_]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    };
+    
+    const normalized1 = normalize(name1);
+    const normalized2 = normalize(name2);
+    
+    // Exact match
+    if (normalized1 === normalized2) return true;
+    
+    // Check if one name contains the other (for cases like "John Doe" vs "John")
+    const words1 = normalized1.split(' ').filter(w => w.length > 2);
+    const words2 = normalized2.split(' ').filter(w => w.length > 2);
+    
+    // Check if at least 2 significant words match or if it's a subset
+    const matchingWords = words1.filter(word => 
+      words2.some(w => w.includes(word) || word.includes(w))
+    );
+    
+    return matchingWords.length >= Math.min(2, Math.min(words1.length, words2.length));
+  };
+
+  // Enhanced onNext handler with validation
+  const handleNext = async () => {
+    // If validation is in progress, don't proceed
+    if (isValidating) {
+      return;
+    }
+
+    // If already completed and no changes, proceed directly
+    if (isCompleted && bankData) {
+      const isValid = await validateBankDetails();
+      if (isValid) {
+        onNext();
+      }
+      return;
+    }
+
+    // For new submissions, validation will be handled in the child components
+    onNext();
+  };
+
   // Helper function to mask account number
   const maskAccountNumber = (accountNo: string): string => {
     if (!accountNo) return "";
@@ -82,20 +226,38 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
     return `****${accountNo.slice(-4)}`;
   };
 
+  // Enhanced method selection handler
+  const handleMethodSelection = (method: string) => {
+    setLinkingMethod(method);
+  };
+
+  // Rate limit display component
+  const RateLimitDisplay = () => {
+    return null; // Removed rate limiting
+  };
+
   // Always show the same UI - whether fresh or completed
   const renderLinkingOption = () => {
     if (linkingMethod === "manual") {
       return (
         <ManualBankDetails 
-          onNext={onNext} 
+          onNext={handleNext}
           onBack={() => setLinkingMethod(null)} 
           initialData={initialData}
           isCompleted={isCompleted}
+          validateBankDetails={validateBankDetails}
         />
       );
     } else if (linkingMethod === "upi") {
-      return <UpiLinking onNext={onNext} onBack={() => setLinkingMethod(null)} />;
+      return (
+        <UpiLinking 
+          onNext={handleNext}
+          onBack={() => setLinkingMethod(null)}
+          validateBankDetails={validateBankDetails}
+        />
+      );
     }
+    
     return (
       <div className="w-full max-w-2xl mx-auto p-4">
         <FormHeading 
@@ -141,13 +303,16 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
             {/* Continue or Change Options */}
             <div className="mt-4 flex flex-col sm:flex-row gap-3">
               <button 
-                onClick={onNext}
-                className="flex-1 bg-teal-800 text-white px-4 py-2 rounded hover:bg-teal-900 transition-colors"
+                onClick={handleNext}
+                disabled={isValidating}
+                className={`flex-1 bg-teal-800 text-white px-4 py-2 rounded hover:bg-teal-900 transition-colors ${
+                  isValidating ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
-                Continue
+                {isValidating ? 'Validating...' : 'Continue'}
               </button>
               <button 
-                onClick={() => setLinkingMethod("manual")}
+                onClick={() => handleMethodSelection("manual")}
                 className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors"
               >
                 Link Different Account
@@ -164,7 +329,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
               {!isSmallScreen && (
                 <button 
                   className="flex flex-col items-center justify-center h-32 border-2 rounded hover:border-[#064D51] transition-colors"
-                  onClick={() => setLinkingMethod("upi")}
+                  onClick={() => handleMethodSelection("upi")}
                 >
                   <div className="flex items-center justify-center w-20 h-10 mt-4 mb-2">
                     <Image width={1000} height={1000} src="/new-signup/new-upi.svg" alt="UPI" className="h-full w-20"  />
@@ -175,8 +340,10 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
               )}
               
               <button 
-                className={`flex flex-col items-center justify-center h-32 border-2 rounded hover:border-[#064D51] transition-colors ${isSmallScreen ? "col-span-1" : ""}`}
-                onClick={() => setLinkingMethod("manual")}
+                className={`flex flex-col items-center justify-center h-32 border-2 rounded hover:border-[#064D51] transition-colors ${
+                  isSmallScreen ? "col-span-1" : ""
+                }`}
+                onClick={() => handleMethodSelection("manual")}
               >
                 <div className="flex items-center justify-center space-x-1 mb-2">
                   <Image width={1000} height={1000} src="/new-signup/threebanks.png" alt="Bank" className="h-full w-20"  />
