@@ -745,17 +745,6 @@ const OnboardingCarousel = () => {
     );
   }
 
-
-  // Add this to debug what's cached
-const debugCache = () => {
-  const allQueries = queryClient.getQueryCache().getAll();
-  console.log("🔄 CACHED QUERIES:", allQueries.map(query => ({
-    key: query.queryKey,
-    status: query.state.status,
-    hasData: !!query.state.data
-  })));
-};
-
   return (
     <div className="flex h-screen max-h-screen overflow-hidden">
       {/* Static Left Panel */}
