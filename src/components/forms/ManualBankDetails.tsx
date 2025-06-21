@@ -269,7 +269,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   const canSubmit = isFormValid && !isSubmitting;
 
   return (
-    <div className="w-full max-w-2xl mx-auto mt-4 p-4">
+    <div className="w-full -mt-28 sm:mt-4  max-w-2xl mx-auto  p-4">
       <FormHeading
         title="Bank Account Details"
         description="Seamlessly link your bank for smooth transactions."

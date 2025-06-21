@@ -255,7 +255,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
 
   // Always show the same UI - whether fresh or completed
   return (
-    <div className="w-full mx-auto mt-8">
+    <div className="w-full  -mt-28 sm:mt-8 mx-auto">
       <FormHeading
         title="Personal Details"
         description="Provide your personal information for account setup."

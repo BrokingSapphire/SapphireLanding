@@ -24,6 +24,7 @@ import SetPassword from "../forms/SetPassword";
 import { toast } from "sonner";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { queryClient } from "@/providers/QueryProvider"; // Adjust the path as needed to where your queryClient is exported
 
 const OnboardingCarousel = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -744,6 +745,17 @@ const OnboardingCarousel = () => {
     );
   }
 
+
+  // Add this to debug what's cached
+const debugCache = () => {
+  const allQueries = queryClient.getQueryCache().getAll();
+  console.log("🔄 CACHED QUERIES:", allQueries.map(query => ({
+    key: query.queryKey,
+    status: query.state.status,
+    hasData: !!query.state.data
+  })));
+};
+
   return (
     <div className="flex h-screen max-h-screen overflow-hidden">
       {/* Static Left Panel */}
@@ -820,19 +832,6 @@ const OnboardingCarousel = () => {
           ))}
         </div>
 
-        {/* Reload Protection Notice - Only show for protected steps */}
-        {currentStep > 1 && currentStep < 15 && (
-          <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 shadow-sm">
-              <div className="flex items-center text-yellow-800 text-xs">
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-                <span>Please avoid refreshing the page to prevent data loss</span>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Logout Button - Hide on email screen and congratulations page */}
         {currentStep > 0 && currentStep !== 15 && (
@@ -846,7 +845,15 @@ const OnboardingCarousel = () => {
                 
                 // Clear auth token from cookies
                 Cookies.remove('authToken');
-                
+                  Object.keys(Cookies.get()).forEach(cookieName => {
+                  Cookies.remove(cookieName);
+                });
+
+                 
+              // Clear React Query cache
+                queryClient.removeQueries(); // Alternative method
+              queryClient.invalidateQueries(); // Invalidate all queries
+  
                 // Clear axios default headers
                 delete axios.defaults.headers.common['Authorization'];
                 
@@ -885,7 +892,7 @@ const OnboardingCarousel = () => {
 
         {/* Navigation Arrows - Hide on congratulations page */}
         {currentStep !== 15 && (
-          <div className="hidden lg:block fixed bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 lg:left-auto lg:transform-none lg:right-6 flex gap-1">
+          <div className="hidden lg:flex fixed bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 lg:left-auto lg:transform-none lg:right-6  gap-1">
             {navigationButtons.map((button, index) => (
               <button
                 key={index}

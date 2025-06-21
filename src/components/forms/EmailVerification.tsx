@@ -51,6 +51,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     }
   }, [initialData, isCompleted]);
 
+  
   // Only auto-advance if manually verified in this session
   useEffect(() => {
     if (isCompleted && hasManuallyVerified) {
@@ -280,7 +281,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   // Show completed state only if manually verified
   if (isCompleted && hasManuallyVerified) {
     return (
-      <div className="mx-auto pt-24">
+      <div className="mx-auto -mt-28 sm:mt-0 pt-24">
         <FormHeading
           title={"Email Verified Successfully!"}
           description={"Proceeding to the next step..."}
@@ -310,7 +311,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   }
 
   return (
-    <div className="mx-auto pt-24">
+    <div className="mx-auto -mt-28 sm:mt-0 pt-24">
       <FormHeading
         title={"Hi, Welcome to Sapphire!"}
         description={"Get started in just a few easy steps!"}

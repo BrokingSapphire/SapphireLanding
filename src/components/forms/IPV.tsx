@@ -379,7 +379,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   // Show initialization loading
   if (!isInitialized && isLoading) {
     return (
-      <div className="mx-auto mt-16">
+      <div className="mx-auto -mt-28 sm:mt-16">
         <FormHeading
           title="Video Verification (IPV)"
           description="Initializing verification session..."
@@ -395,7 +395,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   // Show error state if initialization failed
   if (!isInitialized && error) {
     return (
-      <div className="mx-auto mt-16">
+      <div className="mx-auto -mt-28 sm:mt-16">
         <FormHeading
           title="Video Verification (IPV)"
           description="Failed to initialize verification session."
@@ -421,7 +421,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   };
 
   return (
-    <div className="mx-auto mt-16">
+    <div className="mx-auto -mt-28 sm:mt-16">
       <FormHeading
         title="Video Verification (IPV)"
         description="A quick face-to-face verification for security."

@@ -326,7 +326,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
 
   // Always show the same UI - whether fresh or completed
   return (
-    <div className="w-full max-w-2xl mx-auto p-4">
+    <div className="w-full -mt-28 sm:mt-0 max-w-2xl mx-auto p-4">
       <FormHeading 
         title="Choose your investment segment" 
         description="Choose where you want to invest and trade." 

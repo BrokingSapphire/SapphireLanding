@@ -335,7 +335,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   // Show initialization loading
   if (!isInitialized && isLoading) {
     return (
-      <div className="mx-auto p-4 mt-10">
+      <div className="mx-auto p-4 -mt-28 sm:mt-10">
         <FormHeading
           title="Finish account set-up using Aadhar E-sign"
           description="Initializing eSign session..."

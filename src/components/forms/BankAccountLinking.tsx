@@ -259,7 +259,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
     }
     
     return (
-      <div className="w-full max-w-2xl mx-auto p-4">
+      <div className="w-full -mt-28 sm:mt-0 max-w-2xl mx-auto p-4">
         <FormHeading 
           title="Bank Account Details" 
           description="Seamlessly link your bank for smooth transactions." 

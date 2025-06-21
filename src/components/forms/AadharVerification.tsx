@@ -502,7 +502,7 @@ const AadhaarVerification = ({
   // Show Aadhaar mismatch form
   if (currentStep === 'mismatch') {
     return (
-      <div className="mx-auto pt-20">
+      <div className="mx-auto -mt-28 sm:mt-0 pt-20">
         <FormHeading
           title={"Additional Verification Required"}
           description={"We detected a mismatch between your PAN and Aadhaar details. Please provide additional information to complete verification."}
@@ -574,7 +574,7 @@ const AadhaarVerification = ({
 
   // Always show the same UI - whether fresh or completed
   return (
-    <div className="mx-auto pt-20">
+    <div className="mx-auto -mt-28 sm:mt-0 pt-20">
       <FormHeading
         title={"Verify Aadhaar (DigiLocker)"}
         description={"Fast and easy Aadhaar-based verification."}

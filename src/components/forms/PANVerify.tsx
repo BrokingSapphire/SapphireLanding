@@ -227,7 +227,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
 
   // Always show the same UI, just with prefilled PAN number if completed
   return (
-    <div className="mx-auto max-w-full px-4">
+    <div className="mx-auto -mt-28 sm:mt-0 max-w-full px-4">
       <FormHeading
         title={"Verify PAN to Continue"}
         description={"Secure your identity with PAN verification."}

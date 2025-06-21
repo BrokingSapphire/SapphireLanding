@@ -238,7 +238,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
 
   if (isLoading) {
     return (
-      <div className="w-full mt-8 max-w-2xl mx-auto p-2">
+      <div className="w-full -mt-28 sm:mt-8 max-w-2xl mx-auto p-2">
         <FormHeading
           title="Bank Account Details"
           description="Initializing UPI verification..."
