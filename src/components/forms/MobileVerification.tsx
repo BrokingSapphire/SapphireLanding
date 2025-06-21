@@ -44,7 +44,11 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     if (isCompleted && initialData?.phone) {
       // If step is completed, prefill with data from API AND save to localStorage
       setMobileNumber(initialData.phone);
-      localStorage.setItem("verifiedPhone", initialData.phone);
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem(
+        "verifiedPhone",
+        JSON.stringify({ value: initialData.phone, expiry })
+      );
     } else {
       // Try to get data from localStorage (from previous session)
       const storedPhone = localStorage.getItem("verifiedPhone") || "";
@@ -148,7 +152,11 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
       }
 
       // FIXED: Always store verified phone in localStorage, regardless of verification state
-      localStorage.setItem("verifiedPhone", mobileNumber);
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem(
+        "verifiedPhone",
+        JSON.stringify({ value: mobileNumber, expiry })
+      );
       
       // MODIFIED: Mark as manually verified before proceeding
       setHasManuallyVerified(true);
@@ -205,7 +213,11 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
       }
 
       // FIXED: Save mobile number to localStorage as soon as OTP is sent
-      localStorage.setItem("verifiedPhone", mobileNumber);
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem(
+        "verifiedPhone",
+        JSON.stringify({ value: mobileNumber, expiry })
+      );
 
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes

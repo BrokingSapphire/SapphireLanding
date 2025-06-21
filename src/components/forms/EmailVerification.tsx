@@ -39,7 +39,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     if (isCompleted && initialData?.email) {
       // If step is completed, prefill with data from API AND save to localStorage
       setEmail(initialData.email);
-      localStorage.setItem("email", initialData.email);
+      // Store email with 1-day expiry in localStorage
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem("email", JSON.stringify({ value: initialData.email, expiry }));
     } else {
       // Try to get email from localStorage (from previous session)
       const storedEmail = localStorage.getItem("email") || "";
@@ -174,7 +176,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       }
 
       // FIXED: Always store email in localStorage, regardless of verification state
-      localStorage.setItem("email", email);
+      // Store email with 1-day expiry in localStorage
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem("email", JSON.stringify({ value: email, expiry }));
       
       // Store auth token in cookies and axios headers
       if (response.data.token) {
@@ -229,7 +233,8 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       }
 
       // FIXED: Save email to localStorage as soon as OTP is sent
-      localStorage.setItem("email", email);
+      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
+      localStorage.setItem("email", JSON.stringify({ value: email, expiry }));
 
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
