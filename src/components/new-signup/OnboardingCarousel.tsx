@@ -1,4 +1,4 @@
-// Updated OnboardingCarousel with proper client initialization
+// Enhanced OnboardingCarousel with smart reload protection
 
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
@@ -48,6 +48,62 @@ const OnboardingCarousel = () => {
   } = useCheckpoint();
 
   const TOTAL_STEPS = 16;
+
+  // Smart reload protection - Allow reload only on email (step 0) and mobile (step 1) steps
+  useEffect(() => {
+    const isEmailOrMobileStep = currentStep === 0 || currentStep === 1;
+    
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Only show warning for steps other than email and mobile
+      if (!isEmailOrMobileStep && isInitialized) {
+        // Show browser's default confirmation dialog
+        e.preventDefault();
+        e.returnValue = 'Are you sure you want to leave? Your progress may be lost.'; // Required for Chrome
+        
+        // Show toast warning (may not be visible due to browser dialog)
+        toast.error("Please don't reload the page during the verification process!");
+        
+        return 'Are you sure you want to leave? Your progress may be lost.'; // Some browsers require a return value
+      }
+    };
+
+    const handleUnload = () => {
+      // Show toast when user actually tries to leave (only for protected steps)
+      if (!isEmailOrMobileStep && isInitialized) {
+        toast.error("Page reload detected! Please resubmit if verification was interrupted.");
+      }
+    };
+
+    // Add event listeners only for protected steps
+    if (!isEmailOrMobileStep && isInitialized) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener('unload', handleUnload);
+    }
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('unload', handleUnload);
+    };
+  }, [currentStep, isInitialized]);
+
+  // Detect when user comes back to the tab (for protected steps only)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const isEmailOrMobileStep = currentStep === 0 || currentStep === 1;
+      
+      if (document.visibilityState === 'visible' && !isEmailOrMobileStep && isInitialized) {
+        // User came back to tab during a protected step
+        toast.warning("If you refreshed the page, you may need to restart the verification process.");
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [currentStep, isInitialized]);
 
   // Initialize current step from checkpoint data and client ID from localStorage
   useEffect(() => {
@@ -763,6 +819,20 @@ const OnboardingCarousel = () => {
             />
           ))}
         </div>
+
+        {/* Reload Protection Notice - Only show for protected steps */}
+        {currentStep > 1 && currentStep < 15 && (
+          <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 shadow-sm">
+              <div className="flex items-center text-yellow-800 text-xs">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span>Please avoid refreshing the page to prevent data loss</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Logout Button - Hide on email screen and congratulations page */}
         {currentStep > 0 && currentStep !== 15 && (
