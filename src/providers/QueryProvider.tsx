@@ -14,9 +14,18 @@ export const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
       retry: (failureCount, error) => {
+        // Type guard to check if error has a status property
+        function hasStatus(err: unknown): err is Error & { status: number } {
+          return (
+            typeof err === 'object' &&
+            err !== null &&
+            'status' in err &&
+            typeof (err as { status?: unknown }).status === 'number'
+          );
+        }
         // Don't retry on 4xx errors
-        if (error instanceof Error && 'status' in error) {
-          const status = (error as any).status;
+        if (hasStatus(error)) {
+          const status = error.status;
           if (status >= 400 && status < 500) {
             return false;
           }

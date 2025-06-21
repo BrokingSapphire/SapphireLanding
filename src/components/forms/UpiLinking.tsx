@@ -12,7 +12,7 @@ interface UpiLinkingProps {
   onNext: () => void;
   onBack: () => void;
   validateBankDetails: (bankAccountHolderName?: string) => Promise<boolean>;
-  onUpiSuccess?: (upiData: any) => Promise<void>;
+  onUpiSuccess?: (upiData: Record<string, unknown>) => Promise<void>;
 }
 
 interface UpiData {

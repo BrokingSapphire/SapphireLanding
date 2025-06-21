@@ -35,7 +35,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
   const [hasManuallyVerified, setHasManuallyVerified] = useState(false); // Track manual verification
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [email, setEmail] = useState("");
+  const [, setEmail] = useState("");
 
   const { setAuthToken } = useAuthToken();
 

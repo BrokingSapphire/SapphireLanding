@@ -209,18 +209,33 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
       // Names match, proceed
       return true;
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error validating bank details:", error);
-      
+
       if (!hasShownValidationToast) {
-        if (error.response?.status === 404) {
+        // Type guard for AxiosError-like object
+        type AxiosErrorLike = {
+          response?: {
+            status?: number;
+          };
+        };
+
+        const axiosError = error as AxiosErrorLike;
+
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "response" in error &&
+          typeof axiosError.response?.status === "number" &&
+          axiosError.response?.status === 404
+        ) {
           toast.error("Bank account details not found. Please complete bank validation first.");
         } else {
           toast.error("Error validating bank details. Please try again.");
         }
         hasShownValidationToast = true;
       }
-      
+
       return false;
     } finally {
       setIsValidating(false);
@@ -297,7 +312,17 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
   };
 
   // Enhanced UPI success callback to validate names immediately
-  const handleUpiSuccess = async (upiData: any) => {
+  interface UpiData {
+    account_no?: string;
+    ifsc_code?: string;
+    account_type?: string;
+    full_name?: string;
+    account_holder_name?: string;
+    name?: string;
+    [key: string]: unknown; // Allow additional properties if needed
+  }
+
+  const handleUpiSuccess = async (upiData: UpiData) => {
     console.log("UPI success data:", upiData);
     
     // If UPI data contains bank account holder name, validate immediately
@@ -309,7 +334,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
         account_no: upiData.account_no || '',
         ifsc_code: upiData.ifsc_code || '',
         account_type: upiData.account_type || 'savings',
-        full_name: bankAccountHolderName
+        full_name: bankAccountHolderName || ''
       });
       
       // Validate names
@@ -328,10 +353,6 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
     }
   };
 
-  // Rate limit display component
-  const RateLimitDisplay = () => {
-    return null; // Removed rate limiting
-  };
 
   // Always show the same UI - whether fresh or completed
   const renderLinkingOption = () => {
