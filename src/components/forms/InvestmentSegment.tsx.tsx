@@ -326,7 +326,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
 
   // Always show the same UI - whether fresh or completed
   return (
-    <div className="w-full max-w-2xl mx-auto p-4">
+    <div className="w-full -mt-28 sm:mt-0 max-w-2xl mx-auto p-4">
       <FormHeading 
         title="Choose your investment segment" 
         description="Choose where you want to invest and trade." 
@@ -366,7 +366,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         {getButtonText()}
       </Button>
 
-      <div className="hidden md:block text-center text-sm text-gray-600 space-y-3 mt-8">
+      <div className="hidden lg:block text-center text-sm text-gray-600 space-y-3 mt-8">
         <p>
           If you choose the F&O, Currency, or Commodity Derivatives segment, you will be required to upload your income proof.
         </p>

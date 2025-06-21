@@ -225,7 +225,7 @@ const MPIN: React.FC<MPINProps> = ({
   // Show completed state
   if (isCompleted) {
     return (
-      <div className="mx-auto mt-16 max-w-md">
+      <div className="mx-auto -mt-28 sm:mt-16 max-w-md">
         <FormHeading
           title="MPIN Set Successfully!"
           description="Your 4-digit MPIN has been configured for secure transactions."
@@ -255,7 +255,7 @@ const MPIN: React.FC<MPINProps> = ({
   }
 
   return (
-    <div className="mx-auto mt-16 max-w-md">
+    <div className="mx-auto -mt-28 sm:mt-16 max-w-md">
       <FormHeading
         title={step === 'enter' ? "Set Your MPIN" : "Confirm Your MPIN"}
         description={

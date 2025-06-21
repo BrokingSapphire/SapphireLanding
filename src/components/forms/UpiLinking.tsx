@@ -6,9 +6,13 @@ import Image from "next/image";
 import axios from "axios";
 import QRCode from "qrcode";
 import Cookies from "js-cookie";
+import { toast } from "sonner";
+
 interface UpiLinkingProps {
   onNext: () => void;
   onBack: () => void;
+  validateBankDetails: (bankAccountHolderName?: string) => Promise<boolean>;
+  onUpiSuccess?: (upiData: Record<string, unknown>) => Promise<void>;
 }
 
 interface UpiData {
@@ -22,13 +26,19 @@ interface UpiData {
   };
 }
 
-const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
+const UpiLinking: React.FC<UpiLinkingProps> = ({ 
+  onBack, 
+  onNext,
+  validateBankDetails,
+  onUpiSuccess
+}) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   const [upiData, setUpiData] = useState<UpiData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
+  const [isValidatingName, setIsValidatingName] = useState(false);
 
   // Initialize UPI verification
   useEffect(() => {
@@ -39,6 +49,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
   useEffect(() => {
     if (timeLeft <= 0) {
       setError("Verification timeout. Please try again.");
+      setIsPolling(false);
       return;
     }
 
@@ -47,6 +58,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
         if (prevTime <= 1) {
           clearInterval(timer);
           setError("Verification timeout. Please try again.");
+          setIsPolling(false);
           return 0;
         }
         return prevTime - 1;
@@ -60,10 +72,10 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
   useEffect(() => {
     let pollingInterval: NodeJS.Timeout;
 
-    if (upiData && !isPolling && timeLeft > 0) {
+    if (upiData && !isPolling && timeLeft > 0 && !isValidatingName) {
       setIsPolling(true);
       
-      // Start polling after 10 seconds
+      // Start polling after 20 seconds
       setTimeout(() => {
         pollingInterval = setInterval(() => {
           checkUpiStatus();
@@ -76,7 +88,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
         clearInterval(pollingInterval);
       }
     };
-  }, [upiData, timeLeft]);
+  }, [upiData, timeLeft, isValidatingName]);
 
   const initializeUpiVerification = async () => {
     setIsLoading(true);
@@ -91,9 +103,8 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
         },
         {
           headers:{
-            Authorization: `Bearer ${Cookies.get('authToken')}`, // Use cookies for authentication
+            Authorization: `Bearer ${Cookies.get('authToken')}`,
           }
-          
         }
       );
 
@@ -104,23 +115,10 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
           generateQRCode(response.data.data.payment_link);
         }
       } else {
-        setError("Failed to initialize UPI verification. Please try again. line 101");
+        setError("Failed to initialize UPI verification. Please try again.");
       }
     } catch (err: unknown) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "response" in err &&
-        typeof (err as { response?: unknown }).response === "object" &&
-        (err as { response?: unknown }).response !== null &&
-        typeof (err as { response: { data?: unknown } }).response.data === "object" &&
-        (err as { response: { data?: unknown } }).response.data !== null &&
-        "message" in (err as { response: { data: { message?: string } } }).response.data
-      ) {
-        setError(`Error: ${(err as { response: { data: { message?: string } } }).response.data.message}`);
-      } else {
-        setError("Failed to initialize UPI verification. Please try again. line 107");
-      }
+      handleApiError(err, "Failed to initialize UPI verification. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -152,14 +150,47 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${Cookies.get('authToken')}`, // Use cookies for authentication
+            Authorization: `Bearer ${Cookies.get('authToken')}`,
           }
         }
       );
 
-      // If successful (status 201), verification is complete
+      // If successful (status 201), UPI payment is complete
       if (response.status === 201) {
-        onNext();
+        setIsPolling(false);
+        setIsValidatingName(true);
+        
+        toast.success("UPI payment completed! Validating account holder name...");
+        
+        // Get bank details from response
+        const bankDetails = response.data?.data?.bank || response.data?.data;
+        
+        console.log("UPI payment successful, bank details:", bankDetails);
+        
+        // If onUpiSuccess callback is provided, use it for validation
+        if (onUpiSuccess && bankDetails) {
+          try {
+            await onUpiSuccess(bankDetails);
+            setIsValidatingName(false);
+          } catch (error) {
+            console.error("UPI success validation failed:", error);
+            setIsValidatingName(false);
+            // Error handling is done in the onUpiSuccess callback
+          }
+        } else {
+          // Fallback to old validation method
+          setTimeout(async () => {
+            const isValid = await validateBankDetails();
+            setIsValidatingName(false);
+            
+            if (isValid) {
+              toast.success("Bank account verified successfully!");
+              setTimeout(() => {
+                onNext();
+              }, 1500);
+            }
+          }, 2000);
+        }
       }
     } catch (err: unknown) {
       if (
@@ -178,7 +209,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
           setError("UPI verification failed. Please try again or use manual bank details.");
           setIsPolling(false);
         } else {
-          // Other errors, but don't stop polling yet
+          // Other errors, but don't stop polling yet unless it's a critical error
           console.error("UPI status check error:", err);
         }
       } else {
@@ -188,14 +219,31 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
     }
   };
 
-  // const handleUpiAppClick = (appLink: string) => {
-  //   window.open(appLink, '_blank');
-  // };
+  const handleApiError = (err: unknown, defaultMessage: string) => {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "response" in err &&
+      typeof (err as { response?: unknown }).response === "object" &&
+      (err as { response?: unknown }).response !== null
+    ) {
+      const response = (err as { response: { status?: number; data?: { message?: string } } }).response;
+      
+      if (response.data?.message) {
+        setError(`Error: ${response.data.message}`);
+      } else {
+        setError(defaultMessage);
+      }
+    } else {
+      setError(defaultMessage);
+    }
+  };
 
   const handleRetry = () => {
     setTimeLeft(300);
     setError(null);
     setIsPolling(false);
+    setIsValidatingName(false);
     setQrCodeDataUrl("");
     initializeUpiVerification();
   };
@@ -209,7 +257,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
 
   if (isLoading) {
     return (
-      <div className="w-full mt-8 max-w-2xl mx-auto p-2">
+      <div className="w-full -mt-28 sm:mt-8 max-w-2xl mx-auto p-2">
         <FormHeading
           title="Bank Account Details"
           description="Initializing UPI verification..."
@@ -309,10 +357,9 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
                 alt="banks"
               />
             </div>
-
-
           </div>
         </div>
+        
         <div className="bg-[#F7F9FD] p-3 rounded mt-6 space-y-1 text-sm">
           <h4 className="font-semibold">Scan QR Code</h4>
           <ul className="list-disc list-inside space-y-0.5 text-gray-600">
@@ -320,15 +367,25 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
               ₹1 will be debited from your account and refunded within 24 hours.
             </li>
             <li>Scan using any UPI app to complete bank verification.</li>
+            <li>We&apos;ll verify that the account holder name matches your Government ID.</li>
             <li>We&apos;ll automatically detect once payment is completed.</li>
           </ul>
         </div>
 
-        {isPolling && (
+        {isPolling && !isValidatingName && (
           <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
             <div className="flex items-center">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
               <span className="text-blue-800 text-sm">Waiting for UPI payment completion...</span>
+            </div>
+          </div>
+        )}
+
+        {isValidatingName && (
+          <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600 mr-3"></div>
+              <span className="text-yellow-800 text-sm">Payment received! Validating account holder name...</span>
             </div>
           </div>
         )}
@@ -340,6 +397,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({ onBack, onNext }) => {
           variant="link"
           onClick={onBack}
           className="text-blue-500 mr-auto flex items-center"
+          disabled={isValidatingName}
         >
           Enter details manually <ArrowRight className="ml-1 h-4 w-4" />
         </Button>

@@ -288,7 +288,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
 
   // Always show the same UI - whether fresh or completed
   return (
-    <div className="mx-auto mt-10">
+    <div className="mx-auto -mt-28 sm:mt-10">
       <FormHeading
         title={"Parent Details"}
         description={"Provide your parent/spouse information for KYC verification."}
@@ -342,7 +342,6 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
             </p>
           )}
         </div>
-
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 rounded">

@@ -18,6 +18,7 @@ interface ManualBankDetailsProps {
     };
   };
   isCompleted?: boolean;
+  validateBankDetails: () => Promise<boolean>;
 }
 
 interface FormData {
@@ -40,6 +41,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   onBack,
   initialData,
   isCompleted,
+  validateBankDetails,
 }) => {
   const [formData, setFormData] = useState<FormData>({
     ifscCode: "",
@@ -171,10 +173,13 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     e.preventDefault();
     if (isSubmitting) return;
 
-    // If no changes and already completed, just proceed to next step
+    // If no changes and already completed, validate and proceed
     if (!hasChanges() && isCompleted) {
-      console.log("No changes detected, proceeding to next step");
-      onNext();
+      console.log("No changes detected, validating existing bank details");
+      const isValid = await validateBankDetails();
+      if (isValid) {
+        onNext();
+      }
       return;
     }
 
@@ -186,6 +191,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     setError(null);
 
     try {
+      // Submit bank details
       await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
@@ -205,11 +211,17 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
         }
       );
 
-      toast.success("Bank details verified successfully!");
+      toast.success("Bank details submitted successfully! Validating account holder name...");
       
-      // Auto-advance after 2 seconds
-      setTimeout(() => {
-        onNext();
+      // Wait a moment for the data to be processed, then validate
+      setTimeout(async () => {
+        const isValid = await validateBankDetails();
+        if (isValid) {
+          toast.success("Bank account verified successfully!");
+          setTimeout(() => {
+            onNext();
+          }, 1500);
+        }
       }, 2000);
       
     } catch (err: unknown) {
@@ -227,6 +239,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
         typeof (err as AxiosErrorResponse).response === "object"
       ) {
         const response = (err as AxiosErrorResponse).response;
+        
         if (response?.data?.message) {
           setError(`Error: ${response.data.message}`);
         } else if (response?.status === 422) {
@@ -253,15 +266,14 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   };
 
   const isFormValid = formData.ifscCode && formData.accountNumber && formData.accountType;
+  const canSubmit = isFormValid && !isSubmitting;
 
   return (
-    <div className="w-full max-w-2xl mx-auto mt-4 p-4">
+    <div className="w-full -mt-28 sm:mt-4  max-w-2xl mx-auto  p-4">
       <FormHeading
         title="Bank Account Details"
         description="Seamlessly link your bank for smooth transactions."
       />
-
-
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div className="space-y-2">
@@ -371,14 +383,13 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
           >
             Go Back <ArrowRight className="h-4 w-4" />
           </Button>
-
-          
         </div>
+        
         <Button
             type="submit"
-            disabled={isSubmitting || !isFormValid}
+            disabled={!canSubmit}
             className={`bg-teal-800 w-full text-white p-6 rounded hover:bg-teal-900 ${
-              (isSubmitting || !isFormValid) ? "opacity-50 cursor-not-allowed" : ""
+              !canSubmit ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             {getButtonText()}
@@ -387,7 +398,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
         <div className="text-center text-sm text-gray-600 mt-4">
           <p>
             We&apos;ll verify your bank account details for secure transactions. 
-            This process may take a few moments.
+            The account holder name must match your Government ID.
           </p>
         </div>
       </form>

@@ -32,13 +32,31 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
     } | undefined;
 
     if (isCompleted && data) {
-      // If step is completed, only prefill PAN number
+      // If step is completed, prefill all data
       console.log("Prefilling PAN data:", data);
       setPanNumber(data.pan_number || "");
-      // Store other data but don't show in UI
-      setFullName(data.full_name || "");
-      setDob(data.dob || "");
-      setMaskedAadhaar(data.masked_aadhaar || "");
+      
+      // ENHANCED: Always save full_name to localStorage when available
+      if (data.full_name) {
+        setFullName(data.full_name);
+        localStorage.setItem("full_name", data.full_name);
+        console.log("Saved full_name to localStorage:", data.full_name);
+      }
+      
+      if (data.dob) {
+        setDob(data.dob);
+      }
+      
+      if (data.masked_aadhaar) {
+        setMaskedAadhaar(data.masked_aadhaar);
+      }
+    } else {
+      // ENHANCED: Even if not completed, try to get full_name from localStorage
+      const storedFullName = localStorage.getItem("full_name");
+      if (storedFullName) {
+        setFullName(storedFullName);
+        console.log("Retrieved full_name from localStorage:", storedFullName);
+      }
     }
   }, [initialData, isCompleted]);
 
@@ -139,6 +157,22 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
         return;
       }
 
+      // ENHANCED: Save full_name to localStorage immediately after successful PAN verification
+      if (response.data.data?.full_name) {
+        setFullName(response.data.data.full_name);
+        localStorage.setItem("full_name", response.data.data.full_name);
+        console.log("Saved full_name to localStorage after PAN verification:", response.data.data.full_name);
+      }
+
+      // Save other details as well
+      if (response.data.data?.dob) {
+        setDob(response.data.data.dob);
+      }
+
+      if (response.data.data?.masked_aadhaar) {
+        setMaskedAadhaar(response.data.data.masked_aadhaar);
+      }
+
       toast.success("PAN verified successfully!");
       onNext();
     } catch (err: unknown) {
@@ -193,7 +227,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
 
   // Always show the same UI, just with prefilled PAN number if completed
   return (
-    <div className="mx-auto max-w-full px-4">
+    <div className="mx-auto -mt-28 sm:mt-0 max-w-full px-4">
       <FormHeading
         title={"Verify PAN to Continue"}
         description={"Secure your identity with PAN verification."}
@@ -231,7 +265,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
         {getButtonText()}
       </Button>
 
-      <div className="hidden md:block mt-6 text-sm text-center text-gray-600">
+      <div className="hidden lg:block mt-6 text-sm text-center text-gray-600">
         <p className="mb-4 text-center">
           By continuing, you agree to verify your PAN details with the Income
           Tax Department. Your PAN will be used for KYC verification purposes
