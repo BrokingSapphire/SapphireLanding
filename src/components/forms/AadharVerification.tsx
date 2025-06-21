@@ -13,8 +13,6 @@ interface AadhaarVerificationProps {
   panMaskedAadhaar?: string; // Masked Aadhaar from PAN verification
 }
 
-// Global flag to track if completion toast has been shown in this session
-let hasShownGlobalCompletedToast = false;
 
 const AadhaarVerification = ({ 
   onNext, 
@@ -24,7 +22,7 @@ const AadhaarVerification = ({
   const [isLoading, setIsLoading] = useState(false);
   const [, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'mismatch'>('initial');
-  const [digilockerUrl, setDigilockerUrl] = useState<string>('');
+  const [, setDigilockerUrl] = useState<string>('');
   const [, setIsPolling] = useState(false);
   const digilockerTabRef = useRef<Window | null>(null);
   
@@ -179,12 +177,7 @@ const AadhaarVerification = ({
   useEffect(() => {
     // Check if Aadhaar is already completed - only show toast once per session
     const aadhaarCompleted = isCompleted || isStepCompleted(CheckpointStep.AADHAAR);
-    
-    if (aadhaarCompleted && !hasShownGlobalCompletedToast) {
-      toast.success("Aadhaar already verified! You can proceed or verify again if needed.");
-      hasShownGlobalCompletedToast = true;
-      return; // Don't start polling if already completed
-    }
+
 
     // Check if there's existing mismatch data in Redis
     if (hasMismatchData()) {
@@ -554,20 +547,7 @@ const AadhaarVerification = ({
         </div>
       </div>
 
-      {/* Show additional info for completed users */}
-      {(isCompleted || isStepCompleted(CheckpointStep.AADHAAR)) && (
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <div>
-              <p className="text-green-800 font-medium">Aadhaar Already Verified</p>
-              <p className="text-green-700 text-sm">Your Aadhaar verification is complete. You can proceed to the next step.</p>
-            </div>
-          </div>
-        </div>
-      )}
+    
 
       {/* Status indicator for pending verification (but no polling status shown) */}
       {currentStep === 'digilocker_pending' && (
@@ -581,21 +561,6 @@ const AadhaarVerification = ({
               <p className="text-blue-700 text-sm">Complete the verification in DigiLocker. We&apos;ll automatically detect when you&apos;re done!</p>
             </div>
           </div>
-          {digilockerUrl && (
-            <button
-              onClick={() => {
-                // Close existing tab if open
-                if (digilockerTabRef.current && !digilockerTabRef.current.closed) {
-                  digilockerTabRef.current.close();
-                }
-                // Open new tab
-                digilockerTabRef.current = window.open(digilockerUrl, '_blank');
-              }}
-              className="text-blue-600 hover:text-blue-700 text-sm underline"
-            >
-              Reopen DigiLocker Tab
-            </button>
-          )}
         </div>
       )}
 
@@ -610,7 +575,7 @@ const AadhaarVerification = ({
         {getButtonText()}
       </Button>
 
-      <div className="text-center text-sm text-gray-600 space-y-3">
+      <div className="hidden lg:block text-center text-sm text-gray-600 space-y-3">
         <p>I authorise Sapphire to fetch my KYC information from DigiLocker.</p>
       </div>
     </div>

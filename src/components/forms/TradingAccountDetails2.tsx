@@ -24,8 +24,6 @@ const occupationOptions = [
   "Others",
 ];
 
-// Global flag to track if completion toast has been shown in this session for this component
-let hasShownGlobalCompletedToastForOtherDetails = false;
 
 const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({ 
   onNext, 
@@ -83,11 +81,6 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
         is_politically_exposed: mappedData.is_politically_exposed ?? false
       });
       
-      // Show completion toast only once per session and only if not currently submitting
-      if (!hasShownGlobalCompletedToastForOtherDetails) {
-        toast.success("Other details already saved! You can modify them or continue.");
-        hasShownGlobalCompletedToastForOtherDetails = true;
-      }
     }
   }, [initialData, isCompleted, isSubmitting, hasJustSubmitted]);
 

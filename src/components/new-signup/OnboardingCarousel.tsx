@@ -57,23 +57,23 @@ const OnboardingCarousel = () => {
       setCurrentStep(resumeStep);
       
       // Check if user has reached esign step (step 12) or beyond
-      if (resumeStep >= 12) {
+      if (resumeStep > 12) {
         setHasReachedEsign(true);
         // Clear localStorage and cookies when reaching esign
-        clearStorageAndCookies();
+        // clearStorageAndCookies();
       }
       
       // Check localStorage for existing client ID
       if (typeof window !== 'undefined') {
         const storedClientId = localStorage.getItem('clientId');
         if (storedClientId) {
-          console.log('Found existing client ID in localStorage:', storedClientId);
+          // console.log('Found existing client ID in localStorage:', storedClientId);
         } else {
           // Try to get client ID from checkpoint data and save to localStorage
           const existingClientId = getClientId();
           if (existingClientId) {
             localStorage.setItem('clientId', existingClientId);
-            console.log('Saved client ID from checkpoint to localStorage:', existingClientId);
+            // console.log('Saved client ID from checkpoint to localStorage:', existingClientId);
           }
         }
       }
@@ -83,17 +83,17 @@ const OnboardingCarousel = () => {
   }, [checkpointLoading, resumeStep, isInitialized, getClientId, isClientInitialized]);
 
   // Function to clear localStorage and cookies
-  const clearStorageAndCookies = () => {
-    if (typeof window !== 'undefined') {
-      // Clear specific localStorage items (but keep clientId for MPIN)
-      localStorage.removeItem('email');
-      localStorage.removeItem('verifiedPhone');
+  // const clearStorageAndCookies = () => {
+  //   if (typeof window !== 'undefined') {
+  //     // Clear specific localStorage items (but keep clientId for MPIN)
+  //     localStorage.removeItem('email');
+  //     localStorage.removeItem('verifiedPhone');
       
-      // Clear specific cookies but keep authToken for API calls
-      // We'll keep the authToken until the very end of the process
-      console.log('Cleared localStorage and specific cookies at esign step');
-    }
-  };
+  //     // Clear specific cookies but keep authToken for API calls
+  //     // We'll keep the authToken until the very end of the process
+  //     console.log('Cleared localStorage and specific cookies at esign step');
+  //   }
+  // };
 
   // Special effect to handle income proof progress
   useEffect(() => {
@@ -294,7 +294,7 @@ const OnboardingCarousel = () => {
     // Set hasReachedEsign flag and clear storage when reaching esign step
     if (currentStep === 11 && !hasReachedEsign) { // Moving from step 11 to 12 (esign)
       setHasReachedEsign(true);
-      clearStorageAndCookies();
+      // clearStorageAndCookies();
     }
     
     // Special case for investment segment with income proof
@@ -653,7 +653,7 @@ const OnboardingCarousel = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
           <p className="text-gray-600">
-            {!isClientInitialized ? "Initializing..." : "Loading your progress..."}
+            {!isClientInitialized ? "Loading..." : "Loading..."}
           </p>
         </div>
       </div>
