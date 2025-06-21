@@ -657,33 +657,6 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       return STEP_TO_COMPONENT_INDEX[AllSteps.EMAIL];
     }
 
-<<<<<<< HEAD
-=======
-    console.log("=== CHECKPOINT DATA DEBUG ===");
-    // Add this to debug what's cached
-const debugCache = () => {
-  const allQueries = queryClient.getQueryCache().getAll();
-  console.log("🔄 CACHED QUERIES:", allQueries.map(query => ({
-    key: query.queryKey,
-    status: query.state.status,
-    hasData: !!query.state.data
-  })));
-};
-    // console.log("Client initialized:", isClientInitialized);
-    // console.log("Email from storage:", getEmailFromStorage());
-    // console.log("Phone from storage:", getPhoneFromStorage());
-    // console.log("Auth token exists:", !!getAuthToken());
-    // console.log("Investment segment data:", checkpointData[CheckpointStep.INVESTMENT_SEGMENT]);
-    // console.log("Income proof data:", checkpointData[CheckpointStep.INCOME_PROOF]);
-    // console.log("IPV data:", checkpointData[CheckpointStep.IPV]);
-    // console.log("eSign data:", checkpointData[CheckpointStep.ESIGN]);
-    // console.log("Investment segment completed:", isStepCompleted(CheckpointStep.INVESTMENT_SEGMENT));
-    // console.log("Income proof completed:", isStepCompleted(CheckpointStep.INCOME_PROOF));
-    // console.log("IPV completed:", isStepCompleted(CheckpointStep.IPV));
-    // console.log("eSign completed:", isStepCompleted(CheckpointStep.ESIGN));
-    // console.log("Investment segment step complete (with income proof check):", isInvestmentSegmentStepComplete());
-    debugCache();
->>>>>>> 86bdf3b6b1f1a80dec8ba01146ee0f356fb87c4f
     // Check email completion
     if (!isEmailCompleted()) {
       return STEP_TO_COMPONENT_INDEX[AllSteps.EMAIL];
@@ -691,29 +664,17 @@ const debugCache = () => {
 
     // Check mobile completion
     if (!isMobileCompleted()) {
-<<<<<<< HEAD
-=======
-      // console.log("Mobile not completed, returning mobile step");
->>>>>>> 86bdf3b6b1f1a80dec8ba01146ee0f356fb87c4f
       return STEP_TO_COMPONENT_INDEX[AllSteps.MOBILE];
     }
 
     // Check PAN completion
     if (!isStepCompleted(CheckpointStep.PAN)) {
-<<<<<<< HEAD
-=======
-      // console.log("PAN not completed, returning PAN step");
->>>>>>> 86bdf3b6b1f1a80dec8ba01146ee0f356fb87c4f
       return STEP_TO_COMPONENT_INDEX[AllSteps.PAN];
     }
 
     // Check for mismatch data first (this avoids expensive DigiLocker calls)
     const mismatchData = checkpointData[CheckpointStep.AADHAAR_MISMATCH_DETAILS];
     if (mismatchData?.completed) {
-<<<<<<< HEAD
-=======
-      // console.log("Mismatch data found, returning Aadhaar step");
->>>>>>> 86bdf3b6b1f1a80dec8ba01146ee0f356fb87c4f
       // There's mismatch data, user needs to fill mismatch form
       return STEP_TO_COMPONENT_INDEX[AllSteps.AADHAAR];
     }
@@ -764,13 +725,8 @@ const debugCache = () => {
 
     // Check Signature with enhanced validation
     if (!isStepCompleted(CheckpointStep.SIGNATURE)) {
-<<<<<<< HEAD
       // console.log("Signature not completed, returning signature step");
       return STEP_TO_COMPONENT_INDEX[AllSteps.SIGNATURE];
-=======
-      console.log("Signature not completed, returning signature step");
-      // return STEP_TO_COMPONENT_INDEX[AllSteps.SIGNATURE];
->>>>>>> 86bdf3b6b1f1a80dec8ba01146ee0f356fb87c4f
     }
 
     // Check Add Nominees
