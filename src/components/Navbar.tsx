@@ -93,7 +93,7 @@ const Navbar = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex space-x-4">
-            <Link href="/login">
+            <Link href="https://terminal.sapphirebroking.com" target="_blank" rel="noopener noreferrer">
               <Button variant="outline">Login</Button>
             </Link>
             <Link href="/signup">
