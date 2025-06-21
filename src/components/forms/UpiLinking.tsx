@@ -11,7 +11,8 @@ import { toast } from "sonner";
 interface UpiLinkingProps {
   onNext: () => void;
   onBack: () => void;
-  validateBankDetails: () => Promise<boolean>;
+  validateBankDetails: (bankAccountHolderName?: string) => Promise<boolean>;
+  onUpiSuccess?: (upiData: any) => Promise<void>;
 }
 
 interface UpiData {
@@ -28,7 +29,8 @@ interface UpiData {
 const UpiLinking: React.FC<UpiLinkingProps> = ({ 
   onBack, 
   onNext,
-  validateBankDetails
+  validateBankDetails,
+  onUpiSuccess
 }) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   const [upiData, setUpiData] = useState<UpiData | null>(null);
@@ -160,18 +162,35 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
         
         toast.success("UPI payment completed! Validating account holder name...");
         
-        // Wait a moment for the data to be processed, then validate name
-        setTimeout(async () => {
-          const isValid = await validateBankDetails();
-          setIsValidatingName(false);
-          
-          if (isValid) {
-            toast.success("Bank account verified successfully!");
-            setTimeout(() => {
-              onNext();
-            }, 1500);
+        // Get bank details from response
+        const bankDetails = response.data?.data?.bank || response.data?.data;
+        
+        console.log("UPI payment successful, bank details:", bankDetails);
+        
+        // If onUpiSuccess callback is provided, use it for validation
+        if (onUpiSuccess && bankDetails) {
+          try {
+            await onUpiSuccess(bankDetails);
+            setIsValidatingName(false);
+          } catch (error) {
+            console.error("UPI success validation failed:", error);
+            setIsValidatingName(false);
+            // Error handling is done in the onUpiSuccess callback
           }
-        }, 2000);
+        } else {
+          // Fallback to old validation method
+          setTimeout(async () => {
+            const isValid = await validateBankDetails();
+            setIsValidatingName(false);
+            
+            if (isValid) {
+              toast.success("Bank account verified successfully!");
+              setTimeout(() => {
+                onNext();
+              }, 1500);
+            }
+          }, 2000);
+        }
       }
     } catch (err: unknown) {
       if (

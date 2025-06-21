@@ -343,7 +343,6 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
           )}
         </div>
 
-
         {error && (
           <div className="mb-4 p-3 bg-red-50 rounded">
             <p className="text-red-600 text-sm">{error}</p>

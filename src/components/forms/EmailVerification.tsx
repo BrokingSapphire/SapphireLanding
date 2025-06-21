@@ -21,6 +21,9 @@ interface ApiErrorResponse {
   message?: string;
 }
 
+// Global flag to track if completion toast has been shown in this session
+let hasShownGlobalCompletedToast = false;
+
 const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificationProps) => {
   const [email, setEmail] = useState("");
   const [showOTP, setShowOTP] = useState(false);
@@ -34,24 +37,46 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
   const { setAuthToken } = useAuthToken();
 
-  // Prefill email from localStorage or initialData
+  // Helper function to get email from localStorage with expiry check
+  const getStoredEmail = () => {
+    try {
+      const stored = localStorage.getItem("email");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.expiry && Date.now() < parsed.expiry) {
+          return parsed.value;
+        } else {
+          // Remove expired email
+          localStorage.removeItem("email");
+        }
+      }
+    } catch (error) {
+      console.warn("Error reading stored email:", error);
+      localStorage.removeItem("email");
+    }
+    return null;
+  };
+
+  // Prefill email from initialData or localStorage (only if previously verified)
   useEffect(() => {
     if (isCompleted && initialData?.email) {
-      // If step is completed, prefill with data from API AND save to localStorage
+      // If step is completed, prefill with data from API 
       setEmail(initialData.email);
-      // Store email with 1-day expiry in localStorage
-      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
-      localStorage.setItem("email", JSON.stringify({ value: initialData.email, expiry }));
+      
+      // Show completion toast only once per session
+      if (!hasShownGlobalCompletedToast) {
+        toast.success("Email already verified! You can proceed or verify a different email.");
+        hasShownGlobalCompletedToast = true;
+      }
     } else {
-      // Try to get email from localStorage (from previous session)
-      const storedEmail = localStorage.getItem("email") || "";
+      // Try to get email from localStorage (only if previously verified and not expired)
+      const storedEmail = getStoredEmail();
       if (storedEmail) {
         setEmail(storedEmail);
       }
     }
   }, [initialData, isCompleted]);
 
-  
   // Only auto-advance if manually verified in this session
   useEffect(() => {
     if (isCompleted && hasManuallyVerified) {
@@ -131,8 +156,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         return;
       }
 
-      // Always store email in localStorage, regardless of verification state
-      // Store email with 1-day expiry in localStorage
+      // ONLY save email to localStorage after successful verification
       const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
       localStorage.setItem("email", JSON.stringify({ value: email, expiry }));
       
@@ -188,10 +212,8 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         return;
       }
 
-      // Save email to localStorage as soon as OTP is sent
-      const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
-      localStorage.setItem("email", JSON.stringify({ value: email, expiry }));
-
+      // DO NOT save email to localStorage yet - only after verification
+      
       setShowOTP(true);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds

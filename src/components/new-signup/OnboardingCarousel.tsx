@@ -1,4 +1,4 @@
-// Enhanced OnboardingCarousel with smart reload protection
+// Enhanced OnboardingCarousel with smart reload protection and TanStack Query cache management
 
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
@@ -49,6 +49,77 @@ const OnboardingCarousel = () => {
   } = useCheckpoint();
 
   const TOTAL_STEPS = 16;
+
+  // ENHANCED: Complete cleanup utility function
+  const performCompleteCleanup = useCallback(async () => {
+    try {
+      console.log('Performing complete cleanup...');
+      
+      // Clear localStorage
+      localStorage.clear();
+      
+      // Clear all cookies
+      Cookies.remove('authToken');
+      Object.keys(Cookies.get()).forEach(cookieName => {
+        Cookies.remove(cookieName);
+      });
+      
+      // Clear axios headers
+      delete axios.defaults.headers.common['Authorization'];
+      
+      // Clear TanStack Query cache completely
+      queryClient.clear();
+      queryClient.invalidateQueries();
+      queryClient.removeQueries();
+      
+      console.log('Complete cleanup performed successfully');
+      return true;
+    } catch (error) {
+      console.error('Error during complete cleanup:', error);
+      return false;
+    }
+  }, []);
+
+  // ENHANCED: Logout handler with proper cache clearing
+  const handleLogout = useCallback(async () => {
+    try {
+      // Perform complete cleanup
+      const success = await performCompleteCleanup();
+      
+      if (success) {
+        // Show confirmation toast
+        toast.success("Logged out successfully!");
+        
+        // Reset component state after clearing everything
+        setTimeout(() => {
+          setCurrentStep(0);
+          setIsInitialized(false);
+          setHasReachedEsign(false);
+        }, 500);
+      } else {
+        toast.error("Error during logout. Please refresh the page.");
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      toast.error("Error during logout. Please refresh the page.");
+    }
+  }, [performCompleteCleanup]);
+
+  // ENHANCED: Congratulations completion handler with cache clearing
+  const handleCongratulationsComplete = useCallback(async () => {
+    try {
+      console.log('Congratulations reached - performing complete cleanup');
+      
+      // Perform complete cleanup
+      await performCompleteCleanup();
+      
+      // Optional: Redirect to home page or login page
+      // window.location.href = '/login'; // Uncomment if you want to redirect
+      
+    } catch (error) {
+      console.error('Error clearing data on congratulations:', error);
+    }
+  }, [performCompleteCleanup]);
 
   // Smart reload protection - Allow reload only on email (step 0) and mobile (step 1) steps
   useEffect(() => {
@@ -649,13 +720,7 @@ const OnboardingCarousel = () => {
       id: "congratulations",
       component: (
         <CongratulationsPage 
-          onNext={() => {
-            // Clear all remaining localStorage and cookies on congratulations
-            localStorage.clear();
-            Cookies.remove('authToken');
-            delete axios.defaults.headers.common['Authorization'];
-            console.log('Congratulations reached - cleared all storage');
-          }}
+          onNext={handleCongratulationsComplete} // Use the enhanced completion handler
           clientId={getStoredClientId() ?? undefined} // Pass client ID from localStorage, convert null to undefined
         />
       ),
@@ -821,41 +886,11 @@ const OnboardingCarousel = () => {
           ))}
         </div>
 
-
-        {/* Logout Button - Hide on email screen and congratulations page */}
+        {/* ENHANCED: Logout Button with proper cache clearing */}
         {currentStep > 0 && currentStep !== 15 && (
           <div className={`fixed bottom-4 lg:bottom-6 ${currentStep !== 15 ? "left-1/2 -translate-x-1/2" : ""} lg:left-[41%] lg:translate-x-0`}>
             <button
-              onClick={() => {
-                // Clear localStorage
-                localStorage.removeItem('email');
-                localStorage.removeItem('verifiedPhone');
-                localStorage.removeItem('clientId');
-                
-                // Clear auth token from cookies
-                Cookies.remove('authToken');
-                  Object.keys(Cookies.get()).forEach(cookieName => {
-                  Cookies.remove(cookieName);
-                });
-
-                 
-              // Clear React Query cache
-                queryClient.removeQueries(); // Alternative method
-              queryClient.invalidateQueries(); // Invalidate all queries
-  
-                // Clear axios default headers
-                delete axios.defaults.headers.common['Authorization'];
-                
-                // Show confirmation toast
-                toast.success("Logged out successfully!");
-                
-                // Reset to first step after a brief delay
-                setTimeout(() => {
-                  setCurrentStep(0);
-                  setIsInitialized(false);
-                  setHasReachedEsign(false);
-                }, 1000);
-              }}
+              onClick={handleLogout}
               className="px-3 py-2 flex items-center justify-center bg-red-500 hover:bg-red-600 transition-all duration-300 ease-in-out border border-red-500 text-white shadow-lg rounded-md mr-2 lg:mr-0"
               aria-label="Logout"
               title="Logout"

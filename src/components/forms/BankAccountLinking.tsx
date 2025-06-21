@@ -29,8 +29,9 @@ interface BankData {
   full_name: string;
 }
 
-// Global flag to track if completion toast has been shown in this session
+// Global flags to track toast states in this session
 let hasShownGlobalCompletedToast = false;
+let hasShownValidationToast = false;
 
 const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ 
   onNext, 
@@ -110,14 +111,19 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
     return null;
   };
 
-  // Validate bank details and full name match
-  const validateBankDetails = async (): Promise<boolean> => {
-    setIsValidating(true);
-    
+  // Get Government ID name from multiple possible sources
+  const getGovernmentIdName = async (): Promise<string | null> => {
+    // First try localStorage
+    const storedName = getStoredFullName();
+    if (storedName) {
+      return storedName;
+    }
+
+    // If not in localStorage, try to get from PAN API
     try {
-      // Get bank details from API
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/bank_validation`,
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        { step: "pan" },
         {
           headers: {
             Authorization: `Bearer ${Cookies.get('authToken')}`
@@ -125,42 +131,94 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
         }
       );
 
-      if (response.data?.data?.bank?.full_name) {
-        const apiBankName = response.data.data.bank.full_name.toLowerCase().trim();
-        const storedName = getStoredFullName()?.toLowerCase().trim();
-        
-        if (!storedName) {
-          toast.error("Unable to verify identity. Please restart the process.");
-          return false;
-        }
+      if (response.data?.data?.full_name) {
+        // Store in localStorage for future use
+        localStorage.setItem('full_name', response.data.data.full_name);
+        return response.data.data.full_name;
+      }
+    } catch (error) {
+      console.warn("Could not fetch PAN details:", error);
+    }
 
-        // Compare names (allowing for minor variations)
-        const namesMatch = compareNames(apiBankName, storedName);
-        
-        if (!namesMatch) {
-          toast.error("Account holder name doesn't match with your official Government ID. Please try again with the correct bank account.");
-          
-          // Reset to main component to allow retry
-          setLinkingMethod(null);
-          setBankData(null);
-          
-          return false;
+    return null;
+  };
+
+  // Updated validate bank details function that works for both UPI and manual entry
+  const validateBankDetails = async (bankAccountHolderName?: string): Promise<boolean> => {
+    setIsValidating(true);
+    
+    try {
+      let bankHolderName = bankAccountHolderName;
+      
+      // If bank holder name is not provided, try to get it from the current bank data or API
+      if (!bankHolderName) {
+        if (bankData?.full_name) {
+          bankHolderName = bankData.full_name;
+        } else {
+          // Try to get from API as fallback
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/bank_validation`,
+            {
+              headers: {
+                Authorization: `Bearer ${Cookies.get('authToken')}`
+              }
+            }
+          );
+
+          if (response.data?.data?.bank?.full_name) {
+            bankHolderName = response.data.data.bank.full_name;
+          }
         }
-        
-        // Names match, proceed
-        return true;
-      } else {
-        toast.error("Unable to fetch bank account details. Please try again.");
+      }
+
+      if (!bankHolderName) {
+        if (!hasShownValidationToast) {
+          toast.error("Unable to verify bank account holder name. Please try again.");
+          hasShownValidationToast = true;
+        }
         return false;
       }
+
+      // Get government ID name
+      const govIdName = await getGovernmentIdName();
+      
+      if (!govIdName) {
+        if (!hasShownValidationToast) {
+          toast.error("Unable to verify identity. Please restart the process.");
+          hasShownValidationToast = true;
+        }
+        return false;
+      }
+
+      // Compare names (allowing for minor variations)
+      const namesMatch = compareNames(bankHolderName.toLowerCase().trim(), govIdName.toLowerCase().trim());
+      
+      if (!namesMatch) {
+        if (!hasShownValidationToast) {
+          toast.error("Account holder name doesn't match with your official Government ID. Please try again with the correct bank account.");
+          hasShownValidationToast = true;
+        }
+        
+        // Reset to main component to allow retry
+        setLinkingMethod(null);
+        setBankData(null);
+        
+        return false;
+      }
+      
+      // Names match, proceed
+      return true;
       
     } catch (error: any) {
       console.error("Error validating bank details:", error);
       
-      if (error.response?.status === 404) {
-        toast.error("Bank account details not found. Please complete bank validation first.");
-      } else {
-        toast.error("Error validating bank details. Please try again.");
+      if (!hasShownValidationToast) {
+        if (error.response?.status === 404) {
+          toast.error("Bank account details not found. Please complete bank validation first.");
+        } else {
+          toast.error("Error validating bank details. Please try again.");
+        }
+        hasShownValidationToast = true;
       }
       
       return false;
@@ -184,6 +242,8 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
     const normalized1 = normalize(name1);
     const normalized2 = normalize(name2);
     
+    console.log("Comparing names:", { bank: normalized1, govId: normalized2 });
+    
     // Exact match
     if (normalized1 === normalized2) return true;
     
@@ -196,7 +256,10 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
       words2.some(w => w.includes(word) || word.includes(w))
     );
     
-    return matchingWords.length >= Math.min(2, Math.min(words1.length, words2.length));
+    const isMatch = matchingWords.length >= Math.min(2, Math.min(words1.length, words2.length));
+    console.log("Name match result:", { matchingWords, isMatch });
+    
+    return isMatch;
   };
 
   // Enhanced onNext handler with validation
@@ -229,6 +292,40 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
   // Enhanced method selection handler
   const handleMethodSelection = (method: string) => {
     setLinkingMethod(method);
+    // Reset validation toast flags when starting fresh
+    hasShownValidationToast = false;
+  };
+
+  // Enhanced UPI success callback to validate names immediately
+  const handleUpiSuccess = async (upiData: any) => {
+    console.log("UPI success data:", upiData);
+    
+    // If UPI data contains bank account holder name, validate immediately
+    if (upiData?.full_name || upiData?.account_holder_name || upiData?.name) {
+      const bankAccountHolderName = upiData.full_name || upiData.account_holder_name || upiData.name;
+      
+      // Update bank data
+      setBankData({
+        account_no: upiData.account_no || '',
+        ifsc_code: upiData.ifsc_code || '',
+        account_type: upiData.account_type || 'savings',
+        full_name: bankAccountHolderName
+      });
+      
+      // Validate names
+      const isValid = await validateBankDetails(bankAccountHolderName);
+      
+      if (isValid) {
+        // Names match, proceed to next step
+        onNext();
+      } else {
+        // Names don't match, the validateBankDetails function will show the error toast
+        // and reset the linking method
+      }
+    } else {
+      // No name data from UPI, proceed normally
+      onNext();
+    }
   };
 
   // Rate limit display component
@@ -254,6 +351,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
           onNext={handleNext}
           onBack={() => setLinkingMethod(null)}
           validateBankDetails={validateBankDetails}
+          onUpiSuccess={handleUpiSuccess}
         />
       );
     }

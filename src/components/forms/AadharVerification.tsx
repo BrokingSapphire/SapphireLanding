@@ -316,64 +316,59 @@ const AadhaarVerification = ({
     stopPolling
   ]);
 
-  // Step 1: Get DigiLocker URI (without redirect to prevent new tab opening)
-  const handleGetDigilockerUri = async () => {
-    setIsLoading(true);
-    setError(null);
+  // Step 1: Get DigiLocker URI and close current tab
+// Step 1: Get DigiLocker URI and close current tab
+const handleGetDigilockerUri = async () => {
+  setIsLoading(true);
+  setError(null);
 
-    try {
-      const authToken = Cookies.get('authToken');
-      
-      if (!authToken) {
-        toast.error("Authentication token not found. Please restart the process.");
-        setIsLoading(false);
-        return;
-      }
-
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-        {
-          step: "aadhaar_uri",
-          redirect: `https://sapphirebroking.com/signup`
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`,
-          }
-        }
-      );
-      
-      if (!response.data?.data?.uri) {
-        toast.error("Failed to generate DigiLocker URI. Please try again.");
-        return;
-      }
-
-      setDigilockerUrl(response.data.data.uri);
-      setCurrentStep('digilocker_pending');
-      
-      toast.success("DigiLocker opened! Complete verification and we'll detect it automatically.");
-      
-      // Open DigiLocker in new tab and store reference
-      digilockerTabRef.current = window.open(response.data.data.uri, '_blank');
-
-      // Start polling if not already started
-      if (!isPollingRef.current) {
-        startPolling();
-      }
-
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string; error?: { message?: string } }; status?: number } };
-      const errorMessage = 
-        error.response?.data?.error?.message ||
-        error.response?.data?.message ||
-        "Failed to initialize DigiLocker. Please try again.";
-      
-      toast.error(errorMessage);
-    } finally {
+  try {
+    const authToken = Cookies.get('authToken');
+    
+    if (!authToken) {
+      toast.error("Authentication token not found. Please restart the process.");
       setIsLoading(false);
+      return;
     }
-  };
+
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+      {
+        step: "aadhaar_uri",
+        redirect: `https://sapphirebroking.com/signup`
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+        }
+      }
+    );
+    
+    if (!response.data?.data?.uri) {
+      toast.error("Failed to generate DigiLocker URI. Please try again.");
+      return;
+    }
+
+    setDigilockerUrl(response.data.data.uri);
+    setCurrentStep('digilocker_pending');
+    
+    
+    // Open DigiLocker in the same tab (this will navigate away from current page)
+    window.location.href = response.data.data.uri;
+
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string; error?: { message?: string } }; status?: number } };
+    const errorMessage = 
+      error.response?.data?.error?.message ||
+      error.response?.data?.message ||
+      "Failed to initialize DigiLocker. Please try again.";
+    
+    toast.error(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // Handle Aadhaar mismatch form submission
   const handleMismatchSubmit = async (e: React.FormEvent) => {

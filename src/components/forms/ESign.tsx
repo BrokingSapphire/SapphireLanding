@@ -14,15 +14,16 @@ interface LastStepPageProps {
   isCompleted?: boolean;
 }
 
-// Global flag to track if completion toast has been shown in this session
+// Global flags to track toast states in this session
 let hasShownGlobalCompletedToast = false;
+let hasShownEsignSuccessToast = false;
 
 const LastStepPage: React.FC<LastStepPageProps> = ({ 
   onNext, 
   initialData, 
   isCompleted 
 }) => {
-  const [isChecked, setIsChecked] = useState(true);
+  const [isChecked, setIsChecked] = useState(false); // Changed to false by default
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [esignUrl, setEsignUrl] = useState<string | null>(null);
@@ -33,7 +34,6 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   // Use the checkpoint hook to check for existing eSign data
   const { 
     isStepCompleted,
-    // getStepData,
     refetchStep 
   } = useCheckpoint();
 
@@ -49,6 +49,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       if (!hasShownGlobalCompletedToast) {
         toast.success("eSign already completed! You can proceed to the next step.");
         hasShownGlobalCompletedToast = true;
+        // Also set the eSign success flag to prevent duplicate success messages
+        hasShownEsignSuccessToast = true;
       }
       return;
     }
@@ -219,7 +221,12 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           }
           
           console.log("eSign completed successfully! URL:", response.data.data.url);
-          toast.success("eSign completed successfully!");
+          
+          // Only show success toast if we haven't shown it already in this session
+          if (!hasShownEsignSuccessToast) {
+            toast.success("eSign completed successfully!");
+            hasShownEsignSuccessToast = true;
+          }
           
           // Close the eSign window if it's still open
           if (esignWindowRef.current && !esignWindowRef.current.closed) {
@@ -267,7 +274,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           pollIntervalRef.current = null;
         }
       }
-    }, 2000); // Poll every 3 seconds
+    }, 2000); // Poll every 2 seconds
 
     // Stop polling after 15 minutes (timeout)
     setTimeout(() => {
@@ -276,7 +283,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         pollIntervalRef.current = null;
         console.log("eSign polling timeout after 15 minutes");
       }
-    }, 7 * 60 * 1000);
+    }, 15 * 60 * 1000);
   };
 
   const handleEsignClick = () => {
@@ -285,31 +292,31 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       return;
     }
 
-    console.log("Opening eSign URL:", esignUrl);
-
-    // Open eSign URL in new window/tab
-    const esignWindow = window.open(
-      esignUrl,
-      'esign',
-      'width=800,height=600,scrollbars=yes,resizable=yes'
-    );
-
-    if (!esignWindow) {
-      setError("Please allow popups for eSign to work. Then try again.");
+    if (!isChecked) {
+      toast.error("Please agree to receive communications via email to proceed.");
       return;
     }
 
-    // Store reference to the window
-    esignWindowRef.current = esignWindow;
-
-    // Optional: Monitor if the window is closed manually
-    const checkClosed = setInterval(() => {
-      if (esignWindow.closed) {
-        clearInterval(checkClosed);
-        esignWindowRef.current = null;
-        console.log("eSign window was closed");
-      }
-    }, 1000);
+    console.log("Opening eSign URL:", esignUrl);
+    
+    toast.success("Opening eSign...");
+    
+    // Open eSign in the same tab (this will navigate away from current page)
+    window.location.href = esignUrl;
+    
+    // Alternative approach: Open in new tab and then close current tab
+    // Uncomment the lines below and comment the line above if you prefer this approach
+    /*
+    const esignTab = window.open(esignUrl, '_blank');
+    if (esignTab) {
+      // Small delay to ensure the new tab opens, then close current tab
+      setTimeout(() => {
+        window.close();
+      }, 1000);
+    } else {
+      toast.error("Please allow popups for this site and try again.");
+    }
+    */
   };
 
   const handleRetry = () => {
@@ -331,6 +338,19 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   };
 
   const shouldShowCompletedState = isStepCompleted(CheckpointStep.ESIGN);
+
+  // Check if button should be disabled
+  const isButtonDisabled = () => {
+    if (shouldShowCompletedState) return false; // If completed, allow continue
+    return !isChecked || !esignUrl; // Disable if checkbox not checked or no eSign URL
+  };
+
+  const getButtonText = () => {
+    if (shouldShowCompletedState) return "Continue";
+    if (!isChecked) return "Please accept ECN to proceed";
+    if (!esignUrl) return "Loading eSign...";
+    return "Proceed to E-sign";
+  };
 
   // Show initialization loading
   if (!isInitialized && isLoading) {
@@ -458,19 +478,21 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       <Button 
         variant="ghost"
-        onClick={handleEsignClick} 
-        disabled={!esignUrl}
+        onClick={shouldShowCompletedState ? onNext : handleEsignClick} 
+        disabled={isButtonDisabled()}
         className={`py-6 w-full ${
-          !esignUrl ? "opacity-50 cursor-not-allowed" : ""
+          isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
-        Proceed to E-sign
+        {getButtonText()}
       </Button>
 
       <div className="hidden sm:block mt-4 text-center text-xs text-gray-600">
         <p>
-          Clicking the button will open eSign in a new window. 
-          Complete the process there and this page will automatically proceed to the next step.
+          {shouldShowCompletedState 
+            ? "Your eSign is complete. Click continue to proceed to the next step."
+            : "Clicking the button will navigate to eSign. Complete the process and you'll be redirected back automatically."
+          }
         </p>
       </div>
     </div>
