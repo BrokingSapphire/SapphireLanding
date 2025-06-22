@@ -5,12 +5,10 @@ import {
   equityData,
   currencyData,
   commodityData,
-  // accountOpeningData,
   nonTradeCharges,
   mtfCharges,
   EquityRowType,
   OtherRowType,
-  // AccountType,
   ChargeType
 } from "@/constants/ChargesTable";
 import ChargesExplained from "./ChargesExplained";
