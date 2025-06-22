@@ -83,7 +83,7 @@ const Charges: React.FC = () => {
       title: "Commodity & Currency",
       subtitle: "Affordable Rates for Diversified Trading",
       description:
-        "0.05% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Commodity and Currency Futures. Flat ₹20 per executed on all options trade.",
+        "0.05% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Commodity and Currency across MCX and NCDEX.",
       icon: Coins,
     },
   ];

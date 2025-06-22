@@ -53,7 +53,7 @@ const OnboardingCarousel = () => {
   // ENHANCED: Complete cleanup utility function
   const performCompleteCleanup = useCallback(async () => {
     try {
-      console.log('Performing complete cleanup...');
+      // console.log('Performing complete cleanup...');
       
       // Clear localStorage
       localStorage.clear();
@@ -72,7 +72,7 @@ const OnboardingCarousel = () => {
       queryClient.invalidateQueries();
       queryClient.removeQueries();
       
-      console.log('Complete cleanup performed successfully');
+      // console.log('Complete cleanup performed successfully');
       return true;
     } catch (error) {
       console.error('Error during complete cleanup:', error);
@@ -108,7 +108,7 @@ const OnboardingCarousel = () => {
   // ENHANCED: Congratulations completion handler with cache clearing
   const handleCongratulationsComplete = useCallback(async () => {
     try {
-      console.log('Congratulations reached - performing complete cleanup');
+      // console.log('Congratulations reached - performing complete cleanup');
       
       // Perform complete cleanup
       await performCompleteCleanup();
@@ -181,7 +181,7 @@ const OnboardingCarousel = () => {
   useEffect(() => {
     // Wait for both checkpoint loading AND client initialization
     if (!checkpointLoading && isClientInitialized && !isInitialized) {
-      console.log('Client initialized, resuming from step:', resumeStep);
+      // console.log('Client initialized, resuming from step:', resumeStep);
       setCurrentStep(resumeStep);
       
       // Check if user has reached esign step (step 12) or beyond
@@ -195,13 +195,13 @@ const OnboardingCarousel = () => {
       if (typeof window !== 'undefined') {
         const storedClientId = localStorage.getItem('clientId');
         if (storedClientId) {
-          // console.log('Found existing client ID in localStorage:', storedClientId);
+          // // console.log('Found existing client ID in localStorage:', storedClientId);
         } else {
           // Try to get client ID from checkpoint data and save to localStorage
           const existingClientId = getClientId();
           if (existingClientId) {
             localStorage.setItem('clientId', existingClientId);
-            // console.log('Saved client ID from checkpoint to localStorage:', existingClientId);
+            // // console.log('Saved client ID from checkpoint to localStorage:', existingClientId);
           }
         }
       }
@@ -219,7 +219,7 @@ const OnboardingCarousel = () => {
       
   //     // Clear specific cookies but keep authToken for API calls
   //     // We'll keep the authToken until the very end of the process
-  //     console.log('Cleared localStorage and specific cookies at esign step');
+  //     // console.log('Cleared localStorage and specific cookies at esign step');
   //   }
   // };
 
@@ -240,7 +240,7 @@ const OnboardingCarousel = () => {
           );
           
           if (response.status === 200 && response.data?.data?.url) {
-            console.log("Income proof is confirmed, proceeding to next step");
+            // console.log("Income proof is confirmed, proceeding to next step");
             
             // Refetch investment segment data
             refetchStep(CheckpointStep.INVESTMENT_SEGMENT);
@@ -308,12 +308,12 @@ const OnboardingCarousel = () => {
         // If income proof is required (either by backend flag or risk segments)
         if (requiresIncomeProof || hasRiskSegments) {
           const incomeProofCompleted = isStepCompleted(CheckpointStep.INCOME_PROOF);
-          console.log(`Investment step completion check: investmentCompleted=${investmentCompleted}, requiresIncomeProof=${requiresIncomeProof}, hasRiskSegments=${hasRiskSegments}, incomeProofCompleted=${incomeProofCompleted}`);
+          // console.log(`Investment step completion check: investmentCompleted=${investmentCompleted}, requiresIncomeProof=${requiresIncomeProof}, hasRiskSegments=${hasRiskSegments}, incomeProofCompleted=${incomeProofCompleted}`);
           return incomeProofCompleted;
         }
         
         // If no income proof required, investment segment completion is sufficient
-        console.log(`Investment step completion check: investmentCompleted=${investmentCompleted}, no income proof required`);
+        // console.log(`Investment step completion check: investmentCompleted=${investmentCompleted}, no income proof required`);
         return true;
       case 5: // User Detail
         return isStepCompleted(CheckpointStep.USER_DETAIL);
@@ -492,7 +492,7 @@ const OnboardingCarousel = () => {
 
   // NEW: Enhanced step completion handler
   const handleStepCompletion = useCallback(async (stepType: CheckpointStep) => {
-    console.log(`Step ${stepType} completed, invalidating cache and proceeding...`);
+    // console.log(`Step ${stepType} completed, invalidating cache and proceeding...`);
     
     // Invalidate the specific step cache
     refetchStep(stepType);
@@ -533,7 +533,7 @@ const OnboardingCarousel = () => {
         );
         
         if (response.status === 200 && response.data?.data?.url) {
-          console.log("Income proof is confirmed, proceeding to next step");
+          // console.log("Income proof is confirmed, proceeding to next step");
           
           // Force advance to next step
           setForceProgress(true);
@@ -692,7 +692,7 @@ const OnboardingCarousel = () => {
       component: (
         <SetPassword 
           onNext={() => {
-            console.log('SetPassword completed');
+            // console.log('SetPassword completed');
             // Client ID is now handled in localStorage within SetPassword component
             handleStepCompletion(CheckpointStep.PASSWORD_SETUP);
           }}
@@ -706,7 +706,7 @@ const OnboardingCarousel = () => {
       component: (
         <MPIN 
           onNext={() => {
-            console.log('MPIN completed');
+            // console.log('MPIN completed');
             // Client ID is now retrieved from localStorage within MPIN component
             handleStepCompletion(CheckpointStep.MPIN_SETUP);
           }}

@@ -225,7 +225,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     const emailExists = !!email;
     
     // Debug logging
-    console.log("Email completed check:", emailExists, "Email value:", email);
+    // console.log("Email completed check:", emailExists, "Email value:", email);
     return emailExists;
   };
 
@@ -244,7 +244,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     const mobileCompleted = tokenExists && phoneExists;
     
     // Debug logging
-    console.log("Mobile completed check:", mobileCompleted, "Token exists:", tokenExists, "Phone exists:", phoneExists, "Phone value:", phone);
+    // console.log("Mobile completed check:", mobileCompleted, "Token exists:", tokenExists, "Phone exists:", phoneExists, "Phone value:", phone);
     return mobileCompleted;
   };
 
@@ -270,7 +270,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           
           // IPV endpoint returns 200 OK with data when completed
           if (response.status === 200 && response.data?.data?.url) {
-            console.log("IPV completed successfully with URL:", response.data.data.url);
+            // console.log("IPV completed successfully with URL:", response.data.data.url);
             return {
               step,
               data: response.data.data as StepDataWithUrl,
@@ -278,7 +278,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             };
           } else {
             // If no URL in response, IPV is not completed
-            console.log("IPV endpoint returned 200 but no URL data");
+            // console.log("IPV endpoint returned 200 but no URL data");
             return {
               step,
               data: null,
@@ -289,7 +289,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           const err = error as AxiosError;
           // Handle 204 No Content specifically (IPV not uploaded)
           if (err.response?.status === 204) {
-            console.log("IPV endpoint returned 204 No Content - not uploaded yet");
+            // console.log("IPV endpoint returned 204 No Content - not uploaded yet");
             return {
               step,
               data: null,
@@ -312,7 +312,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           
           // Signature endpoint returns 200 OK with data when completed
           if (response.status === 200 && response.data?.data?.url) {
-            console.log("Signature completed successfully with URL:", response.data.data.url);
+            // console.log("Signature completed successfully with URL:", response.data.data.url);
             return {
               step,
               data: response.data.data as StepDataWithUrl,
@@ -320,7 +320,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             };
           } else {
             // If no URL in response, signature is not completed
-            console.log("Signature endpoint returned 200 but no URL data");
+            // console.log("Signature endpoint returned 200 but no URL data");
             return {
               step,
               data: null,
@@ -331,7 +331,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           const err = error as AxiosError;
           // Handle 204 No Content specifically (signature not uploaded)
           if (err.response?.status === 204) {
-            console.log("Signature endpoint returned 204 No Content - not uploaded yet");
+            // console.log("Signature endpoint returned 204 No Content - not uploaded yet");
             return {
               step,
               data: null,
@@ -354,14 +354,14 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           
           // Income proof endpoint returns URL if the file is uploaded
           if (response.status === 200 && response.data?.data?.url) {
-            console.log("Income proof is completed with data:", response.data.data.url);
+            // console.log("Income proof is completed with data:", response.data.data.url);
             return {
               step,
               data: response.data.data as StepDataWithUrl,
               completed: true,
             };
           } else {
-            console.log("Income proof endpoint returned success but no data");
+            // console.log("Income proof endpoint returned success but no data");
             return {
               step,
               data: null,
@@ -372,7 +372,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           const err = error as AxiosError;
           // Handle 204 No Content specifically
           if (err.response?.status === 204) {
-            console.log("Income proof endpoint returned 204 No Content");
+            // console.log("Income proof endpoint returned 204 No Content");
             return {
               step,
               data: null,
@@ -394,18 +394,18 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             }
           );
           
-          console.log("eSign complete response:", response.data);
+          // console.log("eSign complete response:", response.data);
           
           // If we get a 200 response with data, eSign is completed
           if (response.status === 200 && response.data?.data?.url) {
-            console.log("eSign completed successfully with URL:", response.data.data.url);
+            // console.log("eSign completed successfully with URL:", response.data.data.url);
             return {
               step,
               data: { url: response.data.data.url } as StepDataWithUrl,
               completed: true,
             };
           } else {
-            console.log("eSign complete endpoint returned success but no URL");
+            // console.log("eSign complete endpoint returned success but no URL");
             return {
               step,
               data: null,
@@ -414,17 +414,17 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           }
         } catch (error) {
           const err = error as AxiosError;
-          console.log("eSign complete error:", err.response?.status, err.response?.data);
+          // console.log("eSign complete error:", err.response?.status, err.response?.data);
           // Handle specific error cases
           if (err.response?.status === 404) {
-            console.log("eSign endpoint not found");
+            // console.log("eSign endpoint not found");
             return {
               step,
               data: null,
               completed: false,
             };
           } else if (err.response?.status === 401) {
-            console.log("eSign not authorized or expired - not completed yet");
+            // console.log("eSign not authorized or expired - not completed yet");
             return {
               step,
               data: null,
@@ -466,7 +466,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       if (step === CheckpointStep.PASSWORD_SETUP && err.response?.status === 400) {
         const errorMessage = err.response?.data?.error?.message || err.response?.data?.message || '';
         if (errorMessage.includes('Password already set')) {
-          console.log("Password already set - treating as completed");
+          // console.log("Password already set - treating as completed");
           return {
             step,
             data: { password_set: true } as PasswordSetupData,
@@ -545,11 +545,11 @@ export const useCheckpoint = (): UseCheckpointReturn => {
   const hasValidData = (step: CheckpointStep): boolean => {
     const stepData = checkpointData[step];
     
-    console.log(`Validating step ${step}:`, {
-      stepData,
-      completed: stepData?.completed,
-      data: stepData?.data
-    });
+    // console.log(`Validating step ${step}:`, {
+    //   stepData,
+    //   completed: stepData?.completed,
+    //   data: stepData?.data
+    // });
     
     if (!stepData?.completed || !stepData.data) {
       return false;
@@ -570,21 +570,21 @@ export const useCheckpoint = (): UseCheckpointReturn => {
       case CheckpointStep.IPV: {
         const data = stepData.data as StepDataWithUrl;
         const isValid = !!data.url;
-        console.log(`IPV validation - URL exists: ${isValid}, URL value:`, data.url);
+        // console.log(`IPV validation - URL exists: ${isValid}, URL value:`, data.url);
         return isValid;
       }
       
       case CheckpointStep.SIGNATURE: {
         const data = stepData.data as StepDataWithUrl;
         const isValid = !!data.url;
-        console.log(`Signature validation - URL exists: ${isValid}, URL value:`, data.url);
+        // console.log(`Signature validation - URL exists: ${isValid}, URL value:`, data.url);
         return isValid;
       }
       
       case CheckpointStep.ESIGN: {
         // For eSign, check if we have step data with url field (even empty string means completed)
         const hasUrlField = stepData.data && typeof stepData.data === 'object' && 'url' in stepData.data;
-        console.log(`eSign validation - hasUrlField: ${hasUrlField}, url value:`, (stepData.data as StepDataWithUrl)?.url);
+        // console.log(`eSign validation - hasUrlField: ${hasUrlField}, url value:`, (stepData.data as StepDataWithUrl)?.url);
         return hasUrlField;
       }
       
@@ -641,12 +641,12 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     if (requiresIncomeProof || hasRiskSegments) {
       // Check if income proof is also completed
       const incomeProofCompleted = isStepCompleted(CheckpointStep.INCOME_PROOF);
-      console.log(`Investment segment complete: ${investmentCompleted}, Income proof required: ${requiresIncomeProof || hasRiskSegments}, Income proof completed: ${incomeProofCompleted}`);
+      // console.log(`Investment segment complete: ${investmentCompleted}, Income proof required: ${requiresIncomeProof || hasRiskSegments}, Income proof completed: ${incomeProofCompleted}`);
       return incomeProofCompleted;
     }
     
     // If no income proof required, investment segment completion is sufficient
-    console.log(`Investment segment complete: ${investmentCompleted}, No income proof required`);
+    // console.log(`Investment segment complete: ${investmentCompleted}, No income proof required`);
     return true;
   };
 

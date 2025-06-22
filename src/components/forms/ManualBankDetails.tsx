@@ -175,7 +175,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
 
     // If no changes and already completed, validate and proceed
     if (!hasChanges() && isCompleted) {
-      console.log("No changes detected, validating existing bank details");
+      // console.log("No changes detected, validating existing bank details");
       const isValid = await validateBankDetails();
       if (isValid) {
         onNext();
