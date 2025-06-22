@@ -45,7 +45,7 @@ const calculatorTypes = [
 
 const Calculator: React.FC = () => {
   const handleCalculatorClick = (calculatorId: string) => {
-    console.log(`Selected calculator: ${calculatorId}`);
+    // console.log(`Selected calculator: ${calculatorId}`);
   };
 
   return (

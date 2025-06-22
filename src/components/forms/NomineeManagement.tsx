@@ -287,7 +287,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   const handleSubmit = async () => {
     // If no changes and already completed, just proceed to next step
     if (!hasChanges() && isCompleted) {
-      console.log("No changes detected, proceeding to next step");
+      // console.log("No changes detected, proceeding to next step");
       onNext();
       return;
     }

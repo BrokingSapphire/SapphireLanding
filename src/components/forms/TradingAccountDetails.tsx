@@ -118,7 +118,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         }
       } catch (error) {
         // Silently handle error - PAN data might not be available yet
-        console.log("Could not fetch PAN data for prefilling", error);
+        // console.log("Could not fetch PAN data for prefilling", error);
       }
     };
     
@@ -199,7 +199,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
 
     // If no changes and already completed, just proceed to next step
     if (!hasChanges() && isCompleted) {
-      console.log("No changes detected, proceeding to next step");
+      // console.log("No changes detected, proceeding to next step");
       onNext();
       return;
     }

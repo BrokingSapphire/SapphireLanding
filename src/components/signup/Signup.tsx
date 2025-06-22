@@ -165,7 +165,7 @@
 //         BankComponent && (
 //           <BankComponent
 //             onBack={() => setBankLinkMethod(null)}
-//             onNextStep={() => console.log("Completed")}
+//             onNextStep={() => // console.log("Completed")}
 //             onComplete={() => {
 //               setBankLinkMethod(null);
 //               setCurrentStep(15);
@@ -180,7 +180,7 @@
 //       return (
 //         PaymentComponent && (
 //           <PaymentComponent
-//             onNextStep={() => console.log("Completed")}
+//             onNextStep={() => // console.log("Completed")}
 //             onBack={() => setPaymentMethod(null)}
 //             onComplete={() => {
 //               setCurrentStep(4);
