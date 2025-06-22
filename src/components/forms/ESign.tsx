@@ -14,6 +14,49 @@ interface LastStepPageProps {
   isCompleted?: boolean;
 }
 
+// Helper function to get data from localStorage for URL encoding
+const getEmailFromStorage = (): string => {
+  try {
+    const storedEmail = localStorage.getItem("email");
+    if (!storedEmail) return "";
+    
+    try {
+      const parsedEmail = JSON.parse(storedEmail);
+      if (typeof parsedEmail === 'object' && parsedEmail.value) {
+        return parsedEmail.value;
+      }
+    } catch {
+      return storedEmail;
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Error retrieving email from localStorage:", error);
+    return "";
+  }
+};
+
+const getPhoneFromStorage = (): string => {
+  try {
+    const storedPhone = localStorage.getItem("verifiedPhone");
+    if (!storedPhone) return "";
+    
+    try {
+      const parsedPhone = JSON.parse(storedPhone);
+      if (typeof parsedPhone === 'object' && parsedPhone.value) {
+        return parsedPhone.value;
+      }
+    } catch {
+      return storedPhone;
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Error retrieving phone from localStorage:", error);
+    return "";
+  }
+};
+
 // Global flags to track toast states in this session
 let hasShownGlobalCompletedToast = false;
 let hasShownEsignSuccessToast = false;
@@ -86,6 +129,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     };
   }, [isInitialized, esignUrl, isStepCompleted]);
 
+  // UPDATED: Enhanced eSign initialization with state encoding
   const initializeEsign = async () => {
     console.log("initializeEsign called - isLoading:", isLoading, "esignUrl:", esignUrl);
     
@@ -99,25 +143,37 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     setError(null);
 
     try {
-      // Create redirect URL - this should be your app's URL where user returns after eSign
-      const redirectUrl = 'https://sapphirebroking.com/signup';
-
-      // Get the auth token
+      // Get current state data for URL encoding
       const authToken = Cookies.get('authToken');
+      const email = getEmailFromStorage();
+      const phone = getPhoneFromStorage();
       
       if (!authToken) {
         setError("Authentication token not found. Please restart the process.");
         return;
       }
 
+      // Create state data to encode in URL
+      const stateData = {
+        token: authToken,
+        email: email,
+        phone: phone,
+        step: 'esign',
+        timestamp: Date.now()
+      };
+      
+      // Encode the state data
+      const encodedState = btoa(JSON.stringify(stateData));
+      const redirectUrl = `https://sapphirebroking.com/signup?state=${encodedState}`;
+
       console.log("Making API call to initialize eSign session...");
 
-      // Initialize eSign session
+      // Initialize eSign session with enhanced redirect URL
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "esign_initialize",
-          redirect_url: redirectUrl
+          redirect_url: redirectUrl // Use the enhanced redirect URL
         },
         {
           headers: {

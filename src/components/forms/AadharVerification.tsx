@@ -13,6 +13,48 @@ interface AadhaarVerificationProps {
   panMaskedAadhaar?: string; // Masked Aadhaar from PAN verification
 }
 
+// Helper function to get data from localStorage for URL encoding
+const getEmailFromStorage = (): string => {
+  try {
+    const storedEmail = localStorage.getItem("email");
+    if (!storedEmail) return "";
+    
+    try {
+      const parsedEmail = JSON.parse(storedEmail);
+      if (typeof parsedEmail === 'object' && parsedEmail.value) {
+        return parsedEmail.value;
+      }
+    } catch {
+      return storedEmail;
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Error retrieving email from localStorage:", error);
+    return "";
+  }
+};
+
+const getPhoneFromStorage = (): string => {
+  try {
+    const storedPhone = localStorage.getItem("verifiedPhone");
+    if (!storedPhone) return "";
+    
+    try {
+      const parsedPhone = JSON.parse(storedPhone);
+      if (typeof parsedPhone === 'object' && parsedPhone.value) {
+        return parsedPhone.value;
+      }
+    } catch {
+      return storedPhone;
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Error retrieving phone from localStorage:", error);
+    return "";
+  }
+};
 
 const AadhaarVerification = ({ 
   onNext, 
@@ -255,7 +297,6 @@ const AadhaarVerification = ({
     // Check if Aadhaar is already completed - only show toast once per session
     const aadhaarCompleted = isCompleted || isStepCompleted(CheckpointStep.AADHAAR);
 
-
     // Check if there's existing mismatch data in Redis
     if (hasMismatchData()) {
       const existingMismatchData = getMismatchData();
@@ -309,59 +350,72 @@ const AadhaarVerification = ({
     stopPolling
   ]);
 
-  // Step 1: Get DigiLocker URI and close current tab
-// Step 1: Get DigiLocker URI and close current tab
-const handleGetDigilockerUri = async () => {
-  setIsLoading(true);
-  setError(null);
+  // UPDATED: Enhanced DigiLocker URI handler with state encoding
+  const handleGetDigilockerUri = async () => {
+    setIsLoading(true);
+    setError(null);
 
-  try {
-    const authToken = Cookies.get('authToken');
-    
-    if (!authToken) {
-      toast.error("Authentication token not found. Please restart the process.");
-      setIsLoading(false);
-      return;
-    }
-
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-      {
-        step: "aadhaar_uri",
-        redirect: `https://sapphirebroking.com/signup`
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-        }
+    try {
+      const authToken = Cookies.get('authToken');
+      const email = getEmailFromStorage();
+      const phone = getPhoneFromStorage();
+      
+      if (!authToken) {
+        toast.error("Authentication token not found. Please restart the process.");
+        setIsLoading(false);
+        return;
       }
-    );
-    
-    if (!response.data?.data?.uri) {
-      toast.error("Failed to generate DigiLocker URI. Please try again.");
-      return;
+
+      // Create state data to encode in URL
+      const stateData = {
+        token: authToken,
+        email: email,
+        phone: phone,
+        step: 'aadhaar',
+        timestamp: Date.now()
+      };
+      
+      // Encode the state data
+      const encodedState = btoa(JSON.stringify(stateData));
+      const redirectUrl = `https://sapphirebroking.com/signup?state=${encodedState}`;
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "aadhaar_uri",
+          redirect: redirectUrl // Use the enhanced redirect URL
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`,
+          }
+        }
+      );
+      
+      if (!response.data?.data?.uri) {
+        toast.error("Failed to generate DigiLocker URI. Please try again.");
+        return;
+      }
+
+      setDigilockerUrl(response.data.data.uri);
+      setCurrentStep('digilocker_pending');
+      
+      // Open DigiLocker in the same tab (this will navigate away from current page)
+      window.location.href = response.data.data.uri;
+
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string; error?: { message?: string } }; status?: number } };
+      const errorMessage = 
+        error.response?.data?.error?.message ||
+        error.response?.data?.message ||
+        "Failed to initialize DigiLocker. Please try again.";
+      
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-
-    setDigilockerUrl(response.data.data.uri);
-    setCurrentStep('digilocker_pending');
-    
-    
-    // Open DigiLocker in the same tab (this will navigate away from current page)
-    window.location.href = response.data.data.uri;
-
-  } catch (err: unknown) {
-    const error = err as { response?: { data?: { message?: string; error?: { message?: string } }; status?: number } };
-    const errorMessage = 
-      error.response?.data?.error?.message ||
-      error.response?.data?.message ||
-      "Failed to initialize DigiLocker. Please try again.";
-    
-    toast.error(errorMessage);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   // Handle Aadhaar mismatch form submission
   const handleMismatchSubmit = async (e: React.FormEvent) => {
@@ -629,8 +683,6 @@ const handleGetDigilockerUri = async () => {
           </div>
         </div>
       </div>
-
-    
 
       {/* Status indicator for pending verification (but no polling status shown) */}
       {currentStep === 'digilocker_pending' && (
