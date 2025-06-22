@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import { ArrowRight, Clock } from "lucide-react";
@@ -40,61 +40,119 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
   const [isValidatingName, setIsValidatingName] = useState(false);
 
+  // Use refs to track polling state and intervals
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isPollingRef = useRef(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   // Initialize UPI verification
   useEffect(() => {
     initializeUpiVerification();
+    
+    // Cleanup on unmount
+    return () => {
+      stopPolling();
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
   }, []);
 
-  // Timer effect
+  // Timer effect with ref-based cleanup
   useEffect(() => {
     if (timeLeft <= 0) {
       setError("Verification timeout. Please try again.");
-      setIsPolling(false);
+      stopPolling();
       return;
     }
 
-    const timer = setInterval(() => {
+    // Clear existing timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    timerRef.current = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
-          clearInterval(timer);
           setError("Verification timeout. Please try again.");
-          setIsPolling(false);
+          stopPolling();
           return 0;
         }
         return prevTime - 1;
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  // Polling effect
-  useEffect(() => {
-    let pollingInterval: NodeJS.Timeout;
-
-    if (upiData && !isPolling && timeLeft > 0 && !isValidatingName) {
-      setIsPolling(true);
-      
-      // Start polling after 20 seconds
-      setTimeout(() => {
-        pollingInterval = setInterval(() => {
-          checkUpiStatus();
-        }, 3000); // Poll every 3 seconds
-      }, 20000);
-    }
-
     return () => {
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
       }
     };
-  }, [upiData, timeLeft, isValidatingName]);
+  }, [timeLeft]);
+
+  // Start polling when UPI data is available
+  useEffect(() => {
+    if (upiData && !isPollingRef.current && timeLeft > 0 && !isValidatingName && !error) {
+      console.log("Starting UPI polling...");
+      startPolling();
+    }
+  }, [upiData, timeLeft, isValidatingName, error]);
+
+  const stopPolling = useCallback(() => {
+    console.log("Stopping UPI polling");
+    isPollingRef.current = false;
+    setIsPolling(false);
+    
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+    
+    if (pollingTimeoutRef.current) {
+      clearTimeout(pollingTimeoutRef.current);
+      pollingTimeoutRef.current = null;
+    }
+  }, []);
+
+  const startPolling = useCallback(() => {
+    if (isPollingRef.current) {
+      console.log("Polling already active, skipping...");
+      return;
+    }
+    
+    console.log("Initializing UPI polling with 20-second delay...");
+    isPollingRef.current = true;
+    setIsPolling(true);
+    
+    // Start polling after 20 seconds
+    pollingTimeoutRef.current = setTimeout(() => {
+      console.log("Starting actual UPI polling...");
+      
+      // Initial check
+      checkUpiStatus();
+      
+      // Set up interval for subsequent checks
+      pollingIntervalRef.current = setInterval(() => {
+        if (isPollingRef.current) {
+          checkUpiStatus();
+        }
+      }, 3000); // Poll every 3 seconds
+      
+    }, 20000); // 20-second delay
+  }, []);
 
   const initializeUpiVerification = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        throw new Error('No authentication token found');
+      }
+
+      console.log("Initializing UPI verification...");
+      
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
@@ -102,11 +160,14 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
           validation_type: "upi"
         },
         {
-          headers:{
-            Authorization: `Bearer ${Cookies.get('authToken')}`,
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
           }
         }
       );
+
+      console.log("UPI initialization response:", response.data);
 
       if (response.data?.data) {
         setUpiData(response.data.data);
@@ -118,6 +179,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
         setError("Failed to initialize UPI verification. Please try again.");
       }
     } catch (err: unknown) {
+      console.error("UPI initialization error:", err);
       handleApiError(err, "Failed to initialize UPI verification. Please try again.");
     } finally {
       setIsLoading(false);
@@ -126,6 +188,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
 
   const generateQRCode = async (paymentLink: string) => {
     try {
+      console.log("Generating QR code for payment link:", paymentLink);
       const qrCodeDataUrl = await QRCode.toDataURL(paymentLink, {
         width: 200,
         margin: 2,
@@ -141,7 +204,21 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
   };
 
   const checkUpiStatus = async () => {
+    if (!isPollingRef.current) {
+      console.log("Polling stopped, skipping status check");
+      return;
+    }
+
     try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        console.log("No auth token, stopping polling");
+        stopPolling();
+        return;
+      }
+
+      console.log("Checking UPI status...");
+      
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
@@ -150,14 +227,19 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
         },
         {
           headers: {
-            Authorization: `Bearer ${Cookies.get('authToken')}`,
-          }
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          },
+          timeout: 10000 // 10-second timeout
         }
       );
 
+      console.log("UPI status response:", response.status, response.data);
+
       // If successful (status 201), UPI payment is complete
       if (response.status === 201) {
-        setIsPolling(false);
+        console.log("UPI payment completed successfully!");
+        stopPolling();
         setIsValidatingName(true);
         
         toast.success("UPI payment completed! Validating account holder name...");
@@ -180,71 +262,76 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
         } else {
           // Fallback to old validation method
           setTimeout(async () => {
-            const isValid = await validateBankDetails();
-            setIsValidatingName(false);
-            
-            if (isValid) {
-              toast.success("Bank account verified successfully!");
-              setTimeout(() => {
-                onNext();
-              }, 1500);
+            try {
+              const isValid = await validateBankDetails();
+              setIsValidatingName(false);
+              
+              if (isValid) {
+                toast.success("Bank account verified successfully!");
+                setTimeout(() => {
+                  onNext();
+                }, 1500);
+              }
+            } catch (error) {
+              console.error("Bank validation error:", error);
+              setIsValidatingName(false);
+              setError("Bank validation failed. Please try again.");
             }
           }, 2000);
         }
       }
     } catch (err: unknown) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "response" in err &&
-        typeof (err as { response?: unknown }).response === "object" &&
-        (err as { response?: unknown }).response !== null
-      ) {
-        const response = (err as { response: { status?: number } }).response;
-        if (response.status === 204) {
-          // 204 means still pending, continue polling
-          return;
-        } else if (response.status === 406) {
-          // 406 means validation failed
-          setError("UPI verification failed. Please try again or use manual bank details.");
-          setIsPolling(false);
-        } else {
-          // Other errors, but don't stop polling yet unless it's a critical error
-          console.error("UPI status check error:", err);
-        }
+      const error = err as { response?: { status?: number; data?: { message?: string } } };
+      
+      console.log("UPI status check error:", error.response?.status, error.response?.data);
+      
+      if (error.response?.status === 204) {
+        // 204 means still pending, continue polling
+        console.log("UPI payment still pending, continuing to poll...");
+        return;
+      } else if (error.response?.status === 406) {
+        // 406 means validation failed
+        console.log("UPI validation failed");
+        stopPolling();
+        setError("UPI verification failed. Please try again or use manual bank details.");
+      } else if (error.response?.status === 401) {
+        // 401 unauthorized - stop polling
+        console.log("Unauthorized, stopping polling");
+        stopPolling();
+        setError("Session expired. Please refresh and try again.");
       } else {
-        // Unknown error structure
-        console.error("UPI status check error:", err);
+        // For other errors, log but continue polling for a few more attempts
+        console.warn("UPI status check error (continuing polling):", err);
       }
     }
   };
 
   const handleApiError = (err: unknown, defaultMessage: string) => {
-    if (
-      typeof err === "object" &&
-      err !== null &&
-      "response" in err &&
-      typeof (err as { response?: unknown }).response === "object" &&
-      (err as { response?: unknown }).response !== null
-    ) {
-      const response = (err as { response: { status?: number; data?: { message?: string } } }).response;
-      
-      if (response.data?.message) {
-        setError(`Error: ${response.data.message}`);
-      } else {
-        setError(defaultMessage);
-      }
+    const error = err as { response?: { status?: number; data?: { message?: string } } };
+    
+    if (error.response?.data?.message) {
+      setError(`Error: ${error.response.data.message}`);
+    } else if (error.response?.status) {
+      setError(`Server error (${error.response.status}). ${defaultMessage}`);
     } else {
       setError(defaultMessage);
     }
   };
 
   const handleRetry = () => {
+    console.log("Retrying UPI verification...");
+    
+    // Reset all states
     setTimeLeft(300);
     setError(null);
-    setIsPolling(false);
     setIsValidatingName(false);
     setQrCodeDataUrl("");
+    setUpiData(null);
+    
+    // Stop any existing polling
+    stopPolling();
+    
+    // Reinitialize
     initializeUpiVerification();
   };
 
@@ -293,9 +380,9 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
             type="button"
             variant="link"
             onClick={onBack}
-            className="text-blue-500 flex items-center"
+            className="text-blue-500"
           >
-            Enter details manually <ArrowRight className="ml-1 h-4 w-4" />
+            Enter details manually
           </Button>
         </div>
       </div>
@@ -376,16 +463,10 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
           <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
             <div className="flex items-center">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
-              <span className="text-blue-800 text-sm">Waiting for UPI payment completion...</span>
-            </div>
-          </div>
-        )}
-
-        {isValidatingName && (
-          <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600 mr-3"></div>
-              <span className="text-yellow-800 text-sm">Payment received! Validating account holder name...</span>
+              <span className="text-blue-800 text-sm">
+                Waiting for UPI payment completion... 
+                {pollingTimeoutRef.current ? "" : ""}
+              </span>
             </div>
           </div>
         )}

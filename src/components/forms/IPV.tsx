@@ -231,6 +231,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       console.log("Uploading IPV with UID:", ipvUid);
 
       // Use the correct PUT endpoint for IPV upload
+      
       await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/${ipvUid}`,
         formData,

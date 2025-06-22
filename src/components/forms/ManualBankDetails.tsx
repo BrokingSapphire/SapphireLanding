@@ -89,11 +89,6 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
       setFormData(mappedData);
       setOriginalData(mappedData);
       
-      // Show completion toast only once per session
-      if (!hasShownGlobalCompletedToast) {
-        toast.success("Bank details already verified! You can modify them or continue.");
-        hasShownGlobalCompletedToast = true;
-      }
     }
   }, [initialData, isCompleted]);
 
@@ -373,17 +368,6 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
           </div>
         )}
 
-        <div className="flex justify-between items-center mt-6">
-          <Button
-            type="button"
-            variant="link"
-            onClick={onBack}
-            disabled={isSubmitting}
-            className="hidden text-blue-500 sm:flex items-center"
-          >
-            Go Back <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
         
         <Button
             type="submit"

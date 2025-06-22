@@ -72,12 +72,6 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
   useEffect(() => {
     if (isCompleted && initialData?.bank) {
       setBankData(initialData.bank);
-      
-      // Show completion toast only once per session
-      if (!hasShownGlobalCompletedToast) {
-        toast.success("Bank account already verified! You can change details or continue.");
-        hasShownGlobalCompletedToast = true;
-      }
     }
   }, [initialData, isCompleted]);
 
