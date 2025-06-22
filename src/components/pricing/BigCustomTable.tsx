@@ -207,7 +207,7 @@ const ChargesTable: React.FC = () => {
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8 mb-8 overflow-x-auto scrollbar-hide">
         {/* Navigation Bar */}
         <div className="flex border-b pt-6 gap-x-8 lg:gap-x-20 overflow-x-auto scrollbar-hide">
-          {["Equity", "Currency", "Commodity", "Other Charges"].map((tab: string) => (
+          {["Equity", "Currency", "Commodity"].map((tab: string) => (
             <div
               key={tab}
               onClick={() => setActiveTab(tab)}
