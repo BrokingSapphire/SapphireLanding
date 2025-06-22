@@ -49,7 +49,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
 
   // Check if IPV is already completed and show toast
   useEffect(() => {
-    // console.log("useEffect triggered - isStepCompleted:", isStepCompleted(CheckpointStep.IPV), "wantsToReverify:", wantsToReverify, "isInitialized:", isInitialized, "isLoading:", isLoading);
+    console.log("useEffect triggered - isStepCompleted:", isStepCompleted(CheckpointStep.IPV), "wantsToReverify:", wantsToReverify, "isInitialized:", isInitialized, "isLoading:", isLoading);
     
     if (isStepCompleted(CheckpointStep.IPV) && !wantsToReverify) {
       // IPV is already completed and user doesn't want to re-verify
@@ -68,7 +68,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     // If not completed OR user wants to re-verify, initialize IPV
     // But only if we haven't already initialized and we're not already loading
     if (((!isStepCompleted(CheckpointStep.IPV) && !isInitialized) || wantsToReverify) && !isLoading && !ipvUid) {
-      // console.log("Calling initializeIPV from useEffect");
+      console.log("Calling initializeIPV from useEffect");
       initializeIPV();
     }
   }, [isStepCompleted(CheckpointStep.IPV), wantsToReverify]); // Only depend on these two values
@@ -85,11 +85,11 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   }, [isInitialized, ipvUid, cameraAutoStarted, wantsToReverify, isStepCompleted]);
 
   const initializeIPV = async () => {
-    // console.log("initializeIPV called - isLoading:", isLoading, "ipvUid:", ipvUid);
+    console.log("initializeIPV called - isLoading:", isLoading, "ipvUid:", ipvUid);
     
     // Prevent multiple simultaneous calls
     if (isLoading || ipvUid) {
-      // console.log("Already initializing or UID exists, skipping...");
+      console.log("Already initializing or UID exists, skipping...");
       return;
     }
 
@@ -103,7 +103,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         return;
       }
 
-      // console.log("Making API call to initialize IPV session...");
+      console.log("Making API call to initialize IPV session...");
 
       // Use the correct endpoint for IPV initialization
       const response = await axios.post(
@@ -120,7 +120,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       );
 
       if (response.data?.data?.uid) {
-        // console.log("IPV session initialized with UID:", response.data.data.uid);
+        console.log("IPV session initialized with UID:", response.data.data.uid);
         setIpvUid(response.data.data.uid);
         setIsInitialized(true);
       } else {
@@ -194,27 +194,27 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   };
 
   const handleSubmit = async () => {
-    // console.log("handleSubmit called - isLoading:", isLoading, "imageFile:", !!imageFile, "ipvUid:", !!ipvUid);
+    console.log("handleSubmit called - isLoading:", isLoading, "imageFile:", !!imageFile, "ipvUid:", !!ipvUid);
     
     // Prevent multiple submissions
     if (isLoading) {
-      // console.log("Already submitting, please wait...");
+      console.log("Already submitting, please wait...");
       return;
     }
 
     // If already completed and no new image and not wanting to re-verify, just go to next step
     if (isStepCompleted(CheckpointStep.IPV) && !imageFile && !wantsToReverify) {
-      // console.log("Step completed, no new image, proceeding to next step");
+      console.log("Step completed, no new image, proceeding to next step");
       onNext();
       return;
     }
 
     if (!imageFile || !ipvUid) {
-      // console.log("Missing image or UID, cannot submit");
+      console.log("Missing image or UID, cannot submit");
       return;
     }
 
-    // console.log("Starting IPV submission...");
+    console.log("Starting IPV submission...");
     setIsLoading(true);
     setError(null);
 
@@ -228,7 +228,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       const formData = new FormData();
       formData.append('image', imageFile);
 
-      // console.log("Uploading IPV with UID:", ipvUid);
+      console.log("Uploading IPV with UID:", ipvUid);
 
       // Use the correct PUT endpoint for IPV upload
       await axios.put(
@@ -242,7 +242,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         }
       );
 
-      // console.log("IPV uploaded successfully");
+      console.log("IPV uploaded successfully");
       toast.success("IPV verification completed successfully!");
       
       // Reset re-verification state immediately to prevent further submissions
@@ -295,7 +295,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   };
 
   const handleVerifyAgain = () => {
-    // console.log("User wants to verify again");
+    console.log("User wants to verify again");
     
     // Clear all states first
     setImageFile(null);

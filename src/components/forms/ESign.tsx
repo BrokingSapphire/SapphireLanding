@@ -57,7 +57,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
     // If not completed, initialize eSign
     if (!isInitialized && !isLoading && !esignUrl) {
-      // console.log("Calling initializeEsign from useEffect");
+      console.log("Calling initializeEsign from useEffect");
       initializeEsign();
     }
   }, [isStepCompleted(CheckpointStep.ESIGN)]); // Only depend on step completion
@@ -66,7 +66,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   useEffect(() => {
     const data = initialData as { esign?: boolean } | undefined;
     if (isCompleted && data?.esign) {
-      // console.log("eSign completed from initialData");
+      console.log("eSign completed from initialData");
       setIsInitialized(true);
     }
   }, [initialData, isCompleted]);
@@ -87,11 +87,11 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   }, [isInitialized, esignUrl, isStepCompleted]);
 
   const initializeEsign = async () => {
-    // console.log("initializeEsign called - isLoading:", isLoading, "esignUrl:", esignUrl);
+    console.log("initializeEsign called - isLoading:", isLoading, "esignUrl:", esignUrl);
     
     // Prevent multiple simultaneous calls
     if (isLoading || esignUrl) {
-      // console.log("Already initializing or URL exists, skipping...");
+      console.log("Already initializing or URL exists, skipping...");
       return;
     }
 
@@ -110,7 +110,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         return;
       }
 
-      // console.log("Making API call to initialize eSign session...");
+      console.log("Making API call to initialize eSign session...");
 
       // Initialize eSign session
       const response = await axios.post(
@@ -127,10 +127,10 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         }
       );
 
-      // console.log("eSign initialization response:", response.data);
+      console.log("eSign initialization response:", response.data);
 
       if (response.data?.data?.uri) {
-        // console.log("eSign session initialized with URL:", response.data.data.uri);
+        console.log("eSign session initialized with URL:", response.data.data.uri);
         setEsignUrl(response.data.data.uri);
         setIsInitialized(true);
       } else {
@@ -173,7 +173,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   };
 
   const startBackgroundPolling = () => {
-    // console.log("Starting background polling for eSign completion...");
+    console.log("Starting background polling for eSign completion...");
     
     // Clear any existing polling interval
     if (pollIntervalRef.current) {
@@ -186,7 +186,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         const authToken = Cookies.get('authToken');
         
         if (!authToken) {
-          // console.log("No auth token, stopping polling");
+          console.log("No auth token, stopping polling");
           if (pollIntervalRef.current) {
             clearInterval(pollIntervalRef.current);
             pollIntervalRef.current = null;
@@ -194,7 +194,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           return;
         }
         
-        // console.log("Background polling for eSign completion...");
+        console.log("Background polling for eSign completion...");
         
         // Check if eSign is completed by calling the correct checkpoint endpoint
         const response = await axios.post(
@@ -210,7 +210,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           }
         );
 
-        // console.log("eSign completion check response:", response.status, response.data);
+        console.log("eSign completion check response:", response.status, response.data);
 
         // Check if we got a successful response with URL (even if empty, it means eSign is completed)
         if (response.status === 200 && response.data?.data?.url !== undefined) {
@@ -220,7 +220,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
             pollIntervalRef.current = null;
           }
           
-          // console.log("eSign completed successfully! URL:", response.data.data.url);
+          console.log("eSign completed successfully! URL:", response.data.data.url);
           
           // Only show success toast if we haven't shown it already in this session
           if (!hasShownEsignSuccessToast) {
@@ -250,20 +250,20 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           };
         };
 
-        // console.log("eSign polling error:", error.response?.status, error.response?.data);
+        console.log("eSign polling error:", error.response?.status, error.response?.data);
 
         // Handle specific eSign polling errors
         if (error.response?.status === 401) {
           // 401 means eSign not completed yet - continue polling
-          // console.log("eSign not completed yet (401), continuing to poll...");
+          console.log("eSign not completed yet (401), continuing to poll...");
           return;
         } else if (error.response?.status === 404) {
           // 404 means endpoint not found or no eSign record - continue polling
-          // console.log("eSign endpoint not found (404), continuing to poll...");
+          console.log("eSign endpoint not found (404), continuing to poll...");
           return;
         } else if (error.response?.status === 500) {
           // 500 server error - continue polling for a bit
-          // console.log("Server error (500), continuing to poll...");
+          console.log("Server error (500), continuing to poll...");
           return;
         }
         
@@ -281,7 +281,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
         pollIntervalRef.current = null;
-        // console.log("eSign polling timeout after 15 minutes");
+        console.log("eSign polling timeout after 15 minutes");
       }
     }, 15 * 60 * 1000);
   };
@@ -297,7 +297,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       return;
     }
 
-    // console.log("Opening eSign URL:", esignUrl);
+    console.log("Opening eSign URL:", esignUrl);
     
     toast.success("Opening eSign...");
     

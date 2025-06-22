@@ -165,7 +165,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
         // Get bank details from response
         const bankDetails = response.data?.data?.bank || response.data?.data;
         
-        // console.log("UPI payment successful, bank details:", bankDetails);
+        console.log("UPI payment successful, bank details:", bankDetails);
         
         // If onUpiSuccess callback is provided, use it for validation
         if (onUpiSuccess && bankDetails) {

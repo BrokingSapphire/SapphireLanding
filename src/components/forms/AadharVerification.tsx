@@ -35,12 +35,12 @@ const AadhaarVerification = ({
     
     for (const source of sources) {
       if (source && source.trim()) {
-        // console.log("Found full_name from storage:", source);
+        console.log("Found full_name from storage:", source);
         return source.trim();
       }
     }
     
-    // console.log("No full_name found in storage, using empty string");
+    console.log("No full_name found in storage, using empty string");
     return "";
   };
 
@@ -76,7 +76,7 @@ const AadhaarVerification = ({
     const checkForFullName = () => {
       const currentFullName = getFullNameFromStorage();
       if (currentFullName && currentFullName !== mismatchFormData.full_name) {
-        // console.log("Updating full_name from storage:", currentFullName);
+        console.log("Updating full_name from storage:", currentFullName);
         setMismatchFormData(prev => ({
           ...prev,
           full_name: currentFullName
@@ -93,7 +93,7 @@ const AadhaarVerification = ({
     // Listen for storage events (when localStorage changes in other tabs/components)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'full_name' && e.newValue) {
-        // console.log("full_name updated via storage event:", e.newValue);
+        console.log("full_name updated via storage event:", e.newValue);
         setMismatchFormData(prev => ({
           ...prev,
           full_name: e.newValue || ""
@@ -114,7 +114,7 @@ const AadhaarVerification = ({
     const panData = getStepData(CheckpointStep.PAN);
     if (panData?.full_name && typeof panData.full_name === 'string') {
       const panFullName = panData.full_name.trim();
-      // console.log("Found full_name from PAN step data:", panFullName);
+      console.log("Found full_name from PAN step data:", panFullName);
       
       // Save to localStorage for future use
       localStorage.setItem("full_name", panFullName);
@@ -137,7 +137,7 @@ const AadhaarVerification = ({
       const authToken = Cookies.get('authToken');
       
       if (!authToken) {
-        // console.log("No auth token, stopping polling");
+        console.log("No auth token, stopping polling");
         isPollingRef.current = false;
         setIsPolling(false);
         return;
@@ -157,7 +157,7 @@ const AadhaarVerification = ({
       );
 
       // If we get here, verification was successful
-      // console.log("Aadhaar verification successful via polling");
+      console.log("Aadhaar verification successful via polling");
       isPollingRef.current = false;
       setIsPolling(false);
       
@@ -199,7 +199,7 @@ const AadhaarVerification = ({
       
       if (error.response?.status === 401) {
         // DigiLocker not completed yet - continue polling silently
-        // console.log("DigiLocker verification not completed yet, continuing polling...");
+        console.log("DigiLocker verification not completed yet, continuing polling...");
         return;
       }
 
@@ -212,7 +212,7 @@ const AadhaarVerification = ({
   const startPolling = useCallback(() => {
     if (isPollingRef.current) return; // Prevent multiple polling instances
     
-    // console.log("Starting silent polling for Aadhaar verification");
+    console.log("Starting silent polling for Aadhaar verification");
     isPollingRef.current = true;
     setIsPolling(true);
     
@@ -229,7 +229,7 @@ const AadhaarVerification = ({
 
   // Stop polling - memoized to prevent recreation
   const stopPolling = useCallback(() => {
-    // console.log("Stopping polling");
+    console.log("Stopping polling");
     isPollingRef.current = false;
     setIsPolling(false);
     
@@ -259,7 +259,7 @@ const AadhaarVerification = ({
     // Check if there's existing mismatch data in Redis
     if (hasMismatchData()) {
       const existingMismatchData = getMismatchData();
-      // console.log('Found existing mismatch data:', existingMismatchData);
+      console.log('Found existing mismatch data:', existingMismatchData);
       
       // Set mismatch info from the hook data
       setMismatchInfo({

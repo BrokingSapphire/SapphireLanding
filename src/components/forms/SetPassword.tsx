@@ -54,7 +54,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
     const storedClientId = localStorage.getItem('clientId');
     if (storedClientId) {
       setClientId(storedClientId);
-      // console.log('Found client ID in localStorage:', storedClientId);
+      console.log('Found client ID in localStorage:', storedClientId);
     }
 
     // Also check initialData
@@ -63,7 +63,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
       // Save to localStorage if not already there
       if (!storedClientId) {
         localStorage.setItem('clientId', initialData.client_id);
-        // console.log('Saved client ID to localStorage:', initialData.client_id);
+        console.log('Saved client ID to localStorage:', initialData.client_id);
       }
     }
   }, [initialData, isCompleted]);
@@ -106,7 +106,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
         setClientId(newClientId);
         // Save to localStorage
         localStorage.setItem('clientId', newClientId);
-        // console.log('Finalize successful, Client ID saved to localStorage:', newClientId);
+        console.log('Finalize successful, Client ID saved to localStorage:', newClientId);
       }
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -163,7 +163,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
         const newClientId = response.data.data.client_id;
         setClientId(newClientId);
         localStorage.setItem('clientId', newClientId);
-        // console.log('Password setup successful, Client ID saved to localStorage:', newClientId);
+        console.log('Password setup successful, Client ID saved to localStorage:', newClientId);
       }
 
       // Proceed to next step
@@ -177,7 +177,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
             (err.response.data?.message?.includes("Password already set") ||
               err.response.data?.error?.message?.includes("Password already set"))
           ) {
-            // console.log("Password already set, proceeding to next step");
+            console.log("Password already set, proceeding to next step");
             // If password is already set, just proceed to next step
             onNext();
             return;
