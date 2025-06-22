@@ -21,8 +21,7 @@ interface ApiErrorResponse {
   message?: string;
 }
 
-// Global flag to track if completion toast has been shown in this session
-let hasShownGlobalCompletedToast = false;
+// Global flag to track if completion toas
 
 const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificationProps) => {
   const [email, setEmail] = useState("");

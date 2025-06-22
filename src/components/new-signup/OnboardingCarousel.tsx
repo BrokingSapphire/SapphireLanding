@@ -36,7 +36,7 @@ const OnboardingCarousel = () => {
   const [hasReachedEsign, setHasReachedEsign] = useState(false);
 
   // Add the URL state recovery hook
-  const { isRecovering, hasRecovered } = useUrlStateRecovery();
+  const { isRecovering } = useUrlStateRecovery();
 
   // Use checkpoint hook to manage state
   const { 
@@ -78,8 +78,8 @@ const OnboardingCarousel = () => {
       
       console.log('Complete cleanup performed successfully');
       return true;
-    } catch (error) {
-      console.error('Error during complete cleanup:', error);
+    } catch {
+      console.error('Error during complete cleanup');
       return false;
     }
   }, []);
@@ -103,7 +103,7 @@ const OnboardingCarousel = () => {
       } else {
         toast.error("Error during logout. Please refresh the page.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Error during logout. Please refresh the page.");
     }
   }, [performCompleteCleanup]);
@@ -959,7 +959,7 @@ const OnboardingCarousel = () => {
 };
 
 export default OnboardingCarousel;
-function handleVisibilityChange(this: Document, ev: Event) {
+function handleVisibilityChange(this: Document) {
   // Only show a warning if the tab becomes visible again during a protected step
   if (
     document.visibilityState === "visible" &&

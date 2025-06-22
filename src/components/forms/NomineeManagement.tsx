@@ -20,8 +20,6 @@ interface NomineeData {
   sharePercentage: string;
 }
 
-// Global flag to track if completion toast has been shown in this session for this component
-let hasShownGlobalCompletedToastForNominees = false;
 
 // Helper function to format PAN number
 const formatPanNumber = (value: string): string => {

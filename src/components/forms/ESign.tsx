@@ -15,47 +15,47 @@ interface LastStepPageProps {
 }
 
 // Helper function to get data from localStorage for URL encoding
-const getEmailFromStorage = (): string => {
-  try {
-    const storedEmail = localStorage.getItem("email");
-    if (!storedEmail) return "";
+// const getEmailFromStorage = (): string => {
+//   try {
+//     const storedEmail = localStorage.getItem("email");
+//     if (!storedEmail) return "";
     
-    try {
-      const parsedEmail = JSON.parse(storedEmail);
-      if (typeof parsedEmail === 'object' && parsedEmail.value) {
-        return parsedEmail.value;
-      }
-    } catch {
-      return storedEmail;
-    }
+//     try {
+//       const parsedEmail = JSON.parse(storedEmail);
+//       if (typeof parsedEmail === 'object' && parsedEmail.value) {
+//         return parsedEmail.value;
+//       }
+//     } catch {
+//       return storedEmail;
+//     }
     
-    return "";
-  } catch (error) {
-    console.error("Error retrieving email from localStorage:", error);
-    return "";
-  }
-};
+//     return "";
+//   } catch (error) {
+//     console.error("Error retrieving email from localStorage:", error);
+//     return "";
+//   }
+// };
 
-const getPhoneFromStorage = (): string => {
-  try {
-    const storedPhone = localStorage.getItem("verifiedPhone");
-    if (!storedPhone) return "";
+// const getPhoneFromStorage = (): string => {
+//   try {
+//     const storedPhone = localStorage.getItem("verifiedPhone");
+//     if (!storedPhone) return "";
     
-    try {
-      const parsedPhone = JSON.parse(storedPhone);
-      if (typeof parsedPhone === 'object' && parsedPhone.value) {
-        return parsedPhone.value;
-      }
-    } catch {
-      return storedPhone;
-    }
+//     try {
+//       const parsedPhone = JSON.parse(storedPhone);
+//       if (typeof parsedPhone === 'object' && parsedPhone.value) {
+//         return parsedPhone.value;
+//       }
+//     } catch {
+//       return storedPhone;
+//     }
     
-    return "";
-  } catch (error) {
-    console.error("Error retrieving phone from localStorage:", error);
-    return "";
-  }
-};
+//     return "";
+//   } catch (error) {
+//     console.error("Error retrieving phone from localStorage:", error);
+//     return "";
+//   }
+// };
 
 // Global flags to track toast states in this session
 let hasShownGlobalCompletedToast = false;
@@ -145,8 +145,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     try {
       // Get current state data for URL encoding
       const authToken = Cookies.get('authToken');
-      const email = getEmailFromStorage();
-      const phone = getPhoneFromStorage();
+      // const email = getEmailFromStorage();
+      // const phone = getPhoneFromStorage();
       
       if (!authToken) {
         setError("Authentication token not found. Please restart the process.");
@@ -154,16 +154,16 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       }
 
       // Create state data to encode in URL
-      const stateData = {
-        token: authToken,
-        email: email,
-        phone: phone,
-        step: 'esign',
-        timestamp: Date.now()
-      };
+      // const stateData = {
+      //   token: authToken,
+      //   email: email,
+      //   phone: phone,
+      //   step: 'esign',
+      //   timestamp: Date.now()
+      // };
       
       // Encode the state data
-      const encodedState = btoa(JSON.stringify(stateData));
+      // const encodedState = btoa(JSON.stringify(stateData));
       const redirectUrl = `https://sapphirebroking.com/signup`;
 
       console.log("Making API call to initialize eSign session...");

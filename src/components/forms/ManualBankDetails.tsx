@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
-import { ArrowRight } from "lucide-react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
@@ -33,12 +32,8 @@ interface FormErrors {
   accountType?: string;
 }
 
-// Global flag to track if completion toast has been shown in this session
-let hasShownGlobalCompletedToast = false;
-
 const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   onNext,
-  onBack,
   initialData,
   isCompleted,
   validateBankDetails,
