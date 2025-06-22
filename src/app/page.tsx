@@ -2,7 +2,6 @@ import Calculator from "@/components/landing/Calculator";
 import FAQ from "@/components/landing/FAQ";
 import Gateway from "@/components/landing/Gateway";
 import Hero from "@/components/landing/Hero";
-import Guide from "@/components/landing/Guide";
 import React from "react";
 import TradingCharges from "@/components/landing/TradingCharges";
 import SmartTrades from "@/components/landing/SmartTrades";
@@ -33,9 +32,6 @@ const Home = () => {
         <SmartTrades />
         <Calculator />
         <Gateway />
-      </div>
-      <div>
-        <Guide />
       </div>
       <FAQ />
     </>

@@ -28,22 +28,22 @@ const ContactDetails: React.FC = () => {
     {
       details: "Account Freezing",
       contactNo: "0811-5883899",
-      workingHours: "11:00 - 6:00",
+      workingHours: "08:00 AM - 11:55 PM",
     },
     {
       details: "Non-Individual A/c",
       contactNo: "0811-5883899",
-      workingHours: "11:00 - 6:00",
+      workingHours: "08:00 AM - 11:55 PM",
     },
     {
       details: "API Support",
       contactNo: "0811-5883899",
-      workingHours: "11:00 - 6:00",
+      workingHours: "08:00 AM - 11:55 PM",
     },
     {
       details: "NRI A/c",
       contactNo: "0811-5883899",
-      workingHours: "11:00 - 6:00",
+      workingHours: "08:00 AM - 11:55 PM",
     },
   ];
 
@@ -53,28 +53,28 @@ const ContactDetails: React.FC = () => {
       contactPerson: "Support Team",
       emailId: "support@sapphirebroking.com",
       contactNo: "0811-5883899",
-      workingHours: "11:00 - 6:00",
+      workingHours: "08:00 AM - 11:55 PM",
     },
     {
       details: "Head of Customer Care",
-      contactPerson: "Mr.",
-      emailId: "@sapphirebroking.com",
+      contactPerson: "Mr. 404 Not Found",
+      emailId: "not.found@sapphirebroking.com",
       contactNo: "0811-5883899",
-      workingHours: "11:00 - 6:00",
+      workingHours: "11:00 AM - 06:00 PM",
     },
     {
       details: "Compliance Officer",
       contactPerson: "Mr. Yash Katyari",
       emailId: "yash.katyari@sapphirebroking.com",
       contactNo: "+91 79729 12709",
-      workingHours: "11:00 - 6:00",
+      workingHours: "11:00 AM - 06:00 PM",
     },
     {
       details: "Managing Partner",
       contactPerson: "Mr. Nakul Thakur",
       emailId: "nakul.thakur@sapphirebroking.com",
-      contactNo: "91 74992 43342",
-      workingHours: "11:00 - 6:00",
+      contactNo: "+91 74992 43342",
+      workingHours: "11:00 AM - 06:00 PM",
     },
   ];
 
