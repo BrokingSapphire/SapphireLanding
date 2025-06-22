@@ -30,7 +30,6 @@ interface BankData {
 }
 
 // Global flags to track toast states in this session
-let hasShownGlobalCompletedToast = false;
 let hasShownValidationToast = false;
 
 const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({ 
