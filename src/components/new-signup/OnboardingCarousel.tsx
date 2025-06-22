@@ -36,7 +36,7 @@ const OnboardingCarousel = () => {
   const [hasReachedEsign, setHasReachedEsign] = useState(false);
 
   // Add the URL state recovery hook
-  const { isRecovering } = useUrlStateRecovery();
+  const { isRecovering, hasRecovered } = useUrlStateRecovery();
 
   // Use checkpoint hook to manage state
   const { 
@@ -104,7 +104,6 @@ const OnboardingCarousel = () => {
         toast.error("Error during logout. Please refresh the page.");
       }
     } catch (error) {
-      console.log('Error during logout:', error);
       toast.error("Error during logout. Please refresh the page.");
     }
   }, [performCompleteCleanup]);
@@ -125,13 +124,13 @@ const OnboardingCarousel = () => {
     }
   }, [performCompleteCleanup]);
 
-  // Smart reload protection - Allow reload only on email (step 0) and mobile (step 1) steps
+  // Smart reload protection - Allow reload on email (step 0), mobile (step 1), aadhaar (step 3), and esign (step 12) steps
   useEffect(() => {
-    const isEmailOrMobileStep = currentStep === 0 || currentStep === 1;
+    const isAllowedReloadStep = currentStep === 0 || currentStep === 1 || currentStep === 3 || currentStep === 12;
     
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      // Only show warning for steps other than email and mobile
-      if (!isEmailOrMobileStep && isInitialized) {
+      // Only show warning for steps other than email, mobile, aadhaar, and esign
+      if (!isAllowedReloadStep && isInitialized) {
         // Show browser's default confirmation dialog
         e.preventDefault();
         e.returnValue = 'Are you sure you want to leave? Your progress may be lost.'; // Required for Chrome
@@ -145,13 +144,13 @@ const OnboardingCarousel = () => {
 
     const handleUnload = () => {
       // Show toast when user actually tries to leave (only for protected steps)
-      if (!isEmailOrMobileStep && isInitialized) {
+      if (!isAllowedReloadStep && isInitialized) {
         toast.error("Page reload detected! Please resubmit if verification was interrupted.");
       }
     };
 
     // Add event listeners only for protected steps
-    if (!isEmailOrMobileStep && isInitialized) {
+    if (!isAllowedReloadStep && isInitialized) {
       window.addEventListener('beforeunload', handleBeforeUnload);
       window.addEventListener('unload', handleUnload);
     }
@@ -165,14 +164,12 @@ const OnboardingCarousel = () => {
 
   // Detect when user comes back to the tab (for protected steps only)
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      const isEmailOrMobileStep = currentStep === 0 || currentStep === 1;
-      
-      if (document.visibilityState === 'visible' && !isEmailOrMobileStep && isInitialized) {
-        // User came back to tab during a protected step
-        toast.warning("If you refreshed the page, you may need to restart the verification process.");
-      }
-    };
+    const isAllowedReloadStep = currentStep === 0 || currentStep === 1 || currentStep === 3 || currentStep === 12;
+    
+    if (document.visibilityState === 'visible' && !isAllowedReloadStep && isInitialized) {
+      // User came back to tab during a protected step
+      toast.warning("If you refreshed the page, you may need to restart the verification process.");
+    }
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
@@ -962,3 +959,16 @@ const OnboardingCarousel = () => {
 };
 
 export default OnboardingCarousel;
+function handleVisibilityChange(this: Document, ev: Event) {
+  // Only show a warning if the tab becomes visible again during a protected step
+  if (
+    document.visibilityState === "visible" &&
+    typeof window !== "undefined"
+  ) {
+    // You may want to check currentStep and isInitialized here if needed
+    // For example, show a toast or warning
+    toast.warning(
+      "If you refreshed the page, you may need to restart the verification process."
+    );
+  }
+}

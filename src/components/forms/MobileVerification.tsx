@@ -374,8 +374,8 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     return (
       <div className="mx-auto -mt-28 lg:mt-0 pt-24">
         <FormHeading
-          title={"Mobile Verified Successfully!"}
-          description={"Proceeding to the next step..."}
+          title={"Verify your Mobile!"}
+          description={"Please enter your mobile for verification."}
         />
 
         <div className="mb-8">

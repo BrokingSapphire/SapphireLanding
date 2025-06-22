@@ -23,6 +23,45 @@ interface NomineeData {
 // Global flag to track if completion toast has been shown in this session for this component
 let hasShownGlobalCompletedToastForNominees = false;
 
+// Helper function to format PAN number
+const formatPanNumber = (value: string): string => {
+  // Remove all non-alphanumeric characters
+  const cleaned = value.replace(/[^A-Z0-9]/gi, '');
+  
+  // Convert to uppercase
+  const uppercase = cleaned.toUpperCase();
+  
+  // Apply PAN format: AAAAA0000A (5 letters, 4 digits, 1 letter)
+  let formatted = '';
+  for (let i = 0; i < uppercase.length && i < 10; i++) {
+    const char = uppercase[i];
+    if (i < 5) {
+      // First 5 positions should be letters
+      if (/[A-Z]/.test(char)) {
+        formatted += char;
+      }
+    } else if (i < 9) {
+      // Next 4 positions should be digits
+      if (/[0-9]/.test(char)) {
+        formatted += char;
+      }
+    } else {
+      // Last position should be a letter
+      if (/[A-Z]/.test(char)) {
+        formatted += char;
+      }
+    }
+  }
+  
+  return formatted;
+};
+
+// Helper function to validate PAN format
+const isValidPanFormat = (pan: string): boolean => {
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  return panRegex.test(pan);
+};
+
 const NomineeManagement: React.FC<NomineeManagementProps> = ({ 
   onNext, 
   initialData, 
@@ -93,11 +132,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
           id: (formattedNominees.length + 1).toString()
         }));
 
-        // Show completion toast only once per session and only if not currently submitting
-        if (isCompleted && formattedNominees.length > 0 && !hasShownGlobalCompletedToastForNominees && !hasJustSubmitted) {
-          toast.success("Nominees already added! You can modify them or continue.");
-          hasShownGlobalCompletedToastForNominees = true;
-        }
       }
     }
   }, [initialData, isCompleted, hasJustSubmitted]); // Removed getStepData from dependencies
@@ -105,13 +139,36 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   const handleInputChange = (field: keyof NomineeData, value: string) => {
     setError(null);
 
+    // Special handling for PAN number formatting
+    if (field === "panOrAadhar") {
+      value = formatPanNumber(value);
+    }
+
     // Special validation for share percentage
     if (field === "sharePercentage") {
-      // Ensure the value is a number and not over 100
+      // Remove any non-numeric characters except decimal point
+      const numericValue = value.replace(/[^0-9.]/g, '');
+      
+      // Ensure only one decimal point
+      const parts = numericValue.split('.');
+      if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+      } else {
+        value = numericValue;
+      }
+      
+      // Parse the numeric value
       const numValue = parseFloat(value);
+      
+      // Don't allow values over 100
       if (numValue > 100) {
         setError("Share percentage cannot exceed 100%");
-        value = "100"; // Cap at 100
+        value = "100";
+      }
+      
+      // Don't allow negative values
+      if (numValue < 0) {
+        value = "0";
       }
 
       // Calculate how much percentage is left to allocate
@@ -137,12 +194,36 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   const handleNomineeInputChange = (nomineeId: string, field: keyof NomineeData, value: string) => {
     setError(null);
     
+    // Special handling for PAN number formatting
+    if (field === "panOrAadhar") {
+      value = formatPanNumber(value);
+    }
+    
     // Special validation for share percentage
     if (field === "sharePercentage") {
+      // Remove any non-numeric characters except decimal point
+      const numericValue = value.replace(/[^0-9.]/g, '');
+      
+      // Ensure only one decimal point
+      const parts = numericValue.split('.');
+      if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+      } else {
+        value = numericValue;
+      }
+      
+      // Parse the numeric value
       const numValue = parseFloat(value);
+      
+      // Don't allow values over 100
       if (numValue > 100) {
         setError("Share percentage cannot exceed 100%");
         value = "100";
+      }
+      
+      // Don't allow negative values
+      if (numValue < 0) {
+        value = "0";
       }
 
       // Calculate available percentage (excluding current nominee's percentage)
@@ -173,7 +254,11 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       return false;
     }
     if (!currentNominee.panOrAadhar.trim()) {
-      setError("Please enter PAN/Aadhar number");
+      setError("Please enter PAN number");
+      return false;
+    }
+    if (!isValidPanFormat(currentNominee.panOrAadhar)) {
+      setError("Please enter a valid PAN number (Format: AAAAA0000A)");
       return false;
     }
     if (!currentNominee.relationship) {
@@ -260,6 +345,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   const isCurrentNomineeComplete =
     currentNominee.name &&
     currentNominee.panOrAadhar &&
+    isValidPanFormat(currentNominee.panOrAadhar) &&
     currentNominee.relationship &&
     currentNominee.sharePercentage;
 
@@ -301,6 +387,14 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
     if (nomineesToSubmit.length === 0) {
       setError("Please add at least one nominee");
       return;
+    }
+
+    // Validate all nominees have valid PAN format
+    for (const nominee of nomineesToSubmit) {
+      if (!isValidPanFormat(nominee.panOrAadhar)) {
+        setError(`Invalid PAN format for ${nominee.name}. Please use format: AAAAA0000A`);
+        return;
+      }
     }
 
     // Calculate total percentage from nominees to submit
@@ -479,10 +573,14 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                   type="text"
                   value={nominee.panOrAadhar}
                   onChange={(e) => handleNomineeInputChange(nominee.id, "panOrAadhar", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm uppercase"
                   disabled={isLoading}
-                  placeholder="Enter PAN/Aadhar number"
+                  placeholder="AAAAA0000A"
+                  maxLength={10}
                 />
+                {nominee.panOrAadhar && !isValidPanFormat(nominee.panOrAadhar) && (
+                  <p className="text-red-500 text-xs mt-1">Invalid PAN format (AAAAA0000A)</p>
+                )}
               </div>
 
               <div>
@@ -565,7 +663,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
 
               <div>
                 <label className="block text-xs sm:text-sm mb-1">
-                  Pan/Aadhar card <span className="text-red-500">*</span>
+                  PAN Number <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -573,10 +671,14 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                   onChange={(e) =>
                     handleInputChange("panOrAadhar", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500 text-xs sm:text-sm uppercase"
                   disabled={isLoading}
-                  placeholder="Enter PAN/Aadhar number"
+                  placeholder="AAAAA0000A"
+                  maxLength={10}
                 />
+                {currentNominee.panOrAadhar && !isValidPanFormat(currentNominee.panOrAadhar) && (
+                  <p className="text-red-500 text-xs mt-1">Invalid PAN format (AAAAA0000A)</p>
+                )}
               </div>
 
               <div>
@@ -657,20 +759,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                 <PlusIcon className="w-5 h-5 mr-1" />
                 Add Nominee
               </button>
-            </div>
-          </div>
-        )}
-
-        {/* Message when 100% is allocated */}
-        {remainingPercentage === 0 && nominees.length < 5 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center justify-center">
-              <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-blue-800 text-xs sm:text-sm text-center">
-                100% share allocated. To add more nominees, please adjust the existing share percentages.
-              </p>
             </div>
           </div>
         )}

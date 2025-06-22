@@ -63,11 +63,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       // If step is completed, prefill with data from API 
       setEmail(initialData.email);
       
-      // Show completion toast only once per session
-      if (!hasShownGlobalCompletedToast) {
-        toast.success("Email already verified! You can proceed or verify a different email.");
-        hasShownGlobalCompletedToast = true;
-      }
     } else {
       // Try to get email from localStorage (only if previously verified and not expired)
       const storedEmail = getStoredEmail();
@@ -305,8 +300,8 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     return (
       <div className="mx-auto -mt-28 sm:mt-0 pt-24">
         <FormHeading
-          title={"Email Verified Successfully!"}
-          description={"Proceeding to the next step..."}
+          title={"Hi, Welcome to Sapphire!"}
+          description={"Get started in just a few easy steps!"}
         />
         
         <div className="mb-8">

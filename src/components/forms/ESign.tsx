@@ -164,7 +164,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       // Encode the state data
       const encodedState = btoa(JSON.stringify(stateData));
-      const redirectUrl = `https://sapphirebroking.com/signup?state=${encodedState}`;
+      const redirectUrl = `https://sapphirebroking.com/signup`;
 
       console.log("Making API call to initialize eSign session...");
 
@@ -173,7 +173,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "esign_initialize",
-          redirect_url: redirectUrl // Use the enhanced redirect URL
+          redirect_url: redirectUrl
         },
         {
           headers: {
