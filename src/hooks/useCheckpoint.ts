@@ -153,7 +153,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     return Cookies.get('authToken') || '';
   };
 
-  // Enhanced function to get email from localStorage with JSON parsing
+  // UPDATED: Enhanced function to get email from localStorage with JSON parsing and URL recovery support
   const getEmailFromStorage = (): string => {
     if (!isClientInitialized) return '';
     
@@ -170,6 +170,12 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             localStorage.removeItem("email");
             return "";
           }
+          
+          // Log if this was recovered from URL
+          if (parsedEmail.recoveredFromUrl) {
+            console.log("Using email recovered from URL redirect");
+          }
+          
           return parsedEmail.value;
         }
       } catch {
@@ -184,7 +190,7 @@ export const useCheckpoint = (): UseCheckpointReturn => {
     }
   };
 
-  // Enhanced function to get phone from localStorage with JSON parsing
+  // UPDATED: Enhanced function to get phone from localStorage with JSON parsing and URL recovery support
   const getPhoneFromStorage = (): string => {
     if (!isClientInitialized) return '';
     
@@ -201,6 +207,12 @@ export const useCheckpoint = (): UseCheckpointReturn => {
             localStorage.removeItem("verifiedPhone");
             return "";
           }
+          
+          // Log if this was recovered from URL
+          if (parsedPhone.recoveredFromUrl) {
+            console.log("Using phone recovered from URL redirect");
+          }
+          
           return parsedPhone.value;
         }
       } catch {

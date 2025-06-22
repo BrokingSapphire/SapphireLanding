@@ -1,4 +1,4 @@
-// Enhanced OnboardingCarousel with smart reload protection and TanStack Query cache management
+// Enhanced OnboardingCarousel with smart reload protection, TanStack Query cache management, and URL state recovery
 
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
@@ -20,6 +20,7 @@ import BankAccountLinking from "../forms/BankAccountLinking";
 import SignatureComponent from "../forms/Signature";
 import MPIN from "../forms/MPIN";
 import { useCheckpoint, CheckpointStep } from "@/hooks/useCheckpoint";
+import { useUrlStateRecovery } from "@/hooks/useUrlStateRecovery"; // Import the new hook
 import SetPassword from "../forms/SetPassword";
 import { toast } from "sonner";
 import axios from "axios";
@@ -33,6 +34,9 @@ const OnboardingCarousel = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [forceProgress, setForceProgress] = useState(false);
   const [hasReachedEsign, setHasReachedEsign] = useState(false);
+
+  // Add the URL state recovery hook
+  const { isRecovering } = useUrlStateRecovery();
 
   // Use checkpoint hook to manage state
   const { 
@@ -100,7 +104,7 @@ const OnboardingCarousel = () => {
         toast.error("Error during logout. Please refresh the page.");
       }
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.log('Error during logout:', error);
       toast.error("Error during logout. Please refresh the page.");
     }
   }, [performCompleteCleanup]);
@@ -177,10 +181,11 @@ const OnboardingCarousel = () => {
     };
   }, [currentStep, isInitialized]);
 
-  // Initialize current step from checkpoint data and client ID from localStorage
+  // UPDATED: Initialize current step from checkpoint data and client ID from localStorage
+  // Wait for URL recovery to complete before initialization
   useEffect(() => {
-    // Wait for both checkpoint loading AND client initialization
-    if (!checkpointLoading && isClientInitialized && !isInitialized) {
+    // Wait for both checkpoint loading, client initialization AND URL recovery
+    if (!checkpointLoading && isClientInitialized && !isInitialized && !isRecovering) {
       console.log('Client initialized, resuming from step:', resumeStep);
       setCurrentStep(resumeStep);
       
@@ -208,7 +213,7 @@ const OnboardingCarousel = () => {
       
       setIsInitialized(true);
     }
-  }, [checkpointLoading, resumeStep, isInitialized, getClientId, isClientInitialized]);
+  }, [checkpointLoading, resumeStep, isInitialized, getClientId, isClientInitialized, isRecovering]);
 
   // Function to clear localStorage and cookies
   // const clearStorageAndCookies = () => {
@@ -308,12 +313,12 @@ const OnboardingCarousel = () => {
         // If income proof is required (either by backend flag or risk segments)
         if (requiresIncomeProof || hasRiskSegments) {
           const incomeProofCompleted = isStepCompleted(CheckpointStep.INCOME_PROOF);
-          console.log(`Investment step completion check: investmentCompleted=${investmentCompleted}, requiresIncomeProof=${requiresIncomeProof}, hasRiskSegments=${hasRiskSegments}, incomeProofCompleted=${incomeProofCompleted}`);
+          // console.log(`Investment step completion check: investmentCompleted=${investmentCompleted}, requiresIncomeProof=${requiresIncomeProof}, hasRiskSegments=${hasRiskSegments}, incomeProofCompleted=${incomeProofCompleted}`);
           return incomeProofCompleted;
         }
         
         // If no income proof required, investment segment completion is sufficient
-        console.log(`Investment step completion check: investmentCompleted=${investmentCompleted}, no income proof required`);
+        // console.log(`Investment step completion check: investmentCompleted=${investmentCompleted}, no income proof required`);
         return true;
       case 5: // User Detail
         return isStepCompleted(CheckpointStep.USER_DETAIL);
@@ -768,14 +773,14 @@ const OnboardingCarousel = () => {
     };
   };
 
-  // Show loading state while fetching checkpoint data OR waiting for client initialization
-  if ((checkpointLoading || !isClientInitialized) && !isInitialized) {
+  // UPDATED: Show loading state while fetching checkpoint data OR waiting for client initialization OR URL recovery
+  if ((checkpointLoading || !isClientInitialized || isRecovering) && !isInitialized) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
           <p className="text-gray-600">
-            {!isClientInitialized ? "Loading..." : "Loading..."}
+            {isRecovering ? "Restoring session..." : !isClientInitialized ? "Loading..." : "Loading..."}
           </p>
         </div>
       </div>
