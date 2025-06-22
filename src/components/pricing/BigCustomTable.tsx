@@ -15,8 +15,32 @@ import {
 } from "@/constants/ChargesTable";
 import ChargesExplained from "./ChargesExplained";
 
+// Info content for each charge type
+const infoContent = {
+  "Brokerage": "Brokerage is the fee charged by the broker for executing trades. It's typically calculated as a percentage of the trade value or a flat fee per trade.",
+  "STT": "Securities Transaction Tax (STT) is a tax levied by the government on the purchase and sale of securities listed on Indian stock exchanges.",
+  "Exchange txn charge": "Exchange transaction charges are fees levied by stock exchanges (NSE/BSE) for using their trading platform and infrastructure.",
+  "GST": "Goods and Services Tax (GST) is applied on brokerage and other charges as per government regulations. Currently charged at 18%.",
+  "SEBI charges": "Securities and Exchange Board of India (SEBI) charges a regulatory fee to fund market oversight and investor protection activities.",
+  "Stamp charges": "Stamp duty is a tax charged by state governments on the transfer of securities. Rates vary by state.",
+  "DP charges": "Depository Participant (DP) charges are fees for maintaining your demat account and processing transactions through the depository system."
+};
+
 const ChargesTable: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("Equity");
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+
+  // Tooltip component
+  const InfoTooltip: React.FC<{ content: string; isVisible: boolean }> = ({ content, isVisible }) => {
+    if (!isVisible) return null;
+    
+    return (
+      <div className="absolute z-50 w-80 p-3 bg-white border border-gray-200 rounded-lg shadow-lg text-sm text-gray-700 -top-2 left-8">
+        <div className="absolute -left-2 top-4 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-white"></div>
+        {content}
+      </div>
+    );
+  };
 
   // Functions to render different table types
   const renderEquityTable = (): React.ReactNode => (
@@ -43,27 +67,40 @@ const ChargesTable: React.FC = () => {
           <tbody>
             {equityData.map((row: EquityRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
-                <td className="py-3 px-4 font-medium text-gray-700 flex items-center text-sm sm:text-base">
-                  {row.type}
-                  {index < 7 && (
-                    <span className="ml-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12" y2="8"></line>
-                      </svg>
-                    </span>
-                  )}
+                <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
+                  <div className="flex items-center relative">
+                    <span>{row.type}</span>
+                    {index < 7 && (
+                      <div className="relative ml-2">
+                        <button
+                          onMouseEnter={() => setActiveTooltip(`${row.type}-${index}`)}
+                          onMouseLeave={() => setActiveTooltip(null)}
+                          onClick={() => setActiveTooltip(activeTooltip === `${row.type}-${index}` ? null : `${row.type}-${index}`)}
+                          className="text-current"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12" y2="8"></line>
+                          </svg>
+                        </button>
+                        <InfoTooltip 
+                          content={infoContent[row.type as keyof typeof infoContent] || "Information about this charge type."} 
+                          isVisible={activeTooltip === `${row.type}-${index}`}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td className="py-3 px-4 text-gray-600 whitespace-pre-line text-sm sm:text-base">
                   {row.equityDelivery}
@@ -103,25 +140,38 @@ const ChargesTable: React.FC = () => {
           <tbody>
             {currencyData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
-                <td className="py-3 px-4 font-medium text-gray-700 flex items-center text-sm sm:text-base">
-                  {row.type}
-                  <span className="ml-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="16" x2="12" y2="12"></line>
-                      <line x1="12" y1="8" x2="12" y2="8"></line>
-                    </svg>
-                  </span>
+                <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
+                  <div className="flex items-center relative">
+                    <span>{row.type}</span>
+                    <div className="relative ml-2">
+                      <button
+                        onMouseEnter={() => setActiveTooltip(`currency-${row.type}-${index}`)}
+                        onMouseLeave={() => setActiveTooltip(null)}
+                        onClick={() => setActiveTooltip(activeTooltip === `currency-${row.type}-${index}` ? null : `currency-${row.type}-${index}`)}
+                        className="text-current"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12" y2="8"></line>
+                        </svg>
+                      </button>
+                      <InfoTooltip 
+                        content={infoContent[row.type as keyof typeof infoContent] || "Information about this charge type for currency trading."} 
+                        isVisible={activeTooltip === `currency-${row.type}-${index}`}
+                      />
+                    </div>
+                  </div>
                 </td>
                 <td className="py-3 px-4 text-gray-600 whitespace-pre-line text-sm sm:text-base">
                   {row.futures}
@@ -155,25 +205,38 @@ const ChargesTable: React.FC = () => {
           <tbody>
             {commodityData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
-                <td className="py-3 px-4 font-medium text-gray-700 flex items-center text-sm sm:text-base">
-                  {row.type}
-                  <span className="ml-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="16" x2="12" y2="12"></line>
-                      <line x1="12" y1="8" x2="12" y2="8"></line>
-                    </svg>
-                  </span>
+                <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
+                  <div className="flex items-center relative">
+                    <span>{row.type}</span>
+                    <div className="relative ml-2">
+                      <button
+                        onMouseEnter={() => setActiveTooltip(`commodity-${row.type}-${index}`)}
+                        onMouseLeave={() => setActiveTooltip(null)}
+                        onClick={() => setActiveTooltip(activeTooltip === `commodity-${row.type}-${index}` ? null : `commodity-${row.type}-${index}`)}
+                        className="text-current"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12" y2="8"></line>
+                        </svg>
+                      </button>
+                      <InfoTooltip 
+                        content={infoContent[row.type as keyof typeof infoContent] || "Information about this charge type for commodity trading."} 
+                        isVisible={activeTooltip === `commodity-${row.type}-${index}`}
+                      />
+                    </div>
+                  </div>
                 </td>
                 <td className="py-3 px-4 text-gray-600 whitespace-pre-line text-sm sm:text-base">
                   {row.futures}
