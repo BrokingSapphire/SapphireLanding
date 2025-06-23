@@ -34,6 +34,7 @@ const OnboardingCarousel = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [forceProgress, setForceProgress] = useState(false);
   const [hasReachedEsign, setHasReachedEsign] = useState(false);
+  const [hasCleanedOnCongratulations, setHasCleanedOnCongratulations] = useState(false); // New state to track cleanup
 
   // Add the URL state recovery hook
   const { isRecovering } = useUrlStateRecovery();
@@ -54,13 +55,24 @@ const OnboardingCarousel = () => {
 
   const TOTAL_STEPS = 16;
 
-  // ENHANCED: Complete cleanup utility function
-  const performCompleteCleanup = useCallback(async () => {
+  // ENHANCED: Complete cleanup utility function with clientId preservation
+  const performCompleteCleanup = useCallback(async (preserveClientId = true) => {
     try {
       console.log('Performing complete cleanup...');
       
+      // Save clientId if we want to preserve it
+      let savedClientId = null;
+      if (preserveClientId && typeof window !== 'undefined') {
+        savedClientId = localStorage.getItem('clientId');
+      }
+      
       // Clear localStorage
       localStorage.clear();
+      
+      // Restore clientId if we saved it
+      if (savedClientId && preserveClientId) {
+        localStorage.setItem('clientId', savedClientId);
+      }
       
       // Clear all cookies
       Cookies.remove('authToken');
@@ -87,8 +99,8 @@ const OnboardingCarousel = () => {
   // ENHANCED: Logout handler with proper cache clearing
   const handleLogout = useCallback(async () => {
     try {
-      // Perform complete cleanup
-      const success = await performCompleteCleanup();
+      // Perform complete cleanup without preserving clientId for logout
+      const success = await performCompleteCleanup(false);
       
       if (success) {
         // Show confirmation toast
@@ -99,6 +111,7 @@ const OnboardingCarousel = () => {
           setCurrentStep(0);
           setIsInitialized(false);
           setHasReachedEsign(false);
+          setHasCleanedOnCongratulations(false);
         }, 500);
       } else {
         toast.error("Error during logout. Please refresh the page.");
@@ -108,21 +121,28 @@ const OnboardingCarousel = () => {
     }
   }, [performCompleteCleanup]);
 
-  // ENHANCED: Congratulations completion handler with cache clearing
+  // NEW: Clear storage immediately when reaching congratulations page
+  useEffect(() => {
+    if (currentStep === 15 && !hasCleanedOnCongratulations) {
+      console.log('Reached congratulations page - performing cleanup immediately');
+      
+      // Perform cleanup with clientId preservation
+      performCompleteCleanup(true).then(() => {
+        setHasCleanedOnCongratulations(true);
+        console.log('Cleanup completed on congratulations page');
+      });
+    }
+  }, [currentStep, hasCleanedOnCongratulations, performCompleteCleanup]);
+
+  // ENHANCED: Congratulations completion handler (now just for any final cleanup)
   const handleCongratulationsComplete = useCallback(async () => {
     try {
-      console.log('Congratulations reached - performing complete cleanup');
-      
-      // Perform complete cleanup
-      await performCompleteCleanup();
-      
-      // Optional: Redirect to home page or login page
-      // window.location.href = '/login'; // Uncomment if you want to redirect
-      
+      console.log('Congratulations complete handler called');
+      // Cleanup already happened when reaching the page, so this is just for any final actions
     } catch (error) {
-      console.error('Error clearing data on congratulations:', error);
+      console.error('Error in congratulations complete handler:', error);
     }
-  }, [performCompleteCleanup]);
+  }, []);
 
   // Smart reload protection - Allow reload on email (step 0), mobile (step 1), aadhaar (step 3), and esign (step 12) steps
   useEffect(() => {
@@ -196,18 +216,6 @@ const OnboardingCarousel = () => {
     }
   }, [checkpointLoading, resumeStep, isInitialized, getClientId, isClientInitialized, isRecovering]);
 
-  // Function to clear localStorage and cookies
-  // const clearStorageAndCookies = () => {
-  //   if (typeof window !== 'undefined') {
-  //     // Clear specific localStorage items (but keep clientId for MPIN)
-  //     localStorage.removeItem('email');
-  //     localStorage.removeItem('verifiedPhone');
-      
-  //     // Clear specific cookies but keep authToken for API calls
-  //     // We'll keep the authToken until the very end of the process
-  //     console.log('Cleared localStorage and specific cookies at esign step');
-  //   }
-  // };
 
   // Special effect to handle income proof progress
   useEffect(() => {
