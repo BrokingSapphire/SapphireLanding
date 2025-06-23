@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import FormHeading from "./FormHeading";
 import Image from "next/image";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
 import { toast } from "sonner";
@@ -12,6 +12,35 @@ interface LastStepPageProps {
   onNext: () => void;
   initialData?: unknown;
   isCompleted?: boolean;
+}
+
+interface ApiErrorResponse {
+  message?: string;
+  error?: {
+    message?: string;
+  };
+}
+
+interface EsignInitializeResponse {
+  data?: {
+    uri?: string;
+  };
+  message?: string;
+}
+
+interface EsignCompleteResponse {
+  data?: {
+    download_url?: string;
+    signed_at?: string;
+  };
+  message?: string;
+}
+
+interface EsignStatusResponse {
+  data?: {
+    url?: string;
+  };
+  message?: string;
 }
 
 // Global flags to track states in this session
@@ -66,19 +95,19 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   onNext, 
   isCompleted 
 }) => {
-  const [isChecked, setIsChecked] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isChecked, setIsChecked] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'esign_pending'>('initial');
   const [esignUrl, setEsignUrl] = useState<string>('');
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [, setIsPolling] = useState(false);
+  const [, setIsInitialized] = useState<boolean>(false);
+  const [, setIsPolling] = useState<boolean>(false);
   const esignTabRef = useRef<Window | null>(null);
 
   // Polling refs
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isPollingRef = useRef(false); // Use ref to track polling state
+  const isPollingRef = useRef<boolean>(false); // Use ref to track polling state
 
   // Use the checkpoint hook to check for existing eSign data
   const { 
@@ -87,7 +116,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   } = useCheckpoint();
 
   // Initialize eSign session - memoized to prevent recreation
-  const initializeEsign = useCallback(async () => {
+  const initializeEsign = useCallback(async (): Promise<void> => {
     // Prevent multiple simultaneous calls using global flag
     if (hasInitializedEsign || isLoading || esignUrl) {
       console.log("eSign already initialized or in progress, skipping...");
@@ -125,7 +154,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       console.log("Making API call to initialize eSign session...");
 
       // Initialize eSign session with enhanced redirect URL
-      const response = await axios.post(
+      const response = await axios.post<EsignInitializeResponse>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "esign_initialize",
@@ -151,13 +180,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       setIsInitialized(true);
       
     } catch (err: unknown) {
-      const error = err as {
-        response?: {
-          data?: { message?: string; error?: { message?: string } };
-          status?: number;
-        };
-        request?: unknown;
-      };
+      const error = err as AxiosError<ApiErrorResponse>;
 
       console.error("eSign initialization error:", err);
       hasInitializedEsign = false;
@@ -174,7 +197,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   }, [isLoading, esignUrl]);
 
   // Silent polling function to check eSign completion - memoized to prevent recreation
-  const checkEsignStatus = useCallback(async () => {
+  const checkEsignStatus = useCallback(async (): Promise<void> => {
     if (!isPollingRef.current) return;
 
     try {
@@ -190,7 +213,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       // First try POST esign_complete to check if eSign is ready and process it
       try {
         console.log("Checking if eSign is ready for processing via POST API...");
-        const completeResponse = await axios.post(
+        const completeResponse = await axios.post<EsignCompleteResponse>(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
           {
             step: "esign_complete"
@@ -233,11 +256,13 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         
         return; // Exit here if POST API succeeded
         
-      } catch (completeError: any) {
+      } catch (completeError: unknown) {
+        const error = completeError as AxiosError<ApiErrorResponse>;
+        
         // If POST API fails, check the reason
-        if (completeError.response?.status === 401) {
+        if (error.response?.status === 401) {
           // Could mean Redis key expired OR eSign not completed by user yet
-          const errorMessage = completeError.response?.data?.message || '';
+          const errorMessage = error.response?.data?.message || '';
           
           if (errorMessage.includes('not completed')) {
             console.log("eSign not completed by user yet, continuing polling...");
@@ -247,7 +272,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
             console.log("POST esign_complete failed with 401:", errorMessage);
           }
         } else {
-          console.log("POST esign_complete failed with error:", completeError.response?.status, completeError.response?.data?.message);
+          console.log("POST esign_complete failed with error:", error.response?.status, error.response?.data?.message);
         }
         
         // Continue to fallback GET API check
@@ -255,7 +280,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       // Fallback: Use GET API to check if eSign was already processed previously
       try {
-        const response = await axios.get(
+        const response = await axios.get<EsignStatusResponse>(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/esign_complete`,
           {
             headers: {
@@ -296,12 +321,14 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           // Empty URL means eSign record exists but not processed yet
           console.log("eSign record found but empty URL - not processed yet, continuing polling...");
         }
-      } catch (getError: any) {
-        if (getError.response?.status === 404) {
+      } catch (getError: unknown) {
+        const error = getError as AxiosError<ApiErrorResponse>;
+        
+        if (error.response?.status === 404) {
           // eSign not found in DB yet - not processed
           console.log("eSign not found in DB yet (404) - not processed yet...");
         } else {
-          console.warn("GET API error:", getError.response?.status, getError.response?.data?.message);
+          console.warn("GET API error:", error.response?.status, error.response?.data?.message);
         }
       }
 
@@ -312,7 +339,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   }, [onNext, refetchStep]);
 
   // Start polling - memoized to prevent recreation
-  const startPolling = useCallback(() => {
+  const startPolling = useCallback((): void => {
     if (isPollingRef.current) return; // Prevent multiple polling instances
 
     console.log("Starting silent polling for eSign completion");
@@ -331,7 +358,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   }, [checkEsignStatus]);
 
   // Stop polling - memoized to prevent recreation
-  const stopPolling = useCallback(() => {
+  const stopPolling = useCallback((): void => {
     console.log("Stopping eSign polling");
     isPollingRef.current = false;
     setIsPolling(false);
@@ -392,7 +419,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   ]);
 
   // Handle eSign button click (now just opens the URL)
-  const handleEsignClick = () => {
+  const handleEsignClick = (): void => {
     if (!isChecked) {
       toast.error("Please agree to receive communications via email to proceed.");
       return;
@@ -410,7 +437,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     window.location.href = esignUrl;
   };
 
-  const handleRetry = () => {
+  const handleRetry = (): void => {
     setError(null);
     setEsignUrl('');
     setCurrentStep('initial');
@@ -425,7 +452,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   };
 
   // Handle continue/proceed button click
-  const handleContinue = () => {
+  const handleContinue = (): void => {
     // If already completed, just proceed to next step
     if (isCompleted || isStepCompleted(CheckpointStep.ESIGN)) {
       onNext();
@@ -445,13 +472,13 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   const shouldShowCompletedState = isCompleted || isStepCompleted(CheckpointStep.ESIGN);
 
   // Check if button should be disabled
-  const isButtonDisabled = () => {
+  const isButtonDisabled = (): boolean => {
     if (shouldShowCompletedState) return false; // If completed, allow continue
     if (isLoading) return true; // Disable while initializing
     return false;
   };
 
-  const getButtonText = () => {
+  const getButtonText = (): string => {
     if (shouldShowCompletedState) return "Continue";
     
     if (isLoading) return "Initializing eSign...";
