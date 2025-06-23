@@ -60,7 +60,7 @@ const Glimpses = () => {
   return (
     <div className="font-lexend container text-center w-full mx-auto px-8 sm:px-20">
       <h1 className="font-lexend text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
-        Meet Our Team
+        Glipmses at Sapphire
       </h1>
       <p className="text-sm sm:text-base text-gray-500 mt-3 px-4 mb-8 max-w-3xl mx-auto">
         Experience candid moments at Sapphire, where innovation, teamwork, and integrity 
