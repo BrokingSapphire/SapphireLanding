@@ -3,7 +3,6 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { toast } from "sonner";
 
 interface ManualBankDetailsProps {
   onNext: () => void;
