@@ -46,7 +46,7 @@ interface EsignStatusResponse {
 // Global flags to track states in this session
 let hasShownGlobalCompletedToast = false;
 let hasShownEsignSuccessToast = false;
-let hasInitializedEsign = false; // Global flag to prevent multiple initializations
+let hasInitializedEsign = false;
 
 // Helper function to get data from localStorage for URL encoding
 const getEmailFromStorage = (): string => {
@@ -107,7 +107,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   // Polling refs
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isPollingRef = useRef<boolean>(false); // Use ref to track polling state
+  const isPollingRef = useRef<boolean>(false);
 
   // Use the checkpoint hook to check for existing eSign data
   const { 
@@ -117,7 +117,6 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
   // Initialize eSign session - memoized to prevent recreation
   const initializeEsign = useCallback(async (): Promise<void> => {
-    // Prevent multiple simultaneous calls using global flag
     if (hasInitializedEsign || isLoading || esignUrl) {
       console.log("eSign already initialized or in progress, skipping...");
       return;
@@ -210,76 +209,9 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         return;
       }
       
-      // First try POST esign_complete to check if eSign is ready and process it
+      // First check if eSign was already completed using GET API
       try {
-        console.log("Checking if eSign is ready for processing via POST API...");
-        const completeResponse = await axios.post<EsignCompleteResponse>(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-          {
-            step: "esign_complete"
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${authToken}`
-            }
-          }
-        );
-        
-        console.log("eSign processing successful:", completeResponse.data);
-        
-        // If POST API succeeds, eSign was completed by user and now processed
-        isPollingRef.current = false;
-        setIsPolling(false);
-        
-        // Close eSign tab if it's still open
-        if (esignTabRef.current && !esignTabRef.current.closed) {
-          esignTabRef.current.close();
-          esignTabRef.current = null;
-        }
-        
-        // Reset to initial state
-        setCurrentStep('initial');
-        
-        // Only show success toast if we haven't shown it already in this session
-        if (!hasShownEsignSuccessToast) {
-          toast.success("eSign completed successfully!");
-          hasShownEsignSuccessToast = true;
-        }
-        
-        // Refetch the eSign checkpoint to update the hook
-        refetchStep(CheckpointStep.ESIGN);
-        
-        setTimeout(() => {
-          onNext();
-        }, 100);
-        
-        return; // Exit here if POST API succeeded
-        
-      } catch (completeError: unknown) {
-        const error = completeError as AxiosError<ApiErrorResponse>;
-        
-        // If POST API fails, check the reason
-        if (error.response?.status === 401) {
-          // Could mean Redis key expired OR eSign not completed by user yet
-          const errorMessage = error.response?.data?.message || '';
-          
-          if (errorMessage.includes('not completed')) {
-            console.log("eSign not completed by user yet, continuing polling...");
-          } else if (errorMessage.includes('expired') || errorMessage.includes('authorized')) {
-            console.log("Redis key expired - eSign session timed out, continuing polling...");
-          } else {
-            console.log("POST esign_complete failed with 401:", errorMessage);
-          }
-        } else {
-          console.log("POST esign_complete failed with error:", error.response?.status, error.response?.data?.message);
-        }
-        
-        // Continue to fallback GET API check
-      }
-      
-      // Fallback: Use GET API to check if eSign was already processed previously
-      try {
+        console.log("Checking if eSign was already completed via GET API...");
         const response = await axios.get<EsignStatusResponse>(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/esign_complete`,
           {
@@ -291,7 +223,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
         // If GET API finds completed eSign with actual URL, it was processed before
         if (response.status === 200 && response.data?.data?.url && response.data.data.url.trim() !== "") {
-          console.log("eSign was already processed previously, URL:", response.data.data.url);
+          console.log("eSign was already completed and processed, URL:", response.data.data.url);
           
           isPollingRef.current = false;
           setIsPolling(false);
@@ -317,9 +249,77 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           setTimeout(() => {
             onNext();
           }, 100);
+          
+          return; // Exit here if already completed
         } else if (response.status === 200 && response.data?.data?.url === "") {
           // Empty URL means eSign record exists but not processed yet
-          console.log("eSign record found but empty URL - not processed yet, continuing polling...");
+          console.log("eSign record found but not processed yet, trying to process...");
+          
+          // Now try POST API to process the eSign
+          try {
+            console.log("Attempting to process eSign via POST API...");
+            const completeResponse = await axios.post<EsignCompleteResponse>(
+              `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+              {
+                step: "esign_complete"
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${authToken}`
+                }
+              }
+            );
+            
+            console.log("eSign processing successful:", completeResponse.data);
+            
+            // If POST API succeeds, eSign was completed by user and now processed
+            isPollingRef.current = false;
+            setIsPolling(false);
+            
+            // Close eSign tab if it's still open
+            if (esignTabRef.current && !esignTabRef.current.closed) {
+              esignTabRef.current.close();
+              esignTabRef.current = null;
+            }
+            
+            // Reset to initial state
+            setCurrentStep('initial');
+            
+            // Only show success toast if we haven't shown it already in this session
+            if (!hasShownEsignSuccessToast) {
+              toast.success("eSign completed successfully!");
+              hasShownEsignSuccessToast = true;
+            }
+            
+            // Refetch the eSign checkpoint to update the hook
+            refetchStep(CheckpointStep.ESIGN);
+            
+            setTimeout(() => {
+              onNext();
+            }, 100);
+            
+            return; // Exit here if POST API succeeded
+            
+          } catch (completeError: unknown) {
+            const error = completeError as AxiosError<ApiErrorResponse>;
+            
+            // If POST API fails, log the reason but don't stop polling
+            if (error.response?.status === 401) {
+              const errorMessage = error.response?.data?.message || '';
+              
+              if (errorMessage.includes('not completed')) {
+                console.log("eSign not completed by user yet, continuing polling...");
+              } else if (errorMessage.includes('expired') || errorMessage.includes('authorized')) {
+                console.log("Redis key expired - eSign session may have timed out");
+                // Don't stop polling yet, user might still complete it
+              }
+            } else {
+              console.log("POST esign_complete failed with error:", error.response?.status, error.response?.data?.message);
+            }
+            
+            // Continue polling
+          }
         }
       } catch (getError: unknown) {
         const error = getError as AxiosError<ApiErrorResponse>;
@@ -328,7 +328,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           // eSign not found in DB yet - not processed
           console.log("eSign not found in DB yet (404) - not processed yet...");
         } else {
-          console.warn("GET API error:", error.response?.status, error.response?.data?.message);
+          console.log("GET API error:", error.response?.status, error.response?.data?.message);
         }
       }
 
@@ -342,19 +342,19 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   const startPolling = useCallback((): void => {
     if (isPollingRef.current) return; // Prevent multiple polling instances
 
-    console.log("Starting silent polling for eSign completion");
+    console.log("Starting polling for eSign completion");
     isPollingRef.current = true;
     setIsPolling(true);
 
-    // Initial check after 1 second (give time for eSign to be completed)
+    // Initial check after 3 seconds (give time for user to start eSign process)
     pollingTimeoutRef.current = setTimeout(() => {
       checkEsignStatus();
 
-      // Then poll every 2 seconds
+      // Then poll every 3 seconds (reduced frequency)
       pollingIntervalRef.current = setInterval(() => {
         checkEsignStatus();
-      }, 2000);
-    }, 1000);
+      }, 3000);
+    }, 3000);
   }, [checkEsignStatus]);
 
   // Stop polling - memoized to prevent recreation
@@ -399,10 +399,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       initializeEsign();
     }
 
-    // Start polling immediately when component mounts (if not already completed)
-    if (!esignCompleted) {
-      startPolling();
-    }
+    // DON'T start polling immediately - only after user opens eSign
+    // This prevents premature API calls
 
     // Cleanup polling on unmount
     return () => {
@@ -412,13 +410,12 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     isCompleted,
     isStepCompleted,
     initializeEsign,
-    startPolling,
     stopPolling,
     isLoading,
     esignUrl
   ]);
 
-  // Handle eSign button click (now just opens the URL)
+  // Handle eSign button click
   const handleEsignClick = (): void => {
     if (!isChecked) {
       toast.error("Please agree to receive communications via email to proceed.");
@@ -432,6 +429,9 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
     console.log("Opening eSign URL:", esignUrl);
     setCurrentStep('esign_pending');
+    
+    // Start polling ONLY after user opens eSign
+    startPolling();
     
     // Open eSign in the same tab (this will navigate away from current page)
     window.location.href = esignUrl;
