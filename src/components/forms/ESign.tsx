@@ -63,15 +63,14 @@ const getPhoneFromStorage = (): string => {
 
 const LastStepPage: React.FC<LastStepPageProps> = ({ 
   onNext, 
-  initialData, 
   isCompleted 
 }) => {
   const [isChecked, setIsChecked] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'esign_pending'>('initial');
-  const [esignUrl, setEsignUrl] = useState<string>('');
-  const [isPolling, setIsPolling] = useState(false);
+  const [, setEsignUrl] = useState<string>('');
+  const [, setIsPolling] = useState(false);
   const esignTabRef = useRef<Window | null>(null);
 
   // Polling refs
@@ -130,16 +129,32 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           );
           
           console.log("eSign completion API successful:", completeResponse.data);
-        } catch (completeError: any) {
+        } catch (completeError: unknown) {
           console.error("eSign completion API failed:", completeError);
-          
-          // Check if it's a Redis expiry error
-          if (completeError.response?.status === 401) {
-            console.log("Redis key expired or eSign already processed - this is expected, continuing...");
-          } else {
-            console.error("Other eSign completion error:", completeError.response?.data);
-          }
-          
+
+          // Type guard for AxiosError-like structure
+            if (
+            typeof completeError === "object" &&
+            completeError !== null &&
+            "response" in completeError &&
+            typeof (completeError as { response?: unknown }).response === "object" &&
+            (completeError as { response?: unknown }).response !== null
+            ) {
+            const response = (completeError as { response?: { status?: number; data?: unknown } }).response;
+            if (response && typeof response === "object" && "status" in response) {
+              const status = (response as { status?: number }).status;
+              if (status === 401) {
+              console.log("Redis key expired or eSign already processed - this is expected, continuing...");
+              } else {
+              console.error("Other eSign completion error:", (response as { data?: unknown }).data);
+              }
+            } else {
+              console.error("Unknown response structure in eSign completion error.");
+            }
+            } else {
+            console.error("Unknown error structure in eSign completion error.");
+            }
+
           // Continue anyway since the eSign document exists in the database
           // The GET API confirmed it's there, so the process was successful
         }
