@@ -155,7 +155,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
         // Check if income proof is already uploaded
         if (isIncomeProofCompleted) {
           console.log("Income proof already completed, proceeding to next step");
-          toast.success("Investment segments saved successfully!");
+          // toast.success("Investment segments saved successfully!");
           setTimeout(() => {
             onNext();
           }, 100);
