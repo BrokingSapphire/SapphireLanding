@@ -458,7 +458,7 @@ const BankAccountLinking: React.FC<BankAccountLinkingProps> = ({
                 onClick={() => handleMethodSelection("manual")}
               >
                 <div className="flex items-center justify-center space-x-1 mb-2">
-                  <Image width={1000} height={1000} src="/new-signup/threebanks.png" alt="Bank" className="h-full w-20"  />
+                  <Image width={1000} height={1000} src="/new-signup/threeBanks.png" alt="Bank" className="h-full w-20"  />
                 </div>
                 <div className="font-medium">Enter bank</div>
                 <div className="font-medium">details manually</div>
