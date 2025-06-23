@@ -102,6 +102,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     if (isCompleted && initialData?.phone) {
       // If step is completed, prefill with data from API AND save to localStorage
       setMobileNumber(initialData.phone);
+      setShowOTP(true); // Show OTP fields when completed
       const expiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day in ms
       localStorage.setItem(
         "verifiedPhone",
@@ -138,7 +139,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
-    if (showOTP && otpTimer > 0) {
+    if (showOTP && otpTimer > 0 && !isCompleted) {
       interval = setInterval(() => {
         setOtpTimer((prev) => prev - 1);
       }, 1000);
@@ -147,13 +148,13 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [showOTP, otpTimer]);
+  }, [showOTP, otpTimer, isCompleted]);
 
   // Resend OTP timer for 30 seconds
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
-    if (resendTimer > 0) {
+    if (resendTimer > 0 && !isCompleted) {
       interval = setInterval(() => {
         setResendTimer((prev) => prev - 1);
       }, 1000);
@@ -162,13 +163,19 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [resendTimer]);
+  }, [resendTimer, isCompleted]);
 
   const validateMobile = (number: string) => {
     return /^[6-9][0-9]{9}$/.test(number);
   };
 
   const handleButtonClick = async () => {
+    // If completed, go to next step
+    if (isCompleted) {
+      onNext();
+      return;
+    }
+
     // If button is disabled, don't proceed
     if (isButtonDisabled()) {
       return;
@@ -309,6 +316,9 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
   };
 
   const handleOTPChange = (index: number, value: string) => {
+    // Don't allow changes if completed
+    if (isCompleted) return;
+
     if (value.length <= 1 && /^\d*$/.test(value)) {
       const newOTP = [...otp];
       newOTP[index] = value;
@@ -331,6 +341,9 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     index: number,
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
+    // Don't handle key events if completed
+    if (isCompleted) return;
+
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     } else if (e.key === "Enter") {
@@ -349,7 +362,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
 
   // Get button text based on current state
   const getButtonText = () => {
-    if (isCompleted && hasManuallyVerified) return "Completed ✓";
+    if (isCompleted) return "Continue to Next Step";
     if (isLoading) {
       return showOTP ? "Verifying..." : "Sending OTP...";
     }
@@ -358,7 +371,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
 
   // Determine if button should be disabled
   const isButtonDisabled = () => {
-    if (isCompleted && hasManuallyVerified) return false;
+    if (isCompleted) return false;
     if (isLoading) return true;
     
     // Check if email is available for mobile verification
@@ -369,40 +382,6 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
     return !otp.every((digit) => digit !== "");
   };
 
-  // Show completed state only if manually verified
-  if (isCompleted && hasManuallyVerified) {
-    return (
-      <div className="mx-auto -mt-28 lg:mt-0 pt-24">
-        <FormHeading
-          title={"Verify your Mobile!"}
-          description={"Please enter your mobile for verification."}
-        />
-
-        <div className="mb-8">
-          <label className="block text-gray-700 mb-2">Mobile Number</label>
-          <div className="flex gap-3">
-            <div className=" px-3 py-2 rounded border text-gray-500">
-              +91
-            </div>
-            <input
-              type="tel"
-              className="flex-1 px-3 py-2 border rounded focus:outline-none"
-              value={mobileNumber}
-              disabled
-            />
-          </div>
-        </div>
-        <Button
-          onClick={onNext}
-          className="w-full py-6 mb-6"
-          variant="ghost"
-        >
-          Continue to Next Step
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="mx-auto -mt-28 lg:mt-0 pt-24">
       <FormHeading
@@ -411,7 +390,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
       />
 
       {/* Show email status for debugging - can be removed in production */}
-      {!getEmailFromStorage() && (
+      {!getEmailFromStorage() && !isCompleted && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <div className="flex items-center text-yellow-800 text-sm">
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -442,7 +421,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
             onKeyDown={handleMobileKeyDown}
             maxLength={10}
             pattern="[6-9][0-9]{9}"
-            disabled={isLoading || showOTP}
+            disabled={isLoading || showOTP || isCompleted}
           />
         </div>
       </div>
@@ -473,19 +452,21 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
                       ? "rounded-md rounded-l-none"
                       : "rounded-none"
                   }`}
-                disabled={isLoading}
+                disabled={isLoading || isCompleted}
               />
             ))}
           </div>
-          <div className="flex flex-col sm:flex-row justify-end text-sm mb-2 gap-2">
-            <button
-              className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleSendOTP}
-              disabled={isLoading || resendTimer > 0}
-            >
-              {resendTimer > 0 ? `Resend OTP (${resendTimer}s)` : "Resend OTP"}
-            </button>
-          </div>
+          {!isCompleted && (
+            <div className="flex flex-col sm:flex-row justify-end text-sm mb-2 gap-2">
+              <button
+                className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleSendOTP}
+                disabled={isLoading || resendTimer > 0}
+              >
+                {resendTimer > 0 ? `Resend OTP (${resendTimer}s)` : "Resend OTP"}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -496,7 +477,7 @@ const MobileVerification = ({ onNext, initialData, isCompleted }: MobileVerifica
         variant="ghost"
         className={`w-full py-6 rounded mb-6 ${
           isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
-        } ${isCompleted && hasManuallyVerified ? "" : ""}`}
+        }`}
       >
         {getButtonText()}
       </Button>
