@@ -557,11 +557,11 @@ export const useCheckpoint = (): UseCheckpointReturn => {
   const hasValidData = (step: CheckpointStep): boolean => {
     const stepData = checkpointData[step];
     
-    console.log(`Validating step ${step}:`, {
-      stepData,
-      completed: stepData?.completed,
-      data: stepData?.data
-    });
+    // console.log(`Validating step ${step}:`, {
+    //   stepData,
+    //   completed: stepData?.completed,
+    //   data: stepData?.data
+    // });
     
     if (!stepData?.completed || !stepData.data) {
       return false;
