@@ -214,7 +214,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
 
       // Only show success toast if we haven't shown it already in this session
       if (!hasShownSubmissionSuccessToast) {
-        toast.success("Personal details saved successfully!");
+        // toast.success("Personal details saved successfully!");
         hasShownSubmissionSuccessToast = true;
       }
       

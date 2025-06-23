@@ -161,13 +161,13 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
           }, 100);
         } else {
           // Need to upload income proof
-          toast.success("Investment segments saved! Income proof required for selected segments.");
+          // toast.success("Investment segments saved! Income proof required for selected segments.");
           await handleInitializeIncomeProof();
         }
       } else {
         // No income proof required
         console.log("No income proof required, proceeding to next step");
-        toast.success("Investment segments saved successfully!");
+        // toast.success("Investment segments saved successfully!");
         setTimeout(() => {
           onNext();
         }, 100);

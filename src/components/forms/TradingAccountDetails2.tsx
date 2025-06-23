@@ -169,7 +169,6 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
         return;
       }
 
-      toast.success("Other details saved successfully!");
       
       // Mark that we just submitted to prevent the "already saved" toast
       setHasJustSubmitted(true);

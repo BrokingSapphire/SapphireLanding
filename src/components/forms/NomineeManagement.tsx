@@ -158,28 +158,20 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       // Parse the numeric value
       const numValue = parseFloat(value);
       
-      // Don't allow values over 100
-      if (numValue > 100) {
-        setError("Share percentage cannot exceed 100%");
-        value = "100";
+      // Calculate available percentage for current nominee
+      const remainingPercentage = 100 - totalSharePercentage;
+      const currentNomineePercentage = parseFloat(currentNominee.sharePercentage) || 0;
+      const availablePercentage = remainingPercentage + currentNomineePercentage;
+      
+      // Don't allow values greater than available percentage
+      if (numValue > availablePercentage) {
+        // Don't update the value, just return early
+        return;
       }
       
       // Don't allow negative values
       if (numValue < 0) {
         value = "0";
-      }
-
-      // Calculate how much percentage is left to allocate
-      const remainingPercentage = 100 - totalSharePercentage;
-      const currentNomineePercentage =
-        parseFloat(currentNominee.sharePercentage) || 0;
-      const availablePercentage =
-        remainingPercentage + currentNomineePercentage;
-
-      // Ensure entered value doesn't exceed available percentage
-      if (numValue > availablePercentage) {
-        value = availablePercentage.toString();
-        setError(`Maximum available percentage is ${availablePercentage}%`);
       }
     }
 
@@ -213,17 +205,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       // Parse the numeric value
       const numValue = parseFloat(value);
       
-      // Don't allow values over 100
-      if (numValue > 100) {
-        setError("Share percentage cannot exceed 100%");
-        value = "100";
-      }
-      
-      // Don't allow negative values
-      if (numValue < 0) {
-        value = "0";
-      }
-
       // Calculate available percentage (excluding current nominee's percentage)
       const otherNomineesTotal = nominees
         .filter(n => n.id !== nomineeId)
@@ -231,9 +212,15 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
       
       const availablePercentage = 100 - otherNomineesTotal;
       
+      // Don't allow values greater than available percentage
       if (numValue > availablePercentage) {
-        value = availablePercentage.toString();
-        setError(`Maximum available percentage is ${availablePercentage}%`);
+        // Don't update the value, just return early
+        return;
+      }
+      
+      // Don't allow negative values
+      if (numValue < 0) {
+        value = "0";
       }
     }
 
@@ -444,7 +431,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
         return;
       }
 
-      toast.success("Nominees saved successfully!");
 
       // Mark that we just submitted to prevent the "already saved" toast
       setHasJustSubmitted(true);
@@ -576,9 +562,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                   placeholder="AAAAA0000A"
                   maxLength={10}
                 />
-                {nominee.panOrAadhar && !isValidPanFormat(nominee.panOrAadhar) && (
-                  <p className="text-red-500 text-xs mt-1">Invalid PAN format (AAAAA0000A)</p>
-                )}
               </div>
 
               <div>
