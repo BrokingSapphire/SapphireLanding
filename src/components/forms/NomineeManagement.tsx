@@ -3,7 +3,6 @@ import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 
 interface NomineeManagementProps {
