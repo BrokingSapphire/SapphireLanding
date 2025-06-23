@@ -63,15 +63,14 @@ const getPhoneFromStorage = (): string => {
 
 const LastStepPage: React.FC<LastStepPageProps> = ({ 
   onNext, 
-  initialData, 
   isCompleted 
 }) => {
   const [isChecked, setIsChecked] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'esign_pending'>('initial');
-  const [esignUrl, setEsignUrl] = useState<string>('');
-  const [isPolling, setIsPolling] = useState(false);
+  const [, setEsignUrl] = useState<string>('');
+  const [, setIsPolling] = useState(false);
   const esignTabRef = useRef<Window | null>(null);
 
   // Polling refs
