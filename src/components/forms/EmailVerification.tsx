@@ -61,7 +61,8 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     if (isCompleted && initialData?.email) {
       // If step is completed, prefill with data from API 
       setEmail(initialData.email);
-      
+      // Also show OTP fields if step is completed
+      setShowOTP(true);
     } else {
       // Try to get email from localStorage (only if previously verified and not expired)
       const storedEmail = getStoredEmail();
@@ -86,7 +87,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
-    if (showOTP && otpTimer > 0) {
+    if (showOTP && otpTimer > 0 && !isCompleted) {
       interval = setInterval(() => {
         setOtpTimer((prev) => prev - 1);
       }, 1000);
@@ -95,13 +96,13 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [showOTP, otpTimer]);
+  }, [showOTP, otpTimer, isCompleted]);
 
   // Resend OTP timer for 30 seconds
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
-    if (resendTimer > 0) {
+    if (resendTimer > 0 && !isCompleted) {
       interval = setInterval(() => {
         setResendTimer((prev) => prev - 1);
       }, 1000);
@@ -110,13 +111,19 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [resendTimer]);
+  }, [resendTimer, isCompleted]);
 
   const validateEmail = (email: string) => {
     return email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
   };
 
   const handleButtonClick = async () => {
+    // If completed, go to next step
+    if (isCompleted) {
+      onNext();
+      return;
+    }
+
     // If button is disabled, don't proceed
     if (isButtonDisabled()) {
       return;
@@ -239,6 +246,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   };
 
   const handleOTPChange = (index: number, value: string) => {
+    // Don't allow changes if completed
+    if (isCompleted) return;
+
     if (value.length <= 1 && /^\d*$/.test(value)) {
       const newOTP = [...otp];
       newOTP[index] = value;
@@ -261,6 +271,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     index: number,
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
+    // Don't handle key events if completed
+    if (isCompleted) return;
+
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     } else if (e.key === "Enter") {
@@ -279,7 +292,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
   // Get button text based on current state
   const getButtonText = () => {
-    if (isCompleted && hasManuallyVerified) return "Completed ✓";
+    if (isCompleted) return "Continue to Next Step";
     if (isLoading) {
       return showOTP ? "Verifying..." : "Sending Code...";
     }
@@ -288,43 +301,11 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
   // Determine if button should be disabled
   const isButtonDisabled = () => {
-    if (isCompleted && hasManuallyVerified) return false;
+    if (isCompleted) return false;
     if (isLoading) return true;
     if (!showOTP) return !validateEmail(email);
     return !otp.every((digit) => digit !== "");
   };
-
-  // Show completed state only if manually verified
-  if (isCompleted && hasManuallyVerified) {
-    return (
-      <div className="mx-auto -mt-28 sm:mt-0 pt-24">
-        <FormHeading
-          title={"Hi, Welcome to Sapphire!"}
-          description={"Get started in just a few easy steps!"}
-        />
-        
-        <div className="mb-8">
-          <label className="block text-gray-700 mb-2">Email Address</label>
-          <div className="flex gap-3">
-            <input
-              type="email"
-              className="flex-1 px-3 py-2 border rounded focus:outline-none"
-              value={email}
-              disabled
-            />
-          </div>
-        </div>
-
-        <Button
-          onClick={onNext}
-          className="w-full py-6 mb-6"
-          variant="ghost"
-        >
-          Continue to Next Step
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="mx-auto -mt-28 sm:mt-0 pt-24">
@@ -339,13 +320,15 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
           <input
             type="email"
             placeholder="Enter your email address"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className={`flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+              isCompleted ? "bg-gray-50" : ""
+            }`}
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
             }}
             onKeyDown={handleEmailKeyDown}
-            disabled={isLoading || showOTP}
+            disabled={isLoading || showOTP || isCompleted}
           />
         </div>
       </div>
@@ -354,6 +337,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         <div className="mb-6">
           <label className="block text-left text-gray-heading mb-3">
             Enter OTP
+            {isCompleted && (
+              <span className=" text-sm ml-2">✓ Verified</span>
+            )}
           </label>
           <div className="flex justify-center gap-2 mb-4">
             {otp.map((digit, index) => (
@@ -368,7 +354,11 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
                 value={digit}
                 onChange={(e) => handleOTPChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className={`w-12 h-12 text-center border-2 border-gray-300 focus:outline-none focus:border-teal-500 text-xl
+                className={`w-12 h-12 text-center border-2 text-xl
+                  ${isCompleted 
+                    ? "border-gray-300 focus:outline-none focus:border-teal-500" 
+                    : "border-gray-300 focus:outline-none focus:border-teal-500"
+                  }
                   ${
                     index === 0
                       ? "rounded-md rounded-r-none"
@@ -376,21 +366,23 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
                       ? "rounded-md rounded-l-none"
                       : "rounded-none"
                   }`}
-                disabled={isLoading}
+                disabled={isLoading || isCompleted}
               />
             ))}
           </div>
-          <div className="flex w-full justify-end text-sm mb-2">
-            <button
-              className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleSendOTP}
-              disabled={isLoading || resendTimer > 0}
-            >
-              {resendTimer > 0
-                ? `Resend Code (${resendTimer}s)`
-                : "Resend Code"}
-            </button>
-          </div>
+          {!isCompleted && (
+            <div className="flex w-full justify-end text-sm mb-2">
+              <button
+                className="text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleSendOTP}
+                disabled={isLoading || resendTimer > 0}
+              >
+                {resendTimer > 0
+                  ? `Resend Code (${resendTimer}s)`
+                  : "Resend Code"}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -400,7 +392,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         disabled={isButtonDisabled()}
         className={`w-full py-6 mb-6 ${
           isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
-        } ${isCompleted && hasManuallyVerified ? "bg-green-600 hover:bg-green-700" : ""}`}
+        } ${isCompleted ? "" : ""}`}
         variant="ghost"
       >
         {getButtonText()}

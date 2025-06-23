@@ -134,7 +134,6 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
       
       // Show completion toast only once per session
       if (!hasShownGlobalCompletedToast) {
-        toast.success("Signature already submitted! You can proceed or sign again if needed.");
         hasShownGlobalCompletedToast = true;
       }
       return;

@@ -5,9 +5,9 @@ const Glimpses = () => {
   const images = [
     {
       id: 1,
-      src: "/about/glimpses.svg",
-      alt: "Team discussion at Zomato office",
+      src: "/about/IMG_3190.jpg",
       className: "col-span-2 row-span-2",
+      alt: "Sapphire team working together",
     },
     {
       id: 2,
@@ -28,32 +28,6 @@ const Glimpses = () => {
       id: 5,
       src: "/about/glimpses.svg",
       alt: "Team meeting view 4",
-    },
-    {
-      id: 6,
-      src: "/about/glimpses.svg",
-      alt: "Full team discussion",
-    },
-    {
-      id: 6,
-      src: "/about/glimpses.svg",
-      alt: "Full team discussion",
-    },
-    {
-        id: 7,
-        src: "/about/glimpses.svg",
-        alt: "Full team discussion",
-        className: "col-span-2 row-span-2",
-    },
-    {
-      id: 6,
-      src: "/about/glimpses.svg",
-      alt: "Full team discussion",
-    },
-    {
-      id: 6,
-      src: "/about/glimpses.svg",
-      alt: "Full team discussion",
     },
   ];
 

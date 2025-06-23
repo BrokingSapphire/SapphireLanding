@@ -14,49 +14,6 @@ interface LastStepPageProps {
   isCompleted?: boolean;
 }
 
-// Helper function to get data from localStorage for URL encoding
-// const getEmailFromStorage = (): string => {
-//   try {
-//     const storedEmail = localStorage.getItem("email");
-//     if (!storedEmail) return "";
-    
-//     try {
-//       const parsedEmail = JSON.parse(storedEmail);
-//       if (typeof parsedEmail === 'object' && parsedEmail.value) {
-//         return parsedEmail.value;
-//       }
-//     } catch {
-//       return storedEmail;
-//     }
-    
-//     return "";
-//   } catch (error) {
-//     console.error("Error retrieving email from localStorage:", error);
-//     return "";
-//   }
-// };
-
-// const getPhoneFromStorage = (): string => {
-//   try {
-//     const storedPhone = localStorage.getItem("verifiedPhone");
-//     if (!storedPhone) return "";
-    
-//     try {
-//       const parsedPhone = JSON.parse(storedPhone);
-//       if (typeof parsedPhone === 'object' && parsedPhone.value) {
-//         return parsedPhone.value;
-//       }
-//     } catch {
-//       return storedPhone;
-//     }
-    
-//     return "";
-//   } catch (error) {
-//     console.error("Error retrieving phone from localStorage:", error);
-//     return "";
-//   }
-// };
-
 // Global flags to track toast states in this session
 let hasShownGlobalCompletedToast = false;
 let hasShownEsignSuccessToast = false;
@@ -66,7 +23,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   initialData, 
   isCompleted 
 }) => {
-  const [isChecked, setIsChecked] = useState(false); // Changed to false by default
+  const [isChecked, setIsChecked] = useState(true); // Changed to true by default
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [esignUrl, setEsignUrl] = useState<string | null>(null);
@@ -90,7 +47,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       // Show completion toast only once per session
       if (!hasShownGlobalCompletedToast) {
-        toast.success("eSign already completed! You can proceed to the next step.");
+        // toast.success("eSign already completed! You can proceed to the next step.");
         hasShownGlobalCompletedToast = true;
         // Also set the eSign success flag to prevent duplicate success messages
         hasShownEsignSuccessToast = true;
@@ -145,26 +102,11 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     try {
       // Get current state data for URL encoding
       const authToken = Cookies.get('authToken');
-      // const email = getEmailFromStorage();
-      // const phone = getPhoneFromStorage();
       
       if (!authToken) {
         setError("Authentication token not found. Please restart the process.");
         return;
       }
-
-      // Create state data to encode in URL
-      // const stateData = {
-      //   token: authToken,
-      //   email: email,
-      //   phone: phone,
-      //   step: 'esign',
-      //   timestamp: Date.now()
-      // };
-      
-      // Encode the state data
-      // const encodedState = btoa(JSON.stringify(stateData));
-      const redirectUrl = `https://sapphirebroking.com/signup`;
 
       console.log("Making API call to initialize eSign session...");
 
@@ -173,7 +115,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "esign_initialize",
-          redirect_url: redirectUrl
+          redirect_url: "https://sapphirebroking.com/signup"
         },
         {
           headers: {
@@ -359,20 +301,6 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     
     // Open eSign in the same tab (this will navigate away from current page)
     window.location.href = esignUrl;
-    
-    // Alternative approach: Open in new tab and then close current tab
-    // Uncomment the lines below and comment the line above if you prefer this approach
-    /*
-    const esignTab = window.open(esignUrl, '_blank');
-    if (esignTab) {
-      // Small delay to ensure the new tab opens, then close current tab
-      setTimeout(() => {
-        window.close();
-      }, 1000);
-    } else {
-      toast.error("Please allow popups for this site and try again.");
-    }
-    */
   };
 
   const handleRetry = () => {
@@ -411,7 +339,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   // Show initialization loading
   if (!isInitialized && isLoading) {
     return (
-      <div className="mx-auto p-4 -mt-28 sm:mt-10">
+      <div className="mx-auto p-4 -mt-44 sm:mt-10">
         <FormHeading
           title="Finish account set-up using Aadhar E-sign"
           description="Initializing eSign session..."
