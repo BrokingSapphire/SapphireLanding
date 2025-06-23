@@ -93,7 +93,6 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
       
       // Show completion toast only once per session and only if not currently submitting
       if (!hasShownGlobalCompletedToast) {
-        toast.success("Personal details already saved! You can modify them or continue.");
         hasShownGlobalCompletedToast = true;
         // Also set the submission success flag to prevent duplicate success messages
         hasShownSubmissionSuccessToast = true;

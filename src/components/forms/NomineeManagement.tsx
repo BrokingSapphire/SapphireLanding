@@ -521,7 +521,7 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
   // Always show the same UI - whether fresh or completed
   return (
     <div className="mx-auto h-full max-h-[80vh] overflow-y-auto mt-20">
-      <div className="sticky top-0 bg-white z-10 pt-0 pb-2">
+      <div className="sticky top-0 bg-white z-10 -mt-28 sm:mt-0 pt-0 pb-2">
         <FormHeading
           title={"Nominees"}
           description={

@@ -60,7 +60,6 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
           
           // Show completion toast only once per session
           if (!hasShownGlobalCompletedToast) {
-            toast.success("Income proof already verified! You can upload a new document or continue.");
             hasShownGlobalCompletedToast = true;
           }
         }

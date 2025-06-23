@@ -162,22 +162,6 @@ const OnboardingCarousel = () => {
     };
   }, [currentStep, isInitialized]);
 
-  // Detect when user comes back to the tab (for protected steps only)
-  useEffect(() => {
-    const isAllowedReloadStep = currentStep === 0 || currentStep === 1 || currentStep === 3 || currentStep === 12;
-    
-    if (document.visibilityState === 'visible' && !isAllowedReloadStep && isInitialized) {
-      // User came back to tab during a protected step
-      toast.warning("If you refreshed the page, you may need to restart the verification process.");
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [currentStep, isInitialized]);
-
   // UPDATED: Initialize current step from checkpoint data and client ID from localStorage
   // Wait for URL recovery to complete before initialization
   useEffect(() => {
@@ -959,16 +943,3 @@ const OnboardingCarousel = () => {
 };
 
 export default OnboardingCarousel;
-function handleVisibilityChange(this: Document) {
-  // Only show a warning if the tab becomes visible again during a protected step
-  if (
-    document.visibilityState === "visible" &&
-    typeof window !== "undefined"
-  ) {
-    // You may want to check currentStep and isInitialized here if needed
-    // For example, show a toast or warning
-    toast.warning(
-      "If you refreshed the page, you may need to restart the verification process."
-    );
-  }
-}

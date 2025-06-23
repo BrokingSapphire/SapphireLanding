@@ -90,7 +90,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       // Show completion toast only once per session
       if (!hasShownGlobalCompletedToast) {
-        toast.success("eSign already completed! You can proceed to the next step.");
+        // toast.success("eSign already completed! You can proceed to the next step.");
         hasShownGlobalCompletedToast = true;
         // Also set the eSign success flag to prevent duplicate success messages
         hasShownEsignSuccessToast = true;
@@ -411,7 +411,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   // Show initialization loading
   if (!isInitialized && isLoading) {
     return (
-      <div className="mx-auto p-4 -mt-28 sm:mt-10">
+      <div className="mx-auto p-4 -mt-44 sm:mt-10">
         <FormHeading
           title="Finish account set-up using Aadhar E-sign"
           description="Initializing eSign session..."

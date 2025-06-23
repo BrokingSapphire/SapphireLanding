@@ -19,8 +19,6 @@ interface InvestmentSegmentProps {
   isCompleted?: boolean;
 }
 
-// Global flag to track if completion toast has been shown in this session
-let hasShownGlobalCompletedToast = false;
 
 const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({ 
   onNext, 
@@ -62,11 +60,6 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
     if (isCompleted && initialData && initialData.segments && initialData.segments.length > 0) {
       setSelectedSegments(initialData.segments);
       
-      // Show completion toast only once per session
-      if (!hasShownGlobalCompletedToast) {
-        toast.success("Investment segments already configured! You can modify them or continue.");
-        hasShownGlobalCompletedToast = true;
-      }
     }
   }, [initialData, isCompleted]);
 

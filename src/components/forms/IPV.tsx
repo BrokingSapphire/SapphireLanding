@@ -59,7 +59,6 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       
       // Show completion toast only once per session
       if (!hasShownGlobalCompletedToast) {
-        toast.success("IPV verification already completed! You can proceed or re-verify if needed.");
         hasShownGlobalCompletedToast = true;
       }
       return;

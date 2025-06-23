@@ -81,7 +81,6 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
       
       // Show completion toast only once per session
       if (!hasShownGlobalCompletedToast) {
-        toast.success("Parent details already saved! You can modify them or continue.");
         hasShownGlobalCompletedToast = true;
       }
     }
