@@ -11,7 +11,7 @@ const MeetOurTeam = () => {
     {
       name: 'Yash Katyari',
       role: 'Partner',
-      image: '/about/profile.png', 
+      image: '/about/meetOurTeam/PHOTO-2025-06-23-11-45-46.jpg', 
     },
     {
       name: 'Prakash Katyari',

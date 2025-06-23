@@ -5,9 +5,9 @@ const Glimpses = () => {
   const images = [
     {
       id: 1,
-      src: "/about/glimpses.svg",
-      alt: "Team discussion at Zomato office",
+      src: "/about/IMG_3190.jpg",
       className: "col-span-2 row-span-2",
+      alt: "Sapphire team working together",
     },
     {
       id: 2,
@@ -29,40 +29,14 @@ const Glimpses = () => {
       src: "/about/glimpses.svg",
       alt: "Team meeting view 4",
     },
-    {
-      id: 6,
-      src: "/about/glimpses.svg",
-      alt: "Full team discussion",
-    },
-    {
-      id: 6,
-      src: "/about/glimpses.svg",
-      alt: "Full team discussion",
-    },
-    {
-        id: 7,
-        src: "/about/glimpses.svg",
-        alt: "Full team discussion",
-        className: "col-span-2 row-span-2",
-    },
-    {
-      id: 6,
-      src: "/about/glimpses.svg",
-      alt: "Full team discussion",
-    },
-    {
-      id: 6,
-      src: "/about/glimpses.svg",
-      alt: "Full team discussion",
-    },
   ];
 
   return (
     <div className="font-lexend container text-center w-full mx-auto px-8 sm:px-20">
       <h1 className="font-lexend text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4">
-        Meet Our Team
+        Glipmses at Sapphire
       </h1>
-      <p className="text-sm sm:text-base text-gray-500 mt-3 px-4 mb-16 max-w-3xl mx-auto">
+      <p className="text-sm sm:text-base text-gray-500 mt-3 px-4 mb-8 max-w-3xl mx-auto">
         Experience candid moments at Sapphire, where innovation, teamwork, and integrity 
         come together to shape the future of financial excellence.
       </p>
