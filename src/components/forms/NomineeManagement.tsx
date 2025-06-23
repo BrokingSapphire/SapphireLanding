@@ -656,9 +656,6 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
                   placeholder="AAAAA0000A"
                   maxLength={10}
                 />
-                {currentNominee.panOrAadhar && !isValidPanFormat(currentNominee.panOrAadhar) && (
-                  <p className="text-red-500 text-xs mt-1">Invalid PAN format (AAAAA0000A)</p>
-                )}
               </div>
 
               <div>

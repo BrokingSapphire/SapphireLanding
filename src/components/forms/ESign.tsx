@@ -63,14 +63,15 @@ const getPhoneFromStorage = (): string => {
 
 const LastStepPage: React.FC<LastStepPageProps> = ({ 
   onNext, 
+  initialData, 
   isCompleted 
 }) => {
   const [isChecked, setIsChecked] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'esign_pending'>('initial');
-  const [, setEsignUrl] = useState<string>('');
-  const [, setIsPolling] = useState(false);
+  const [esignUrl, setEsignUrl] = useState<string>('');
+  const [isPolling, setIsPolling] = useState(false);
   const esignTabRef = useRef<Window | null>(null);
 
   // Polling refs
@@ -112,7 +113,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       if (response.status === 200 && response.data?.data?.url) {
         console.log("eSign completed successfully via polling, URL:", response.data.data.url);
         
-        // Now call the POST API to complete the eSign process (download, upload to S3, etc.)
+        // Try to call the POST API to complete the eSign process, but don't fail if it errors
         try {
           console.log("Calling eSign completion API...");
           const completeResponse = await axios.post(
@@ -129,9 +130,18 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           );
           
           console.log("eSign completion API successful:", completeResponse.data);
-        } catch (completeError) {
+        } catch (completeError: any) {
           console.error("eSign completion API failed:", completeError);
-          // Continue anyway since the eSign document exists
+          
+          // Check if it's a Redis expiry error
+          if (completeError.response?.status === 401) {
+            console.log("Redis key expired or eSign already processed - this is expected, continuing...");
+          } else {
+            console.error("Other eSign completion error:", completeError.response?.data);
+          }
+          
+          // Continue anyway since the eSign document exists in the database
+          // The GET API confirmed it's there, so the process was successful
         }
         
         isPollingRef.current = false;
