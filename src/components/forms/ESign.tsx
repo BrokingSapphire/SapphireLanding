@@ -72,26 +72,15 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     }
   }, [initialData, isCompleted]);
 
-  // Start background polling ONLY when eSign is in progress
+  // Cleanup polling on unmount
   useEffect(() => {
-    if (esignInProgress && !isStepCompleted(CheckpointStep.ESIGN)) {
-      console.log("Starting polling because eSign is in progress");
-      startBackgroundPolling();
-    } else if (!esignInProgress && pollIntervalRef.current) {
-      // Stop polling if eSign is not in progress
-      console.log("Stopping polling because eSign is not in progress");
-      clearInterval(pollIntervalRef.current);
-      pollIntervalRef.current = null;
-    }
-
-    // Cleanup polling on unmount
     return () => {
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
         pollIntervalRef.current = null;
       }
     };
-  }, [esignInProgress, isStepCompleted(CheckpointStep.ESIGN)]);
+  }, []);
 
   // UPDATED: Enhanced eSign initialization with state encoding
   const initializeEsign = async () => {
@@ -321,6 +310,9 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     
     // Set eSign as in progress to start polling
     setEsignInProgress(true);
+    
+    // Start polling only when eSign button is clicked
+    startBackgroundPolling();
     
     // toast.success("Opening eSign...");
     

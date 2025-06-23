@@ -7,7 +7,6 @@ import QrCodeVerification from "./QrCodeVerification";
 import axios from "axios";
 import Cookies from 'js-cookie';
 import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
-import { toast } from "sonner";
 
 /* eslint-disable */
 interface IPVInitialData {
@@ -243,7 +242,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       );
 
       console.log("IPV uploaded successfully");
-      toast.success("IPV verification completed successfully!");
+      // toast.success("IPV verification completed successfully!");
       
       // Reset re-verification state immediately to prevent further submissions
       setWantsToReverify(false);

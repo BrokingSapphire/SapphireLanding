@@ -267,7 +267,7 @@ const UpiLinking: React.FC<UpiLinkingProps> = ({
               setIsValidatingName(false);
               
               if (isValid) {
-                toast.success("Bank account verified successfully!");
+                // toast.success("Bank account verified successfully!");
                 setTimeout(() => {
                   onNext();
                 }, 1500);

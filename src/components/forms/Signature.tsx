@@ -333,9 +333,6 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
           }
         }
       );
-
-      console.log("Signature uploaded successfully");
-      toast.success("Signature submitted successfully!");
       
       // Reset re-signing state immediately to prevent further submissions
       setWantsToResign(false);

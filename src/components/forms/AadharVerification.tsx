@@ -678,21 +678,6 @@ const AadhaarVerification = ({
         </div>
       </div>
 
-      {/* Status indicator for pending verification (but no polling status shown) */}
-      {currentStep === 'digilocker_pending' && (
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-center mb-3">
-            <svg className="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div>
-              <p className="text-blue-800 font-medium">DigiLocker Opened</p>
-              <p className="text-blue-700 text-sm">Complete the verification in DigiLocker. We&apos;ll automatically detect when you&apos;re done!</p>
-            </div>
-          </div>
-        </div>
-      )}
-
       <Button
         onClick={handleContinue}
         variant="ghost"
