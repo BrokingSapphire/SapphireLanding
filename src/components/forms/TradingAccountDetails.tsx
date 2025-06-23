@@ -3,7 +3,6 @@ import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { toast } from "sonner";
 
 interface TradingAccountDetailsProps {
   onNext: () => void;
@@ -240,7 +239,6 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
         return;
       }
 
-      toast.success("Parent details saved successfully!");
       
       setTimeout(() => {
         onNext();

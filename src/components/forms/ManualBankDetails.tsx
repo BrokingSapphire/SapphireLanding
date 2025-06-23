@@ -201,8 +201,7 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
         }
       );
 
-      toast.success("Bank details submitted successfully! Validating account holder name...");
-      
+
       // Wait a moment for the data to be processed, then validate
       setTimeout(async () => {
         const isValid = await validateBankDetails();

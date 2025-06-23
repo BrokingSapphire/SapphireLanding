@@ -173,7 +173,6 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
         setMaskedAadhaar(response.data.data.masked_aadhaar);
       }
 
-      toast.success("PAN verified successfully!");
       onNext();
     } catch (err: unknown) {
       const error = err as {
