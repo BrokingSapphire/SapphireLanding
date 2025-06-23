@@ -28,6 +28,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [esignUrl, setEsignUrl] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [esignInProgress, setEsignInProgress] = useState(false); // Track if eSign is in progress
   const esignWindowRef = useRef<Window | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -37,7 +38,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     refetchStep 
   } = useCheckpoint();
 
-  // Check if eSign is already completed and show toast
+  // Check if eSign is already completed on mount
   useEffect(() => {
     if (isStepCompleted(CheckpointStep.ESIGN)) {
       // eSign is already completed
@@ -55,12 +56,12 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       return;
     }
 
-    // If not completed, initialize eSign
+    // If not completed, initialize eSign ONLY if not already initialized
     if (!isInitialized && !isLoading && !esignUrl) {
       console.log("Calling initializeEsign from useEffect");
       initializeEsign();
     }
-  }, [isStepCompleted(CheckpointStep.ESIGN)]); // Only depend on step completion
+  }, []); // Empty dependency array - only run once on mount
 
   // Also check initialData as fallback
   useEffect(() => {
@@ -71,10 +72,16 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     }
   }, [initialData, isCompleted]);
 
-  // Start background polling after initialization
+  // Start background polling ONLY when eSign is in progress
   useEffect(() => {
-    if (isInitialized && esignUrl && !isStepCompleted(CheckpointStep.ESIGN)) {
+    if (esignInProgress && !isStepCompleted(CheckpointStep.ESIGN)) {
+      console.log("Starting polling because eSign is in progress");
       startBackgroundPolling();
+    } else if (!esignInProgress && pollIntervalRef.current) {
+      // Stop polling if eSign is not in progress
+      console.log("Stopping polling because eSign is not in progress");
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
     }
 
     // Cleanup polling on unmount
@@ -84,7 +91,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         pollIntervalRef.current = null;
       }
     };
-  }, [isInitialized, esignUrl, isStepCompleted]);
+  }, [esignInProgress, isStepCompleted(CheckpointStep.ESIGN)]);
 
   // UPDATED: Enhanced eSign initialization with state encoding
   const initializeEsign = async () => {
@@ -180,6 +187,16 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     
     pollIntervalRef.current = setInterval(async () => {
       try {
+        // Stop polling if eSign is no longer in progress
+        if (!esignInProgress) {
+          console.log("eSign not in progress, stopping polling");
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+          }
+          return;
+        }
+
         // Get the auth token for polling
         const authToken = Cookies.get('authToken');
         
@@ -189,6 +206,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
             clearInterval(pollIntervalRef.current);
             pollIntervalRef.current = null;
           }
+          setEsignInProgress(false);
           return;
         }
         
@@ -213,6 +231,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         // Check if we got a successful response with URL (even if empty, it means eSign is completed)
         if (response.status === 200 && response.data?.data?.url !== undefined) {
           // eSign completed successfully
+          setEsignInProgress(false); // Stop the polling flag
+          
           if (pollIntervalRef.current) {
             clearInterval(pollIntervalRef.current);
             pollIntervalRef.current = null;
@@ -267,6 +287,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         
         // For other critical errors, stop polling
         console.error("Critical eSign polling error:", err);
+        setEsignInProgress(false);
         if (pollIntervalRef.current) {
           clearInterval(pollIntervalRef.current);
           pollIntervalRef.current = null;
@@ -279,6 +300,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
         pollIntervalRef.current = null;
+        setEsignInProgress(false);
         console.log("eSign polling timeout after 15 minutes");
       }
     }, 15 * 60 * 1000);
@@ -297,7 +319,10 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
     console.log("Opening eSign URL:", esignUrl);
     
-    toast.success("Opening eSign...");
+    // Set eSign as in progress to start polling
+    setEsignInProgress(true);
+    
+    // toast.success("Opening eSign...");
     
     // Open eSign in the same tab (this will navigate away from current page)
     window.location.href = esignUrl;
@@ -307,6 +332,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     setError(null);
     setEsignUrl(null);
     setIsInitialized(false);
+    setEsignInProgress(false); // Reset eSign progress state
     
     // Clear any existing polling
     if (pollIntervalRef.current) {
