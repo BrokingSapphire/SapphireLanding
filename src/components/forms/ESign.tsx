@@ -17,6 +17,7 @@ interface LastStepPageProps {
 // Global flags to track toast states in this session
 let hasShownGlobalCompletedToast = false;
 let hasShownEsignSuccessToast = false;
+let hasInitializedEsign = false; // Global flag to prevent multiple initializations
 
 const LastStepPage: React.FC<LastStepPageProps> = ({ 
   onNext, 
@@ -56,8 +57,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       return;
     }
 
-    // If not completed, initialize eSign ONLY if not already initialized
-    if (!isInitialized && !isLoading && !esignUrl) {
+    // If not completed, initialize eSign ONLY if not already initialized globally
+    if (!isInitialized && !isLoading && !esignUrl && !hasInitializedEsign) {
       console.log("Calling initializeEsign from useEffect");
       initializeEsign();
     }
@@ -84,14 +85,17 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
   // UPDATED: Enhanced eSign initialization with state encoding
   const initializeEsign = async () => {
-    console.log("initializeEsign called - isLoading:", isLoading, "esignUrl:", esignUrl);
+    console.log("initializeEsign called - isLoading:", isLoading, "esignUrl:", esignUrl, "hasInitializedEsign:", hasInitializedEsign);
     
-    // Prevent multiple simultaneous calls
-    if (isLoading || esignUrl) {
-      console.log("Already initializing or URL exists, skipping...");
+    // Prevent multiple simultaneous calls using global flag
+    if (isLoading || esignUrl || hasInitializedEsign) {
+      console.log("Already initializing or URL exists or already initialized globally, skipping...");
       return;
     }
 
+    // Set global flag to prevent multiple calls across component instances
+    hasInitializedEsign = true;
+    
     setIsLoading(true);
     setError(null);
 
@@ -101,6 +105,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       if (!authToken) {
         setError("Authentication token not found. Please restart the process.");
+        hasInitializedEsign = false; // Reset flag on error
         return;
       }
 
@@ -129,6 +134,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         setIsInitialized(true);
       } else {
         setError("Failed to initialize eSign. Please try again.");
+        hasInitializedEsign = false; // Reset flag on error
       }
     } catch (err: unknown) {
       const error = err as {
@@ -140,6 +146,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       };
 
       console.error("eSign initialization error:", err);
+      hasInitializedEsign = false; // Reset flag on error
+      
       if (error.response) {
         if (error.response.data?.message) {
           setError(`Error: ${error.response.data.message}`);
@@ -201,15 +209,11 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         
         console.log("Background polling for eSign completion...");
         
-        // Check if eSign is completed by calling the correct checkpoint endpoint
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-          {
-            step: "esign_complete"
-          },
+        // FIXED: Use the GET endpoint for checking eSign completion status (polling)
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/esign_complete`,
           {
             headers: {
-              "Content-Type": "application/json",
               Authorization: `Bearer ${authToken}`
             },
           }
@@ -217,8 +221,15 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
         console.log("eSign completion check response:", response.status, response.data);
 
-        // Check if we got a successful response with URL (even if empty, it means eSign is completed)
-        if (response.status === 200 && response.data?.data?.url !== undefined) {
+        // Check if we got a successful response with URL (means eSign is completed)
+        if (response.status === 200 && response.data?.data?.url) {
+          // First call the POST esign_complete API to process the document
+          const completionSuccess = await completeEsignProcess();
+          
+          if (!completionSuccess) {
+            console.error("Failed to complete eSign process, but will continue...");
+          }
+          
           // eSign completed successfully
           setEsignInProgress(false); // Stop the polling flag
           
@@ -282,7 +293,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           pollIntervalRef.current = null;
         }
       }
-    }, 2000); // Poll every 2 seconds
+    }, 1000); // Poll every 2 seconds
 
     // Stop polling after 15 minutes (timeout)
     setTimeout(() => {
@@ -292,7 +303,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         setEsignInProgress(false);
         console.log("eSign polling timeout after 15 minutes");
       }
-    }, 15 * 60 * 1000);
+    }, 10 * 60 * 1000);
   };
 
   const handleEsignClick = () => {
@@ -320,11 +331,50 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     window.location.href = esignUrl;
   };
 
+  // NEW: Function to complete eSign process (call the POST esign_complete API)
+  const completeEsignProcess = async () => {
+    try {
+      const authToken = Cookies.get('authToken');
+      if (!authToken) {
+        console.error("No auth token for eSign completion");
+        return false;
+      }
+
+      console.log("Calling eSign complete API...");
+      
+      // Call the POST esign_complete API to trigger document processing
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+        {
+          step: "esign_complete"
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("eSign completion API successful:", response.data);
+        return true;
+      } else {
+        console.error("eSign completion API failed:", response);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error calling eSign completion API:", error);
+      return false;
+    }
+  };
+
   const handleRetry = () => {
     setError(null);
     setEsignUrl(null);
     setIsInitialized(false);
     setEsignInProgress(false); // Reset eSign progress state
+    hasInitializedEsign = false; // Reset global flag to allow retry
     
     // Clear any existing polling
     if (pollIntervalRef.current) {
@@ -337,6 +387,9 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       esignWindowRef.current.close();
       esignWindowRef.current = null;
     }
+    
+    // Try to initialize again
+    initializeEsign();
   };
 
   const shouldShowCompletedState = isStepCompleted(CheckpointStep.ESIGN);
