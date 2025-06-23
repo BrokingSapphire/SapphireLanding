@@ -395,58 +395,89 @@ export const useCheckpoint = (): UseCheckpointReturn => {
           throw error;
         }
       } else if (step === CheckpointStep.ESIGN) {
-        // For eSign, use the specific esign_complete endpoint with GET request
         try {
-          response = await axios.get(
+        response = await axios.get(
             `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/esign_complete`,
             {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             }
-          );
-          
-          console.log("eSign complete response:", response.data);
-          
-          // If we get a 200 response with data, eSign is completed
-          if (response.status === 200 && response.data?.data?.url) {
-            console.log("eSign completed successfully with URL:", response.data.data.url);
-            return {
-              step,
-              data: { url: response.data.data.url } as StepDataWithUrl,
-              completed: true,
-            };
-          } else {
-            console.log("eSign complete endpoint returned success but no URL");
-            return {
-              step,
-              data: null,
-              completed: false,
-            };
-          }
-        } catch (error) {
-          const err = error as AxiosError;
-          console.log("eSign complete error:", err.response?.status, err.response?.data);
-          // Handle specific error cases
-          if (err.response?.status === 404) {
-            console.log("eSign endpoint not found");
-            return {
-              step,
-              data: null,
-              completed: false,
-            };
-          } else if (err.response?.status === 401) {
-            console.log("eSign not authorized or expired - not completed yet");
-            return {
-              step,
-              data: null,
-              completed: false,
-            };
-          }
-          // For other errors, re-throw
-          throw error;
+        );
+        
+        console.log("eSign complete response:", response.data);
+        console.log("eSign response.data:", JSON.stringify(response.data, null, 2));
+        console.log("eSign response.data.data:", response.data?.data);
+        console.log("eSign response.data.data.url:", response.data?.data?.url);
+        console.log("eSign URL type:", typeof response.data?.data?.url);
+        console.log("eSign URL length:", response.data?.data?.url?.length);
+        
+        // Check if we have the expected structure
+        if (response.status === 200) {
+            const hasData = response.data?.data;
+            const hasUrl = response.data?.data?.url;
+            const urlValue = response.data?.data?.url;
+            const isValidUrl = urlValue && urlValue.trim() !== "";
+            
+            console.log("eSign validation:", {
+                hasData,
+                hasUrl,
+                urlValue,
+                isValidUrl,
+                urlLength: urlValue?.length
+            });
+            
+            if (hasData && typeof hasUrl !== 'undefined' && isValidUrl) {
+                console.log("eSign completed successfully with URL:", urlValue);
+                return {
+                    step,
+                    data: { url: urlValue } as StepDataWithUrl,
+                    completed: true,
+                };
+            } else if (hasData && typeof hasUrl !== 'undefined' && urlValue === "") {
+                // Empty URL means record exists but no file
+                console.log("eSign record found but URL is empty");
+                return {
+                    step,
+                    data: { url: "" } as StepDataWithUrl,
+                    completed: true, // Still completed if record exists
+                };
+            } else {
+                console.log("eSign complete endpoint returned success but invalid data structure");
+                console.log("Expected: response.data.data.url, Got:", response.data);
+                return {
+                    step,
+                    data: null,
+                    completed: false,
+                };
+            }
         }
-      } else {
+    } catch (error) {
+        const err = error as AxiosError;
+        console.log("eSign complete error:", err.response?.status, err.response?.data);
+        
+        // Handle specific error cases
+        if (err.response?.status === 404) {
+            console.log("eSign not found in database - not completed yet");
+            return {
+                step,
+                data: null,
+                completed: false,
+            };
+        } else if (err.response?.status === 401) {
+            console.log("eSign not authorized - not completed yet");
+            return {
+                step,
+                data: null,
+                completed: false,
+            };
+        }
+        
+        // For other errors, re-throw
+        throw error;
+    }
+}
+      else {
         // Use the general checkpoint endpoint for all other steps
         response = await axios.get(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/${step}`,
