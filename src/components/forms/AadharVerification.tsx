@@ -227,7 +227,6 @@ const AadhaarVerification = ({
       // Reset to initial state but show success
       setCurrentStep('initial');
       
-      toast.success("Aadhaar verified successfully via DigiLocker!");
       
       // Refetch the Aadhaar checkpoint to update the hook
       refetchStep(CheckpointStep.AADHAAR);
@@ -253,20 +252,20 @@ const AadhaarVerification = ({
   // Start polling - memoized to prevent recreation
   const startPolling = useCallback(() => {
     if (isPollingRef.current) return; // Prevent multiple polling instances
-    
+
     console.log("Starting silent polling for Aadhaar verification");
     isPollingRef.current = true;
     setIsPolling(true);
-    
-    // Initial check after 4 seconds (give time for DigiLocker to be completed)
+
+    // Initial check after 1 second (give time for DigiLocker to be completed)
     pollingTimeoutRef.current = setTimeout(() => {
       checkAadhaarStatus();
-      
-      // Then poll every 3 seconds
+
+      // Then poll every 1 second
       pollingIntervalRef.current = setInterval(() => {
         checkAadhaarStatus();
-      }, 2500);
-    }, 4000);
+      }, 1000);
+    }, 1000);
   }, [checkAadhaarStatus]);
 
   // Stop polling - memoized to prevent recreation
@@ -466,12 +465,7 @@ const AadhaarVerification = ({
         
         // Reset to initial state
         setCurrentStep('initial');
-        
-        toast.success(
-          response.data.data?.requires_manual_review
-            ? "Details submitted! Manual review required due to name verification."
-            : "Additional details submitted successfully!"
-        );
+
         
         // Refetch both checkpoints to update the hook
         refetchStep(CheckpointStep.AADHAAR_MISMATCH_DETAILS);

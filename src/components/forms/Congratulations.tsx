@@ -39,6 +39,9 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
     }
   };
 
+  // Construct the terminal URL with client ID as query parameter
+  const terminalUrl = `https://terminal.sapphirebroking.com?clientId=${encodeURIComponent(clientId)}`;
+
   return (
     <div className="w-full mx-auto text-center text-xl">
       <div className="mb-8">
@@ -48,7 +51,7 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
 
       <p className="text-gray-600 mb-8">
         Your application is being reviewed. This could take up to 24 hours. We
-        will email once processed.
+        will send you an email once processed.
       </p>
 
       <div className="mb-8">
@@ -76,7 +79,7 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
         )}
       </div>
 
-      <Link href="https://terminal.sapphirebroking.com" target="_blank" rel="noopener noreferrer">
+      <Link href={terminalUrl} target="_blank" rel="noopener noreferrer">
         <Button variant="ghost" className="py-6">
           Login to Terminal
         </Button>
