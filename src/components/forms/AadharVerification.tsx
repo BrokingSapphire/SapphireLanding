@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "../ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from 'js-cookie';
@@ -89,7 +93,7 @@ const AadhaarVerification = ({
   // Aadhaar mismatch form state with enhanced full_name handling
   const [mismatchFormData, setMismatchFormData] = useState({
     full_name: getFullNameFromStorage(),
-    dob: ''
+    dob: null as Date | null
   });
   
   const [isSubmittingMismatch, setIsSubmittingMismatch] = useState(false);
@@ -98,6 +102,9 @@ const AadhaarVerification = ({
     digilocker_masked_aadhaar?: string;
     requires_manual_review?: boolean;
   }>({});
+
+  // Calendar popover state
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   // Polling refs
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -445,12 +452,15 @@ const AadhaarVerification = ({
         return;
       }
 
+      // Format date to YYYY-MM-DD for API
+      const formattedDate = mismatchFormData.dob ? format(mismatchFormData.dob, 'yyyy-MM-dd') : '';
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "aadhaar_mismatch_details",
           full_name: mismatchFormData.full_name.trim(),
-          dob: mismatchFormData.dob
+          dob: formattedDate
         },
         {
           headers: {
@@ -500,6 +510,14 @@ const AadhaarVerification = ({
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setMismatchFormData(prev => ({
+      ...prev,
+      dob: date || null
+    }));
+    setIsCalendarOpen(false);
   };
 
   // Handle continue/proceed button click
@@ -590,14 +608,35 @@ const AadhaarVerification = ({
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Date of Birth (as per Aadhaar) *
             </label>
-            <input
-              type="date"
-              required
-              value={mismatchFormData.dob}
-              onChange={(e) => handleInputChange('dob', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isSubmittingMismatch}
-            />
+            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={`w-full justify-start text-left font-normal ${
+                    !mismatchFormData.dob ? "text-muted-foreground" : ""
+                  }`}
+                  disabled={isSubmittingMismatch}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {mismatchFormData.dob ? (
+                    format(mismatchFormData.dob, "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={mismatchFormData.dob || undefined}
+                  onSelect={handleDateSelect}
+                  disabled={(date) =>
+                    date > new Date() || date < new Date("1900-01-01")
+                  }
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <Button
