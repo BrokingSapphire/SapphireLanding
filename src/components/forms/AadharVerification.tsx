@@ -65,7 +65,7 @@ const AadhaarVerification = ({
   const [, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'mismatch'>('initial');
   const [, setDigilockerUrl] = useState<string>('');
-  const [, setIsPolling] = useState(false);
+  const [isPolling, setIsPolling] = useState(false);
   const digilockerTabRef = useRef<Window | null>(null);
   
   // ENHANCED: Robust full_name retrieval with multiple fallback sources
@@ -400,6 +400,9 @@ const AadhaarVerification = ({
       setDigilockerUrl(response.data.data.uri);
       setCurrentStep('digilocker_pending');
       
+      // Start polling when user navigates to DigiLocker
+      startPolling();
+      
       // Open DigiLocker in the same tab (this will navigate away from current page)
       window.location.href = response.data.data.uri;
 
@@ -516,9 +519,14 @@ const AadhaarVerification = ({
       return "Continue to Next Step";
     }
     
+    // Show polling status when active
+    if (isPolling) {
+      return "Waiting for DigiLocker completion...";
+    }
+    
     switch (currentStep) {
       case 'initial':
-        return isLoading ? "Proceed to DigiLocker" : "Proceed to DigiLocker";
+        return isLoading ? "Loading..." : "Proceed to DigiLocker";
       case 'digilocker_pending':
         return "Proceed to DigiLocker";
       case 'mismatch':
@@ -532,7 +540,8 @@ const AadhaarVerification = ({
     if (isCompleted || isStepCompleted(CheckpointStep.AADHAAR)) {
       return false;
     }
-    return isLoading;
+    // Disable button when loading, polling, or during mismatch submission
+    return isLoading || isPolling;
   };
 
   // Show Aadhaar mismatch form
@@ -678,6 +687,19 @@ const AadhaarVerification = ({
         </div>
       </div>
 
+      {/* Show polling status */}
+      {isPolling && (
+        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
+            <div>
+              <h3 className="text-blue-800 font-medium">Waiting for DigiLocker verification...</h3>
+              <p className="text-blue-700 text-sm">Please complete the verification process in DigiLocker.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Button
         onClick={handleContinue}
         variant="ghost"
@@ -686,6 +708,9 @@ const AadhaarVerification = ({
         }`}
         disabled={isButtonDisabled()}
       >
+        {isLoading && (
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+        )}
         {getButtonText()}
       </Button>
 
