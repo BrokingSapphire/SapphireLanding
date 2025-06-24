@@ -6,17 +6,17 @@ const MeetOurTeam = () => {
     {
       name: 'Pratap Thakur',
       role: 'Partner',
-      image: '/about/profile.png', 
+      image: '/about/112bfcbe-0fd1-4f98-a9d8-9d46f978ecc9.JPG', 
     },
     {
       name: 'Yash Katyari',
       role: 'Partner',
-      image: '/about/PHOTO-2025-06-23-11-45-46.jpg', 
+      image: '/about/8433f5e3-5dd8-4c19-8eee-d08db88bfa4b.JPG', 
     },
     {
       name: 'Prakash Katyari',
       role: 'Partner',
-      image: '/about/profile.png',
+      image: '/about/9d0779c1-5a9e-446f-82ca-2dfa1d7172da.JPG',
     },
   ];
   
