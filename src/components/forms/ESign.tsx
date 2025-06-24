@@ -17,6 +17,49 @@ interface LastStepPageProps {
 // Global flag to track if completion toast has been shown in this session
 let hasShownGlobalCompletedToast = false;
 
+// Helper function to get data from localStorage for URL encoding
+const getEmailFromStorage = (): string => {
+  try {
+    const storedEmail = localStorage.getItem("email");
+    if (!storedEmail) return "";
+    
+    try {
+      const parsedEmail = JSON.parse(storedEmail);
+      if (typeof parsedEmail === 'object' && parsedEmail.value) {
+        return parsedEmail.value;
+      }
+    } catch {
+      return storedEmail;
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Error retrieving email from localStorage:", error);
+    return "";
+  }
+};
+
+const getPhoneFromStorage = (): string => {
+  try {
+    const storedPhone = localStorage.getItem("verifiedPhone");
+    if (!storedPhone) return "";
+    
+    try {
+      const parsedPhone = JSON.parse(storedPhone);
+      if (typeof parsedPhone === 'object' && parsedPhone.value) {
+        return parsedPhone.value;
+      }
+    } catch {
+      return storedPhone;
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Error retrieving phone from localStorage:", error);
+    return "";
+  }
+};
+
 const LastStepPage: React.FC<LastStepPageProps> = ({ 
   onNext, 
   initialData, 
@@ -27,13 +70,11 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [esignUrl, setEsignUrl] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  const esignWindowRef = useRef<Window | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use the checkpoint hook to check for existing eSign data
   const { 
     isStepCompleted,
-    // getStepData,
     refetchStep 
   } = useCheckpoint();
 
@@ -97,16 +138,28 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     setError(null);
 
     try {
-      // Create redirect URL - this should be your app's URL where user returns after eSign
-      const redirectUrl = 'https://sapphirebroking.com/signup';
-
-      // Get the auth token
+      // Get the auth token and user data for state encoding
       const authToken = Cookies.get('authToken');
+      const email = getEmailFromStorage();
+      const phone = getPhoneFromStorage();
       
       if (!authToken) {
         setError("Authentication token not found. Please restart the process.");
         return;
       }
+
+      // Create state data to encode in URL (same pattern as Aadhaar)
+      const stateData = {
+        token: authToken,
+        email: email,
+        phone: phone,
+        step: 'esign',
+        timestamp: Date.now()
+      };
+      
+      // Encode the state data
+      const encodedState = btoa(JSON.stringify(stateData));
+      const redirectUrl = `https://sapphirebroking.com/signup?state=${encodedState}`;
 
       console.log("Making API call to initialize eSign session...");
 
@@ -115,7 +168,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "esign_initialize",
-          redirect_url: redirectUrl
+          redirect_url: redirectUrl // Use the enhanced redirect URL with state
         },
         {
           headers: {
@@ -221,12 +274,6 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           console.log("eSign completed successfully! URL:", response.data.data.url);
           toast.success("eSign completed successfully!");
           
-          // Close the eSign window if it's still open
-          if (esignWindowRef.current && !esignWindowRef.current.closed) {
-            esignWindowRef.current.close();
-            esignWindowRef.current = null;
-          }
-          
           // Refetch eSign step to update the hook
           refetchStep(CheckpointStep.ESIGN);
           
@@ -267,14 +314,14 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           pollIntervalRef.current = null;
         }
       }
-    }, 2000); // Poll every 3 seconds
+    }, 2000); // Poll every 2 seconds
 
-    // Stop polling after 15 minutes (timeout)
+    // Stop polling after 7 minutes (timeout)
     setTimeout(() => {
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
         pollIntervalRef.current = null;
-        console.log("eSign polling timeout after 15 minutes");
+        console.log("eSign polling timeout after 7 minutes");
       }
     }, 7 * 60 * 1000);
   };
@@ -286,30 +333,12 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     }
 
     console.log("Opening eSign URL:", esignUrl);
-
-    // Open eSign URL in new window/tab
-    const esignWindow = window.open(
-      esignUrl,
-      'esign',
-      'width=800,height=600,scrollbars=yes,resizable=yes'
-    );
-
-    if (!esignWindow) {
-      setError("Please allow popups for eSign to work. Then try again.");
-      return;
-    }
-
-    // Store reference to the window
-    esignWindowRef.current = esignWindow;
-
-    // Optional: Monitor if the window is closed manually
-    const checkClosed = setInterval(() => {
-      if (esignWindow.closed) {
-        clearInterval(checkClosed);
-        esignWindowRef.current = null;
-        console.log("eSign window was closed");
-      }
-    }, 1000);
+    
+    toast.success("Opening eSign...");
+    
+    // Open eSign in the same tab (this will navigate away from current page)
+    // Same pattern as Aadhaar - no popup windows
+    window.location.href = esignUrl;
   };
 
   const handleRetry = () => {
@@ -321,12 +350,6 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     if (pollIntervalRef.current) {
       clearInterval(pollIntervalRef.current);
       pollIntervalRef.current = null;
-    }
-    
-    // Close any open eSign window
-    if (esignWindowRef.current && !esignWindowRef.current.closed) {
-      esignWindowRef.current.close();
-      esignWindowRef.current = null;
     }
   };
 
@@ -469,8 +492,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
       <div className="hidden sm:block mt-4 text-center text-xs text-gray-600">
         <p>
-          Clicking the button will open eSign in a new window. 
-          Complete the process there and this page will automatically proceed to the next step.
+          Clicking the button will navigate to eSign. Complete the process and you'll be redirected back automatically.
         </p>
       </div>
     </div>
