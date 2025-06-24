@@ -250,7 +250,7 @@ const TradingPreferences: React.FC<TradingPreferencesProps> = ({
   const isFormValid = maritalStatus && selectedIncome && selectedExperience && selectedSettlement;
 
   const getButtonText = () => {
-    if (isSubmitting) return "Saving...";
+    if (isSubmitting) return "Continue";
     return "Continue";
   };
 

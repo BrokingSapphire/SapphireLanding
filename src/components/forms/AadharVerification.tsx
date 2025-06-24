@@ -518,9 +518,9 @@ const AadhaarVerification = ({
     
     switch (currentStep) {
       case 'initial':
-        return isLoading ? "Initializing DigiLocker..." : "Proceed to DigiLocker";
+        return isLoading ? "Proceed to DigiLocker" : "Proceed to DigiLocker";
       case 'digilocker_pending':
-        return "Reopen DigiLocker";
+        return "Proceed to DigiLocker";
       case 'mismatch':
         return "Submit Additional Details";
       default:

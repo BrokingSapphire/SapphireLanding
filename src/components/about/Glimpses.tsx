@@ -11,7 +11,7 @@ const Glimpses = () => {
     },
     {
       id: 2,
-      src: "/about/glimpses.svg",
+      src: "/about/IMG_3160.jpg",
       alt: "Team meeting view 1",
     },
     {

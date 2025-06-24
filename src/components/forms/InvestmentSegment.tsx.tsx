@@ -289,7 +289,7 @@ const InvestmentSegment: React.FC<InvestmentSegmentProps> = ({
   };
 
   const getButtonText = () => {
-    if (isLoading) return "Saving...";
+    if (isLoading) return "Continue";
     
     // Check if any selected segments require risk disclosure
     const segmentsRequiringRisk = getSegmentsRequiringProof(selectedSegments);

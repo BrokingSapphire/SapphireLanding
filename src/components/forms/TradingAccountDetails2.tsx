@@ -202,7 +202,7 @@ const TradingAccountDetails2: React.FC<TradingAccountDetails2Props> = ({
   const isFormValid = occupation !== "";
 
   const getButtonText = () => {
-    if (isSubmitting) return "Saving...";
+    if (isSubmitting) return "Continue";
     return "Continue";
   };
 

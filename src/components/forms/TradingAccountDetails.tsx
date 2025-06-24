@@ -274,7 +274,7 @@ const TradingAccountDetails: React.FC<TradingAccountDetailsProps> = ({
     formData.fatherSpouseName.trim() && formData.motherName.trim();
 
   const getButtonText = () => {
-    if (isSubmitting) return "Saving...";
+    if (isSubmitting) return "Continue";
     return "Continue";
   };
 
