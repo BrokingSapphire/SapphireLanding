@@ -256,7 +256,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
 
   // Show password setup form
   return (
-    <div className="mx-auto -mt-28 sm:mt-16 max-w-md">
+    <div className="mx-auto -mt-10 sm:mt-16 max-w-md">
       <FormHeading
         title="Set Your Password"
         description="Create a secure password for your trading account."
