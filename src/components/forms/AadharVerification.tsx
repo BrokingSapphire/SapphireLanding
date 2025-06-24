@@ -577,8 +577,8 @@ const AadhaarVerification = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
             <div>
-              <h3 className="font-semibold text-yellow-800 mb-1">Aadhaar Mismatch Detected</h3>
-              <p className="text-yellow-700 text-sm mb-2">
+              <h3 className="text-sm md:text-base font-semibold text-yellow-800 mb-1">Aadhaar Mismatch Detected</h3>
+              <p className="text-yellow-700  text-xs md:text-sm mb-2">
                 The Aadhaar number linked to your PAN doesn&apos;t match the one from DigiLocker verification.
               </p>
               {(mismatchInfo.pan_masked_aadhaar || panMaskedAadhaar) && mismatchInfo.digilocker_masked_aadhaar && (
@@ -610,20 +610,16 @@ const AadhaarVerification = ({
             </label>
             <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={`w-full justify-start text-left font-normal ${
-                    !mismatchFormData.dob ? "text-muted-foreground" : ""
-                  }`}
+                <input
+                  type="text"
+                  required
+                  value={mismatchFormData.dob ? format(mismatchFormData.dob, "dd/MM/yyyy") : ""}
+                  placeholder="DD/MM/YYYY"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   disabled={isSubmittingMismatch}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {mismatchFormData.dob ? (
-                    format(mismatchFormData.dob, "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                </Button>
+                  readOnly
+                  onClick={() => setIsCalendarOpen(true)}
+                />
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
@@ -649,7 +645,7 @@ const AadhaarVerification = ({
           </Button>
         </form>
 
-        <div className="text-center text-xs text-gray-600 mt-6">
+        <div className="hidden lg:block text-center text-xs text-gray-600 mt-6">
           <p>Please ensure all details match exactly with your Aadhaar card.</p>
         </div>
       </div>
