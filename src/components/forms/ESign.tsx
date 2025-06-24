@@ -492,7 +492,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
       <div className="hidden sm:block mt-4 text-center text-xs text-gray-600">
         <p>
-          Clicking the button will navigate to eSign. Complete the process and you'll be redirected back automatically.
+          Clicking the button will navigate to eSign. Complete the process and you&apos;ll be redirected back automatically.
         </p>
       </div>
     </div>
