@@ -84,163 +84,38 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     };
   }, [isInitialized, esignUrl, isStepCompleted]);
 
-
-// Improved initialization with better error handling
-const initializeEsign = async () => {
-  console.log("initializeEsign called - isLoading:", isLoading, "esignUrl:", esignUrl);
-  
-  // Prevent multiple simultaneous calls
-  if (isLoading || esignUrl) {
-    console.log("Already initializing or URL exists, skipping...");
-    return;
-  }
-
-  setIsLoading(true);
-  setError(null);
-
-  try {
-    // Create redirect URL - this should be your app's URL where user returns after eSign
-    const redirectUrl = `${window.location.origin}/signup?step=esign-complete`;
-
-    // Get the auth token
-    const authToken = Cookies.get('authToken');
+  const initializeEsign = async () => {
+    console.log("initializeEsign called - isLoading:", isLoading, "esignUrl:", esignUrl);
     
-    if (!authToken) {
-      throw new Error("Authentication token not found. Please restart the process.");
+    // Prevent multiple simultaneous calls
+    if (isLoading || esignUrl) {
+      console.log("Already initializing or URL exists, skipping...");
+      return;
     }
 
-    console.log("Making API call to initialize eSign session...");
+    setIsLoading(true);
+    setError(null);
 
-    // Initialize eSign session
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-      {
-        step: "esign_initialize",
-        redirect_url: redirectUrl
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`
-        },
-        timeout: 30000, // 30 second timeout
-      }
-    );
-
-    console.log("eSign initialization response:", response.data);
-
-    if (response.data?.data?.uri) {
-      console.log("eSign session initialized with URL:", response.data.data.uri);
-      setEsignUrl(response.data.data.uri);
-      setIsInitialized(true);
-      
-      // Show success message
-      toast.success("eSign session initialized successfully!");
-      
-    } else if (response.data?.data?.status === 'already_completed') {
-      // Handle case where eSign is already completed
-      console.log("eSign already completed");
-      setIsInitialized(true);
-      toast.success("eSign already completed!");
-      refetchStep(CheckpointStep.ESIGN);
-      
-    } else {
-      throw new Error("Invalid response: eSign URL not provided");
-    }
-    
-  } catch (err: unknown) {
-    const error = err as {
-      response?: {
-        data?: { message?: string; error?: { message?: string } };
-        status?: number;
-      };
-      request?: unknown;
-      code?: string;
-    };
-
-    console.error("eSign initialization error:", err);
-    
-    let errorMessage = "An unexpected error occurred. Please try again.";
-    
-    if (error.code === 'ECONNABORTED') {
-      errorMessage = "Request timeout. Please check your connection and try again.";
-    } else if (error.response) {
-      const status = error.response.status;
-      const data = error.response.data;
-      
-      if (data?.message) {
-        errorMessage = data.message;
-      } else if (data?.error?.message) {
-        errorMessage = data.error.message;
-      } else {
-        switch (status) {
-          case 400:
-            errorMessage = "Invalid request. Please try again.";
-            break;
-          case 401:
-            errorMessage = "Authentication failed. Please restart the process.";
-            break;
-          case 403:
-            errorMessage = "Access denied. Please check your authentication and try again.";
-            break;
-          case 409:
-            errorMessage = "eSign session already exists. Please refresh the page.";
-            break;
-          case 500:
-            errorMessage = "Server error. Please try again in a few moments.";
-            break;
-          default:
-            errorMessage = `Server error (${status}). Please try again.`;
-        }
-      }
-    } else if (error.request) {
-      errorMessage = "Network error. Please check your connection and try again.";
-    }
-    
-    setError(errorMessage);
-    toast.error(`eSign initialization failed: ${errorMessage}`);
-    
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-
-const startBackgroundPolling = () => {
-  console.log("Starting background polling for eSign completion...");
-  
-  // Clear any existing polling interval
-  if (pollIntervalRef.current) {
-    clearInterval(pollIntervalRef.current);
-  }
-  
-  let pollAttempts = 0;
-  const maxPollAttempts = 450; // 15 minutes with 2-second intervals
-  
-  pollIntervalRef.current = setInterval(async () => {
-    pollAttempts++;
-    
     try {
-      // Get the auth token for polling
+      // Create redirect URL - this should be your app's URL where user returns after eSign
+      const redirectUrl = 'https://sapphirebroking.com/signup';
+
+      // Get the auth token
       const authToken = Cookies.get('authToken');
       
       if (!authToken) {
-        console.log("No auth token, stopping polling");
-        if (pollIntervalRef.current) {
-          clearInterval(pollIntervalRef.current);
-          pollIntervalRef.current = null;
-        }
-        toast.error("Authentication expired. Please refresh the page.");
+        setError("Authentication token not found. Please restart the process.");
         return;
       }
-      
-      console.log(`Background polling attempt ${pollAttempts}/${maxPollAttempts} for eSign completion...`);
-      
-      // Check if eSign is completed
+
+      console.log("Making API call to initialize eSign session...");
+
+      // Initialize eSign session
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
-          step: "esign_complete"
+          step: "esign_initialize",
+          redirect_url: redirectUrl
         },
         {
           headers: {
@@ -250,21 +125,102 @@ const startBackgroundPolling = () => {
         }
       );
 
-      console.log("eSign completion check response:", response.status, response.data);
+      console.log("eSign initialization response:", response.data);
 
-      // Check if we got a successful response
-      if (response.status === 200) {
-        const data = response.data?.data;
+      if (response.data?.data?.uri) {
+        console.log("eSign session initialized with URL:", response.data.data.uri);
+        setEsignUrl(response.data.data.uri);
+        setIsInitialized(true);
+      } else {
+        setError("Failed to initialize eSign. Please try again.");
+      }
+    } catch (err: unknown) {
+      const error = err as {
+        response?: {
+          data?: { message?: string; error?: { message?: string } };
+          status?: number;
+        };
+        request?: unknown;
+      };
+
+      console.error("eSign initialization error:", err);
+      if (error.response) {
+        if (error.response.data?.message) {
+          setError(`Error: ${error.response.data.message}`);
+        } else if (error.response.data?.error?.message) {
+          setError(`Error: ${error.response.data.error.message}`);
+        } else if (error.response.status === 400) {
+          setError("Invalid request. Please try again.");
+        } else if (error.response.status === 401) {
+          setError("Authentication failed. Please restart the process.");
+        } else if (error.response.status === 403) {
+          setError("Access denied. Please check your authentication and try again.");
+        } else if (error.response.status === 500) {
+          setError("Server error. Please try again in a few moments.");
+        } else {
+          setError(`Server error (${error.response.status}). Please try again.`);
+        }
+      } else if (error.request) {
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const startBackgroundPolling = () => {
+    console.log("Starting background polling for eSign completion...");
+    
+    // Clear any existing polling interval
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+    }
+    
+    pollIntervalRef.current = setInterval(async () => {
+      try {
+        // Get the auth token for polling
+        const authToken = Cookies.get('authToken');
         
-        // Check if eSign is completed successfully
-        if (data?.status === 'completed' || data?.url !== undefined) {
+        if (!authToken) {
+          console.log("No auth token, stopping polling");
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+          }
+          return;
+        }
+        
+        console.log("Background polling for eSign completion...");
+        
+        // Check if eSign is completed by calling the correct checkpoint endpoint
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+          {
+            step: "esign_complete"
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authToken}`
+            },
+          }
+        );
+
+        console.log("eSign completion check response:", response.status, response.data);
+
+        // Check if we got a successful response with URL (even if empty, it means eSign is completed)
+        if (response.status === 200 && response.data?.data?.url !== undefined) {
           // eSign completed successfully
           if (pollIntervalRef.current) {
             clearInterval(pollIntervalRef.current);
             pollIntervalRef.current = null;
           }
           
-          console.log("eSign completed successfully! Response:", data);
+          console.log("eSign completed successfully! URL:", response.data.data.url);
+          toast.success("eSign completed successfully!");
+          
           // Close the eSign window if it's still open
           if (esignWindowRef.current && !esignWindowRef.current.closed) {
             esignWindowRef.current.close();
@@ -278,122 +234,50 @@ const startBackgroundPolling = () => {
           setTimeout(() => {
             onNext();
           }, 2000);
-          
-          return;
         }
-        
-        // Check if eSign failed
-        if (data?.status === 'failed' || data?.error) {
-          if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current);
-            pollIntervalRef.current = null;
-          }
-          
-          console.error("eSign failed:", data);
-          toast.error("eSign process failed. Please try again.");
-          setError("eSign process failed. Please retry the process.");
-          
-          return;
-        }
-        
-        // If status is 'pending' or 'in_progress', continue polling
-        console.log("eSign still in progress, continuing to poll...");
-      }
-      
-    } catch (err: unknown) {
-      const error = err as {
-        response?: {
-          data?: { 
-            message?: string; 
-            error?: { message?: string };
-            status?: string;
+      } catch (err: unknown) {
+        const error = err as {
+          response?: {
+            data?: { message?: string; error?: { message?: string } };
+            status?: number;
           };
-          status?: number;
         };
-      };
 
-      console.log("eSign polling error:", error.response?.status, error.response?.data);
+        console.log("eSign polling error:", error.response?.status, error.response?.data);
 
-      // Handle specific eSign polling errors
-      if (error.response?.status === 404) {
-        // 404 might mean eSign session not found yet - continue polling for a bit
-        console.log("eSign session not found (404), continuing to poll...");
-        
-        // But if we've been polling for too long, it might be a real error
-        if (pollAttempts > 30) { // After 1 minute of 404s, something is wrong
-          if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current);
-            pollIntervalRef.current = null;
-          }
-          console.error("eSign session not found after 1 minute of polling");
-          toast.error("eSign session not found. Please try again.");
-          setError("eSign session not found. Please retry the process.");
+        // Handle specific eSign polling errors
+        if (error.response?.status === 401) {
+          // 401 means eSign not completed yet - continue polling
+          console.log("eSign not completed yet (401), continuing to poll...");
+          return;
+        } else if (error.response?.status === 404) {
+          // 404 means endpoint not found or no eSign record - continue polling
+          console.log("eSign endpoint not found (404), continuing to poll...");
+          return;
+        } else if (error.response?.status === 500) {
+          // 500 server error - continue polling for a bit
+          console.log("Server error (500), continuing to poll...");
           return;
         }
         
-      } else if (error.response?.status === 401) {
-        // 401 might mean auth token expired
-        console.log("Authentication error (401), stopping polling");
+        // For other critical errors, stop polling
+        console.error("Critical eSign polling error:", err);
         if (pollIntervalRef.current) {
           clearInterval(pollIntervalRef.current);
           pollIntervalRef.current = null;
         }
-        toast.error("Authentication expired. Please refresh the page.");
-        return;
-        
-      } else if (error.response?.status === 400) {
-        // 400 might mean bad request - check if it indicates "not completed yet"
-        const responseData = error.response.data;
-        if (responseData?.message?.includes('not completed') || 
-            responseData?.status === 'pending' ||
-            responseData?.status === 'in_progress') {
-          console.log("eSign not completed yet (400), continuing to poll...");
-        } else {
-          console.error("Bad request error (400):", responseData);
-          if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current);
-            pollIntervalRef.current = null;
-          }
-          toast.error("eSign request error. Please try again.");
-          setError("eSign request error. Please retry the process.");
-          return;
-        }
-        
-      } else if (error.response?.status === 500) {
-        // 500 server error - continue polling for a few attempts
-        console.log("Server error (500), continuing to poll...");
-        
-        // If we get too many server errors, stop polling
-        if (pollAttempts > 50 && pollAttempts % 10 === 0) { // Every 10th attempt after 50
-          toast.warning("Server experiencing issues. Still checking for eSign completion...");
-        }
-        
-      } else {
-        // For other errors, log and continue polling for a bit
-        console.error("eSign polling error:", err);
-        
-        // If we get too many unknown errors, stop polling
-        if (pollAttempts > 100) {
-          if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current);
-            pollIntervalRef.current = null;
-          }
-          toast.error("Unable to check eSign status. Please refresh the page.");
-          return;
-        }
       }
-    }
-    
-    // Check if we've exceeded max polling attempts
-    if (pollAttempts >= maxPollAttempts) {
+    }, 2000); // Poll every 3 seconds
+
+    // Stop polling after 15 minutes (timeout)
+    setTimeout(() => {
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
         pollIntervalRef.current = null;
+        console.log("eSign polling timeout after 15 minutes");
       }
-    }
-    
-  }, 2000); // Poll every 2 seconds
-};
+    }, 7 * 60 * 1000);
+  };
 
   const handleEsignClick = () => {
     if (!esignUrl) {
