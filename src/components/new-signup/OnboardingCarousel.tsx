@@ -1,5 +1,3 @@
-// Enhanced OnboardingCarousel with smart reload protection, TanStack Query cache management, and URL state recovery
-
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import LeftPanel from "./LeftPanel";

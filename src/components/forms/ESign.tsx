@@ -69,6 +69,29 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     }
   }, [initialData, isCompleted]);
 
+  // Add message listener for popup communication
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'CLOSE_POPUP' || event.data?.type === 'ESIGN_COMPLETED') {
+        console.log("Received close/completion message from popup");
+        cleanupPopup();
+        
+        // If it's a completion message, trigger a check
+        if (event.data?.type === 'ESIGN_COMPLETED') {
+          setTimeout(() => {
+            refetchStep(CheckpointStep.ESIGN);
+          }, 1000);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [refetchStep]);
+
   // Start background polling after initialization
   useEffect(() => {
     if (isInitialized && esignUrl && !isStepCompleted(CheckpointStep.ESIGN)) {
@@ -120,8 +143,8 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     setError(null);
 
     try {
-      // Create redirect URL - this should be your app's URL where user returns after eSign
-      const redirectUrl = 'https://sapphirebroking.com/signup';
+      // Updated redirect URL to the success page
+      const redirectUrl = `${window.location.origin}/signup/esign_success`;
 
       // Get the auth token
       const authToken = Cookies.get('authToken');
@@ -236,23 +259,16 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           console.log("eSign completed successfully! URL:", response.data.data.url);
           toast.success("eSign completed successfully!");
           
-          // Force close the eSign window with multiple attempts
-          setTimeout(() => {
-            cleanupPopup();
-          }, 500);
-          
-          // Additional cleanup attempt after a longer delay
-          setTimeout(() => {
-            cleanupPopup();
-          }, 2000);
+          // Clean up the popup window
+          cleanupPopup();
           
           // Refetch eSign step to update the hook
           refetchStep(CheckpointStep.ESIGN);
           
-          // Auto-advance after 3 seconds to ensure popup is closed
+          // Auto-advance after a short delay
           setTimeout(() => {
             onNext();
-          }, 3000);
+          }, 1500);
         }
       } catch (err: unknown) {
         const error = err as {
@@ -300,11 +316,11 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
     console.log("Opening eSign URL:", esignUrl);
 
-    // Open eSign URL in new window/tab
+    // Open eSign URL in new window/tab with specific name and features
     const esignWindow = window.open(
       esignUrl,
-      'esign',
-      'width=800,height=600,scrollbars=yes,resizable=yes,location=yes,menubar=no,toolbar=no'
+      'esign', // Named window for identification
+      'width=800,height=600,scrollbars=yes,resizable=yes,location=yes,menubar=no,toolbar=no,status=no'
     );
 
     if (!esignWindow) {
@@ -326,7 +342,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         clearInterval(windowCheckIntervalRef.current!);
         windowCheckIntervalRef.current = null;
         esignWindowRef.current = null;
-        console.log("eSign window was closed manually");
+        console.log("eSign window was closed");
       }
     }, 1000);
 
