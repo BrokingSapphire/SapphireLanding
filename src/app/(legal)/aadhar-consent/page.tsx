@@ -193,26 +193,6 @@ const AadhaarConsent = () => {
           </div>
         </div>
 
-        {/* Quick Navigation */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Quick Navigation
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {aadhaarConsentData.map((category) => (
-              <a
-                key={category.id}
-                href={`#${category.id}`}
-                className="p-3 bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center hover:bg-gray-50 flex items-center justify-center transition-colors"
-              >
-                <span className="text-green-heading font-medium text-sm">
-                  {category.title.slice(2)}
-                </span>
-              </a>
-            ))}
-          </div>
-        </section>
-
         {/* Main Content */}
         <div className="space-y-8">
           {aadhaarConsentData.map((category) => (
