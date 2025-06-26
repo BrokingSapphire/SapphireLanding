@@ -172,6 +172,9 @@ const Footer = () => {
     { title: "Privacy Policy", href: "/privacy-policy" },
     { title: "Investor Attention", href: "/investor-attention" },
     { title: "Investor Charter", href: "/investor-charter" },
+    { title: "Aadhar Consent", 
+      href: "/aadhar-consent" 
+    },
     { title: "Do's and Don'ts of Investors", href: "/investor-dos-and-donts" },
     { title: "Rights of Investors", href: "/investor-rights" },
     {
