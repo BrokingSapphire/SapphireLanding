@@ -762,11 +762,11 @@ const NomineeManagement: React.FC<NomineeManagementProps> = ({
               (Need to allocate exactly 100%)
             </span>
           )}
-          {totalWithCurrentInput > 100 && (
+          {/* {totalWithCurrentInput > 100 && (
             <span className="ml-2 text-red-600">
               (Exceeds 100% - please adjust)
             </span>
-          )}
+          )} */}
         </div>
 
         {/* Continue Button */}
