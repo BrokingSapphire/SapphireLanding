@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
@@ -16,6 +16,48 @@ interface AadhaarVerificationProps {
 // Global flag to track if completion toast has been shown in this session
 let hasShownGlobalCompletedToast = false;
 
+// Helper function to get data from localStorage for URL encoding
+const getEmailFromStorage = (): string => {
+  try {
+    const storedEmail = localStorage.getItem("email");
+    if (!storedEmail) return "";
+    
+    try {
+      const parsedEmail = JSON.parse(storedEmail);
+      if (typeof parsedEmail === 'object' && parsedEmail.value) {
+        return parsedEmail.value;
+      }
+    } catch {
+      return storedEmail;
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Error retrieving email from localStorage:", error);
+    return "";
+  }
+};
+
+const getPhoneFromStorage = (): string => {
+  try {
+    const storedPhone = localStorage.getItem("verifiedPhone");
+    if (!storedPhone) return "";
+    
+    try {
+      const parsedPhone = JSON.parse(storedPhone);
+      if (typeof parsedPhone === 'object' && parsedPhone.value) {
+        return parsedPhone.value;
+      }
+    } catch {
+      return storedPhone;
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Error retrieving phone from localStorage:", error);
+    return "";
+  }
+};
 
 const getFullNameFromStorage = () => {
   const sources = [
@@ -35,7 +77,7 @@ const getFullNameFromStorage = () => {
 
 const AadhaarVerification = ({ 
   onNext, 
-  // isCompleted,
+  isCompleted,
   panMaskedAadhaar
 }: AadhaarVerificationProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -56,7 +98,7 @@ const AadhaarVerification = ({
   });
   
   const [isSubmittingMismatch, setIsSubmittingMismatch] = useState(false);
-  const [, setMismatchInfo] = useState<{
+  const [mismatchInfo, setMismatchInfo] = useState<{
     pan_masked_aadhaar?: string;
     digilocker_masked_aadhaar?: string;
     requires_manual_review?: boolean;
@@ -160,10 +202,9 @@ const AadhaarVerification = ({
       return;
     }
 
-    // If not completed and no mismatch, initialize DigiLocker
-    if (!isInitialized && !isLoading && !digilockerUrl) {
-      console.log("Calling initializeDigilocker from useEffect");
-      initializeDigilocker();
+    // Mark as initialized but don't auto-load DigiLocker URL
+    if (!isInitialized) {
+      setIsInitialized(true);
     }
   }, [isStepCompleted(CheckpointStep.AADHAAR), hasMismatchData()]);
 
@@ -192,7 +233,8 @@ const AadhaarVerification = ({
 
   // Start background polling after initialization
   useEffect(() => {
-    if (isInitialized && digilockerUrl && !isStepCompleted(CheckpointStep.AADHAAR)) {
+    // Only auto-start polling if DigiLocker window is open and we have a URL
+    if (isInitialized && digilockerUrl && digilockerWindowRef.current && !digilockerWindowRef.current.closed && !isStepCompleted(CheckpointStep.AADHAAR)) {
       startBackgroundPolling();
     }
 
@@ -234,7 +276,7 @@ const AadhaarVerification = ({
     // Prevent multiple simultaneous calls
     if (isLoading || digilockerUrl) {
       console.log("Already initializing or URL exists, skipping...");
-      return;
+      return Promise.resolve();
     }
 
     setIsLoading(true);
@@ -249,7 +291,8 @@ const AadhaarVerification = ({
       
       if (!authToken) {
         setError("Authentication token not found. Please restart the process.");
-        return;
+        setIsLoading(false);
+        return Promise.reject(new Error("No auth token"));
       }
 
       console.log("Making API call to initialize DigiLocker session...");
@@ -275,8 +318,10 @@ const AadhaarVerification = ({
         console.log("DigiLocker session initialized with URL:", response.data.data.uri);
         setDigilockerUrl(response.data.data.uri);
         setIsInitialized(true);
+        return Promise.resolve();
       } else {
         setError("Failed to initialize DigiLocker. Please try again.");
+        return Promise.reject(new Error("No URI received"));
       }
     } catch (err: unknown) {
       const error = err as {
@@ -309,6 +354,7 @@ const AadhaarVerification = ({
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
+      return Promise.reject(err);
     } finally {
       setIsLoading(false);
     }
@@ -456,6 +502,28 @@ const AadhaarVerification = ({
   };
 
   const handleDigilockerClick = () => {
+    // If already completed, just proceed to next step
+    if (isCompleted || isStepCompleted(CheckpointStep.AADHAAR)) {
+      onNext();
+      return;
+    }
+
+    // If no URL yet, initialize DigiLocker first
+    if (!digilockerUrl) {
+      initializeDigilocker().then(() => {
+        // After initialization, open the URL if available
+        if (digilockerUrl) {
+          openDigilockerPopup();
+        }
+      });
+      return;
+    }
+
+    // Open DigiLocker popup
+    openDigilockerPopup();
+  };
+
+  const openDigilockerPopup = () => {
     if (!digilockerUrl) {
       setError("DigiLocker URL not available. Please try again.");
       return;
@@ -492,6 +560,9 @@ const AadhaarVerification = ({
         console.log("DigiLocker window was closed");
       }
     }, 1000);
+
+    // Start polling when popup opens
+    startBackgroundPolling();
 
     toast.success("DigiLocker window opened. Complete the process there.");
   };
@@ -563,7 +634,7 @@ const AadhaarVerification = ({
         // Auto-advance after 2 seconds
         setTimeout(() => {
           onNext();
-        }, 3000);
+        }, 1000);
       } else {
         toast.error("Failed to submit additional details. Please try again.");
       }
@@ -590,8 +661,8 @@ const AadhaarVerification = ({
 
   const shouldShowCompletedState = isStepCompleted(CheckpointStep.AADHAAR);
 
-  // Show initialization loading
-  if (!isInitialized && isLoading) {
+  // Show initialization loading only when actively loading
+  if (isLoading && !shouldShowCompletedState) {
     return (
       <div className="mx-auto -mt-28 sm:mt-0 pt-20">
         <FormHeading
@@ -602,28 +673,6 @@ const AadhaarVerification = ({
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
           <span className="ml-3 text-gray-600">Setting up DigiLocker...</span>
         </div>
-      </div>
-    );
-  }
-
-  // Show error state if initialization failed
-  if (!isInitialized && error) {
-    return (
-      <div className="mx-auto -mt-28 sm:mt-0 pt-20">
-        <FormHeading
-          title="Verify Aadhaar (DigiLocker)"
-          description="Failed to initialize DigiLocker session."
-        />
-        <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
-          <p className="text-red-600 text-sm">{error}</p>
-        </div>
-        <Button
-          onClick={handleRetry}
-          variant="ghost"
-          className="w-full py-6"
-        >
-          Try Again
-        </Button>
       </div>
     );
   }
@@ -825,12 +874,15 @@ const AadhaarVerification = ({
       <Button 
         variant="ghost"
         onClick={handleDigilockerClick} 
-        disabled={!digilockerUrl}
+        disabled={isLoading}
         className={`py-6 w-full ${
-          !digilockerUrl ? "opacity-50 cursor-not-allowed" : ""
+          isLoading ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
-        Proceed to DigiLocker
+        {isLoading && (
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+        )}
+        {shouldShowCompletedState ? "Continue to Next Step" : (isLoading ? "Loading..." : "Proceed to DigiLocker")}
       </Button>
 
       <div className="hidden sm:block mt-4 text-center text-xs text-gray-600">
