@@ -68,7 +68,7 @@ const QuickLinks = () => {
     { name: "Upcoming IPOs", href: "" },
     { name: "Market Holidays", href: "" },
     { name: "Economic Calendar", href: "" },
-    { name: "Market Holidays", href: "" },
+    { name: "Markets", href: "" },
   ];
 
   return (
@@ -186,6 +186,7 @@ const Footer = () => {
     { title: "Company Info", href: "#" },
     { title: "Pricing", href: "/pricing" },
     { title: "Contact Us", href: "/contact" },
+    { title: "Gallery", href: "/gallery" },
     { title: "Support Portal", href: "https://support.sapphirebroking.com" },
     { title: "Become a Partner", href: "/become-a-partner" },
     { title: "Careers", href: "https://careers.sapphirebroking.com" },
@@ -266,13 +267,13 @@ const Footer = () => {
                   <h3 className="font-bold mb-4 text-lg">Download Our App</h3>
                   <div className="flex items-center justify-start gap-4">
                     <Image
-                      src="/apple.svg"
+                      src="/appstore.svg"
                       alt="App Store"
                       width={80}
                       height={50}
                     />
                     <Image
-                      src="/google.png"
+                      src="/playstore.svg"
                       alt="Google Play"
                       width={80}
                       height={50}
@@ -299,19 +300,19 @@ const Footer = () => {
                   <h3 className="font-bold ml-2 text-[20px]">Sapphire</h3>
                 </div>
                 <SocialLinks />
-                <div className="hidden lg:flex items-center justify-start gap-4">
+                <div className="hidden lg:flex flex-col justify-start gap-4">
                   <Image
-                    src="/apple.svg"
+                    src="/appstore.svg"
                     alt="App Store"
-                    width={90}
-                    height={60}
+                    width={100}
+                    height={80}
                   />
                   <Image
-                    src="/google.png"
+                    src="/playstore.svg"
                     alt="Google Play"
                     width={100}
                     height={80}
-                    className="-ml-3"
+                    className=""
                   />
                 </div>
               </div>
@@ -340,16 +341,16 @@ const Footer = () => {
                     <h3 className="font-bold mb-4 text-[20px]">Download Our App</h3>
                     <div className="flex items-center justify-start gap-4">
                       <Image
-                        src="/apple.svg"
+                        src="/appstore.svg"
                         alt="App Store"
-                        width={80}
-                        height={50}
+                        width={100}
+                        height={80}
                       />
                       <Image
-                        src="/google.png"
+                        src="/playstore.svg"
                         alt="Google Play"
-                        width={80}
-                        height={50}
+                        width={100}
+                        height={80}
                         className="-ml-3"
                       />
                     </div>
