@@ -64,9 +64,11 @@ const AadhaarVerification = ({
   const [isLoading, setIsLoading] = useState(false);
   const [, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'mismatch'>('initial');
-  const [, setDigilockerUrl] = useState<string>('');
+  const [digilockerUrl, setDigilockerUrl] = useState<string>('');
   const [, setIsPolling] = useState(false);
-  const digilockerTabRef = useRef<Window | null>(null);
+  const digilockerWindowRef = useRef<Window | null>(null);
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const windowCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // ENHANCED: Robust full_name retrieval with multiple fallback sources
   const getFullNameFromStorage = () => {
@@ -99,11 +101,6 @@ const AadhaarVerification = ({
     requires_manual_review?: boolean;
   }>({});
 
-  // Polling refs
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isPollingRef = useRef(false); // Use ref to track polling state
-
   // Use the checkpoint hook to check for existing mismatch data
   const { 
     hasMismatchData, 
@@ -112,6 +109,181 @@ const AadhaarVerification = ({
     getStepData,
     refetchStep 
   } = useCheckpoint();
+
+  // Add message listener for popup communication
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'CLOSE_POPUP' || event.data?.type === 'DIGILOCKER_COMPLETED') {
+        console.log("Received close/completion message from DigiLocker popup");
+        cleanupPopup();
+        
+        // If it's a completion message, trigger a check
+        if (event.data?.type === 'DIGILOCKER_COMPLETED') {
+          setTimeout(() => {
+            refetchStep(CheckpointStep.AADHAAR);
+          }, 1000);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [refetchStep]);
+
+  const cleanupPolling = () => {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+  };
+
+  const cleanupPopup = () => {
+    // Close popup window if still open
+    if (digilockerWindowRef.current && !digilockerWindowRef.current.closed) {
+      try {
+        digilockerWindowRef.current.close();
+      } catch (error) {
+        console.log("Error closing popup:", error);
+      }
+      digilockerWindowRef.current = null;
+    }
+    
+    // Clear window check interval
+    if (windowCheckIntervalRef.current) {
+      clearInterval(windowCheckIntervalRef.current);
+      windowCheckIntervalRef.current = null;
+    }
+  };
+
+  // Start background polling after DigiLocker window opens
+  const startBackgroundPolling = () => {
+    console.log("Starting background polling for Aadhaar completion...");
+    
+    // Clear any existing polling interval
+    cleanupPolling();
+    
+    pollIntervalRef.current = setInterval(async () => {
+      try {
+        // Get the auth token for polling
+        const authToken = Cookies.get('authToken');
+        
+        if (!authToken) {
+          console.log("No auth token, stopping polling");
+          cleanupPolling();
+          return;
+        }
+        
+        console.log("Background polling for Aadhaar completion...");
+        
+        // Step 1: First call the POST complete API to trigger completion check
+        try {
+          const completeResponse = await axios.post(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+            {
+              step: "aadhaar"
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authToken}`
+              },
+            }
+          );
+          console.log("Aadhaar POST complete response:", completeResponse.status, completeResponse.data);
+          
+          // Check if POST returns success (Aadhaar completed)
+          if (completeResponse.status === 200) {
+            // Check for mismatch in response
+            if (completeResponse.data?.data?.requires_additional_verification) {
+              cleanupPolling();
+              setMismatchInfo({
+                pan_masked_aadhaar: completeResponse.data.data.pan_masked_aadhaar || panMaskedAadhaar,
+                digilocker_masked_aadhaar: completeResponse.data.data.digilocker_masked_aadhaar
+              });
+              setCurrentStep('mismatch');
+              toast.warning("Aadhaar mismatch detected. Please provide additional details.");
+              refetchStep(CheckpointStep.AADHAAR_MISMATCH_DETAILS);
+              cleanupPopup();
+              return;
+            } else {
+              // Aadhaar completed successfully
+              cleanupPolling();
+              console.log("Aadhaar completed successfully!");
+              toast.success("Aadhaar verification completed successfully!");
+              cleanupPopup();
+              refetchStep(CheckpointStep.AADHAAR);
+              setTimeout(() => {
+                onNext();
+              }, 1500);
+              return;
+            }
+          }
+        } catch (completeError) {
+          const err = completeError as {
+            response?: {
+              status?: number;
+              data?: any;
+            };
+          };
+          console.log("Aadhaar POST complete error:", err.response?.status, err.response?.data);
+          
+          // If POST complete fails with 401, Aadhaar is not ready yet - continue polling
+          if (err.response?.status === 401) {
+            console.log("Aadhaar not ready yet, continuing to poll...");
+            return;
+          }
+        }
+
+        // Step 2: Also check using GET API (same as useCheckpoint) as fallback
+        try {
+          const statusResponse = await axios.get(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/aadhaar`,
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`
+              },
+            }
+          );
+
+          console.log("Aadhaar GET status check response:", statusResponse.status, statusResponse.data);
+
+          if (statusResponse.status === 200 && statusResponse.data?.data) {
+            // Aadhaar completed successfully via GET
+            cleanupPolling();
+            console.log("Aadhaar completed successfully detected by GET polling!");
+            toast.success("Aadhaar verification completed successfully!");
+            cleanupPopup();
+            refetchStep(CheckpointStep.AADHAAR);
+            setTimeout(() => {
+              onNext();
+            }, 1500);
+          }
+        } catch (getError) {
+          const err = getError as {
+            response?: {
+              status?: number;
+              data?: any;
+            };
+          };
+          console.log("Aadhaar GET status error:", err.response?.status);
+          // Continue polling on GET errors
+        }
+        
+      } catch (err: unknown) {
+        console.error("Critical Aadhaar polling error:", err);
+        // Continue polling on other errors
+      }
+    }, 2000); // Poll every 2 seconds
+
+    // Stop polling after 7 minutes (timeout)
+    setTimeout(() => {
+      cleanupPolling();
+      console.log("Aadhaar polling timeout after 7 minutes");
+    }, 7 * 60 * 1000);
+  };
 
   // ENHANCED: Monitor localStorage changes and update full_name
   useEffect(() => {
@@ -148,6 +320,8 @@ const AadhaarVerification = ({
     return () => {
       clearInterval(fullNameCheckInterval);
       window.removeEventListener('storage', handleStorageChange);
+      cleanupPolling();
+      cleanupPopup();
     };
   }, [mismatchFormData.full_name]);
 
@@ -171,129 +345,9 @@ const AadhaarVerification = ({
     }
   }, [getStepData, mismatchFormData.full_name]);
 
-  // Silent polling function - memoized to prevent recreation
-  const checkAadhaarStatus = useCallback(async () => {
-    if (!isPollingRef.current) return;
-
-    try {
-      const authToken = Cookies.get('authToken');
-      
-      if (!authToken) {
-        console.log("No auth token, stopping polling");
-        isPollingRef.current = false;
-        setIsPolling(false);
-        return;
-      }
-      
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-        {
-          step: "aadhaar"
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`
-          }
-        }
-      );
-
-      // If we get here, verification was successful
-      console.log("Aadhaar verification successful via polling");
-      isPollingRef.current = false;
-      setIsPolling(false);
-      
-      // Close DigiLocker tab if it's still open
-      if (digilockerTabRef.current && !digilockerTabRef.current.closed) {
-        digilockerTabRef.current.close();
-        digilockerTabRef.current = null;
-      }
-      
-      // Check for Aadhaar mismatch
-      if (response.data?.data?.requires_additional_verification) {
-        setMismatchInfo({
-          pan_masked_aadhaar: response.data.data.pan_masked_aadhaar || panMaskedAadhaar,
-          digilocker_masked_aadhaar: response.data.data.digilocker_masked_aadhaar
-        });
-        setCurrentStep('mismatch');
-        
-        toast.warning("Aadhaar mismatch detected. Please provide additional details.");
-        
-        // Refetch the mismatch checkpoint to update the hook
-        refetchStep(CheckpointStep.AADHAAR_MISMATCH_DETAILS);
-        return;
-      }
-
-      // Reset to initial state but show success
-      setCurrentStep('initial');
-      
-      
-      // Refetch the Aadhaar checkpoint to update the hook
-      refetchStep(CheckpointStep.AADHAAR);
-      
-      setTimeout(() => {
-        onNext();
-      }, 100);
-
-    } catch (err: unknown) {
-      const error = err as { response?: { status?: number; data?: { message?: string; error?: { message?: string } } } };
-      
-      if (error.response?.status === 401) {
-        // DigiLocker not completed yet - continue polling silently
-        console.log("DigiLocker verification not completed yet, continuing polling...");
-        return;
-      }
-
-      // For other errors, continue polling silently but log the error
-      console.warn("Polling error (continuing):", error);
-    }
-  }, [panMaskedAadhaar, onNext, refetchStep]);
-
-  // Start polling - memoized to prevent recreation
-  const startPolling = useCallback(() => {
-    if (isPollingRef.current) return; // Prevent multiple polling instances
-
-    console.log("Starting silent polling for Aadhaar verification");
-    isPollingRef.current = true;
-    setIsPolling(true);
-
-    // Initial check after 1 second (give time for DigiLocker to be completed)
-    pollingTimeoutRef.current = setTimeout(() => {
-      checkAadhaarStatus();
-
-      // Then poll every 1 second
-      pollingIntervalRef.current = setInterval(() => {
-        checkAadhaarStatus();
-      }, 1000);
-    }, 1000);
-  }, [checkAadhaarStatus]);
-
-  // Stop polling - memoized to prevent recreation
-  const stopPolling = useCallback(() => {
-    console.log("Stopping polling");
-    isPollingRef.current = false;
-    setIsPolling(false);
-    
-    if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current);
-      pollingIntervalRef.current = null;
-    }
-    
-    if (pollingTimeoutRef.current) {
-      clearTimeout(pollingTimeoutRef.current);
-      pollingTimeoutRef.current = null;
-    }
-    
-    // Close DigiLocker tab if it's still open
-    if (digilockerTabRef.current && !digilockerTabRef.current.closed) {
-      digilockerTabRef.current.close();
-      digilockerTabRef.current = null;
-    }
-  }, []);
-
-  // Check for existing states on component mount and start polling
+  // Check for existing states on component mount
   useEffect(() => {
-    // Check if Aadhaar is already completed - only show toast once per session
+    // Check if Aadhaar is already completed
     const aadhaarCompleted = isCompleted || isStepCompleted(CheckpointStep.AADHAAR);
 
     // Check if there's existing mismatch data in Redis
@@ -329,14 +383,10 @@ const AadhaarVerification = ({
       }));
     }
 
-    // Start polling immediately when component mounts (if not already completed)
-    if (!aadhaarCompleted) {
-      startPolling();
-    }
-
-    // Cleanup polling on unmount
+    // Cleanup on unmount
     return () => {
-      stopPolling();
+      cleanupPolling();
+      cleanupPopup();
     };
   }, [
     isCompleted,
@@ -344,20 +394,16 @@ const AadhaarVerification = ({
     hasMismatchData,
     getMismatchData,
     getStepData,
-    panMaskedAadhaar,
-    startPolling,
-    stopPolling
+    panMaskedAadhaar
   ]);
 
-  // UPDATED: Enhanced DigiLocker URI handler with state encoding
+  // UPDATED: Enhanced DigiLocker URI handler with popup window
   const handleGetDigilockerUri = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
       const authToken = Cookies.get('authToken');
-      const email = getEmailFromStorage();
-      const phone = getPhoneFromStorage();
       
       if (!authToken) {
         toast.error("Authentication token not found. Please restart the process.");
@@ -365,24 +411,14 @@ const AadhaarVerification = ({
         return;
       }
 
-      // Create state data to encode in URL
-      const stateData = {
-        token: authToken,
-        email: email,
-        phone: phone,
-        step: 'aadhaar',
-        timestamp: Date.now()
-      };
-      
-      // Encode the state data
-      const encodedState = btoa(JSON.stringify(stateData));
-      const redirectUrl = `https://sapphirebroking.com/signup?state=${encodedState}`;
+      // Create redirect URL to success page
+      const redirectUrl = `${window.location.origin}/signup/digilocker-success`;
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
         {
           step: "aadhaar_uri",
-          redirect: redirectUrl // Use the enhanced redirect URL
+          redirect: redirectUrl
         },
         {
           headers: {
@@ -400,8 +436,41 @@ const AadhaarVerification = ({
       setDigilockerUrl(response.data.data.uri);
       setCurrentStep('digilocker_pending');
       
-      // Open DigiLocker in the same tab (this will navigate away from current page)
-      window.location.href = response.data.data.uri;
+      // Open DigiLocker in popup window instead of same tab
+      const digilockerWindow = window.open(
+        response.data.data.uri,
+        'digilocker',
+        'width=800,height=600,scrollbars=yes,resizable=yes,location=yes,menubar=no,toolbar=no,status=no'
+      );
+
+      if (!digilockerWindow) {
+        toast.error("Please allow popups for DigiLocker to work. Then try again.");
+        setCurrentStep('initial');
+        return;
+      }
+
+      // Store reference to the window
+      digilockerWindowRef.current = digilockerWindow;
+
+      // Clear any existing window check interval
+      if (windowCheckIntervalRef.current) {
+        clearInterval(windowCheckIntervalRef.current);
+      }
+
+      // Monitor if the window is closed manually
+      windowCheckIntervalRef.current = setInterval(() => {
+        if (digilockerWindow.closed) {
+          clearInterval(windowCheckIntervalRef.current!);
+          windowCheckIntervalRef.current = null;
+          digilockerWindowRef.current = null;
+          console.log("DigiLocker window was closed");
+        }
+      }, 1000);
+
+      // Start background polling
+      startBackgroundPolling();
+
+      toast.success("DigiLocker window opened. Complete the verification there.");
 
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string; error?: { message?: string } }; status?: number } };
@@ -411,6 +480,7 @@ const AadhaarVerification = ({
         "Failed to initialize DigiLocker. Please try again.";
       
       toast.error(errorMessage);
+      setCurrentStep('initial');
     } finally {
       setIsLoading(false);
     }
@@ -518,7 +588,7 @@ const AadhaarVerification = ({
     
     switch (currentStep) {
       case 'initial':
-        return isLoading ? "Proceed to DigiLocker" : "Proceed to DigiLocker";
+        return isLoading ? "Opening DigiLocker..." : "Proceed to DigiLocker";
       case 'digilocker_pending':
         return "Proceed to DigiLocker";
       case 'mismatch':
@@ -528,11 +598,11 @@ const AadhaarVerification = ({
     }
   };
 
-  const isButtonDisabled = () => {
+  const getButtonDisabled = () => {
     if (isCompleted || isStepCompleted(CheckpointStep.AADHAAR)) {
       return false;
     }
-    return isLoading;
+    return isLoading || !digilockerUrl;
   };
 
   // Show Aadhaar mismatch form
@@ -682,9 +752,9 @@ const AadhaarVerification = ({
         onClick={handleContinue}
         variant="ghost"
         className={`w-full py-6 mb-6 ${
-          isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
+          getButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
         }`}
-        disabled={isButtonDisabled()}
+        disabled={getButtonDisabled()}
       >
         {getButtonText()}
       </Button>

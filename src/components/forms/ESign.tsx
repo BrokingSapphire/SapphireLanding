@@ -144,7 +144,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
     try {
       // Updated redirect URL to the success page
-      const redirectUrl = `${window.location.origin}/signup/esign_success`;
+      const redirectUrl = `${window.location.origin}/signup/esign-success`;
 
       // Get the auth token
       const authToken = Cookies.get('authToken');
@@ -313,7 +313,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
             setTimeout(() => {
               console.log("Auto-advancing to next step after eSign completion");
               onNext();
-            }, 2000);
+            }, 1000);
           } else {
             console.log("eSign GET endpoint returned success but invalid data structure for completion");
           }
