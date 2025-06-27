@@ -3,14 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   FaWhatsapp,
-  FaFacebook,
-  FaLinkedin,
   FaInstagram,
-  FaYoutube,
-  FaTwitter,
-  FaGithub,
 } from "react-icons/fa";
-
+import { FaXTwitter } from "react-icons/fa6";
+import { FiYoutube, FiGithub } from "react-icons/fi";
+import { AiOutlineFacebook } from "react-icons/ai";
+import { PiLinkedinLogo } from "react-icons/pi";
 interface LinkSectionProps {
   title: string;
   links: Array<{ title: string; href: string }>;
@@ -34,16 +32,20 @@ const LinkSection = ({ title, links }: LinkSectionProps) => (
 const SocialLinks = () => {
   const SOCIAL_ICONS = [
     { Icon: FaWhatsapp, href: "https://wa.me/9890336989" },
-    { Icon: FaFacebook, href: "https://facebook.com/BrokingSapphire" },
-    { Icon: FaLinkedin, href: "https://linkedin.com/company/BrokingSapphire" },
+    { Icon: AiOutlineFacebook, href: "https://facebook.com/BrokingSapphire" },
+    { Icon: PiLinkedinLogo, href: "https://linkedin.com/company/BrokingSapphire" },
     { Icon: FaInstagram, href: "https://instagram.com/BrokingSapphire" },
-    { Icon: FaYoutube, href: "https://youtube.com/c/@BrokingSapphire" },
-    { Icon: FaTwitter, href: "https://twitter.com/BrokingSapphire" },
-    { Icon: FaGithub, href: "https://github.com/BrokingSapphire" },
+    { Icon: FiYoutube, href: "https://youtube.com/c/@BrokingSapphire" },
+    { Icon: FaXTwitter, href: "https://twitter.com/BrokingSapphire" },
+    { Icon: FiGithub, href: "https://github.com/BrokingSapphire" },
   ];
 
   return (
-    <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7 gap-1.5 mb-6 max-w-[140px] md:max-w-[120px] lg:max-w-[120px] xl:max-w-xs">
+    <>
+    <p className="text-sm pb-4 max-w-[250px] md:max-w-[250px] lg:max-w-[180px] xl:max-w-[220px]">
+      Copyright © {new Date().getFullYear()} Sapphire Broking, All rights reserved.
+    </p>
+    <div className="grid grid-cols-7 sm:grid-cols-7 md:grid-cols-7 lg:grid-cols-4 xl:grid-cols-4 gap-1.5 mb-6 max-w-[250px] md:max-w-[250px] lg:max-w-[180px] xl:max-w-[220px]">
       {SOCIAL_ICONS.map(({ Icon, href }) => (
         <a
           key={href}
@@ -56,6 +58,29 @@ const SocialLinks = () => {
         </a>
       ))}
     </div>
+    </>
+  );
+};
+
+const QuickLinks = () => {
+  const Links = [
+    { name: "Dematerialisation", href: "" },
+    { name: "Upcoming IPOs", href: "" },
+    { name: "Market Holidays", href: "" },
+    { name: "Economic Calendar", href: "" },
+    { name: "Market Holidays", href: "" },
+  ];
+
+  return (
+    <ul className="space-y-2">
+      {Links.map((link) => (
+        <li key={link.name}>
+          <a href={link.href} className="text-xs sm:text-[14px] hover:text-gray-300">
+            {link.name}
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 };
 
@@ -189,16 +214,21 @@ const Footer = () => {
 
   const ACCOUNT_LINKS = [
     { title: "Open an Account", href: "/signup" },
-    { title: "Bank Details", href: "/bank-details" },
+     { title: "Minor Demat Account", href:"/"},
+     {title: "NRI Demat Account", href:"/"},
+     {title: "Corporate Demat Account", href:"/"},
+    { title: "Fund Transfer", href: "/bank-details" },
+    { title: "MTF", href: "/bank-details" },
     { title: "Account Closure", href: "/account-closure" },
     { title: "Collateral Haircut", href: "/collateral-haircut" },
     { title: "Risk Disclosure", href: "/risk-disclosure" },
+   
   ];
 
   return (
     <>
       <footer className="bg-[#064D51] text-white p-4 sm:py-8 sm:px-20 max-w-7xl mx-auto">
-        <div className="max-w-7xl mx-5 xl:max-w-7xl mx-auto">
+        <div className="max-w-7xl  xl:max-w-7xl mx-auto">
           {/* Mobile Layout (hidden on sm and above) */}
           <div className="sm:hidden">
             {/* Full Width Sapphire Address */}
@@ -213,13 +243,7 @@ const Footer = () => {
                 />
                 <h3 className="font-bold ml-2 text-lg">Sapphire</h3>
               </div>
-              <address className="text-xs leading-loose not-italic mb-6 w-full">
-                First Floor, Pande Layout, New Sneh Nagar, Khamla, Nagpur (MH) - 440025
-                <br />
-                info@sapphirebroking.com
-                <br />
-                www.sapphirebroking.com
-              </address>
+              <SocialLinks />
             </div>
 
             {/* Two Column Layout for Mobile */}
@@ -235,9 +259,10 @@ const Footer = () => {
                 <LinkSection title="Account" links={ACCOUNT_LINKS} />
                 
                 <div>
-                  <h3 className="font-bold mb-4 text-lg">Follow us:</h3>
-                  <SocialLinks />
+                  <h3 className="font-bold mb-4 text-lg">Quick Links</h3>
+                  {/* <SocialLinks /> */}
                   
+                  <QuickLinks />
                   <h3 className="font-bold mb-4 text-lg">Download Our App</h3>
                   <div className="flex items-center justify-start gap-4">
                     <Image
@@ -267,25 +292,28 @@ const Footer = () => {
                   <Image
                     src="/logo-white.svg"
                     alt="Logo"
-                    width={32}
-                    height={32}
+                    width={30}
+                    height={30}
                     priority
                   />
                   <h3 className="font-bold ml-2 text-[20px]">Sapphire</h3>
                 </div>
-                <address className="text-[14px] leading-loose not-italic mb-6 sm:mb-0 w-full max-w-[180px] lg:max-w-[160px] xl:max-w-[200px] break-words">
-                  First Floor, Pande Layout,
-                  <br />
-                  New Sneh Nagar,
-                  <br />
-                  Khamla, Nagpur (MH)
-                  <br />
-                  Pincode : 440025
-                  <br />
-                  <span className="break-all">info@sapphirebroking.com</span>
-                  <br />
-                  <span className="break-all">www.sapphirebroking.com</span>
-                </address>
+                <SocialLinks />
+                <div className="hidden lg:flex items-center justify-start gap-4">
+                  <Image
+                    src="/apple.svg"
+                    alt="App Store"
+                    width={90}
+                    height={60}
+                  />
+                  <Image
+                    src="/google.png"
+                    alt="Google Play"
+                    width={100}
+                    height={80}
+                    className="-ml-3"
+                  />
+                </div>
               </div>
 
               <div className="hidden lg:block">
@@ -306,8 +334,8 @@ const Footer = () => {
                   <LinkSection title="Account" links={ACCOUNT_LINKS} />
                   
                   <div className="col-span-1">
-                    <h3 className="font-bold mb-4 text-[20px]">Follow us:</h3>
-                    <SocialLinks />
+                    <h3 className="font-bold mb-4 text-[20px]">Quick Links</h3>
+                    <QuickLinks />
 
                     <h3 className="font-bold mb-4 text-[20px]">Download Our App</h3>
                     <div className="flex items-center justify-start gap-4">
@@ -331,25 +359,9 @@ const Footer = () => {
 
               {/* LG+ Layout - Follow us column */}
               <div className="hidden lg:block col-span-1">
-                <h3 className="font-bold mb-4 text-[20px]">Follow us:</h3>
-                <SocialLinks />
-
-                <h3 className="font-bold mb-4 text-[20px]">Download Our App</h3>
-                <div className="flex items-center justify-start gap-4">
-                  <Image
-                    src="/apple.svg"
-                    alt="App Store"
-                    width={80}
-                    height={50}
-                  />
-                  <Image
-                    src="/google.png"
-                    alt="Google Play"
-                    width={80}
-                    height={50}
-                    className="-ml-3"
-                  />
-                </div>
+                <h3 className="font-bold mb-3 text-[20px]">Quick Links</h3>
+                {/* <SocialLinks /> */}
+                <QuickLinks />
               </div>
             </div>
           </div>
@@ -357,9 +369,6 @@ const Footer = () => {
           <LegalSection />
         </div>
       </footer>
-      <div className="py-1 text-white text-center bg-[#152F46] text-xs sm:text-[14px]">
-        Copyright © 2025 Sapphire, All rights reserved.
-      </div>
     </>
   );
 };
