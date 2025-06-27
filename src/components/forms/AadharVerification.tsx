@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
@@ -13,48 +13,6 @@ interface AadhaarVerificationProps {
   panMaskedAadhaar?: string; // Masked Aadhaar from PAN verification
 }
 
-// Helper function to get data from localStorage for URL encoding
-const getEmailFromStorage = (): string => {
-  try {
-    const storedEmail = localStorage.getItem("email");
-    if (!storedEmail) return "";
-    
-    try {
-      const parsedEmail = JSON.parse(storedEmail);
-      if (typeof parsedEmail === 'object' && parsedEmail.value) {
-        return parsedEmail.value;
-      }
-    } catch {
-      return storedEmail;
-    }
-    
-    return "";
-  } catch (error) {
-    console.error("Error retrieving email from localStorage:", error);
-    return "";
-  }
-};
-
-const getPhoneFromStorage = (): string => {
-  try {
-    const storedPhone = localStorage.getItem("verifiedPhone");
-    if (!storedPhone) return "";
-    
-    try {
-      const parsedPhone = JSON.parse(storedPhone);
-      if (typeof parsedPhone === 'object' && parsedPhone.value) {
-        return parsedPhone.value;
-      }
-    } catch {
-      return storedPhone;
-    }
-    
-    return "";
-  } catch (error) {
-    console.error("Error retrieving phone from localStorage:", error);
-    return "";
-  }
-};
 
 const AadhaarVerification = ({ 
   onNext, 
@@ -65,7 +23,6 @@ const AadhaarVerification = ({
   const [, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'mismatch'>('initial');
   const [digilockerUrl, setDigilockerUrl] = useState<string>('');
-  const [, setIsPolling] = useState(false);
   const digilockerWindowRef = useRef<Window | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const windowCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -225,7 +182,7 @@ const AadhaarVerification = ({
           const err = completeError as {
             response?: {
               status?: number;
-              data?: any;
+              data?: unknown;
             };
           };
           console.log("Aadhaar POST complete error:", err.response?.status, err.response?.data);
@@ -265,7 +222,7 @@ const AadhaarVerification = ({
           const err = getError as {
             response?: {
               status?: number;
-              data?: any;
+              data?: unknown;
             };
           };
           console.log("Aadhaar GET status error:", err.response?.status);
@@ -348,7 +305,6 @@ const AadhaarVerification = ({
   // Check for existing states on component mount
   useEffect(() => {
     // Check if Aadhaar is already completed
-    const aadhaarCompleted = isCompleted || isStepCompleted(CheckpointStep.AADHAAR);
 
     // Check if there's existing mismatch data in Redis
     if (hasMismatchData()) {

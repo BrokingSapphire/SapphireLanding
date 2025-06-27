@@ -16,7 +16,7 @@ const DigilockerSuccessPage: React.FC = () => {
           !window.opener.closed && 
           window.opener !== window
         ) || window.name === 'digilocker';
-      } catch (e) {
+      } catch {
         return false;
       }
     };
