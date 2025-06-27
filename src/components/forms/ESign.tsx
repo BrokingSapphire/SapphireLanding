@@ -47,7 +47,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       // Show completion toast only once per session
       if (!hasShownGlobalCompletedToast) {
-        // toast.success("eSign already completed! You can proceed to the next step.");
+        toast.success("eSign already completed! You can proceed to the next step.");
         hasShownGlobalCompletedToast = true;
       }
       return;
@@ -144,7 +144,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
     try {
       // Updated redirect URL to the success page
-      const redirectUrl = `https://sapphirebroking.com/signup/esign-success`;
+      const redirectUrl = `${window.location.origin}/signup/esign_success`;
 
       // Get the auth token
       const authToken = Cookies.get('authToken');
@@ -235,41 +235,90 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
         
         console.log("Background polling for eSign completion...");
         
-        // Check if eSign is completed by calling the correct checkpoint endpoint
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
-          {
-            step: "esign_complete"
-          },
+        // Step 1: First call the POST complete API to trigger completion check
+        try {
+          const completeResponse = await axios.post(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint`,
+            {
+              step: "esign_complete"
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authToken}`
+              },
+            }
+          );
+          console.log("eSign POST complete response:", completeResponse.status, completeResponse.data);
+        } catch (completeError) {
+          const err = completeError as {
+            response?: {
+              status?: number;
+              data?: unknown;
+            };
+          };
+          console.log("eSign POST complete error:", err.response?.status, err.response?.data);
+          
+          // If POST complete fails with 401/404, eSign is not ready yet - continue polling
+          if (err.response?.status === 401 || err.response?.status === 404) {
+            console.log("eSign not ready yet, continuing to poll...");
+            return;
+          }
+        }
+
+        // Step 2: Now check actual completion status using GET API (same as useCheckpoint)
+        const statusResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/checkpoint/esign_complete`,
           {
             headers: {
-              "Content-Type": "application/json",
               Authorization: `Bearer ${authToken}`
             },
           }
         );
 
-        console.log("eSign completion check response:", response.status, response.data);
+        console.log("eSign GET status check response:", statusResponse.status, statusResponse.data);
+        console.log("eSign response.data:", JSON.stringify(statusResponse.data, null, 2));
+        console.log("eSign response.data.data:", statusResponse.data?.data);
+        console.log("eSign response.data.data.url:", statusResponse.data?.data?.url);
 
-        // Check if we got a successful response with URL (even if empty, it means eSign is completed)
-        if (response.status === 200 && response.data?.data?.url !== undefined) {
-          // eSign completed successfully
-          cleanupPolling();
+        // Step 3: Validate completion using same logic as useCheckpoint hook
+        if (statusResponse.status === 200) {
+          const hasData = statusResponse.data?.data;
+          const hasUrl = statusResponse.data?.data?.url;
+          const urlValue = statusResponse.data?.data?.url;
+          const isValidStructure = hasData && typeof hasUrl !== 'undefined';
           
-          console.log("eSign completed successfully! URL:", response.data.data.url);
-          toast.success("eSign completed successfully!");
+          console.log("eSign polling validation:", {
+            hasData,
+            hasUrl,
+            urlValue,
+            isValidStructure,
+            urlLength: urlValue?.length
+          });
           
-          // Clean up the popup window
-          cleanupPopup();
-          
-          // Refetch eSign step to update the hook
-          refetchStep(CheckpointStep.ESIGN);
-          
-          // Auto-advance after a short delay
-          setTimeout(() => {
-            onNext();
-          }, 1500);
+          if (isValidStructure) {
+            // eSign completed successfully - same validation as useCheckpoint
+            cleanupPolling();
+            
+            console.log("eSign completed successfully detected by polling! URL:", urlValue);
+            toast.success("eSign completed successfully!");
+            
+            // Clean up the popup window
+            cleanupPopup();
+            
+            // Refetch eSign step to update the hook
+            refetchStep(CheckpointStep.ESIGN);
+            
+            // Wait a bit longer for the hook to update, then advance
+            setTimeout(() => {
+              console.log("Auto-advancing to next step after eSign completion");
+              onNext();
+            }, 2000);
+          } else {
+            console.log("eSign GET endpoint returned success but invalid data structure for completion");
+          }
         }
+        
       } catch (err: unknown) {
         const error = err as {
           response?: {
@@ -280,14 +329,14 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
         console.log("eSign polling error:", error.response?.status, error.response?.data);
 
-        // Handle specific eSign polling errors
-        if (error.response?.status === 401) {
-          // 401 means eSign not completed yet - continue polling
-          console.log("eSign not completed yet (401), continuing to poll...");
+        // Handle specific eSign polling errors - same as useCheckpoint hook
+        if (error.response?.status === 404) {
+          // 404 means eSign not found in database - not completed yet
+          console.log("eSign not found in database (404) - not completed yet, continuing to poll...");
           return;
-        } else if (error.response?.status === 404) {
-          // 404 means endpoint not found or no eSign record - continue polling
-          console.log("eSign endpoint not found (404), continuing to poll...");
+        } else if (error.response?.status === 401) {
+          // 401 means eSign not authorized - not completed yet
+          console.log("eSign not authorized (401) - not completed yet, continuing to poll...");
           return;
         } else if (error.response?.status === 500) {
           // 500 server error - continue polling for a bit
