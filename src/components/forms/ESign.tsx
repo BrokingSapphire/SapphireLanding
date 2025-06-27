@@ -254,7 +254,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
           const err = completeError as {
             response?: {
               status?: number;
-              data?: any;
+              data?: unknown;
             };
           };
           console.log("eSign POST complete error:", err.response?.status, err.response?.data);
