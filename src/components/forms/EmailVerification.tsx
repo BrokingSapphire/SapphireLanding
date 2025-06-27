@@ -5,6 +5,13 @@ import FormHeading from "./FormHeading";
 import { useAuthToken } from "@/hooks/useCheckpoint";
 import { toast } from "sonner";
 
+// Declare global grecaptcha from Google's CDN
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
+
 interface EmailVerificationProps {
   onNext: () => void;
   initialData?: {
@@ -21,7 +28,131 @@ interface ApiErrorResponse {
   message?: string;
 }
 
-// Global flag to track if completion toas
+interface RecaptchaProps {
+  sitekey: string;
+  onChange: (token: string | null) => void;
+  onExpired?: () => void;
+  onError?: () => void;
+  theme?: 'light' | 'dark';
+  size?: 'normal' | 'compact';
+  onReset?: () => void;
+}
+
+// Custom ReCAPTCHA component using Google's CDN
+const CustomReCAPTCHA = React.forwardRef<any, RecaptchaProps>(({ 
+  sitekey, 
+  onChange, 
+  onExpired, 
+  onError,
+  theme = 'light',
+  size = 'normal',
+  onReset
+}, ref) => {
+  const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+  const [widgetId, setWidgetId] = useState<number | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const initRecaptcha = () => {
+    if (window.grecaptcha && window.grecaptcha.render && recaptchaContainerRef.current && !widgetId) {
+      try {
+        const id = window.grecaptcha.render(recaptchaContainerRef.current, {
+          sitekey,
+          callback: (token: string) => onChange(token),
+          'expired-callback': () => {
+            onChange(null);
+            onExpired?.();
+          },
+          'error-callback': () => {
+            onChange(null);
+            onError?.();
+          },
+          theme,
+          size
+        });
+        setWidgetId(id);
+        setIsLoaded(true);
+      } catch (error) {
+        console.error('ReCAPTCHA render error:', error);
+        onError?.();
+      }
+    }
+  };
+
+  const reset = () => {
+    if (widgetId !== null && window.grecaptcha && window.grecaptcha.reset) {
+      try {
+        window.grecaptcha.reset(widgetId);
+        onChange(null);
+        onReset?.();
+      } catch (error) {
+        console.error('ReCAPTCHA reset error:', error);
+      }
+    }
+  };
+
+  // Expose reset method to parent
+  React.useImperativeHandle(ref, () => ({
+    reset
+  }));
+
+  useEffect(() => {
+    // Check if grecaptcha is already loaded
+    if (window.grecaptcha && window.grecaptcha.render) {
+      initRecaptcha();
+      return;
+    }
+
+    // Load Google reCAPTCHA script if not already loaded
+    const existingScript = document.querySelector('script[src*="recaptcha"]');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit';
+      script.async = true;
+      script.defer = true;
+
+      // Create global callback
+      (window as any).onRecaptchaLoad = () => {
+        initRecaptcha();
+      };
+
+      document.head.appendChild(script);
+
+      return () => {
+        // Cleanup
+        if (widgetId !== null && window.grecaptcha && window.grecaptcha.reset) {
+          try {
+            window.grecaptcha.reset(widgetId);
+          } catch (error) {
+            console.error('Cleanup error:', error);
+          }
+        }
+      };
+    } else {
+      // Script exists, wait for it to load
+      const checkGrecaptcha = setInterval(() => {
+        if (window.grecaptcha && window.grecaptcha.render) {
+          clearInterval(checkGrecaptcha);
+          initRecaptcha();
+        }
+      }, 100);
+
+      return () => clearInterval(checkGrecaptcha);
+    }
+  }, [sitekey]);
+
+  return (
+    <div>
+      <div ref={recaptchaContainerRef}></div>
+      {!isLoaded && (
+        <div className="flex items-center justify-center p-4 bg-gray-100 border border-gray-300 rounded">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+          <span className="ml-2 text-gray-600">Loading reCAPTCHA...</span>
+        </div>
+      )}
+    </div>
+  );
+});
+
+CustomReCAPTCHA.displayName = 'CustomReCAPTCHA';
 
 const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificationProps) => {
   const [email, setEmail] = useState("");
@@ -30,9 +161,16 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   const [isLoading, setIsLoading] = useState(false);
   const [otpTimer, setOtpTimer] = useState(600); // 10 minutes in seconds
   const [resendTimer, setResendTimer] = useState(0);
-  const [hasManuallyVerified, setHasManuallyVerified] = useState(false); // Track manual verification
+  const [hasManuallyVerified, setHasManuallyVerified] = useState(false);
+  const [showChangeEmail, setShowChangeEmail] = useState(false);
+  
+  // reCAPTCHA states
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaKey, setCaptchaKey] = useState(0); // For resetting reCAPTCHA
+  
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const recaptchaRef = useRef<any>(null);
 
   const { setAuthToken } = useAuthToken();
 
@@ -55,6 +193,56 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     }
     return null;
   };
+
+  // Reset captcha
+  const resetCaptcha = () => {
+    setCaptchaToken(null);
+    setCaptchaKey(prev => prev + 1); // This will force reCAPTCHA to reset
+    // Reset the reCAPTCHA widget
+    if (recaptchaRef.current && recaptchaRef.current.reset) {
+      recaptchaRef.current.reset();
+    }
+  };
+
+  // Initialize captcha on component mount
+  useEffect(() => {
+    resetCaptcha();
+  }, []);
+
+  const handleCaptchaChange = (token: string | null) => {
+    if (token) {
+      setCaptchaToken(token);
+      toast.success("Captcha verification successful!");
+    } else {
+      setCaptchaToken(null);
+    }
+  };
+
+  const handleCaptchaExpired = () => {
+    setCaptchaToken(null);
+    toast.warning("Captcha expired. Please verify again.");
+  };
+
+  const handleCaptchaError = () => {
+    setCaptchaToken(null);
+    toast.error("Captcha verification failed. Please try again.");
+  };
+
+  const validateEmail = (email: string) => {
+    return email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
+  };
+
+  const handleChangeEmail = () => {
+    setShowChangeEmail(true);
+    setShowOTP(false);
+    setOtp(["", "", "", "", "", ""]);
+    setOtpTimer(600);
+    setResendTimer(0);
+    // Reset captcha when changing email
+    resetCaptcha();
+  };
+
+ 
 
   // Prefill email from initialData or localStorage (only if previously verified)
   useEffect(() => {
@@ -113,10 +301,6 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     };
   }, [resendTimer, isCompleted]);
 
-  const validateEmail = (email: string) => {
-    return email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
-  };
-
   const handleButtonClick = async () => {
     // If completed, go to next step
     if (isCompleted) {
@@ -134,7 +318,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       await handleVerifyOTP();
     }
     // If OTP is not shown yet, send OTP
-    else if (!showOTP) {
+    else if (!showOTP || showChangeEmail) {
       await handleSendOTP();
     }
   };
@@ -197,6 +381,11 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       return;
     }
 
+    if (!captchaToken) {
+      toast.error("Please complete the captcha verification");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -216,6 +405,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       // DO NOT save email to localStorage yet - only after verification
       
       setShowOTP(true);
+      setShowChangeEmail(false);
       setOtpTimer(600); // Reset OTP timer to 10 minutes
       setResendTimer(30); // Set resend timer to 30 seconds
       
@@ -240,6 +430,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       
       toast.error(errorMessage);
       console.error("Send OTP error:", err);
+      
+      // Reset captcha on error
+      resetCaptcha();
     } finally {
       setIsLoading(false);
     }
@@ -303,8 +496,18 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   const isButtonDisabled = () => {
     if (isCompleted) return false;
     if (isLoading) return true;
-    if (!showOTP) return !validateEmail(email);
+    if (!showOTP || showChangeEmail) {
+      return !validateEmail(email) || !captchaToken;
+    }
     return !otp.every((digit) => digit !== "");
+  };
+
+  const shouldShowEmailInput = () => {
+    return !showOTP || showChangeEmail || isCompleted;
+  };
+
+  const shouldShowCaptcha = () => {
+    return (!showOTP || showChangeEmail) && !isCompleted;
   };
 
   return (
@@ -314,31 +517,70 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
         description={"Get started in just a few easy steps!"}
       />
 
-      <div className="mb-8">
-        <label className="block text-gray-700 mb-2">Email Address</label>
-        <div className="flex gap-3">
-          <input
-            type="email"
-            placeholder="Enter your email address"
-            className={`flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 ${
-              isCompleted ? "bg-gray-50" : ""
-            }`}
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            onKeyDown={handleEmailKeyDown}
-            disabled={isLoading || showOTP || isCompleted}
-          />
-        </div>
+      <div className="mb-6">
+        <label className="block text-gray-700 mb-2">
+          Email Address
+          {showOTP && !showChangeEmail && !isCompleted && (
+            <span className="text-sm ml-2">
+              <button
+                onClick={handleChangeEmail}
+                className="text-blue-500 hover:text-blue-600 underline"
+                type="button"
+              >
+                Change Email
+              </button>
+            </span>
+          )}
+        </label>
+        {shouldShowEmailInput() && (
+          <div className="flex gap-3">
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              className={`flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                isCompleted ? "bg-gray-50" : ""
+              }`}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              onKeyDown={handleEmailKeyDown}
+              disabled={isLoading || (showOTP && !showChangeEmail) || isCompleted}
+            />
+          </div>
+        )}
+        {!shouldShowEmailInput() && (
+          <div className="text-gray-700 bg-gray-50 px-3 py-2 rounded border">
+            {email}
+          </div>
+        )}
       </div>
+
+      {/* Google reCAPTCHA v2 */}
+      {shouldShowCaptcha() && (
+        <div className="mb-6">
+            <div className="flex flex-col items-start">
+            <CustomReCAPTCHA
+              key={captchaKey}
+              ref={recaptchaRef}
+              sitekey={process.env.NEXT_PUBLIC_SITEKEY || ""}
+              onChange={handleCaptchaChange}
+              onExpired={handleCaptchaExpired}
+              onError={handleCaptchaError}
+              theme="light"
+              size="normal"
+              onReset={() => setCaptchaToken(null)}
+            />
+            </div>
+        </div>
+      )}
 
       {showOTP && (
         <div className="mb-6">
           <label className="block text-left text-gray-heading mb-3">
             Enter OTP
             {isCompleted && (
-              <span className=" text-sm ml-2">✓ Verified</span>
+              <span className="text-sm ml-2">✓ Verified</span>
             )}
           </label>
           <div className="flex justify-center gap-2 mb-4">
@@ -404,7 +646,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
           registry with my PAN.
         </p>
         <p>
-          If you are looking to open a HUF, Corporate, Partnership,or NRI
+          If you are looking to open a HUF, Corporate, Partnership, or NRI
           account, you have to{" "}
           <span className="text-blue-400">click here.</span>
         </p>

@@ -16,8 +16,6 @@ interface AadhaarVerificationProps {
 // Global flag to track if completion toast has been shown in this session
 let hasShownGlobalCompletedToast = false;
 
-
-
 const getFullNameFromStorage = () => {
   const sources = [
     localStorage.getItem("full_name"),
@@ -71,6 +69,25 @@ const AadhaarVerification = ({
     getStepData,
     refetchStep 
   } = useCheckpoint();
+
+  // Add keyboard event listener for Enter key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // For mismatch form, let the form handle Enter naturally
+      if (currentStep === 'mismatch') {
+        return;
+      }
+
+      // For main DigiLocker interface, handle Enter to trigger continue/proceed
+      if (e.key === 'Enter' && !isLoading) {
+        e.preventDefault();
+        handleDigilockerClick();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [currentStep, isLoading, digilockerUrl]);
 
   // Enhanced full_name monitoring
   useEffect(() => {
@@ -721,18 +738,6 @@ const AadhaarVerification = ({
               <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <div>
-              <h3 className="text-green-800 font-medium">Aadhaar Verification Completed!</h3>
-              <p className="text-green-700 text-sm">Your Aadhaar has been successfully verified through DigiLocker.</p>
             </div>
           </div>
         </div>

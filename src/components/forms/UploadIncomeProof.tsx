@@ -48,7 +48,6 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         );
         
         if (response.status === 200 && response.data?.data?.url) {
-          console.log("Income proof already uploaded:", response.data);
           setIsIncomeProofCompleted(true);
           
           // Set original document type if available in response
@@ -382,20 +381,6 @@ const UploadIncomeProof: React.FC<UploadIncomeProofProps> = ({
         description="A small step for you, a big leap towards seamless trading!"
       />
 
-      {/* Show completion info if already verified */}
-      {isIncomeProofCompleted && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div>
-              <p className="text-gray-800 font-medium">Income Proof Already Verified</p>
-              <p className="text-gray-600 text-sm">You can upload a new document or proceed with the current verification.</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="mt-6 p-2 bg-[#F7F9FD] rounded">
         <div className="relative">

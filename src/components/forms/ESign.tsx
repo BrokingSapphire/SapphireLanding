@@ -36,6 +36,29 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     isStepCompleted,
     refetchStep 
   } = useCheckpoint();
+  const shouldShowCompletedState = isStepCompleted(CheckpointStep.ESIGN);
+  // Add keyboard event listener for Enter key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        
+        // If already completed, continue to next step
+        if (shouldShowCompletedState) {
+          onNext();
+          return;
+        }
+        
+        // If eSign URL is available and not loading, proceed to eSign
+        if (esignUrl && !isLoading) {
+          handleEsignClick();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [shouldShowCompletedState, esignUrl, isLoading]);
 
   // Check if eSign is already completed and show toast
   useEffect(() => {
@@ -408,7 +431,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
     cleanupPopup();
   };
 
-  const shouldShowCompletedState = isStepCompleted(CheckpointStep.ESIGN);
+
 
   // Show initialization loading
   if (!isInitialized && isLoading) {

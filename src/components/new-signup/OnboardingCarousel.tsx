@@ -144,7 +144,7 @@ const OnboardingCarousel = () => {
 
   // Smart reload protection - Allow reload on email (step 0), mobile (step 1), aadhaar (step 3), and esign (step 12) steps
   useEffect(() => {
-    const isAllowedReloadStep = currentStep === 0 || currentStep === 1 || currentStep === 3 || currentStep === 12;
+    const isAllowedReloadStep = currentStep === 0 || currentStep === 1 || currentStep === 3 || currentStep === 12 || currentStep ===15;
     
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       // Only show warning for steps other than email, mobile, aadhaar, and esign

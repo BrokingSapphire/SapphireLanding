@@ -66,7 +66,7 @@ export default function RootLayout({
         <QueryProvider>
           <Navbar />
           {children}
-            <Toaster position="top-right" style={{ right: '10px' }}  offset={75} />
+            <Toaster position="top-right" style={{ right: '10px' }}  offset={77} />
           <FooterWrapper />
         </QueryProvider>
       </body>
