@@ -12,7 +12,9 @@ export function middleware(request: NextRequest) {
   ]
 
   // Check if the current route is in the protected routes list
-  const isProtectedRoute = protectedRoutes.includes(pathname)
+    const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+)
 
   // If it's NOT a protected route, allow access without authentication
   if (!isProtectedRoute) {
@@ -34,20 +36,8 @@ export function middleware(request: NextRequest) {
 
 // Configure which routes this middleware should run on
 export const config = {
-  // Match all routes except:
-  // - API routes (/api/*)
-  // - Static files (_next/static/*)
-  // - Image optimization files (_next/image/*)
-  // - Favicon and other public files
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (images, etc.)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/signup/esign-success',
+    '/signup/digilocker-success',
   ],
 }
