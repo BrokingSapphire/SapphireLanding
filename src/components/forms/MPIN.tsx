@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "../ui/button";
 import FormHeading from "./FormHeading";
 import axios from "axios";
 import Cookies from "js-cookie";
+
 interface MPINProps {
   onNext: (clientId: string) => void;
   clientId?: string;
@@ -28,93 +29,8 @@ const MPIN: React.FC<MPINProps> = ({
   const mpinRefs = useRef<(HTMLInputElement | null)[]>([]);
   const confirmMpinRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Prefill data from initialData (API response)
-  useEffect(() => {
-    if (isCompleted && initialData?.mpin_already_set) {
-      // If MPIN is already set, proceed immediately
-      if (clientId) {
-        onNext(clientId);
-      }
-    }
-  }, [initialData, isCompleted, clientId, onNext]);
-
-  const handleMpinChange = (index: number, value: string) => {
-    if (value.length > 1) return; // Only allow single digit
-    if (!/^\d*$/.test(value)) return; // Only allow numbers
-
-    const newMpin = [...mpin];
-    newMpin[index] = value;
-    setMpin(newMpin);
-    setError(null);
-
-    // Auto-focus next input
-    if (value && index < 3) {
-      mpinRefs.current[index + 1]?.focus();
-    }
-
-    // Move to confirm step when all 4 digits are entered
-    if (newMpin.every(digit => digit !== "") && step === 'enter') {
-      setStep('confirm');
-      setTimeout(() => {
-        confirmMpinRefs.current[0]?.focus();
-      }, 100);
-    }
-  };
-
-  const handleConfirmMpinChange = (index: number, value: string) => {
-    if (value.length > 1) return; // Only allow single digit
-    if (!/^\d*$/.test(value)) return; // Only allow numbers
-
-    const newConfirmMpin = [...confirmMpin];
-    newConfirmMpin[index] = value;
-    setConfirmMpin(newConfirmMpin);
-    setError(null);
-
-    // Auto-focus next input
-    if (value && index < 3) {
-      confirmMpinRefs.current[index + 1]?.focus();
-    }
-
-    // Auto-submit when all 4 confirm digits are entered
-    if (newConfirmMpin.every(digit => digit !== "")) {
-      setTimeout(() => {
-        handleSubmit();
-      }, 200);
-    }
-  };
-
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    index: number,
-    isConfirm: boolean = false
-  ) => {
-    // Handle Enter key
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (step === 'confirm' && isComplete() && !isLoading) {
-        handleSubmit();
-      }
-      return;
-    }
-
-    if (e.key === "Backspace") {
-      const currentMpin = isConfirm ? confirmMpin : mpin;
-      const setCurrentMpin = isConfirm ? setConfirmMpin : setMpin;
-      const refs = isConfirm ? confirmMpinRefs : mpinRefs;
-
-      if (!currentMpin[index] && index > 0) {
-        // Move to previous input if current is empty
-        refs.current[index - 1]?.focus();
-      } else {
-        // Clear current input
-        const newMpin = [...currentMpin];
-        newMpin[index] = "";
-        setCurrentMpin(newMpin);
-      }
-    }
-  };
-
-  const handleSubmit = async () => {
+  // Memoize handleSubmit to prevent unnecessary re-renders and fix dependency issue
+  const handleSubmit = useCallback(async () => {
     if (!clientId) {
       setError("Client ID not found. Please restart the process.");
       return;
@@ -222,17 +138,93 @@ const MPIN: React.FC<MPINProps> = ({
     } finally {
       setIsLoading(false);
     }
+  }, [clientId, mpin, confirmMpin, isCompleted, onNext]);
+
+  // Prefill data from initialData (API response)
+  useEffect(() => {
+    if (isCompleted && initialData?.mpin_already_set) {
+      // If MPIN is already set, proceed immediately
+      if (clientId) {
+        onNext(clientId);
+      }
+    }
+  }, [initialData, isCompleted, clientId, onNext]);
+
+  const handleMpinChange = (index: number, value: string) => {
+    if (value.length > 1) return; // Only allow single digit
+    if (!/^\d*$/.test(value)) return; // Only allow numbers
+
+    const newMpin = [...mpin];
+    newMpin[index] = value;
+    setMpin(newMpin);
+    setError(null);
+
+    // Auto-focus next input
+    if (value && index < 3) {
+      mpinRefs.current[index + 1]?.focus();
+    }
+
+    // Move to confirm step when all 4 digits are entered
+    if (newMpin.every(digit => digit !== "") && step === 'enter') {
+      setStep('confirm');
+      setTimeout(() => {
+        confirmMpinRefs.current[0]?.focus();
+      }, 100);
+    }
   };
 
-  // const handleReset = () => {
-  //   setStep('enter');
-  //   setMpin(["", "", "", ""]);
-  //   setConfirmMpin(["", "", "", ""]);
-  //   setError(null);
-  //   setTimeout(() => {
-  //     mpinRefs.current[0]?.focus();
-  //   }, 100);
-  // };
+  const handleConfirmMpinChange = (index: number, value: string) => {
+    if (value.length > 1) return; // Only allow single digit
+    if (!/^\d*$/.test(value)) return; // Only allow numbers
+
+    const newConfirmMpin = [...confirmMpin];
+    newConfirmMpin[index] = value;
+    setConfirmMpin(newConfirmMpin);
+    setError(null);
+
+    // Auto-focus next input
+    if (value && index < 3) {
+      confirmMpinRefs.current[index + 1]?.focus();
+    }
+
+    // Auto-submit when all 4 confirm digits are entered
+    if (newConfirmMpin.every(digit => digit !== "")) {
+      setTimeout(() => {
+        handleSubmit();
+      }, 200);
+    }
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number,
+    isConfirm: boolean = false
+  ) => {
+    // Handle Enter key
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (step === 'confirm' && isComplete() && !isLoading) {
+        handleSubmit();
+      }
+      return;
+    }
+
+    if (e.key === "Backspace") {
+      const currentMpin = isConfirm ? confirmMpin : mpin;
+      const setCurrentMpin = isConfirm ? setConfirmMpin : setMpin;
+      const refs = isConfirm ? confirmMpinRefs : mpinRefs;
+
+      if (!currentMpin[index] && index > 0) {
+        // Move to previous input if current is empty
+        refs.current[index - 1]?.focus();
+      } else {
+        // Clear current input
+        const newMpin = [...currentMpin];
+        newMpin[index] = "";
+        setCurrentMpin(newMpin);
+      }
+    }
+  };
 
   const isComplete = () => {
     return mpin.every(digit => digit !== "") && confirmMpin.every(digit => digit !== "");
@@ -260,11 +252,17 @@ const MPIN: React.FC<MPINProps> = ({
         </div>
 
         <Button
-          onClick={() => clientId && onNext(clientId)}
+          onClick={() => {
+            if (clientId) {
+              onNext(clientId);
+            }
+          }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              clientId && onNext(clientId);
+              if (clientId) {
+                onNext(clientId);
+              }
             }
           }}
           variant="ghost"
@@ -286,7 +284,6 @@ const MPIN: React.FC<MPINProps> = ({
             : "Re-enter your 4-digit MPIN to confirm"
         }
       />
-
 
       <div className="space-y-6">
         {/* MPIN Input */}
