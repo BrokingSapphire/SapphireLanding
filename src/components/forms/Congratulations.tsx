@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { Copy, Check } from 'lucide-react';
 import Link from 'next/link';
-// import Image from 'next/image';
 
 interface CongratulationsPageProps {
   onNext: () => void;
@@ -74,7 +73,7 @@ const CongratulationsPage: React.FC<CongratulationsPageProps> = ({
         </div>
         {copied && (
           <p className="text-sm text-green-600 mt-2">
-            ✓ Client ID copied to clipboard!
+            Client ID copied to clipboard!
           </p>
         )}
       </div>

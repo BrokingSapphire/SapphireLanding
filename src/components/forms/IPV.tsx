@@ -7,6 +7,7 @@ import QrCodeVerification from "./QrCodeVerification";
 import axios from "axios";
 import Cookies from 'js-cookie';
 import { useCheckpoint, CheckpointStep } from '@/hooks/useCheckpoint';
+import { toast } from "sonner";
 
 /* eslint-disable */
 interface IPVInitialData {
@@ -36,15 +37,151 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   const [ipvUid, setIpvUid] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [cameraAutoStarted, setCameraAutoStarted] = useState(false);
-  const [wantsToReverify, setWantsToReverify] = useState(false); // New state to track re-verification intent
+  const [wantsToReverify, setWantsToReverify] = useState(false);
+  
+  // Face detection states
+  const [isFaceDetected, setIsFaceDetected] = useState(false);
+  const [isMediaPipeLoaded, setIsMediaPipeLoaded] = useState(false);
+  const [faceDetector, setFaceDetector] = useState<any>(null);
+  
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
+  const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use the checkpoint hook to check for existing IPV data
   const { 
     isStepCompleted,
     refetchStep 
   } = useCheckpoint();
+
+  // Add keyboard event listener for Enter key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !isButtonDisabled()) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [imageFile, isLoading, ipvUid, wantsToReverify]);
+
+  // Load MediaPipe Face Detection
+  useEffect(() => {
+    const loadMediaPipe = async () => {
+      try {
+        // Load MediaPipe from CDN
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4/face_detection.js';
+        script.onload = async () => {
+          const { FaceDetection } = (window as any);
+          
+          if (FaceDetection) {
+            const detector = new FaceDetection({
+              model: 'short_range'
+            });
+            
+            detector.setOptions({
+              model: 'short_range',
+              minDetectionConfidence: 0.5,
+            });
+            
+            detector.onResults((results: any) => {
+              const faceDetected = results.detections && results.detections.length > 0;
+              setIsFaceDetected(faceDetected);
+              
+              // Draw face detection overlay
+              if (overlayCanvasRef.current && videoRef.current) {
+                const canvas = overlayCanvasRef.current;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                  // Clear previous drawings
+                  ctx.clearRect(0, 0, canvas.width, canvas.height);
+                  
+                  if (results.detections && results.detections.length > 0) {
+                    results.detections.forEach((detection: any) => {
+                      const bbox = detection.boundingBox;
+                      const x = bbox.xCenter * canvas.width - (bbox.width * canvas.width) / 2;
+                      const y = bbox.yCenter * canvas.height - (bbox.height * canvas.height) / 2;
+                      const width = bbox.width * canvas.width;
+                      const height = bbox.height * canvas.height;
+                      
+                      // Draw green rectangle around detected face
+                      ctx.strokeStyle = '#10B981';
+                      ctx.lineWidth = 3;
+                      ctx.strokeRect(x, y, width, height);
+                      
+                      // Draw confidence score
+                      ctx.fillStyle = '#10B981';
+                      ctx.font = '16px Arial';
+                      ctx.fillText(
+                        `Face: ${(detection.score * 100).toFixed(0)}%`,
+                        x,
+                        y - 10
+                      );
+                    });
+                  }
+                }
+              }
+            });
+            
+            setFaceDetector(detector);
+            setIsMediaPipeLoaded(true);
+            console.log('MediaPipe Face Detection loaded successfully');
+          }
+        };
+        
+        script.onerror = () => {
+          console.error('Failed to load MediaPipe Face Detection');
+          setIsMediaPipeLoaded(false);
+        };
+        
+        document.head.appendChild(script);
+        
+        return () => {
+          document.head.removeChild(script);
+        };
+      } catch (error) {
+        console.error('Error loading MediaPipe:', error);
+        setIsMediaPipeLoaded(false);
+      }
+    };
+
+    loadMediaPipe();
+  }, []);
+
+  // Start face detection when camera is active
+  useEffect(() => {
+    if (showCamera && faceDetector && videoRef.current) {
+      const startDetection = () => {
+        if (detectionIntervalRef.current) {
+          clearInterval(detectionIntervalRef.current);
+        }
+        
+        detectionIntervalRef.current = setInterval(() => {
+          if (videoRef.current && videoRef.current.readyState >= 2) {
+            faceDetector.send({ image: videoRef.current });
+          }
+        }, 100); // Check every 100ms
+      };
+
+      // Wait for video to be ready
+      const video = videoRef.current;
+      if (video.readyState >= 2) {
+        startDetection();
+      } else {
+        video.addEventListener('loadeddata', startDetection);
+      }
+
+      return () => {
+        if (detectionIntervalRef.current) {
+          clearInterval(detectionIntervalRef.current);
+        }
+      };
+    }
+  }, [showCamera, faceDetector]);
 
   // Check if IPV is already completed and show toast
   useEffect(() => {
@@ -69,7 +206,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       console.log("Calling initializeIPV from useEffect");
       initializeIPV();
     }
-  }, [isStepCompleted(CheckpointStep.IPV), wantsToReverify]); // Only depend on these two values
+  }, [isStepCompleted(CheckpointStep.IPV), wantsToReverify]);
 
   // Auto-start camera after initialization is complete
   useEffect(() => {
@@ -152,6 +289,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     try {
       setShowCamera(true);
       setError(null);
+      setIsFaceDetected(false);
     } catch (err) {
       console.error("Camera access error:", err);
       setError("Camera access failed. Please enable permissions.");
@@ -159,6 +297,12 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
   };
 
   const capturePhoto = () => {
+    // Check if face is detected before allowing capture
+    if (!isFaceDetected) {
+      toast.error("Face not recognized! Please position your face clearly in front of the camera.");
+      return;
+    }
+
     const video = videoRef.current;
     const canvas = canvasRef.current;
 
@@ -179,6 +323,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
             });
             setImageFile(capturedFile);
             setShowCamera(false);
+            toast.success("Face detected and photo captured successfully!");
 
             // Stop all video tracks when photo is captured
             const stream = video.srcObject as MediaStream;
@@ -189,6 +334,12 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         }, "image/jpeg", 0.8);
       }
     }
+  };
+
+  const isButtonDisabled = () => {
+    return Boolean((!imageFile && !shouldShowCompletedState) || 
+      isLoading || 
+      (shouldShowCamera && !ipvUid));
   };
 
   const handleSubmit = async () => {
@@ -229,7 +380,6 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       console.log("Uploading IPV with UID:", ipvUid);
 
       // Use the correct PUT endpoint for IPV upload
-      
       await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/signup/ipv/${ipvUid}`,
         formData,
@@ -242,7 +392,6 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       );
 
       console.log("IPV uploaded successfully");
-      // toast.success("IPV verification completed successfully!");
       
       // Reset re-verification state immediately to prevent further submissions
       setWantsToReverify(false);
@@ -251,7 +400,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       // Refetch IPV step to update the hook
       refetchStep(CheckpointStep.IPV);
 
-      // Auto-advance after 2 seconds
+      // Auto-advance after 100ms
       setTimeout(() => {
         onNext();
       }, 100);
@@ -301,6 +450,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     setError(null);
     setShowCamera(false);
     setCameraAutoStarted(false);
+    setIsFaceDetected(false);
     
     // Stop camera if running
     stopCamera();
@@ -318,7 +468,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
     let stream: MediaStream | null = null;
 
     const setupCamera = async () => {
-      if (showCamera && videoRef.current) {
+      if (showCamera && videoRef.current && overlayCanvasRef.current) {
         try {
           stream = await navigator.mediaDevices.getUserMedia({
             video: { 
@@ -330,6 +480,14 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
 
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
+            
+            // Setup overlay canvas to match video dimensions
+            videoRef.current.addEventListener('loadedmetadata', () => {
+              if (overlayCanvasRef.current && videoRef.current) {
+                overlayCanvasRef.current.width = videoRef.current.videoWidth;
+                overlayCanvasRef.current.height = videoRef.current.videoHeight;
+              }
+            });
           }
         } catch (err) {
           console.error("Camera access error:", err);
@@ -353,6 +511,14 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
 
   const stopCamera = () => {
     setShowCamera(false);
+    setIsFaceDetected(false);
+    
+    // Stop face detection
+    if (detectionIntervalRef.current) {
+      clearInterval(detectionIntervalRef.current);
+      detectionIntervalRef.current = null;
+    }
+    
     // Stop camera stream
     const video = videoRef.current;
     if (video && video.srcObject) {
@@ -426,6 +592,36 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
         description="A quick face-to-face verification for security."
       />
 
+      {/* MediaPipe Loading Status */}
+      {!isMediaPipeLoaded && (
+        <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-200">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+            <p className="text-blue-700 text-sm">Loading face detection...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Face Detection Status */}
+      {showCamera && isMediaPipeLoaded && (
+        <div className={`mb-4 p-3 rounded border ${
+          isFaceDetected 
+            ? 'bg-green-50 border-green-200' 
+            : 'bg-yellow-50 border-yellow-200'
+        }`}>
+          <div className="flex items-center">
+            <div className={`w-3 h-3 rounded-full mr-2 ${
+              isFaceDetected ? 'bg-green-500' : 'bg-yellow-500'
+            }`}></div>
+            <p className={`text-sm ${
+              isFaceDetected ? 'text-green-700' : 'text-yellow-700'
+            }`}>
+              {isFaceDetected ? '✓ Face detected - Ready to capture!' : 'Position your face clearly in the camera'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Show loading message when initializing for re-verification */}
       {wantsToReverify && !ipvUid && isLoading && (
         <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-200">
@@ -437,7 +633,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       )}
 
       <div className="mb-6">
-        <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg flex flex-col items-center justify-center overflow-hidden">
+        <div className="border-2 border-dashed h-[300px] border-gray-300 rounded-lg flex flex-col items-center justify-center overflow-hidden relative">
           {shouldShowCompletedState ? (
             // Show completed state with option to verify again
             <div className="text-center space-y-4">
@@ -457,12 +653,20 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
               </Button>
             </div>
           ) : showCamera ? (
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full h-full object-cover rounded transform scale-x-[-1]"
-            />
+            <>
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover rounded transform scale-x-[-1]"
+              />
+              {/* Face detection overlay */}
+              <canvas
+                ref={overlayCanvasRef}
+                className="absolute top-0 left-0 w-full h-full pointer-events-none transform scale-x-[-1]"
+                style={{ mixBlendMode: 'normal' }}
+              />
+            </>
           ) : imageFile ? (
             <div className="space-y-4 w-full flex flex-col items-center">
               <div className="relative w-full h-[250px]">
@@ -491,8 +695,15 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
 
         {showCamera && (
           <div className="flex justify-center mt-4 gap-4">
-            <Button onClick={capturePhoto} variant="ghost" className="py-2">
-              Capture Photo
+            <Button 
+              onClick={capturePhoto} 
+              variant="ghost" 
+              className={`py-2 ${
+                !isFaceDetected ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={!isFaceDetected}
+            >
+              {isFaceDetected ? 'Capture Photo' : 'Face Not Detected'}
             </Button>
             <Button onClick={stopCamera} variant="outline" className="py-2">
               Cancel
@@ -506,6 +717,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
               onClick={() => {
                 setImageFile(null);
                 setError(null);
+                setIsFaceDetected(false);
                 // Auto-restart camera
                 setTimeout(() => startCamera(), 100);
               }}
@@ -522,32 +734,14 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
             <p className="text-red-600 text-sm">{error}</p>
           </div>
         )}
-
-        {/* QR Code option - only show when camera should be available */}
-        {/* {shouldShowCamera && (
-          <div className="text-center mt-4">
-            <button
-              onClick={() => setShowQrCode(true)}
-              className="text-sm text-blue-600 hover:text-blue-800 underline"
-              disabled={!ipvUid}
-            >
-              Problems with Webcam? Use Mobile Camera
-            </button>
-          </div>
-        )} */}
       </div>
 
       <Button
         onClick={handleSubmit}
-        disabled={
-          !!((!imageFile && !shouldShowCompletedState) || 
-          isLoading || 
-          (shouldShowCamera && !ipvUid))
-        }
+        disabled={isButtonDisabled()}
         variant="ghost"
         className={`w-full py-6 ${
-          ((!imageFile && !shouldShowCompletedState) || isLoading || (shouldShowCamera && !ipvUid)) 
-            ? "opacity-50 cursor-not-allowed" : ""
+          isButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         {getButtonText()}
@@ -556,7 +750,7 @@ const IPVVerification: React.FC<IPVVerificationProps> = ({
       <div className="hidden lg:block text-center text-sm text-gray-600 mt-4">
         <p>
           Please ensure your face is clearly visible and well-lit for successful verification.
-          Session expires in 10 minutes.
+          Session expires in 10 minutes. <strong>Press Enter to submit when ready.</strong>
         </p>
       </div>
     </div>

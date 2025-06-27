@@ -96,6 +96,13 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !isButtonDisabled()) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validatePan(panNumber)) {
       setErrors({
@@ -242,6 +249,7 @@ const PANVerify = ({ onNext, initialData, isCompleted }: PANVerifyProps) => {
           } rounded focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all`}
           value={panNumber}
           onChange={handlePanChange}
+          onKeyDown={handleKeyDown}
           maxLength={10}
           disabled={isLoading}
         />

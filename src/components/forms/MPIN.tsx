@@ -74,6 +74,13 @@ const MPIN: React.FC<MPINProps> = ({
     if (value && index < 3) {
       confirmMpinRefs.current[index + 1]?.focus();
     }
+
+    // Auto-submit when all 4 confirm digits are entered
+    if (newConfirmMpin.every(digit => digit !== "")) {
+      setTimeout(() => {
+        handleSubmit();
+      }, 200);
+    }
   };
 
   const handleKeyDown = (
@@ -81,6 +88,15 @@ const MPIN: React.FC<MPINProps> = ({
     index: number,
     isConfirm: boolean = false
   ) => {
+    // Handle Enter key
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (step === 'confirm' && isComplete() && !isLoading) {
+        handleSubmit();
+      }
+      return;
+    }
+
     if (e.key === "Backspace") {
       const currentMpin = isConfirm ? confirmMpin : mpin;
       const setCurrentMpin = isConfirm ? setConfirmMpin : setMpin;
@@ -245,6 +261,12 @@ const MPIN: React.FC<MPINProps> = ({
 
         <Button
           onClick={() => clientId && onNext(clientId)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              clientId && onNext(clientId);
+            }
+          }}
           variant="ghost"
           className="w-full py-6"
         >
@@ -332,6 +354,11 @@ const MPIN: React.FC<MPINProps> = ({
             Your MPIN will be used for secure transactions and account access.
             Keep it confidential and don&apos;t share with anyone.
           </p>
+          {step === 'confirm' && (
+            <p className="mt-2 text-xs text-gray-500">
+              <strong>Press Enter to submit when all digits are entered</strong>
+            </p>
+          )}
         </div>
       </div>
     </div>

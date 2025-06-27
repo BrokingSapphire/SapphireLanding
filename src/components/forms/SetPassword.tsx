@@ -48,6 +48,14 @@ const SetPassword: React.FC<SetPasswordProps> = ({
     hasSpecialChar: false,
   });
 
+  // Add keyboard event handler for Enter key
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isFormValid() && !isLoading) {
+      e.preventDefault();
+      handlePasswordSubmit();
+    }
+  };
+
   // Prefill data from initialData (API response) and localStorage
   useEffect(() => {
     // Check localStorage first
@@ -247,6 +255,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
           onClick={onNext}
           variant="ghost"
           className="w-full py-6"
+          onKeyDown={handleKeyDown}
         >
           Continue to MPIN Setup
         </Button>
@@ -284,6 +293,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
               onCopy={(e) => e.preventDefault()}
               onPaste={(e) => e.preventDefault()}
               onCut={(e) => e.preventDefault()}
@@ -317,6 +327,7 @@ const SetPassword: React.FC<SetPasswordProps> = ({
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
               onCopy={(e) => e.preventDefault()}
               onPaste={(e) => e.preventDefault()}
               onCut={(e) => e.preventDefault()}
@@ -371,6 +382,26 @@ const SetPassword: React.FC<SetPasswordProps> = ({
               </div>
             ))}
           </div>
+          
+          {/* Password match indicator */}
+          {confirmPassword.length > 0 && (
+            <div className="flex items-center mt-2 pt-2 border-t border-gray-200">
+              {password === confirmPassword ? (
+                <Check className="h-4 w-4 text-green-500 mr-2" />
+              ) : (
+                <X className="h-4 w-4 text-red-500 mr-2" />
+              )}
+              <span
+                className={`text-sm ${
+                  password === confirmPassword
+                    ? "text-green-700"
+                    : "text-red-700"
+                }`}
+              >
+                Passwords match
+              </span>
+            </div>
+          )}
         </div>
 
         {error && (

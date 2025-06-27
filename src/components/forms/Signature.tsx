@@ -45,6 +45,24 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     refetchStep 
   } = useCheckpoint();
 
+  // Add keyboard event listener for Enter key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !isButtonDisabled()) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [signature, isLoading, signatureUid, wantsToResign]); // Dependencies for isButtonDisabled check
+
   const initializeSignature = useCallback(async () => {
     console.log("initializeSignature called - isLoading:", isLoading, "signatureUid:", signatureUid);
     
@@ -403,6 +421,13 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
     setWantsToResign(true);
   };
 
+  // Helper function to check if button should be disabled
+  const isButtonDisabled = () => {
+    return Boolean((!signature && !shouldShowCompletedState) || 
+      isLoading || 
+      (shouldShowCanvas && !signatureUid));
+  };
+
   // const handleQrCodeClick = () => {
   //   // If we already have a signatureUid, show QR code immediately
   //   if (signatureUid) {
@@ -570,13 +595,9 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
 
           <button
             onClick={handleSubmit}
-            disabled={
-              Boolean((!signature && !shouldShowCompletedState) || 
-              isLoading || 
-              (shouldShowCanvas && !signatureUid))
-            }
+            disabled={isButtonDisabled()}
             className={`px-8 py-3 rounded bg-teal-800 hover:bg-teal-900 text-white ${
-              ((!signature && !shouldShowCompletedState) || isLoading || (shouldShowCanvas && !signatureUid)) 
+              isButtonDisabled() 
                 ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
@@ -587,7 +608,7 @@ const SignatureComponent: React.FC<SignatureComponentProps> = ({
       <div className="hidden lg:block text-center text-sm text-gray-600 mt-4">
         <p>
           Please sign clearly within the box above. Your signature will be used for document verification.
-          Session expires in 10 minutes.
+          Session expires in 10 minutes. <strong>Press Enter to submit when ready.</strong>
         </p>
       </div>
     </div>
