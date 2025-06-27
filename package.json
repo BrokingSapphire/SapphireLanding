@@ -22,6 +22,7 @@
     "date-fns": "^2.29.3",
     "embla-carousel-react": "^8.5.2",
     "framer-motion": "^12.4.7",
+    "ifsc": "^2.0.44",
     "input-otp": "^1.4.2",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.475.0",

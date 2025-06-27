@@ -31,6 +31,13 @@ interface FormErrors {
   accountType?: string;
 }
 
+interface BankInfo {
+  bankName?: string;
+  branch?: string;
+  city?: string;
+  state?: string;
+}
+
 const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
   onNext,
   initialData,
@@ -51,6 +58,10 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     accountNumber: "",
     accountType: "",
   });
+
+  // New state for IFSC API
+  const [bankInfo, setBankInfo] = useState<BankInfo>({});
+  const [isLoadingBankInfo, setIsLoadingBankInfo] = useState(false);
 
   // Define a type for the bank data received from the API
   interface ApiBankData {
@@ -74,6 +85,43 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
     };
   };
 
+  // Fetch bank details from IFSC API
+  const fetchBankDetails = async (ifscCode: string) => {
+    if (!ifscCode || ifscCode.length !== 11) return;
+
+    setIsLoadingBankInfo(true);
+    try {
+      const response = await axios.get(`https://ifsc.razorpay.com/${ifscCode}`);
+      
+      if (response.data) {
+        setBankInfo({
+          bankName: response.data.BANK,
+          branch: response.data.BRANCH,
+          city: response.data.CITY,
+          state: response.data.STATE,
+        });
+      }
+    } catch (error) {
+      console.log("IFSC API error:", error);
+      setBankInfo({});
+    } finally {
+      setIsLoadingBankInfo(false);
+    }
+  };
+
+  // Effect to fetch bank details when IFSC code changes
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (formData.ifscCode && formData.ifscCode.length === 11 && /^[A-Z]{4}0[A-Z0-9]{6}$/.test(formData.ifscCode)) {
+        fetchBankDetails(formData.ifscCode);
+      } else {
+        setBankInfo({});
+      }
+    }, 500); // Debounce for 500ms
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.ifscCode]);
+
   // Prefill data from initialData (API response) and show completion toast
   useEffect(() => {
     if (isCompleted && initialData?.bank) {
@@ -83,6 +131,10 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
       setFormData(mappedData);
       setOriginalData(mappedData);
       
+      // Fetch bank info for the existing IFSC code
+      if (mappedData.ifscCode) {
+        fetchBankDetails(mappedData.ifscCode);
+      }
     }
   }, [initialData, isCompleted]);
 
@@ -268,21 +320,45 @@ const ManualBankDetails: React.FC<ManualBankDetailsProps> = ({
           <label htmlFor="ifscCode" className="block text-sm font-medium">
             IFSC Code*
           </label>
-          <input
-            type="text"
-            id="ifscCode"
-            name="ifscCode"
-            value={formData.ifscCode}
-            onChange={handleChange}
-            disabled={isSubmitting}
-            className={`w-full p-2 border rounded ${
-              errors.ifscCode ? "border-red-500" : isCompleted && formData.ifscCode === originalData.ifscCode ? "border-gray-300" : "border-gray-300"
-            } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
-            placeholder="Enter IFSC Code (e.g., SBIN0001234)"
-            maxLength={11}
-          />
+          <div className="relative">
+            <input
+              type="text"
+              id="ifscCode"
+              name="ifscCode"
+              value={formData.ifscCode}
+              onChange={handleChange}
+              disabled={isSubmitting}
+              className={`w-full p-2 border rounded ${
+                errors.ifscCode ? "border-red-500" : isCompleted && formData.ifscCode === originalData.ifscCode ? "border-gray-300" : "border-gray-300"
+              } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+              placeholder="Enter IFSC Code (e.g., SBIN0001234)"
+              maxLength={11}
+            />
+            {isLoadingBankInfo && (
+              <div className="absolute right-3 top-2.5">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teal-600"></div>
+              </div>
+            )}
+          </div>
           {errors.ifscCode && (
             <p className="text-xs text-red-500">{errors.ifscCode}</p>
+          )}
+          
+          {/* Bank Info Display */}
+          {bankInfo.bankName && (
+            <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="text-sm">
+                <div className="font-medium text-blue-800">{bankInfo.bankName}</div>
+                {bankInfo.branch && (
+                  <div className="text-blue-700">{bankInfo.branch}</div>
+                )}
+                {(bankInfo.city || bankInfo.state) && (
+                  <div className="text-blue-600">
+                    {[bankInfo.city, bankInfo.state].filter(Boolean).join(", ")}
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
 
