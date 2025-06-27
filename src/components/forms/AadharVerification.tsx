@@ -13,7 +13,6 @@ interface AadhaarVerificationProps {
   panMaskedAadhaar?: string; // Masked Aadhaar from PAN verification
 }
 
-
 const AadhaarVerification = ({ 
   onNext, 
   isCompleted,
@@ -22,7 +21,7 @@ const AadhaarVerification = ({
   const [isLoading, setIsLoading] = useState(false);
   const [, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<'initial' | 'digilocker_pending' | 'mismatch'>('initial');
-  const [digilockerUrl, setDigilockerUrl] = useState<string>('');
+  const [, setDigilockerUrl] = useState<string>('');
   const digilockerWindowRef = useRef<Window | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const windowCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -304,8 +303,6 @@ const AadhaarVerification = ({
 
   // Check for existing states on component mount
   useEffect(() => {
-    // Check if Aadhaar is already completed
-
     // Check if there's existing mismatch data in Redis
     if (hasMismatchData()) {
       const existingMismatchData = getMismatchData();
@@ -386,6 +383,7 @@ const AadhaarVerification = ({
       
       if (!response.data?.data?.uri) {
         toast.error("Failed to generate DigiLocker URI. Please try again.");
+        setIsLoading(false);
         return;
       }
 
@@ -402,6 +400,7 @@ const AadhaarVerification = ({
       if (!digilockerWindow) {
         toast.error("Please allow popups for DigiLocker to work. Then try again.");
         setCurrentStep('initial');
+        setIsLoading(false);
         return;
       }
 
@@ -556,9 +555,11 @@ const AadhaarVerification = ({
 
   const getButtonDisabled = () => {
     if (isCompleted || isStepCompleted(CheckpointStep.AADHAAR)) {
-      return false;
+      return false; // Allow continue if already completed
     }
-    return isLoading || !digilockerUrl;
+    
+    // Only disable during loading, not based on digilockerUrl
+    return isLoading;
   };
 
   // Show Aadhaar mismatch form
