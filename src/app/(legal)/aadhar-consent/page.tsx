@@ -381,7 +381,7 @@ const AadhaarConsent = () => {
           </div>
         </section>
 
-        <div className="text-gray-500 text-center mt-8">
+        <div className="text-gray-500 mt-4">
           <p>Last Updated: June 26, 2025</p>
         </div>
       </div>
