@@ -47,7 +47,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
       
       // Show completion toast only once per session
       if (!hasShownGlobalCompletedToast) {
-        toast.success("eSign already completed! You can proceed to the next step.");
+        // toast.success("eSign already completed! You can proceed to the next step.");
         hasShownGlobalCompletedToast = true;
       }
       return;
@@ -144,7 +144,7 @@ const LastStepPage: React.FC<LastStepPageProps> = ({
 
     try {
       // Updated redirect URL to the success page
-      const redirectUrl = `https://sapphirebroking.com/signup/esign_success`;
+      const redirectUrl = `https://sapphirebroking.com/signup/esign-success`;
 
       // Get the auth token
       const authToken = Cookies.get('authToken');
