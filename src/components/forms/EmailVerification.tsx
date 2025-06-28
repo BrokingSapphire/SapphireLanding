@@ -8,7 +8,11 @@ import { toast } from "sonner";
 // Declare global grecaptcha from Google's CDN
 declare global {
   interface Window {
-    grecaptcha: any;
+    grecaptcha: {
+      render: (element: HTMLElement, options: Record<string, unknown>) => number;
+      reset: (widgetId: number) => void;
+    };
+    onRecaptchaLoad?: () => void; // Add this to avoid type casting
   }
 }
 
@@ -38,8 +42,12 @@ interface RecaptchaProps {
   onReset?: () => void;
 }
 
+interface RecaptchaRef {
+  reset: () => void;
+}
+
 // Custom ReCAPTCHA component using Google's CDN
-const CustomReCAPTCHA = React.forwardRef<any, RecaptchaProps>(({ 
+const CustomReCAPTCHA = React.forwardRef<RecaptchaRef, RecaptchaProps>(({ 
   sitekey, 
   onChange, 
   onExpired, 
@@ -51,8 +59,9 @@ const CustomReCAPTCHA = React.forwardRef<any, RecaptchaProps>(({
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
   const [widgetId, setWidgetId] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const initRecaptcha = () => {
-    if (window.grecaptcha && window.grecaptcha.render && recaptchaContainerRef.current && !widgetId) {
+  
+  const initRecaptcha = React.useCallback(() => {
+    if (window.grecaptcha && window.grecaptcha.render && recaptchaContainerRef.current && widgetId === null) {
       try {
         const id = window.grecaptcha.render(recaptchaContainerRef.current, {
           sitekey,
@@ -75,9 +84,9 @@ const CustomReCAPTCHA = React.forwardRef<any, RecaptchaProps>(({
         onError?.();
       }
     }
-  };
+  }, [onChange, onError, onExpired, sitekey, size, theme, widgetId]);
 
-  const reset = () => {
+  const reset = React.useCallback(() => {
     if (widgetId !== null && window.grecaptcha && window.grecaptcha.reset) {
       try {
         window.grecaptcha.reset(widgetId);
@@ -87,16 +96,16 @@ const CustomReCAPTCHA = React.forwardRef<any, RecaptchaProps>(({
         console.error('ReCAPTCHA reset error:', error);
       }
     }
-  };
+  }, [onChange, onReset, widgetId]);
 
   // Expose reset method to parent
   React.useImperativeHandle(ref, () => ({
     reset
-  }));
+  }), [reset]);
 
   useEffect(() => {
     // Check if grecaptcha is already loaded
-    if (window.grecaptcha && window.grecaptcha.render) {
+    if (typeof window !== "undefined" && typeof window.grecaptcha !== "undefined" && typeof window.grecaptcha.render === "function") {
       initRecaptcha();
       return;
     }
@@ -110,7 +119,7 @@ const CustomReCAPTCHA = React.forwardRef<any, RecaptchaProps>(({
       script.defer = true;
 
       // Create global callback
-      (window as any).onRecaptchaLoad = () => {
+      window.onRecaptchaLoad = () => {
         initRecaptcha();
       };
 
@@ -129,7 +138,7 @@ const CustomReCAPTCHA = React.forwardRef<any, RecaptchaProps>(({
     } else {
       // Script exists, wait for it to load
       const checkGrecaptcha = setInterval(() => {
-        if (window.grecaptcha && window.grecaptcha.render) {
+        if (window.grecaptcha && typeof window.grecaptcha.render === "function") {
           clearInterval(checkGrecaptcha);
           initRecaptcha();
         }
@@ -137,7 +146,7 @@ const CustomReCAPTCHA = React.forwardRef<any, RecaptchaProps>(({
 
       return () => clearInterval(checkGrecaptcha);
     }
-  }, [sitekey]);
+  }, [initRecaptcha]);
 
   return (
     <div>
@@ -167,10 +176,11 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   // reCAPTCHA states
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaKey, setCaptchaKey] = useState(0); // For resetting reCAPTCHA
+  const [captchaVerified, setCaptchaVerified] = useState(false); // Track if captcha was verified before
   
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const recaptchaRef = useRef<any>(null);
+  const recaptchaRef = useRef<RecaptchaRef>(null);
 
   const { setAuthToken } = useAuthToken();
 
@@ -206,12 +216,15 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
 
   // Initialize captcha on component mount
   useEffect(() => {
-    resetCaptcha();
-  }, []);
+    if (!captchaVerified) {
+      resetCaptcha();
+    }
+  }, [captchaVerified]);
 
   const handleCaptchaChange = (token: string | null) => {
     if (token) {
       setCaptchaToken(token);
+      setCaptchaVerified(true); // Remember that captcha was verified
       toast.success("Captcha verification successful!");
     } else {
       setCaptchaToken(null);
@@ -238,11 +251,12 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     setOtp(["", "", "", "", "", ""]);
     setOtpTimer(600);
     setResendTimer(0);
-    // Reset captcha when changing email
-    resetCaptcha();
+    
+    // Don't reset captcha if already verified
+    if (!captchaVerified) {
+      resetCaptcha();
+    }
   };
-
- 
 
   // Prefill email from initialData or localStorage (only if previously verified)
   useEffect(() => {
@@ -381,7 +395,8 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       return;
     }
 
-    if (!captchaToken) {
+    // Check for captcha verification only if not previously verified
+    if (!captchaVerified && !captchaToken) {
       toast.error("Please complete the captcha verification");
       return;
     }
@@ -431,8 +446,10 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
       toast.error(errorMessage);
       console.error("Send OTP error:", err);
       
-      // Reset captcha on error
-      resetCaptcha();
+      // Reset captcha on error only if not previously verified
+      if (!captchaVerified) {
+        resetCaptcha();
+      }
     } finally {
       setIsLoading(false);
     }
@@ -497,7 +514,9 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
     if (isCompleted) return false;
     if (isLoading) return true;
     if (!showOTP || showChangeEmail) {
-      return !validateEmail(email) || !captchaToken;
+      // Only check for captcha if not previously verified
+      if (!captchaVerified && !captchaToken) return true;
+      return !validateEmail(email);
     }
     return !otp.every((digit) => digit !== "");
   };
@@ -507,7 +526,7 @@ const EmailVerification = ({ onNext, initialData, isCompleted }: EmailVerificati
   };
 
   const shouldShowCaptcha = () => {
-    return (!showOTP || showChangeEmail) && !isCompleted;
+    return (!showOTP || showChangeEmail) && !isCompleted && !captchaVerified;
   };
 
   return (
