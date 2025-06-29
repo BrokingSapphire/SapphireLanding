@@ -96,7 +96,7 @@ const Navbar = () => {
             <Link href="https://terminal.sapphirebroking.com" target="_blank" rel="noopener noreferrer">
               <Button variant="outline">Login</Button>
             </Link>
-            <Link href="/signup">
+            <Link href="https://signup.sapphirebroking.com" rel="noopener noreferrer">
               <Button variant="ghost">Signup</Button>
             </Link>
           </div>
