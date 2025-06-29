@@ -198,28 +198,20 @@ const Footer = () => {
     { title: "Privacy Policy", href: "/privacy-policy" },
     { title: "Investor Attention", href: "/investor-attention" },
     { title: "Investor Charter", href: "/investor-charter" },
-    { title: "Aadhar Consent", 
-      href: "/aadhar-consent" 
-    },
+    { title: "Aadhar Consent", href: "/aadhar-consent" },
     { title: "Do's and Don'ts of Investors", href: "/investor-dos-and-donts" },
     { title: "Rights of Investors", href: "/investor-rights" },
-    {
-      title: "Responsibilities of Investors",
-      href: "/investor-responsibilities",
-    },
-    {
-      title: "Code of Conduct for Participants",
-      href: "/code-of-conduct-participants",
-    },
+    { title: "Responsibilities of Investors", href: "/investor-responsibilities" },
+    { title: "Code of Conduct for Participants", href: "/code-of-conduct-participants" },
   ];
 
   const ACCOUNT_LINKS = [
-    { title: "Open an Account", href: "/signup" },
-     { title: "Minor Demat Account", href:"/"},
-     {title: "NRI Demat Account", href:"/"},
-     {title: "Corporate Demat Account", href:"/"},
-    { title: "Fund Transfer", href: "/bank-details" },
-    { title: "MTF", href: "/bank-details" },
+    { title: "Open an Account", href: "https://signup.sapphirebroking.com" },
+     { title: "Minor Demat Account", href:"https://signup.sapphirebroking.com/minor"},
+     {title: "NRI Demat Account", href:"https://signup.sapphirebroking.com/nri"},
+     {title: "Corporate Demat Account", href:"https://signup.sapphirebroking.com/corporate"},
+    { title: "Fund Transfer", href: "/fund-transfer" },
+    { title: "MTF", href: "/mtf" },
     { title: "Account Closure", href: "/account-closure" },
     { title: "Collateral Haircut", href: "/collateral-haircut" },
     { title: "Risk Disclosure", href: "/risk-disclosure" },
@@ -312,7 +304,6 @@ const Footer = () => {
                     alt="Google Play"
                     width={100}
                     height={80}
-                    className=""
                   />
                 </div>
               </div>

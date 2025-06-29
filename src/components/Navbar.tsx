@@ -196,12 +196,12 @@ const Navbar = () => {
 
           {/* Auth Section */}
           <div className="mt-auto space-y-4 border-t border-gray-200 pt-6">
-            <Link href="/login" className="block">
+            <Link href="https://terminal.sapphirebroking.com" target="_blank" className="block">
               <Button variant="outline" className="w-full">
                 Login
               </Button>
             </Link>
-            <Link href="/signup" className="block">
+            <Link href="https://signup.sapphirebroking.com" className="block">
               <Button className="w-full bg-[#064D51] hover:bg-[#043638] text-white">
                 Signup
               </Button>
