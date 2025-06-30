@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { GatewayItem, gatewayItems } from "@/constants/landing";
 import { type CarouselApi } from "@/components/ui/carousel";
+import Link from 'next/link';
 
 import {
   Carousel,
@@ -47,9 +48,17 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
           <h3 className="text-lg sm:text-2xl font-semibold text-white">
             {title}
           </h3>
-          <button className="px-3 sm:px-5 py-1.5 sm:py-2 border rounded-full bg-white text-gray-900 text-xs sm:text-sm">
-            Learn more
-          </button>
+          {title === 'IPO' ? (
+            <Link href="/product/ipo" target="_blank" rel="noopener noreferrer">
+              <button className="px-3 sm:px-5 py-1.5 sm:py-2 border rounded-full bg-white text-gray-900 text-xs sm:text-sm">
+                Learn more
+              </button>
+            </Link>
+          ) : (
+            <button className="px-3 sm:px-5 py-1.5 sm:py-2 border rounded-full bg-white text-gray-900 text-xs sm:text-sm">
+              Learn more
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { FaChevronRight } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 interface CalculatorButtonProps {
   label: string;
@@ -44,8 +45,16 @@ const calculatorTypes = [
 ];
 
 const Calculator: React.FC = () => {
+  const router = useRouter();
+
   const handleCalculatorClick = (calculatorId: string) => {
-    console.log(`Selected calculator: ${calculatorId}`);
+    if (calculatorId === "sip") {
+      router.push("/calculators/sip");
+    } else if (calculatorId === "brokerage") {
+      router.push("/calculators/brokerage");
+    } else if (calculatorId === "margin") {
+      router.push("/calculators/margin");
+    }
   };
 
   return (
