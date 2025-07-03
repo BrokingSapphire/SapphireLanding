@@ -68,14 +68,16 @@ const SIPCalculator: React.FC = () => {
     <div className="min-h-screen bg-white pt-20 ">
       <div className="max-w-7xl mx-auto px-4">
         {/* Breadcrumb */}
-        <div className="max-w-7xl mx-auto pt-6 pb-2 px-20">
-          <span className="text-sm text-gray-500 flex items-center">
-            <Link href="/" className="hover:underline text-gray-600">Home</Link>
-            <span className="mx-2">›</span>
-            <Link href="/calculators" className="hover:underline text-gray-600">Calculators</Link>
-            <span className="mx-2">›</span>
-            <span className="text-blue-600">SIP Calculator</span>
-          </span>
+        <div className="bg-white ">
+          <div className="max-w-7xl mx-auto px-20 py-3">
+            <nav className="flex items-center text-sm" aria-label="Breadcrumb">
+              <Link href="/" className="text-gray-500  hover:text-[#064D51] transition-colors">Home</Link>
+              <span className="mx-2 text-gray-400">›</span>
+              <Link href="/" className="text-gray-500  hover:text-[#064D51] transition-colors">Calculators</Link>
+              <span className="mx-2 text-gray-400">›</span>
+              <span className="text-[#064D51] font-regular">SIP Calculator</span>
+            </nav>
+          </div>
         </div>
 
         {/* Header */}

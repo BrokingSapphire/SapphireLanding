@@ -99,7 +99,7 @@ const MarginCalculator: React.FC = () => {
           <nav className="flex items-center text-sm" aria-label="Breadcrumb">
             <Link href="/" className="text-gray-500  hover:text-[#064D51] transition-colors">Home</Link>
             <span className="mx-2 text-gray-400">›</span>
-            <Link href="/calculators" className="text-gray-500  hover:text-[#064D51] transition-colors">Calculators</Link>
+            <Link href="/" className="text-gray-500  hover:text-[#064D51] transition-colors">Calculators</Link>
             <span className="mx-2 text-gray-400">›</span>
             <span className="text-[#064D51] font-regular">Margin Calculator</span>
           </nav>

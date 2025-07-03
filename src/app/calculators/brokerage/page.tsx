@@ -139,11 +139,11 @@ const BrokerageCalculator: React.FC = () => {
       <div className="bg-white">
         <div className="max-w-7xl mx-auto px-20 py-3">
           <div className="flex items-center text-sm text-gray-600">
-            <Link href="/" className="hover:underline text-gray-600">Home</Link>
+            <Link href="/" className="hover:text-[#064D51] text-gray-600">Home</Link>
             <span className="mx-2">›</span>
-            <Link href="/calculators" className="hover:underline text-gray-600">Calculators</Link>
+            <Link href="/" className="hover:text-[#064D51] text-gray-600">Calculators</Link>
             <span className="mx-2">›</span>
-            <span className="text-blue-600">Brokerage Calculator</span>
+            <span className="text-[#064D51]">Brokerage Calculator</span>
           </div>
         </div>
       </div>

@@ -44,13 +44,13 @@ const IPOPage: React.FC = () => {
 
   return (
     <div className="bg-white min-h-screen pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
-        <div className="bg-gray-50 py-16 px-20">
+        <div className="bg-white py-16 px-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             {/* Left Content */}
             <div className="space-y-6">
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
                 Invest in IPOs & more
               </h1>
               <div className="space-y-4 text-gray-600">
@@ -63,26 +63,26 @@ const IPOPage: React.FC = () => {
                   they list. Ideal for both new investors and experienced market participants.
                 </p>
               </div>
-              <button className="bg-teal-700 hover:bg-teal-800 text-white px-8 py-4 rounded-lg font-semibold transition-colors shadow-lg">
+              <button className="bg-[#064D51] hover:bg-teal-800 text-white px-8 py-[14px] rounded-lg font-semibold transition-colors shadow-lg">
                 Apply for IPO Now
               </button>
             </div>
             {/* Right Side - IPO Images */}
-            <div className="relative flex items-center justify-center w-full h-[300px] sm:h-[400px] md:h-[444px]">
-              <img src="/ipo/first.png" alt="IPO 1" className="absolute top-0 left-8 w-40 sm:w-56 md:w-[253px] h-auto max-h-[312px] shadow-lg z-10 rounded-xl" />
-              <img src="/ipo/second.png" alt="IPO 2" className="absolute top-12 left-24 w-32 sm:w-44 md:w-[253px] h-auto max-h-[274px] shadow-lg z-20 rounded-xl border-4 border-white" />
+            <div className="relative flex items-center pl-60 justify-center w-full h-[300px] sm:h-[400px] md:h-[444px]">
+              <img src="/ipo/IPO Application Status.svg" alt="IPO 1" className="absolute -top-[28px] left-[168px] w-40 sm:w-56 md:w-[280px] h-auto max-h-[320px] z-10" />
+              <img src="/ipo/IPO 1.svg" alt="IPO 2" className="absolute top-16 left-16 w-40 sm:w-56 md:w-[280px] h-auto max-h-[320px] z-20" />
+              <img src="/ipo/third.svg" alt="IPO 3" className="absolute -top-[2rem] right-[20rem] w-40 sm:w-56 md:w-[280px] h-auto max-h-[320px] z-5" />
             </div>
           </div>
         </div>
 
         {/* How Easy It Is Section */}
-        <div className="bg-[#F7F9FB] py-16 lg:py-24 rounded-2xl mt-12">
+        <div className="bg-[#F7F9FB] py-16 lg:py-24 rounded-2xl mt-12 px-20">
           <div className="text-center mb-16">
             <div className="inline-flex items-center space-x-2 mb-4 justify-center">
-              <span className="text-4xl font-bold text-gray-900">Checkout How Easy</span>
-              <img src="/main/image_25.png" alt="Avatar" className="w-10 h-10 rounded-full border-4 border-white shadow -mt-6" />
+              <span className="text-3xl font-bold text-gray-900">Checkout How Easy</span>
             </div>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
               It Is to Apply for an IPO on Sapphire
             </h2>
             <p className="text-gray-600 text-lg mb-8">
@@ -164,7 +164,7 @@ const IPOPage: React.FC = () => {
                 {/* Example IPO rows, replace with real data as needed */}
                 {[
                   {
-                    logo: '/ipo/first.png',
+                    logo: '/ipo/IPO 1.svg',
                     name: 'PROFX',
                     badge: 'SME',
                     subtitle: 'PRO FX TECH',
@@ -173,7 +173,7 @@ const IPOPage: React.FC = () => {
                     priceRange: '₹82 – ₹87',
                   },
                   {
-                    logo: '/ipo/second.png',
+                    logo: '/ipo/IPO Application Status.svg',
                     name: 'VALINDIA',
                     badge: 'SME',
                     subtitle: 'Valencia India IPO',
@@ -182,7 +182,7 @@ const IPOPage: React.FC = () => {
                     priceRange: '₹95 – ₹110',
                   },
                   {
-                    logo: '/ipo/first.png',
+                    logo: '/ipo/third.svg',
                     name: 'SILKY',
                     badge: 'SME',
                     subtitle: 'Silky Overseas IPO',
@@ -191,7 +191,7 @@ const IPOPage: React.FC = () => {
                     priceRange: '₹153 – ₹161',
                   },
                   {
-                    logo: '/ipo/second.png',
+                    logo: '/ipo/IPO 1.svg',
                     name: 'VALINDIA',
                     badge: 'SME',
                     subtitle: 'Valencia India IPO',
@@ -200,7 +200,7 @@ const IPOPage: React.FC = () => {
                     priceRange: '₹95 – ₹110',
                   },
                   {
-                    logo: '/ipo/first.png',
+                    logo: '/ipo/IPO Application Status.svg',
                     name: 'SILKY',
                     badge: 'SME',
                     subtitle: 'Silky Overseas IPO',
