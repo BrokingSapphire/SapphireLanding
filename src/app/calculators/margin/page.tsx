@@ -29,7 +29,7 @@ interface MarginResult {
 const MarginCalculator: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('Equity');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
+
   // Bracket & Cover Order states
   const [selectedExchange, setSelectedExchange] = useState<ExchangeType>('Equity');
   const [symbol, setSymbol] = useState<string>('');
@@ -92,16 +92,16 @@ const MarginCalculator: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-white pt-20">
       {/* Breadcrumb */}
-      <div className="bg-white border-b">
+      <div className="bg-white ">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <nav className="flex items-center text-sm" aria-label="Breadcrumb">
-            <Link href="/" className="text-gray-500 hover:underline hover:text-blue-600 transition-colors">Home</Link>
+            <Link href="/" className="text-gray-500  hover:text-[#064D51] transition-colors">Home</Link>
             <span className="mx-2 text-gray-400">›</span>
-            <Link href="/calculators" className="text-gray-500 hover:underline hover:text-blue-600 transition-colors">Calculators</Link>
+            <Link href="/calculators" className="text-gray-500  hover:text-[#064D51] transition-colors">Calculators</Link>
             <span className="mx-2 text-gray-400">›</span>
-            <span className="text-blue-600 font-semibold">Margin Calculator</span>
+            <span className="text-[#064D51] font-regular">Margin Calculator</span>
           </nav>
         </div>
       </div>
@@ -109,8 +109,8 @@ const MarginCalculator: React.FC = () => {
       {/* Header */}
       <div className="bg-white">
         <div className="max-w-6xl mx-auto px-4 py-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Margin Calculator</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Margin Calculator</h1>
+          <p className="text-gray-500 max-w-2xl mx-auto">
             Use the brokerage calculator to calculate exactly how much you will pay in brokerage and your breakeven.
           </p>
         </div>
@@ -118,9 +118,9 @@ const MarginCalculator: React.FC = () => {
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          {/* Tabs */}
-          <div className="flex border-b mb-8 overflow-x-auto">
+        {/* Tabs */}
+        <div className="bg-white w-auto">
+          <div className="flex border-b-2 mr-60">
             {([
               'Equity',
               'Equity Future',
@@ -131,51 +131,51 @@ const MarginCalculator: React.FC = () => {
             ] as ActiveTab[]).map((tab) => (
               <button
                 key={tab}
-                className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === tab
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab
+                    ? 'border-[#064D51] text-[#064D51]'
+                    : 'border-transparent text-gray-500 hover:text-[#064D51]'
+                  }`}
                 onClick={() => setActiveTab(tab)}
               >
                 {tab}
               </button>
             ))}
           </div>
-
-          {/* Content based on active tab */}
-          {activeTab === 'Equity' && (
-            <EquityMarginCalculator
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              filteredContracts={filteredContracts}
-            />
-          )}
-          {activeTab === 'Equity Future' && <EquityFutureMarginCalculator />}
-          {activeTab === 'Currency Future' && <CurrencyFutureMarginCalculator />}
-          {activeTab === 'MCX Future' && <MCXFutureMarginCalculator />}
-          {activeTab === 'Bracket & Cover Order' && (
-            <BracketCoverOrderMarginCalculator
-              selectedExchange={selectedExchange}
-              setSelectedExchange={setSelectedExchange}
-              symbol={symbol}
-              setSymbol={setSymbol}
-              price={price}
-              setPrice={setPrice}
-              quantity={quantity}
-              setQuantity={setQuantity}
-              stopLossPrice={stopLossPrice}
-              setStopLossPrice={setStopLossPrice}
-              orderType={orderType}
-              setOrderType={setOrderType}
-              marginResult={marginResult}
-              calculateMargin={calculateMargin}
-              handleReset={handleReset}
-              formatCurrency={formatCurrency}
-            />
-          )}
-          {activeTab === 'Span Calculator' && <SpanCalculator />}
         </div>
+        <div className="mb-8"></div>
+
+        {/* Content based on active tab */}
+        {activeTab === 'Equity' && (
+          <EquityMarginCalculator
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filteredContracts={filteredContracts}
+          />
+        )}
+        {activeTab === 'Equity Future' && <EquityFutureMarginCalculator />}
+        {activeTab === 'Currency Future' && <CurrencyFutureMarginCalculator />}
+        {activeTab === 'MCX Future' && <MCXFutureMarginCalculator />}
+        {activeTab === 'Bracket & Cover Order' && (
+          <BracketCoverOrderMarginCalculator
+            selectedExchange={selectedExchange}
+            setSelectedExchange={setSelectedExchange}
+            symbol={symbol}
+            setSymbol={setSymbol}
+            price={price}
+            setPrice={setPrice}
+            quantity={quantity}
+            setQuantity={setQuantity}
+            stopLossPrice={stopLossPrice}
+            setStopLossPrice={setStopLossPrice}
+            orderType={orderType}
+            setOrderType={setOrderType}
+            marginResult={marginResult}
+            calculateMargin={calculateMargin}
+            handleReset={handleReset}
+            formatCurrency={formatCurrency}
+          />
+        )}
+        {activeTab === 'Span Calculator' && <SpanCalculator />}
       </div>
     </div>
   );
