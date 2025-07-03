@@ -6,22 +6,22 @@ import Image from 'next/image';
 const DematerializationPage: React.FC = () => {
   const steps = [
     {
-      number: '01',
+      image: './dematerialization/01.svg',
       title: 'Open a Demat Account',
       description: 'Choose a DP, submit KYC documents, and receive your Demat Account Number after verification.'
     },
     {
-      number: '02',
+      image: './dematerialization/02.svg',
       title: 'Submit Dematerialisation Request',
       description: 'Fill the DRF, submit physical certificates against request. The entire ensuring name matches Demat account.'
     },
     {
-      number: '03',
+      image: './dematerialization/03.svg',
       title: 'Verification and Processing',
       description: 'DP sends documents to RTA, certificates are verified before approval for electronic conversion.'
     },
     {
-      number: '04',
+      image: './dematerialization/04.svg',
       title: 'Shares Credited Digitally',
       description: 'Dematerialized shares are credited to your demat account by NSDL or CDSL within a week.'
     }
@@ -33,11 +33,11 @@ const DematerializationPage: React.FC = () => {
     <div className="bg-white">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-8 sm:px-6 lg:px-20 py-16 lg:py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="space-y-6">
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-4xl lg:text-3xl mt-10 font-bold text-gray-900 leading-tight">
                 Got dusty share certificates lying around? Let's uncover their hidden value together!
               </h1>
               
@@ -60,7 +60,7 @@ const DematerializationPage: React.FC = () => {
                 </p>
               </div>
               
-              <button className="bg-teal-700 hover:bg-teal-800 text-white px-8 py-4 rounded-lg font-semibold transition-colors shadow-lg">
+              <button className="bg-[#064D51] hover:bg-teal-800 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-lg">
                 Convert Your Physical Shares Now
               </button>
             </div>
@@ -74,25 +74,21 @@ const DematerializationPage: React.FC = () => {
       </div>
 
       {/* Steps Section */}
-      <div className="bg-gray-50 py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white py-10 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-[#F5F7FA] py-16">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Steps to Dematerialize Your Physical Share Certificates
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 bg-white rounded-xl shadow p-0 border border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 p-0 px-20">
             {steps.map((step, index) => (
-              <div key={index} className="relative flex flex-col items-start px-6 py-10 min-h-[260px] border-gray-200" style={{borderRight: index < steps.length - 1 ? '1px solid #E5E7EB' : 'none'}}>
-                {/* Large Step Number Background */}
-                <div className="text-[72px] font-semibold text-gray-300 leading-none mb-4 select-none">{step.number}</div>
-                {/* Blue avatar for step 2 */}
-                {index === 1 && (
-                  <div className="absolute top-10 right-10">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="avatar" className="w-8 h-8 rounded-full border-4 border-blue-400 shadow" />
-                  </div>
-                )}
+              <div key={index} className="relative flex flex-col items-start px-6 py-10 min-h-[260px]" style={{borderRight: index < steps.length - 1 ? '2px solid #E5E7EB' : 'none'}}>
+                {/* Step Image */}
+                <div className="mb-6">
+                  <img className="h-25 w-25" src={step.image} alt="" />
+                </div>
                 <h3 className="text-lg font-bold text-black mb-2 z-10">{step.title}</h3>
                 <p className="text-gray-700 text-base z-10">{step.description}</p>
               </div>
@@ -104,53 +100,53 @@ const DematerializationPage: React.FC = () => {
       </div>
 
       {/* Why Dematerialization is Important */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-16">
         <h2 className="text-3xl font-bold text-center mb-12">Why Dematerialization is Important</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Card 1 */}
-          <div className="bg-[#E6F4F1] rounded-lg p-6 flex flex-col h-full">
-            <div className="mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-teal-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <div className="bg-white rounded-lg p-6 flex flex-col h-full">
+            <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
+              <img className="h-7 w-7" src="./dematerialization/1.svg" alt="" />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Improved Security</h3>
             <p className="text-gray-700">Dematerialisation eliminates the risks of losing physical certificates due to theft, misplacement, or damage. Your holdings are safely stored in electronic form under regulated depositories like NSDL or CDSL.</p>
           </div>
           {/* Card 2 */}
-          <div className="bg-[#E6F4F1] rounded-lg p-6 flex flex-col h-full">
-            <div className="mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-teal-700"><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L21 12m0 0l-3.75 5.25M21 12H3" /></svg>
+          <div className="bg-white rounded-lg p-6 flex flex-col h-full">
+            <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
+              <img className="h-7 w-7" src="./dematerialization/2.svg" alt="" />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Faster Transactions</h3>
             <p className="text-gray-700">Digital shares allow you to buy, sell, and transfer securities instantly without delays or paperwork. This ensures smooth, real-time trading and better opportunities in fast-moving markets.</p>
           </div>
           {/* Card 3 */}
-          <div className="bg-[#E6F4F1] rounded-lg p-6 flex flex-col h-full">
-            <div className="mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-teal-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8m8-8a8 8 0 11-16 0 8 8 0 0116 0z" /></svg>
+          <div className="bg-white rounded-lg p-6 flex flex-col h-full">
+            <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
+              <img className="h-7 w-7" src="./dematerialization/3.svg" alt="" />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Cost Efficiency</h3>
             <p className="text-gray-700">Holding shares in demat form reduces expenses like stamp duty, courier charges, and handling fees. It also minimizes administrative burdens and streamlines investment management for better cost control.</p>
           </div>
           {/* Card 4 */}
-          <div className="bg-[#E6F4F1] rounded-lg p-6 flex flex-col h-full">
-            <div className="mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-teal-700"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M3 14h18M7 6h10M7 18h10" /></svg>
+          <div className="bg-white rounded-lg p-6 flex flex-col h-full">
+            <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
+              <img className="h-7 w-7" src="./dematerialization/4.svg" alt="" />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Compliance & Convenience</h3>
             <p className="text-gray-700">SEBI regulations require listed securities to be held in demat form. It also makes it easier to monitor, update, and manage your portfolio anytime through your DP's digital platform.</p>
           </div>
           {/* Card 5 */}
-          <div className="bg-[#E6F4F1] rounded-lg p-6 flex flex-col h-full">
-            <div className="mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-teal-700"><path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 0a2 2 0 002 2h2a2 2 0 002-2m-6 0V7a2 2 0 012-2h2a2 2 0 012 2v10" /></svg>
+          <div className="bg-white rounded-lg p-6 flex flex-col h-full">
+            <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
+              <img className="h-7 w-7" src="./dematerialization/5.svg" alt="" />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Easy Portfolio Tracking</h3>
             <p className="text-gray-700">With all your holdings in one demat account, you can easily track, monitor, and manage your investments, dividends, and corporate actions through a single digital interface.</p>
           </div>
           {/* Card 6 */}
-          <div className="bg-[#E6F4F1] rounded-lg p-6 flex flex-col h-full">
-            <div className="mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-teal-700"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8m8-8a8 8 0 11-16 0 8 8 0 0116 0z" /></svg>
+          <div className="bg-white rounded-lg p-6 flex flex-col h-full">
+            <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
+              <img className="h-7 w-7" src="./dematerialization/6.svg" alt="" />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Eco-Friendly & Paperless</h3>
             <p className="text-gray-700">Dematerialisation reduces paper usage and storage needs, making your investment process environmentally friendly while contributing to a cleaner, more sustainable financial ecosystem.</p>
@@ -159,9 +155,9 @@ const DematerializationPage: React.FC = () => {
       </div>
 
       {/* FAQ Section */}
-      <div className="max-w-3xl mx-auto px-4 py-16">
+      <div className="max-w-4xl mx-auto px-4 py-16">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-[#234056]">Frequently Asked Questions (FAQs)</h2>
-        <div className="divide-y divide-gray-200 border-t border-b">
+        <div className="divide-y divide-gray-200 border-b">
           {/* FAQ 1 */}
           <button
             className="w-full flex items-center justify-between py-6 text-left focus:outline-none"
@@ -169,7 +165,7 @@ const DematerializationPage: React.FC = () => {
             aria-expanded={openFAQ === 0}
           >
             <span className="text-lg font-medium text-black">What is dematerialisation?</span>
-            <span className="text-2xl text-black">{openFAQ === 0 ? '−' : '+'}</span>
+            <span className="text-2xl text-black">{openFAQ === 0 ? '×' : '+'}</span>
           </button>
           {openFAQ === 0 && (
             <div className="pb-6 pl-1 text-gray-700 text-base">
@@ -199,7 +195,7 @@ const DematerializationPage: React.FC = () => {
             aria-expanded={openFAQ === 2}
           >
             <span className="text-lg font-medium text-black">Can I dematerialise shares with mismatched names?</span>
-            <span className="text-2xl text-black">{openFAQ === 2 ? '−' : '+'}</span>
+            <span className="text-2xl text-black">{openFAQ === 2 ? '×' : '+'}</span>
           </button>
           {openFAQ === 2 && (
             <div className="pb-6 pl-1 text-gray-700 text-base">
