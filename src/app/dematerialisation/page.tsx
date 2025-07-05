@@ -52,16 +52,14 @@ const DematerializationPage: React.FC = () => {
     },
     {
       question: "How long does dematerialisation take?",
-      answer: "Typically, the process takes 2–3 weeks after submitting the required documents and share certificates to your Depository Participant (DP)."
+      answer: "Typically, the process takes 2 to 3 weeks after submitting the required documents and share certificates to your Depository Participant (DP)."
     },
     {
       question: "Can I dematerialise shares with mismatched names?",
       answer: "Yes, we are SEBI-registered and comply with all regulatory guidelines to ensure the security of your investments."
     }
   ];
-
-  const [openFAQ, setOpenFAQ] = React.useState<number | null>(null);
-
+  
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -71,7 +69,7 @@ const DematerializationPage: React.FC = () => {
             {/* Left Content */}
             <div className="space-y-4 sm:space-y-6">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl mt-4 sm:mt-6 lg:mt-10 font-bold text-gray-900 leading-tight">
-                Got dusty share certificates lying around? Let's uncover their hidden value together!
+                Got dusty share certificates lying around? Let&apos;s uncover their hidden value together!
               </h1>
               
               <div className="space-y-3 sm:space-y-4 text-gray-600 text-sm sm:text-base">
@@ -81,7 +79,7 @@ const DematerializationPage: React.FC = () => {
                 </p>
                 
                 <p>
-                  Whether you've purchased shares in the past or inherited them recently, you'll 
+                  Whether you&apos;ve purchased shares in the past or inherited them recently, you&apos;ll 
                   need to convert those paper certificates into a digital format before taking any 
                   action.
                 </p>
@@ -169,7 +167,7 @@ const DematerializationPage: React.FC = () => {
               <Image className="h-5 w-5 sm:h-7 sm:w-7" src="/dematerialization/4.svg" alt="" width={28} height={28} />
             </div>
             <h3 className="font-bold text-base sm:text-lg text-black mb-2">Compliance & Convenience</h3>
-            <p className="text-gray-700 text-sm sm:text-base">SEBI regulations require listed securities to be held in demat form. It also makes it easier to monitor, update, and manage your portfolio anytime through your DP's digital platform.</p>
+            <p className="text-gray-700 text-sm sm:text-base">SEBI regulations require listed securities to be held in demat form. It also makes it easier to monitor, update, and manage your portfolio anytime through your DP&apos;s digital platform.</p>
           </div>
           {/* Card 5 */}
           <div className="bg-white rounded-lg p-4 sm:p-6 flex flex-col h-full shadow-sm">
