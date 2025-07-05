@@ -137,7 +137,7 @@ const BrokerageCalculator: React.FC = () => {
     <div className="min-h-screen bg-white pt-20 px-4">
       {/* Breadcrumb */}
       <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-20 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
           <div className="flex items-center text-sm text-gray-600">
             <Link href="/" className="hover:text-[#064D51] text-gray-600">Home</Link>
             <span className="mx-2">›</span>
@@ -151,31 +151,31 @@ const BrokerageCalculator: React.FC = () => {
       {/* Header */}
       <div className="bg-white">
         <div className="max-w-6xl mx-auto px-4 py-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Brokerage Calculator</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Use the brokerage calculator to calculate exactly how much you will
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Brokerage Calculator</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
+            Use the brokerage calculator to calculate exactly how much you will pay in
           </p>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            pay in brokerage and your breakeven.
+          <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
+             brokerage and your breakeven.
           </p>
         </div>
       </div>
 
       {/* Full Width Background Section with ColorGradient */}
-      <div className="w-100vw relative h-[500px] mb-[20rem]" style={{
+      <div className="w-100vw relative h-auto lg:h-[500px] mb-8 lg:mb-[20rem]" style={{
         backgroundImage: 'url(/ColorGradient.svg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}>
         {/* Tabs */}
-        <div className="flex mb-5 max-w-7xl mx-auto px-20 pt-8">
+        <div className="flex mb-5 max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pt-8 overflow-x-auto">
           {(['Equity', 'F&O', 'Currency', 'Commodity'] as ActiveTab[]).map((tab) => (
             <button
               key={tab}
-              className={`px-8 py-3 mb-0 font-[24px] border-b-[3px] transition-colors ${activeTab === tab
+              className={`px-4 py-3 mb-0 font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${activeTab === tab
                 ? 'border-[#064D51] text-[#064D51]'
-                : 'border-gray-300 text-gray-500 hover:text-gray-700 hover:border-b-[3px] hover:border-[#064D51]'
+                : 'border-transparent text-gray-500 hover:text-[#064D51]'
                 }`}
               onClick={() => setActiveTab(tab)}
             >
@@ -185,11 +185,11 @@ const BrokerageCalculator: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-20 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-8">
           <div className="bg-white rounded-lg border border-gray-200">
-            <div className="flex w-full items-stretch min-h-[400px]">
+            <div className="flex flex-col lg:flex-row w-full items-stretch min-h-[400px]">
               {/* Left Panel - Input Form */}
-              <div className="space-y-6 w-2/5 h-full p-8 px-[50px]">
+              <div className="space-y-6 w-full lg:w-2/5 h-full p-4 sm:p-6 lg:p-8 lg:px-[50px]">
                 {/* Exchange Selection */}
                 <div className="p-4">
                   <h3 className="font-medium mb-3">Exchange</h3>
@@ -264,23 +264,23 @@ const BrokerageCalculator: React.FC = () => {
                 {/* Clear Button */}
                 <button
                   onClick={handleClear}
-                  className="bg-[#064D51] text-white px-6 py-2 rounded-lg hover:bg-teal-800 transition-colors"
+                  className="bg-[#064D51] text-white px-6 py-2 rounded-lg hover:bg-teal-800 transition-colors w-full sm:w-auto"
                 >
                   Clear
                 </button>
               </div>
 
               {/* Vertical Divider */}
-              <div className="w-px bg-gray-200 self-stretch" />
+              <div className="w-full lg:w-px h-px lg:h-auto bg-gray-200 self-stretch" />
 
               {/* Right Panel - Results */}
-              <div className="space-y-6 w-3/5 h-full p-8 px-[90px]">
+              <div className="space-y-6 w-full lg:w-3/5 h-full p-4 sm:p-6 lg:p-8 lg:px-[90px]">
                 {/* Delivery Type Tabs */}
                 <div className="flex border-b border-gray-200">
                   {(['Delivery', 'Intraday'] as DeliveryType[]).map((type) => (
                     <button
                       key={type}
-                      className={`flex-1 py-2 text-center transition-colors duration-200
+                      className={`flex-1 py-2 text-center transition-colors duration-200 text-sm sm:text-base
                       ${deliveryType === type
                           ? 'border-b-2 border-[#064D51] text-[#064D51] font-medium'
                           : 'border-b-2 border-transparent text-gray-400 font-medium'
@@ -294,16 +294,16 @@ const BrokerageCalculator: React.FC = () => {
 
                 {/* Sapphire Charges */}
                 <div className="bg-white px-3">
-                  <h3 className="text-[16px] font-poppins font-medium text-[#152F46] mb-3">Sapphire Charges</h3>
+                  <h3 className="text-sm sm:text-[16px] font-poppins font-medium text-[#152F46] mb-3">Sapphire Charges</h3>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 text-[14px] font-poppins">Brokerage</span>
-                    <span className="font-medium text-green-600 text-[14px] font-poppins">{formatCurrency(charges.sapphireBrokerage)}</span>
+                    <span className="text-gray-600 text-xs sm:text-[14px] font-poppins">Brokerage</span>
+                    <span className="font-medium text-green-600 text-xs sm:text-[14px] font-poppins">{formatCurrency(charges.sapphireBrokerage)}</span>
                   </div>
                 </div>
 
                 {/* Regulatory Charges */}
-                <div className='px-3 text-[14px] font-poppins'>
-                  <h3 className="font-medium text-gray-700 mb-3 text-[16px] font-poppins">Regulatory Charges</h3>
+                <div className='px-3 text-xs sm:text-[14px] font-poppins'>
+                  <h3 className="font-medium text-gray-700 mb-3 text-sm sm:text-[16px] font-poppins">Regulatory Charges</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Turnover</span>
@@ -351,15 +351,15 @@ const BrokerageCalculator: React.FC = () => {
 
                 {/* Net P/L */}
                 <div
-                  className="bg-white border-t-2 border-dashed border-gray-300 px-3 text-[16px] font-poppins pt-4"
+                  className="bg-white border-t-2 border-dashed border-gray-300 px-3 text-sm sm:text-[16px] font-poppins pt-4"
                   style={{
                     borderImage: "repeating-linear-gradient(90deg, #d1d5db 0 8px, transparent 6px 12px) 100",
                     borderTopStyle: "solid", // overrides dashed to use image
                   }}
                 >
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-[#152F46] text-[16px]">Net P/L</span>
-                    <span className={`text-[16px] font-medium ${charges.netPL >= 0 ? 'text-[#152F46]' : 'text-red-600'}`}>
+                    <span className="font-medium text-[#152F46] text-sm sm:text-[16px]">Net P/L</span>
+                    <span className={`text-sm sm:text-[16px] font-medium ${charges.netPL >= 0 ? 'text-[#152F46]' : 'text-red-600'}`}>
                       {formatCurrency(charges.netPL)}
                     </span>
                   </div>
@@ -372,31 +372,31 @@ const BrokerageCalculator: React.FC = () => {
       </div>
 
       {/* Informational Sections */}
-      <div className="max-w-7xl mx-auto px-20 pb-12">
-        <h2 className="text-2xl mb-3 mt-8 font-normal font-lexend text-gray-900">What is a Brokerage Calculator?</h2>
-        <p className="text-[#636363] text-base mb-2">A brokerage calculator is a smart online tool designed to help traders and investors calculate the brokerage fees and other transaction-related charges linked to their trades. By entering trade specifics like price, quantity, and segment, users can quickly assess all costs involved, including brokerage, taxes, and exchange fees. This enables better decision-making and accurate profit or loss projections across market segments such as equities, derivatives, commodities, and currencies.</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-12">
+        <h2 className="text-xl sm:text-2xl mb-3 mt-8 font-normal font-lexend text-gray-900">What is a Brokerage Calculator?</h2>
+        <p className="text-[#636363] text-sm sm:text-base mb-2">A brokerage calculator is a smart online tool designed to help traders and investors calculate the brokerage fees and other transaction-related charges linked to their trades. By entering trade specifics like price, quantity, and segment, users can quickly assess all costs involved, including brokerage, taxes, and exchange fees. This enables better decision-making and accurate profit or loss projections across market segments such as equities, derivatives, commodities, and currencies.</p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-20 pb-12">
-        <h2 className="text-2xl mb-3 font-normal font-lexend text-gray-900">How to Calculate Brokerage Using a Brokerage Calculator?</h2>
-        <p className="text-[#636363] text-base mb-2">Traditionally, calculating brokerage required understanding a broker&apos;s fee structure, which can vary—some charge a flat fee per order, while others apply a percentage on the trade value. With the Sapphire Broking Brokerage Calculator, this becomes seamless. Simply input your trade details and the tool instantly computes the total charges and net P&L, eliminating the guesswork.</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-12">
+        <h2 className="text-xl sm:text-2xl mb-3 font-normal font-lexend text-gray-900">How to Calculate Brokerage Using a Brokerage Calculator?</h2>
+        <p className="text-[#636363] text-sm sm:text-base mb-2">Traditionally, calculating brokerage required understanding a broker&apos;s fee structure, which can vary—some charge a flat fee per order, while others apply a percentage on the trade value. With the Sapphire Broking Brokerage Calculator, this becomes seamless. Simply input your trade details and the tool instantly computes the total charges and net P&L, eliminating the guesswork.</p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-20 pb-12">
-        <h2 className="text-2xl mb-3 font-normal font-lexend text-gray-900">How to Use the Sapphire Broking Online Brokerage Calculator?</h2>
-        <p className="text-[#636363] text-base mb-2">Using the Sapphire Broking Brokerage Calculator is simple and intuitive. Just follow these steps:</p>
-        <ol className="list-decimal list-inside text-[#636363] space-y-1 pl-4 mb-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-12">
+        <h2 className="text-xl sm:text-2xl mb-3 font-normal font-lexend text-gray-900">How to Use the Sapphire Broking Online Brokerage Calculator?</h2>
+        <p className="text-[#636363] text-sm sm:text-base mb-2">Using the Sapphire Broking Brokerage Calculator is simple and intuitive. Just follow these steps:</p>
+        <ol className="list-decimal list-inside text-[#636363] space-y-1 pl-4 mb-2 text-sm sm:text-base">
           <li>Select the Market Segment: Equity, F&O, Currency, or Commodities.</li>
           <li>Enter Trade Details: Buy and/or sell price, quantity of shares or contracts.</li>
           <li>View Instant Results: The calculator will display the brokerage, statutory charges (GST, STT, exchange charges, SEBI fees, etc.), and the total cost.</li>
           <li>Review Net P&L: You&apos;ll also see your estimated net profit or loss after all deductions.</li>
         </ol>
-        <p className="text-[#636363] text-base">This tool allows traders to assess the real impact of trading costs before placing an order.</p>
+        <p className="text-[#636363] text-sm sm:text-base">This tool allows traders to assess the real impact of trading costs before placing an order.</p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-20 pb-12">
-        <h2 className="text-2xl mb-3 font-normal font-lexend text-gray-900">Benefits of Using the Sapphire Broking Brokerage Calculator</h2>
-        <ul className="list-disc list-inside text-[#636363] space-y-1 pl-4 mb-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-12">
+        <h2 className="text-xl sm:text-2xl mb-3 font-normal font-lexend text-gray-900">Benefits of Using the Sapphire Broking Brokerage Calculator</h2>
+        <ul className="list-disc list-inside text-[#636363] space-y-1 pl-4 mb-2 text-sm sm:text-base">
           <li><span className="font-medium">Full Transparency:</span> View a detailed cost breakdown before placing a trade.</li>
           <li><span className="font-medium">High Accuracy:</span> Avoid manual miscalculations and surprises.</li>
           <li><span className="font-medium">Time-Efficiency:</span> Get instant results with minimal inputs.</li>
@@ -405,9 +405,9 @@ const BrokerageCalculator: React.FC = () => {
         </ul>
       </div>
 
-      <div className="max-w-7xl mx-auto px-20 pb-12">
-        <h2 className="text-2xl mb-3 font-normal font-lexend text-gray-900">Conclusion</h2>
-        <p className="text-[#636363] text-base">The Sapphire Broking Brokerage Calculator is an essential tool for every trader looking to optimize strategy and minimize trading costs. Whether you trade equities, derivatives, commodities, or currencies, this calculator provides instant, accurate, and transparent cost assessments. With Sapphire Broking&apos;s client-centric approach, you get the right tools to make well-informed and confident trading decisions.</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-12">
+        <h2 className="text-xl sm:text-2xl mb-3 font-normal font-lexend text-gray-900">Conclusion</h2>
+        <p className="text-[#636363] text-sm sm:text-base">The Sapphire Broking Brokerage Calculator is an essential tool for every trader looking to optimize strategy and minimize trading costs. Whether you trade equities, derivatives, commodities, or currencies, this calculator provides instant, accurate, and transparent cost assessments. With Sapphire Broking&apos;s client-centric approach, you get the right tools to make well-informed and confident trading decisions.</p>
       </div>
     </div>
   );
