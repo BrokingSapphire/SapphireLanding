@@ -73,7 +73,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.8 }}
           >
             <motion.div>
-              <Link href={"/signup"}>
+              <Link href={"https://signup.sapphirebroking.com"} rel="noopener noreferrer">
                 <CustomButtonX
                   text="Get Started"
                   backgroundColor="#064D51"

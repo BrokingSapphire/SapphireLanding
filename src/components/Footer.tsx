@@ -64,7 +64,7 @@ const SocialLinks = () => {
 
 const QuickLinks = () => {
   const Links = [
-    { name: "Dematerialisation", href: "" },
+    { name: "Dematerialisation", href: "/dematerialisation" },
     { name: "Upcoming IPOs", href: "" },
     { name: "Market Holidays", href: "" },
     { name: "Economic Calendar", href: "" },
@@ -75,9 +75,15 @@ const QuickLinks = () => {
     <ul className="space-y-2">
       {Links.map((link) => (
         <li key={link.name}>
-          <a href={link.href} className="text-xs sm:text-[14px] hover:text-gray-300">
-            {link.name}
-          </a>
+          {link.href && link.href.startsWith('/') ? (
+            <Link href={link.href} className="text-xs sm:text-[14px] hover:text-gray-300">
+              {link.name}
+            </Link>
+          ) : (
+            <a href={link.href} className="text-xs sm:text-[14px] hover:text-gray-300" target="_blank" rel="noopener noreferrer">
+              {link.name}
+            </a>
+          )}
         </li>
       ))}
     </ul>
