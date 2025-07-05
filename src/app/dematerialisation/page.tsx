@@ -2,6 +2,12 @@
 
 import React from 'react';
 import Image from 'next/image';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const DematerializationPage: React.FC = () => {
   const steps = [
@@ -24,6 +30,21 @@ const DematerializationPage: React.FC = () => {
       image: './dematerialization/04.svg',
       title: 'Shares Credited Digitally',
       description: 'Dematerialized shares are credited to your demat account by NSDL or CDSL within a week.'
+    }
+  ];
+
+  const dematerializationFAQs = [
+    {
+      question: "What is dematerialisation?",
+      answer: "You can open your account online in minutes by submitting your PAN card, Aadhaar, and bank details, or visit our office for assistance."
+    },
+    {
+      question: "How long does dematerialisation take?",
+      answer: "Typically, the process takes 2–3 weeks after submitting the required documents and share certificates to your Depository Participant (DP)."
+    },
+    {
+      question: "Can I dematerialise shares with mismatched names?",
+      answer: "Yes, we are SEBI-registered and comply with all regulatory guidelines to ensure the security of your investments."
     }
   ];
 
@@ -67,7 +88,7 @@ const DematerializationPage: React.FC = () => {
 
             {/* Right Illustration */}
             <div className="flex items-center justify-center w-full h-full">
-              <Image src="/dematerialization/first.svg" alt="Dematerialisation Illustration" width={400} height={400} className="w-full max-w-md h-auto object-contain" />
+              <Image src="/dematerialization/first.svg" alt="Dematerialisation Illustration" width={600} height={600} className="w-full max-w-md h-auto object-contain" />
             </div>
           </div>
         </div>
@@ -75,22 +96,25 @@ const DematerializationPage: React.FC = () => {
 
       {/* Steps Section */}
       <div className="bg-white py-10 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-[#F5F7FA] py-16">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-[#F5F7FA] py-16 pb-8">
+          <div className="text-center mb-16 pl-5">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 flex text-start pl-20">
               Steps to Dematerialize Your Physical Share Certificates
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 p-0 px-20">
             {steps.map((step, index) => (
-              <div key={index} className="relative flex flex-col items-start px-6 py-10 min-h-[260px]" style={{borderRight: index < steps.length - 1 ? '2px solid #E5E7EB' : 'none'}}>
+              <div key={index} className="relative flex flex-col items-start px-6 min-h-[200px]" style={{
+                borderRight: index < steps.length - 1 ? '1px solid #E5E7EB' : 'none',
+                borderLeft: '2px solid #E5E7EB'
+              }}>
                 {/* Step Image */}
-                <div className="mb-6">
+                <div className="mb-6 -ml-4">
                   <img className="h-25 w-25" src={step.image} alt="" />
                 </div>
-                <h3 className="text-lg font-bold text-black mb-2 z-10">{step.title}</h3>
-                <p className="text-gray-700 text-base z-10">{step.description}</p>
+                <h3 className="text-lg font-lexend font-regular text-black mb-2 z-10">{step.title}</h3>
+                <p className="text-gray-700 text-[16px] z-10">{step.description}</p>
               </div>
             ))}
           </div>
@@ -155,53 +179,32 @@ const DematerializationPage: React.FC = () => {
       </div>
 
       {/* FAQ Section */}
-      <div className="max-w-4xl mx-auto px-4 py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-[#234056]">Frequently Asked Questions (FAQs)</h2>
-        <div className="divide-y divide-gray-200 border-b">
-          {/* FAQ 1 */}
-          <button
-            className="w-full flex items-center justify-between py-6 text-left focus:outline-none"
-            onClick={() => setOpenFAQ(openFAQ === 0 ? null : 0)}
-            aria-expanded={openFAQ === 0}
-          >
-            <span className="text-lg font-medium text-black">What is dematerialisation?</span>
-            <span className="text-2xl text-black">{openFAQ === 0 ? '×' : '+'}</span>
-          </button>
-          {openFAQ === 0 && (
-            <div className="pb-6 pl-1 text-gray-700 text-base">
-              Dematerialisation is the process of converting physical share certificates into electronic form, making them easier to manage, transfer, and trade.
-            </div>
-          )}
+      <div className="w-full mb-10 mt-2 px-14 sm:px-6 py-8 sm:p-12">
+        <div className="max-w-6xl mx-auto flex flex-col space-y-4 sm:space-y-6 items-center justify-center">
+          <h1 className="font-lexend text-3xl sm:text-4xl font-medium text-center">
+            Frequently Asked Questions (FAQs)
+          </h1>
 
-          {/* FAQ 2 */}
-          <button
-            className="w-full flex items-center justify-between py-6 text-left focus:outline-none"
-            onClick={() => setOpenFAQ(openFAQ === 1 ? null : 1)}
-            aria-expanded={openFAQ === 1}
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full space-y-2 sm:space-y-3 mt-4 sm:mt-6"
           >
-            <span className="text-lg font-medium text-black">How long does dematerialisation take?</span>
-            <span className="text-2xl text-black">{openFAQ === 1 ? '×' : '+'}</span>
-          </button>
-          {openFAQ === 1 && (
-            <div className="pb-6 pl-1 text-gray-700 text-base">
-              Typically, the process takes 2–3 weeks after submitting the required documents and share certificates to your Depository Participant (DP).
-            </div>
-          )}
-
-          {/* FAQ 3 */}
-          <button
-            className="w-full flex items-center justify-between py-6 text-left focus:outline-none"
-            onClick={() => setOpenFAQ(openFAQ === 2 ? null : 2)}
-            aria-expanded={openFAQ === 2}
-          >
-            <span className="text-lg font-medium text-black">Can I dematerialise shares with mismatched names?</span>
-            <span className="text-2xl text-black">{openFAQ === 2 ? '×' : '+'}</span>
-          </button>
-          {openFAQ === 2 && (
-            <div className="pb-6 pl-1 text-gray-700 text-base">
-              Yes, but you may need to provide supporting documents such as an affidavit, name change certificate, or marriage certificate to prove the name change or correction.
-            </div>
-          )}
+            {dematerializationFAQs.map((faq, index) => (
+              <AccordionItem
+                key={index}
+                value={`item-${index + 1}`}
+                className="py-1 sm:py-2"
+              >
+                <AccordionTrigger className="font-lexend text-sm sm:text-lg md:text-[24px] hover:no-underline text-left">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="font-lexend font-normal text-gray-600 text-sm sm:text-base md:text-[20px] leading-relaxed pr-2 sm:pr-8">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </div>
     </div>
