@@ -49,10 +49,10 @@ const BracketCoverOrderMarginCalculator: React.FC<BracketCoverOrderMarginCalcula
   return (
     <div className="mb-10">
       <div className='border p-6 flex flex-col rounded-md shadow-sm bg-white'>
-        <h2 className="text-xl font-semibold mb-3">Bracket & Cover Orders</h2>
+        <h2 className="text-xl font-medium mb-3">Bracket & Cover Orders</h2>
 
         <div className='mb-4'>
-          <label className="block text-black font-medium mb-1">Exchange</label>
+          <label className="block text-gray-700 font-medium mb-2">Exchange</label>
           <div className="flex flex-wrap gap-4">
             {(['Equity', 'MCX', 'NFO', 'CDS'] as ExchangeType[]).map((exchange) => (
               <label key={exchange} className="flex items-center text-xs cursor-pointer">
@@ -196,24 +196,26 @@ const BracketCoverOrderMarginCalculator: React.FC<BracketCoverOrderMarginCalcula
       <div className="flex justify-end gap-4 mb-8 mt-5">
         <button
           onClick={calculateMargin}
-          className="bg-[#064D51] text-white px-6 py-[6px] rounded-lg hover:bg-teal-800 transition-colors font-medium"
+          className="bg-[#064D51] text-white px-6 py-[8px] rounded-lg hover:bg-teal-800 transition-colors font-medium"
         >
           Calculate
         </button>
         <button
           onClick={handleReset}
-          className="border border-gray-300 text-gray-700 px-6 py-[6px] rounded-lg hover:bg-gray-50 transition-colors font-medium"
+          className="border-2 border-[#064D51] text-[#064D51] px-6 py-[8px] rounded-lg hover:bg-gray-50 transition-colors font-medium"
         >
           Reset
         </button>
       </div>
       {/* Results Table */}
       <div className="w-full">
-        <h3 className="text-lg font-semibold mb-4">Margin Calculator</h3>
+        <h3 className="mb-4" style={{ fontSize: '24px', fontFamily: 'Lexend', fontWeight: 400 }}>
+          Margin Calculator
+        </h3>
         <div className="border border-gray-300 rounded-lg overflow-hidden">
           <table className="w-full">
             <tbody>
-              <tr className="bg-gray-50 border-b border-gray-300">
+              <tr className="bg-[#F5F7FA] border-b border-gray-300">
                 <td className="py-3 px-6 text-gray-500 font-medium border-r border-gray-300">Actual Value</td>
                 <td className="py-3 px-6 text-left text-gray-500 font-medium">{formatCurrency(marginResult.actualValue)}</td>
               </tr>
@@ -221,7 +223,7 @@ const BracketCoverOrderMarginCalculator: React.FC<BracketCoverOrderMarginCalcula
                 <td className="py-3 px-6 text-gray-500 font-medium border-r border-gray-300">Margin Required</td>
                 <td className="py-3 px-6 text-left text-gray-500 font-medium">{formatCurrency(marginResult.marginRequired)}</td>
               </tr>
-              <tr className="bg-gray-50">
+              <tr className="bg-[#F5F7FA]">
                 <td className="py-3 px-6 text-gray-500 font-medium border-r border-gray-300">Margin Utilized</td>
                 <td className="py-3 px-6 text-left text-gray-500 font-medium">{formatCurrency(marginResult.marginUtilized)}</td>
               </tr>

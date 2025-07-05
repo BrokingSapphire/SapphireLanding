@@ -92,10 +92,10 @@ const MarginCalculator: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-20">
+    <div className="min-h-screen bg-white pt-20 px-4">
       {/* Breadcrumb */}
       <div className="bg-white ">
-        <div className="max-w-6xl mx-auto px-4 py-3">
+        <div className="max-w-7xl px-20 mx-auto py-3">
           <nav className="flex items-center text-sm" aria-label="Breadcrumb">
             <Link href="/" className="text-gray-500  hover:text-[#064D51] transition-colors">Home</Link>
             <span className="mx-2 text-gray-400">›</span>
@@ -117,10 +117,10 @@ const MarginCalculator: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-20 py-8">
         {/* Tabs */}
         <div className="bg-white w-auto">
-          <div className="flex border-b-2 mr-60">
+          <div className="flex border-b-2 border-gray-200">
             {([
               'Equity',
               'Equity Future',
@@ -131,7 +131,7 @@ const MarginCalculator: React.FC = () => {
             ] as ActiveTab[]).map((tab) => (
               <button
                 key={tab}
-                className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab
+                className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${activeTab === tab
                     ? 'border-[#064D51] text-[#064D51]'
                     : 'border-transparent text-gray-500 hover:text-[#064D51]'
                   }`}
@@ -152,9 +152,27 @@ const MarginCalculator: React.FC = () => {
             filteredContracts={filteredContracts}
           />
         )}
-        {activeTab === 'Equity Future' && <EquityFutureMarginCalculator />}
-        {activeTab === 'Currency Future' && <CurrencyFutureMarginCalculator />}
-        {activeTab === 'MCX Future' && <MCXFutureMarginCalculator />}
+        {activeTab === 'Equity Future' && (
+          <EquityFutureMarginCalculator
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filteredContracts={filteredContracts}
+          />
+        )}
+        {activeTab === 'Currency Future' && (
+          <CurrencyFutureMarginCalculator
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filteredContracts={filteredContracts}
+          />
+        )}
+        {activeTab === 'MCX Future' && (
+          <MCXFutureMarginCalculator
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filteredContracts={filteredContracts}
+          />
+        )}
         {activeTab === 'Bracket & Cover Order' && (
           <BracketCoverOrderMarginCalculator
             selectedExchange={selectedExchange}
