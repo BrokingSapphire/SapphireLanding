@@ -1,46 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const IPOPage: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<'Current' | 'Upcoming' | 'Closed'>('Current');
-  const [selectedIPO, setSelectedIPO] = useState<string>('Magsons Learning Ltd');
-
-  const ipoData = {
-    Current: [
-      {
-        name: 'Magsons Learning Ltd',
-        issueSize: '₹132.18 Cr',
-        priceRange: '₹55-58',
-        lotSize: '258',
-        dates: '11 May 2024 - 15 May 2024',
-        status: 'Current'
-      }
-    ],
-    Upcoming: [],
-    Closed: []
-  };
-
-  const steps = [
-    {
-      icon: '📱',
-      title: 'Create A Demat Account',
-      description: 'Create a Demat Account with Sapphire. Skip if you already have one.',
-      bgColor: 'bg-blue-500'
-    },
-    {
-      icon: '💻',
-      title: 'Go To Sapphire Terminal',
-      description: 'Go to the terminal by clicking here and click apply if you IPO of your choosing and enter the required details.',
-      bgColor: 'bg-teal-600'
-    },
-    {
-      icon: '✅',
-      title: 'Approve UPI Request',
-      description: 'Confirm the UPI payment mandate in your preferred UPI app.',
-      bgColor: 'bg-blue-600'
-    }
-  ];
+  const [selectedCategory, setSelectedCategory] = useState<'Ongoing' | 'Upcoming' | 'Closed'>('Ongoing');
+  // const [selectedIPO, setSelectedIPO] = useState<string>('Magsons Learning Ltd');
 
   return (
     <div className="bg-white min-h-screen pt-20">
@@ -62,16 +27,36 @@ const IPOPage: React.FC = () => {
                   IPOs offer early access to high-growth companies, letting you invest before 
                   they list. Ideal for both new investors and experienced market participants.
                 </p>
-              </div>
               <button className="bg-[#064D51] hover:bg-teal-800 text-white px-8 py-[14px] rounded-lg font-semibold transition-colors shadow-lg">
                 Apply for IPO Now
               </button>
             </div>
             {/* Right Side - IPO Images */}
             <div className="relative flex items-center pl-60 justify-center w-full h-[300px] sm:h-[400px] md:h-[444px]">
-              <img src="/ipo/IPO Application Status.svg" alt="IPO 1" className="absolute -top-[28px] left-[168px] w-40 sm:w-56 md:w-[280px] h-auto max-h-[320px] z-10" />
-              <img src="/ipo/IPO 1.svg" alt="IPO 2" className="absolute top-16 left-16 w-40 sm:w-56 md:w-[280px] h-auto max-h-[320px] z-20" />
-              <img src="/ipo/third.svg" alt="IPO 3" className="absolute -top-[2rem] right-[20rem] w-40 sm:w-56 md:w-[280px] h-auto max-h-[320px] z-5" />
+              <Image
+                src="/ipo/IPO Application Status.svg"
+                alt="IPO 1"
+                width={280}
+                height={320}
+                className="absolute -top-[28px] left-[168px] w-40 sm:w-56 md:w-[280px] h-auto max-h-[320px] z-10"
+                priority
+              />
+              <Image
+                src="/ipo/IPO 1.svg"
+                alt="IPO 2"
+                width={280}
+                height={320}
+                className="absolute top-16 left-16 w-40 sm:w-56 md:w-[280px] h-auto max-h-[320px] z-20"
+                priority
+              />
+              <Image
+                src="/ipo/third.svg"
+                alt="IPO 3"
+                width={280}
+                height={320}
+                className="absolute -top-[2rem] right-[20rem] w-40 sm:w-56 md:w-[280px] h-auto max-h-[320px] z-5"
+                priority
+              />
             </div>
           </div>
         </div>
@@ -95,7 +80,7 @@ const IPOPage: React.FC = () => {
             {/* Step 1 */}
             <div className="flex flex-col items-center text-center flex-1 min-w-[220px]">
               <div className="bg-white rounded-2xl shadow p-6 mb-4 flex flex-col items-center">
-                <img src="/support/account.svg" alt="Demat Account" className="w-14 h-14 mb-2" />
+                <Image src="/support/account.svg" alt="Demat Account" width={56} height={56} className="w-14 h-14 mb-2" />
                 <h3 className="text-lg font-bold text-[#00706C] mb-1">Create A Demat Account</h3>
                 <p className="text-gray-600 text-base">Create a Demat Account with Sapphire. Skip if you already have one.</p>
               </div>
@@ -110,7 +95,7 @@ const IPOPage: React.FC = () => {
             {/* Step 2 */}
             <div className="flex flex-col items-center text-center flex-1 min-w-[220px]">
               <div className="bg-white rounded-2xl shadow p-6 mb-4 flex flex-col items-center">
-                <img src="/products/trading-terminal.svg" alt="Sapphire Terminal" className="w-14 h-14 mb-2" />
+                <Image src="/products/trading-terminal.svg" alt="Sapphire Terminal" width={56} height={56} className="w-14 h-14 mb-2" />
                 <h3 className="text-lg font-bold text-[#00706C] mb-1">Go To Sapphire Terminal</h3>
                 <p className="text-gray-600 text-base">Go to the terminal by clicking here and click apply on the IPO of your choosing and enter the required details.</p>
               </div>
@@ -124,8 +109,8 @@ const IPOPage: React.FC = () => {
             </div>
             {/* Step 3 */}
             <div className="flex flex-col items-center text-center flex-1 min-w-[220px]">
-              <div className="bg-white rounded-2xl shadow p-6 mb-4 flex flex-col items-center">
-                <img src="/signup/upi.png" alt="UPI Request" className="w-14 h-14 mb-2" />
+                <Image src="/signup/upi.png" alt="UPI Request" width={56} height={56} className="w-14 h-14 mb-2" />
+                <Image src="/signup/upi.png" alt="UPI Request" width={56} height={56} className="w-14 h-14 mb-2" />
                 <h3 className="text-lg font-bold text-[#00706C] mb-1">Approve UPI Request</h3>
                 <p className="text-gray-600 text-base">Confirm the UPI payment mandate in your preferred UPI app.</p>
               </div>
@@ -137,13 +122,13 @@ const IPOPage: React.FC = () => {
         <div className="bg-white py-16 rounded-2xl mt-12">
           {/* Tabs */}
           <div className="flex space-x-8 border-b border-gray-200 mb-4">
-            {['Ongoing', 'Upcoming', 'Closed'].map((tab) => (
+            {(['Ongoing', 'Upcoming', 'Closed'] as Array<'Ongoing' | 'Upcoming' | 'Closed'>).map((tab) => (
               <button
                 key={tab}
                 className={`py-2 px-1 text-lg font-medium focus:outline-none transition-colors border-b-2 ${
                   selectedCategory === tab ? 'border-teal-600 text-teal-700' : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
-                onClick={() => setSelectedCategory(tab as any)}
+                onClick={() => setSelectedCategory(tab)}
               >
                 {tab}
               </button>
@@ -211,7 +196,7 @@ const IPOPage: React.FC = () => {
                 ].map((ipo, idx) => (
                   <tr key={ipo.name + idx} className={idx % 2 === 1 ? 'bg-gray-50' : ''}>
                     <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-3">
-                      <img src={ipo.logo} alt={ipo.name} className="w-8 h-8 rounded-full border border-gray-200" />
+                      <Image src={ipo.logo} alt={ipo.name} width={32} height={32} className="w-8 h-8 rounded-full border border-gray-200" />
                       <div>
                         <div className="flex items-center space-x-2">
                           <span className="font-semibold text-gray-900 text-sm">{ipo.name}</span>

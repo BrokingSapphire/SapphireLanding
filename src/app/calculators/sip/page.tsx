@@ -48,17 +48,6 @@ const SIPCalculator: React.FC = () => {
     }).format(amount).replace('₹', 'Rs.');
   };
 
-  // Format large numbers
-  const formatLargeNumber = (num: number): string => {
-    if (num >= 10000000) {
-      return (num / 10000000).toFixed(2) + ' Cr';
-    } else if (num >= 100000) {
-      return (num / 100000).toFixed(2) + ' L';
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(2) + ' K';
-    }
-    return num.toString();
-  };
 
   // Calculate chart percentages
   const investedPercentage = (calculation.totalInvestment / calculation.totalAmount) * 100;
@@ -154,7 +143,7 @@ const SIPCalculator: React.FC = () => {
                       style={
                         {
                           '--range-progress': `${((investment - 1000) / (10000000 - 1000)) * 100}%`
-                        } as any
+                        } as React.CSSProperties
                       }
                     />
                   </div>
@@ -186,7 +175,7 @@ const SIPCalculator: React.FC = () => {
                       style={
                         {
                           '--range-progress': `${((returnRate - 1) / (30 - 1)) * 100}%`
-                        } as any
+                        } as React.CSSProperties
                       }
                     />
                   </div>
@@ -218,7 +207,7 @@ const SIPCalculator: React.FC = () => {
                       style={
                         {
                           '--range-progress': `${((timePeriod - 1) / (50 - 1)) * 100}%`
-                        } as any
+                        } as React.CSSProperties
                       }
                     />
                   </div>
@@ -335,7 +324,7 @@ const SIPCalculator: React.FC = () => {
         {/* How to Use the Sapphire SIP Calculator? */}
         <div className="max-w-7xl mx-auto px-20 pb-12">
           <h2 className="text-2xl mb-3 font-normal font-lexend text-gray-900">How to Use the Sapphire SIP Calculator?</h2>
-          <p className="text-[#636363] text-base mb-2">Using Sapphire's SIP calculator is easy and quick. Just follow these steps:</p>
+          <p className="text-[#636363] text-base mb-2">Using Sapphire&apos;s SIP calculator is easy and quick. Just follow these steps:</p>
           <ol className="list-decimal list-inside text-[#5F5F5F] space-y-1 pl-4 font-weight-400">
             <li><span className="font-poppins text-[16px] font-weight-500">Enter Monthly Investment:</span> Specify how much you want to invest monthly.</li>
             <li><span className="font-poppins text-[16px] font-weight-500">Enter Investment:</span> Choose how long you plan to invest, usually in years.</li>
@@ -348,7 +337,7 @@ const SIPCalculator: React.FC = () => {
         {/* Example: SIP Returns with Sapphire Broking */}
         <div className="max-w-7xl mx-auto px-20 pb-8">
           <h2 className="text-2xl mb-3 font-normal font-lexend text-gray-900">Example: SIP Returns with Sapphire Broking</h2>
-          <p className="text-[#636363] text-base mb-2">Let's take a simple scenario:</p>
+          <p className="text-[#636363] text-base mb-2">Let&apos;s take a simple scenario:</p>
           <ul className="list-disc list-inside text-[#5F5F5F] space-y-1 pl-4 font-weight-400">
             <li><span className="font-poppins text-[16px] font-weight-500">Monthly Investment (P):</span> ₹5,000</li>
             <li><span className="font-poppins text-[16px] font-weight-500">Investment Period (n):</span> 10 years (120 months)</li>
@@ -378,8 +367,8 @@ const SIPCalculator: React.FC = () => {
         {/* Conclusion */}
         <div className="max-w-7xl mx-auto px-20 pb-12">
           <h2 className="text-2xl mb-3  font-normal font-lexend text-gray-900">Conclusion</h2>
-          <p className="text-[#636363] text-base mb-2">The Sapphire Broking SIP Calculator is a must-have tool for any investor looking to build wealth systematically. Whether you're saving for your child's future, retirement, or any long-term goal, the SIP calculator helps you plan with confidence.</p>
-          <p className="text-[#636363] text-base mb-2">With Sapphire's easy-to-use interface, you can:</p>
+          <p className="text-[#636363] text-base mb-2">The Sapphire Broking SIP Calculator is a must-have tool for any investor looking to build wealth systematically. Whether you&apos;re saving for your child&apos;s future, retirement, or any long-term goal, the SIP calculator helps you plan with confidence.</p>
+          <p className="text-[#636363] text-base mb-2">With Sapphire&apos;s easy-to-use interface, you can:</p>
           <ul className="list-disc list-inside text-[#636363] space-y-1 pl-4">
             <li>Project returns</li>
             <li>Compare investment strategies</li>

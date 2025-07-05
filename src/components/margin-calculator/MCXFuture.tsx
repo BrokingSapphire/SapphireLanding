@@ -133,38 +133,19 @@ const MCXFutureMarginCalculator: React.FC<MCXFutureMarginCalculatorProps> = ({
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-gray-200 hover:bg-gray-50 bg-[#F5F7FA]">
-              <td className="py-3 px-4 text-gray-600">1</td>
-              <td className="py-3 px-4 text-gray-600 font-medium">GOLD</td>
-              <td className="py-3 px-4 text-gray-600">31 Jul 2025</td>
-              <td className="py-3 px-4 text-gray-600">100 g</td>
-              <td className="py-3 px-4 text-gray-600">₹ 55,125.0</td>
-              <td className="py-3 px-4 text-gray-600">0</td>
-            </tr>
-            <tr className="border-b border-gray-200 hover:bg-gray-50 bg-white">
-              <td className="py-3 px-4 text-gray-600">2</td>
-              <td className="py-3 px-4 text-gray-600 font-medium">GOLD</td>
-              <td className="py-3 px-4 text-gray-600">28 Aug 2025</td>
-              <td className="py-3 px-4 text-gray-600">100 g</td>
-              <td className="py-3 px-4 text-gray-600">₹ 55,750.0</td>
-              <td className="py-3 px-4 text-gray-600">0</td>
-            </tr>
-            <tr className="border-b border-gray-200 hover:bg-gray-50 bg-[#F5F7FA]">
-              <td className="py-3 px-4 text-gray-600">3</td>
-              <td className="py-3 px-4 text-gray-600 font-medium">SILVER</td>
-              <td className="py-3 px-4 text-gray-600">31 Jul 2025</td>
-              <td className="py-3 px-4 text-gray-600">30 kg</td>
-              <td className="py-3 px-4 text-gray-600">₹ 1,25,375.0</td>
-              <td className="py-3 px-4 text-gray-600">0</td>
-            </tr>
-            <tr className="border-b border-gray-200 hover:bg-gray-50 bg-white">
-              <td className="py-3 px-4 text-gray-600">4</td>
-              <td className="py-3 px-4 text-gray-600 font-medium">CRUDE OIL</td>
-              <td className="py-3 px-4 text-gray-600">31 Jul 2025</td>
-              <td className="py-3 px-4 text-gray-600">100 BBL</td>
-              <td className="py-3 px-4 text-gray-600">₹ 85,450.0</td>
-              <td className="py-3 px-4 text-gray-600">0</td>
-            </tr>
+            {displayContracts.map((contract, idx) => (
+              <tr
+                key={contract.no}
+                className={`border-b border-gray-200 hover:bg-gray-50 ${idx % 2 === 0 ? 'bg-[#F5F7FA]' : 'bg-white'}`}
+              >
+                <td className="py-3 px-4 text-gray-600">{contract.no}</td>
+                <td className="py-3 px-4 text-gray-600 font-medium">{contract.symbol}</td>
+                <td className="py-3 px-4 text-gray-600">{contract.intradayMultiplier}</td>
+                <td className="py-3 px-4 text-gray-600">-</td>
+                <td className="py-3 px-4 text-gray-600">-</td>
+                <td className="py-3 px-4 text-gray-600">0</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
