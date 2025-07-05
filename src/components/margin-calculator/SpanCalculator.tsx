@@ -102,15 +102,15 @@ const SpanCalculator: React.FC = () => {
 
   return (
     <div className="mb-10">
-      <div className='border p-6 flex flex-col rounded-md shadow-sm bg-white'>
-        <h2 className="text-xl font-medium mb-3">Span</h2>
+      <div className='border p-4 sm:p-6 flex flex-col rounded-md shadow-sm bg-white'>
+        <h2 className="text-lg sm:text-xl font-medium mb-3">Span</h2>
 
         {/* Exchange Radio Buttons */}
         <div className='mb-4'>
-          <label className="block text-gray-700 font-medium mb-2">Exchange</label>
-          <div className="flex gap-6">
+          <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Exchange</label>
+          <div className="flex gap-4 sm:gap-6">
             {(['Buy', 'Sell'] as ExchangeType[]).map((exchange) => (
-              <label key={exchange} className="flex items-center text-sm cursor-pointer">
+              <label key={exchange} className="flex items-center text-xs sm:text-sm cursor-pointer">
                 <div className="relative mr-2">
                   <input
                     type="radio"
@@ -137,14 +137,14 @@ const SpanCalculator: React.FC = () => {
         </div>
 
         {/* First Row - Exchange, Symbol, Expiry */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-4">
           <div>
-            <label className="block text-gray-700 font-medium mb-2">Exchangnge</label>
+            <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Exchangnge</label>
             <div className="relative">
               <select
                 value={exchangeValue}
                 onChange={(e) => setExchangeValue(e.target.value)}
-                className="w-full px-4 py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none"
+                className="w-full px-4 py-2 sm:py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none text-sm sm:text-base"
               >
                 <option value="NSE CDS">NSE CDS</option>
                 <option value="NSE FO">NSE FO</option>
@@ -160,12 +160,12 @@ const SpanCalculator: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">Symbol</label>
+            <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Symbol</label>
             <div className="relative">
               <select
                 value={symbol}
                 onChange={(e) => setSymbol(e.target.value)}
-                className="w-full px-4 py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none"
+                className="w-full px-4 py-2 sm:py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none text-sm sm:text-base"
               >
                 <option value="EURINR">EURINR</option>
                 <option value="GBPINR">GBPINR</option>
@@ -184,12 +184,12 @@ const SpanCalculator: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">Expiry</label>
+            <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Expiry</label>
             <div className="relative">
               <select
                 value={expiry}
                 onChange={(e) => setExpiry(e.target.value)}
-                className="w-full px-4 py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none"
+                className="w-full px-4 py-2 sm:py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none text-sm sm:text-base"
               >
                 <option value="11-07-2025">11-07-2025</option>
                 <option value="18-07-2025">18-07-2025</option>
@@ -219,14 +219,14 @@ const SpanCalculator: React.FC = () => {
         </div>
 
         {/* Second Row - Product, Strike price, Quantity */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-4">
           <div>
-            <label className="block text-gray-700 font-medium mb-2">Product</label>
+            <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Product</label>
             <div className="relative">
               <select
                 value={product}
                 onChange={(e) => setProduct(e.target.value)}
-                className="w-full px-4 py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none"
+                className="w-full px-4 py-2 sm:py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none text-sm sm:text-base"
               >
                 <option value="Future">Future</option>
                 <option value="Option">Option</option>
@@ -242,12 +242,12 @@ const SpanCalculator: React.FC = () => {
           {/* Strike price - only visible when Option is selected */}
           {product === 'Option' && (
             <div>
-              <label className="block text-gray-700 font-medium mb-2">Strike price</label>
+              <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Strike price</label>
               <div className="relative mb-3">
                 <select
                   value={strikePrice}
                   onChange={(e) => setStrikePrice(e.target.value)}
-                  className="w-full px-4 py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none"
+                  className="w-full px-4 py-2 sm:py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none text-sm sm:text-base"
                 >
                   <option value="88.75">88.75</option>
                   <option value="89">89</option>
@@ -313,13 +313,13 @@ const SpanCalculator: React.FC = () => {
             </div>
           )}
 
-          <div className={product === 'Option' ? '' : 'md:col-start-2'}>
-            <label className="block text-gray-700 font-medium mb-2">Quantity</label>
+          <div className={product === 'Option' ? '' : 'sm:col-start-2'}>
+            <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Quantity</label>
             <div className="relative">
               <select
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                className="w-full px-4 py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none"
+                className="w-full px-4 py-2 sm:py-[8px] border border-gray-300 rounded-md focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition-colors bg-white appearance-none text-sm sm:text-base"
               >
                 <option value="Future">Future</option>
                 <option value="1">1</option>
@@ -337,16 +337,16 @@ const SpanCalculator: React.FC = () => {
 
       </div>
         {/* Action Buttons */}
-        <div className="flex gap-4 justify-end mt-5 mb-8">
+        <div className="flex flex-col sm:flex-row gap-4 justify-end mt-5 mb-8">
           <button
             onClick={handleAdd}
-            className="px-6 py-2 bg-[#064D51] text-white rounded-md hover:bg-[#053A3D] transition-colors font-medium"
+            className="px-6 py-2 bg-[#064D51] text-white rounded-md hover:bg-[#053A3D] transition-colors font-medium text-sm sm:text-base order-2 sm:order-1"
           >
             Add
           </button>
           <button
             onClick={handleReset}
-            className="px-6 py-2 border-2 border-[#064D51] text-[#064D51] rounded-md transition-colors font-medium"
+            className="px-6 py-2 border-2 border-[#064D51] text-[#064D51] rounded-md transition-colors font-medium text-sm sm:text-base order-1 sm:order-2"
           >
             Reset
           </button>
@@ -354,48 +354,50 @@ const SpanCalculator: React.FC = () => {
 
       {/* Contracts Table */}
       <div className="mb-8">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-200">
-            <thead>
-              <tr className="bg-white border border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Exchange</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Product</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Ticker</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Expiry</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Option</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Quantity</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Price</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Span</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Exposure</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Total</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {contracts.map((contract, index) => (
-                <tr key={index} className={`border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-[#F5F7FA]'}`}>
-                  <td className="py-3 px-4 text-gray-600">{contract.exchange}</td>
-                  <td className="py-3 px-4 text-gray-600">{contract.product}</td>
-                  <td className="py-3 px-4 text-gray-600 font-medium">{contract.ticker}</td>
-                  <td className="py-3 px-4 text-gray-600">{contract.expiry}</td>
-                  <td className="py-3 px-4 text-gray-600">{contract.option}</td>
-                  <td className="py-3 px-4 text-gray-600">{contract.quantity}</td>
-                  <td className="py-3 px-4 text-gray-600">{contract.price}</td>
-                  <td className="py-3 px-4 text-gray-600">{contract.span}</td>
-                  <td className="py-3 px-4 text-gray-600">{contract.exposure}</td>
-                  <td className="py-3 px-4 text-gray-600">{contract.total}</td>
-                  <td className="py-3 px-4 text-gray-600">
-                    <img 
-                      src="/delete.svg" 
-                      alt="Delete" 
-                      className="w-5 h-5 cursor-pointer hover:opacity-70" 
-                      onClick={() => handleDeleteContract(index)}
-                    />
-                  </td>
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="min-w-full inline-block align-middle">
+            <table className="w-full border-collapse border border-gray-200 min-w-[1000px]">
+              <thead>
+                <tr className="bg-white border border-gray-200">
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Exchange</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Product</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Ticker</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Expiry</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Option</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Quantity</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Price</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Span</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Exposure</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm">Total</th>
+                  <th className="text-left py-3 px-2 sm:px-4 font-medium text-gray-700 text-xs sm:text-sm"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {contracts.map((contract, index) => (
+                  <tr key={index} className={`border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-[#F5F7FA]'}`}>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.exchange}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.product}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 font-medium text-xs sm:text-sm">{contract.ticker}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.expiry}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.option}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.quantity}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.price}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.span}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.exposure}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.total}</td>
+                    <td className="py-3 px-2 sm:px-4 text-gray-600">
+                      <img 
+                        src="/delete.svg" 
+                        alt="Delete" 
+                        className="w-4 h-4 sm:w-5 sm:h-5 cursor-pointer hover:opacity-70" 
+                        onClick={() => handleDeleteContract(index)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
