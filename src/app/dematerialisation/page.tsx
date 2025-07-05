@@ -40,15 +40,13 @@ const DematerializationPage: React.FC = () => {
     },
     {
       question: "How long does dematerialisation take?",
-      answer: "Typically, the process takes 2–3 weeks after submitting the required documents and share certificates to your Depository Participant (DP)."
+      answer: "Typically, the process takes 2 to 3 weeks after submitting the required documents and share certificates to your Depository Participant (DP)."
     },
     {
       question: "Can I dematerialise shares with mismatched names?",
       answer: "Yes, we are SEBI-registered and comply with all regulatory guidelines to ensure the security of your investments."
     }
   ];
-
-  const [openFAQ, setOpenFAQ] = React.useState<number | null>(null);
 
   return (
     <div className="bg-white">
@@ -59,7 +57,7 @@ const DematerializationPage: React.FC = () => {
             {/* Left Content */}
             <div className="space-y-6">
               <h1 className="text-4xl lg:text-3xl mt-10 font-bold text-gray-900 leading-tight">
-                Got dusty share certificates lying around? Let's uncover their hidden value together!
+                Got dusty share certificates lying around? Let&apos;s uncover their hidden value together!
               </h1>
               
               <div className="space-y-4 text-gray-600">
@@ -69,7 +67,7 @@ const DematerializationPage: React.FC = () => {
                 </p>
                 
                 <p>
-                  Whether you've purchased shares in the past or inherited them recently, you'll 
+                  Whether you&apos;ve purchased shares in the past or inherited them recently, you&apos;ll 
                   need to convert those paper certificates into a digital format before taking any 
                   action.
                 </p>
@@ -111,7 +109,7 @@ const DematerializationPage: React.FC = () => {
               }}>
                 {/* Step Image */}
                 <div className="mb-6 -ml-4">
-                  <img className="h-25 w-25" src={step.image} alt="" />
+                  <Image className="h-25 w-25" src={step.image.replace('./', '/')} alt={step.title} width={100} height={100} />
                 </div>
                 <h3 className="text-lg font-lexend font-regular text-black mb-2 z-10">{step.title}</h3>
                 <p className="text-gray-700 text-[16px] z-10">{step.description}</p>
@@ -130,7 +128,7 @@ const DematerializationPage: React.FC = () => {
           {/* Card 1 */}
           <div className="bg-white rounded-lg p-6 flex flex-col h-full">
             <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
-              <img className="h-7 w-7" src="./dematerialization/1.svg" alt="" />
+              <Image className="h-7 w-7" src="/dematerialization/1.svg" alt="" width={28} height={28} />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Improved Security</h3>
             <p className="text-gray-700">Dematerialisation eliminates the risks of losing physical certificates due to theft, misplacement, or damage. Your holdings are safely stored in electronic form under regulated depositories like NSDL or CDSL.</p>
@@ -138,7 +136,7 @@ const DematerializationPage: React.FC = () => {
           {/* Card 2 */}
           <div className="bg-white rounded-lg p-6 flex flex-col h-full">
             <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
-              <img className="h-7 w-7" src="./dematerialization/2.svg" alt="" />
+              <Image className="h-7 w-7" src="/dematerialization/2.svg" alt="" width={28} height={28} />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Faster Transactions</h3>
             <p className="text-gray-700">Digital shares allow you to buy, sell, and transfer securities instantly without delays or paperwork. This ensures smooth, real-time trading and better opportunities in fast-moving markets.</p>
@@ -146,7 +144,7 @@ const DematerializationPage: React.FC = () => {
           {/* Card 3 */}
           <div className="bg-white rounded-lg p-6 flex flex-col h-full">
             <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
-              <img className="h-7 w-7" src="./dematerialization/3.svg" alt="" />
+              <Image className="h-7 w-7" src="/dematerialization/3.svg" alt="" width={28} height={28} />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Cost Efficiency</h3>
             <p className="text-gray-700">Holding shares in demat form reduces expenses like stamp duty, courier charges, and handling fees. It also minimizes administrative burdens and streamlines investment management for better cost control.</p>
@@ -154,15 +152,15 @@ const DematerializationPage: React.FC = () => {
           {/* Card 4 */}
           <div className="bg-white rounded-lg p-6 flex flex-col h-full">
             <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
-              <img className="h-7 w-7" src="./dematerialization/4.svg" alt="" />
+              <Image className="h-7 w-7" src="/dematerialization/4.svg" alt="" width={28} height={28} />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Compliance & Convenience</h3>
-            <p className="text-gray-700">SEBI regulations require listed securities to be held in demat form. It also makes it easier to monitor, update, and manage your portfolio anytime through your DP's digital platform.</p>
+            <p className="text-gray-700">SEBI regulations require listed securities to be held in demat form. It also makes it easier to monitor, update, and manage your portfolio anytime through your DP&apos;s digital platform.</p>
           </div>
           {/* Card 5 */}
           <div className="bg-white rounded-lg p-6 flex flex-col h-full">
             <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
-              <img className="h-7 w-7" src="./dematerialization/5.svg" alt="" />
+              <Image className="h-7 w-7" src="/dematerialization/5.svg" alt="" width={28} height={28} />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Easy Portfolio Tracking</h3>
             <p className="text-gray-700">With all your holdings in one demat account, you can easily track, monitor, and manage your investments, dividends, and corporate actions through a single digital interface.</p>
@@ -170,7 +168,7 @@ const DematerializationPage: React.FC = () => {
           {/* Card 6 */}
           <div className="bg-white rounded-lg p-6 flex flex-col h-full">
             <div className="mb-4 bg-[#E6F4F1] h-10 w-10 flex items-center justify-center">
-              <img className="h-7 w-7" src="./dematerialization/6.svg" alt="" />
+              <Image className="h-7 w-7" src="/dematerialization/6.svg" alt="" width={28} height={28} />
             </div>
             <h3 className="font-bold text-lg text-black mb-2">Eco-Friendly & Paperless</h3>
             <p className="text-gray-700">Dematerialisation reduces paper usage and storage needs, making your investment process environmentally friendly while contributing to a cleaner, more sustainable financial ecosystem.</p>

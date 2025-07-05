@@ -59,7 +59,6 @@ const MarginCalculator: React.FC = () => {
   const calculateMargin = () => {
     const priceNum = parseFloat(price) || 0;
     const qtyNum = parseInt(quantity) || 0;
-    const stopLossNum = parseFloat(stopLossPrice) || 0;
 
     if (priceNum > 0 && qtyNum > 0) {
       const actualValue = priceNum * qtyNum;

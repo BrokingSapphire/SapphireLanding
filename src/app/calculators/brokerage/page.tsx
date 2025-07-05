@@ -379,7 +379,7 @@ const BrokerageCalculator: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-20 pb-12">
         <h2 className="text-2xl mb-3 font-normal font-lexend text-gray-900">How to Calculate Brokerage Using a Brokerage Calculator?</h2>
-        <p className="text-[#636363] text-base mb-2">Traditionally, calculating brokerage required understanding a broker's fee structure, which can vary—some charge a flat fee per order, while others apply a percentage on the trade value. With the Sapphire Broking Brokerage Calculator, this becomes seamless. Simply input your trade details and the tool instantly computes the total charges and net P&L, eliminating the guesswork.</p>
+        <p className="text-[#636363] text-base mb-2">Traditionally, calculating brokerage required understanding a broker&apos;s fee structure, which can vary—some charge a flat fee per order, while others apply a percentage on the trade value. With the Sapphire Broking Brokerage Calculator, this becomes seamless. Simply input your trade details and the tool instantly computes the total charges and net P&L, eliminating the guesswork.</p>
       </div>
 
       <div className="max-w-7xl mx-auto px-20 pb-12">
@@ -389,7 +389,7 @@ const BrokerageCalculator: React.FC = () => {
           <li>Select the Market Segment: Equity, F&O, Currency, or Commodities.</li>
           <li>Enter Trade Details: Buy and/or sell price, quantity of shares or contracts.</li>
           <li>View Instant Results: The calculator will display the brokerage, statutory charges (GST, STT, exchange charges, SEBI fees, etc.), and the total cost.</li>
-          <li>Review Net P&L: You'll also see your estimated net profit or loss after all deductions.</li>
+          <li>Review Net P&L: You&apos;ll also see your estimated net profit or loss after all deductions.</li>
         </ol>
         <p className="text-[#636363] text-base">This tool allows traders to assess the real impact of trading costs before placing an order.</p>
       </div>
@@ -407,7 +407,7 @@ const BrokerageCalculator: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-20 pb-12">
         <h2 className="text-2xl mb-3 font-normal font-lexend text-gray-900">Conclusion</h2>
-        <p className="text-[#636363] text-base">The Sapphire Broking Brokerage Calculator is an essential tool for every trader looking to optimize strategy and minimize trading costs. Whether you trade equities, derivatives, commodities, or currencies, this calculator provides instant, accurate, and transparent cost assessments. With Sapphire Broking's client-centric approach, you get the right tools to make well-informed and confident trading decisions.</p>
+        <p className="text-[#636363] text-base">The Sapphire Broking Brokerage Calculator is an essential tool for every trader looking to optimize strategy and minimize trading costs. Whether you trade equities, derivatives, commodities, or currencies, this calculator provides instant, accurate, and transparent cost assessments. With Sapphire Broking&apos;s client-centric approach, you get the right tools to make well-informed and confident trading decisions.</p>
       </div>
     </div>
   );
