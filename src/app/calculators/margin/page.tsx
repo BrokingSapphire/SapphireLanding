@@ -91,14 +91,14 @@ const MarginCalculator: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-20 px-4">
+    <div className="min-h-screen bg-white pt-16 sm:pt-20 px-4 sm:px-0">
       {/* Breadcrumb */}
-      <div className="bg-white ">
-        <div className="max-w-7xl px-20 mx-auto py-3">
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
           <nav className="flex items-center text-sm" aria-label="Breadcrumb">
-            <Link href="/" className="text-gray-500  hover:text-[#064D51] transition-colors">Home</Link>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
             <span className="mx-2 text-gray-400">›</span>
-            <Link href="/" className="text-gray-500  hover:text-[#064D51] transition-colors">Calculators</Link>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Calculators</Link>
             <span className="mx-2 text-gray-400">›</span>
             <span className="text-[#064D51] font-regular">Margin Calculator</span>
           </nav>
@@ -107,19 +107,19 @@ const MarginCalculator: React.FC = () => {
 
       {/* Header */}
       <div className="bg-white">
-        <div className="max-w-6xl mx-auto px-4 py-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Margin Calculator</h1>
-          <p className="text-gray-500 max-w-2xl mx-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Margin Calculator</h1>
+          <p className="text-gray-500 max-w-2xl mx-auto text-sm sm:text-base">
             Use the brokerage calculator to calculate exactly how much you will pay in brokerage and your breakeven.
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-20 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-8">
         {/* Tabs */}
         <div className="bg-white w-auto">
-          <div className="flex border-b-2 border-gray-200">
+          <div className="flex border-b-2 border-gray-200 overflow-x-auto">
             {([
               'Equity',
               'Equity Future',
@@ -130,7 +130,7 @@ const MarginCalculator: React.FC = () => {
             ] as ActiveTab[]).map((tab) => (
               <button
                 key={tab}
-                className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${activeTab === tab
+                className={`px-3 sm:px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap -mb-px text-sm sm:text-base ${activeTab === tab
                     ? 'border-[#064D51] text-[#064D51]'
                     : 'border-transparent text-gray-500 hover:text-[#064D51]'
                   }`}
