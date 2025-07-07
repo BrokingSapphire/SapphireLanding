@@ -51,31 +51,22 @@ const bankAccountData = [
         isTable: true,
         tableData: [
           {
-            segment: "Equity & F&O",
-            bankName: "HDFC Bank Limited",
-            accountHolder: "SAPPHIRE BROKING LIMITED",
-            accountNumber: "SAPPHIRE001",
+            segment: "Equity, F&O and Commodity",
+            bankName: "ICICI Bank Limited",
+            accountHolder: "SAPPHIRE BROKING",
+            accountNumber: "777705760030",
             accountType: "Current Account",
-            branch: "Commercial Branch, Mumbai",
-            ifscCode: "HDFC0000240"
-          },
-          {
-            segment: "Commodity",
-            bankName: "HDFC Bank Limited",
-            accountHolder: "SAPPHIRE BROKING LIMITED",
-            accountNumber: "SAPPHIRE002",
-            accountType: "Current Account",
-            branch: "Commercial Branch, Mumbai",
-            ifscCode: "HDFC0000240"
+            branch: "Civill Lines, Nagpur",
+            ifscCode: "ICIC0000059"
           },
           {
             segment: "Alternate Account",
-            bankName: "HDFC Bank Limited",
-            accountHolder: "SAPPHIRE BROKING LIMITED",
-            accountNumber: "50100012345678",
+            bankName: "Bank of Baroda",
+            accountHolder: "SAPPHIRE BROKING",
+            accountNumber: "11980200000435",
             accountType: "Current Account",
-            branch: "Corporate Branch, Bangalore",
-            ifscCode: "HDFC0000523"
+            branch: "Arvi, Wardha",
+            ifscCode: "BARB0ARVIXX"
           }
         ],
       },
@@ -354,87 +345,6 @@ const BankAccount = () => {
           ))}
         </div>
 
-        {/* Quick Action Cards */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12s-1.536.219-2.121.659c-1.172.879-1.172 2.303 0 3.182l.879.659z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                Add Funds
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                Instantly add funds using UPI, net banking, or bank transfer
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                Withdraw Funds
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                Request withdrawal to your registered bank account
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                View Statement
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                Check your fund transaction history and account balance
-              </p>
-            </div>
-          </div>
-        </section>
-
         {/* Contact Information */}
         <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
           <h2 className="text-2xl font-semibold text-green-heading mb-4">
@@ -466,7 +376,7 @@ const BankAccount = () => {
                   </svg>
                   <span>
                     <span className="font-medium">Email:</span>{" "}
-                    funds@sapphirebroking.com
+                    support@sapphirebroking.com
                   </span>
                 </li>
                 <li className="flex items-center">
