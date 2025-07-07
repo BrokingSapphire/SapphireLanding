@@ -49,7 +49,7 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
             {title}
           </h3>
           {title === 'IPO' ? (
-            <Link href="/product/ipo" target="_blank" rel="noopener noreferrer">
+            <Link href="/segments/ipo" target="_blank" rel="noopener noreferrer">
               <button className="px-3 sm:px-5 py-1.5 sm:py-2 border rounded-full bg-white text-gray-900 text-xs sm:text-sm">
                 Learn more
               </button>

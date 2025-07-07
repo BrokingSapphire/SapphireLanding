@@ -1,3 +1,4 @@
+// This file was moved from src/app/product/ipo/page.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -11,35 +12,35 @@ const IPOPage: React.FC = () => {
     <div className="bg-white min-h-screen pt-20">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
-        <div className="bg-white py-16 w-full">
-          <div className="flex flex-row items-center justify-between relative w-full min-h-[340px] px-2 md:px-8 lg:px-12 xl:px-20">
+        <div className="bg-white py-10 sm:py-14 lg:py-16 w-full">
+          <div className="flex flex-col-reverse md:flex-row items-center justify-between relative w-full min-h-[240px] md:min-h-[340px] px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20">
             {/* Left Content */}
-            <div className="z-10 max-w-4xl pl-2 md:pl-8 lg:pl-8 xl:pl-15">
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-4 font-lexend">
+            <div className="z-10 w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl pt-8 md:pt-0 pl-0 md:pl-8 lg:pl-8 xl:pl-15 text-center md:text-left">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-3 sm:mb-4 font-lexend">
                 Invest in IPOs & more
               </h1>
-              <div className="space-y-4 text-gray-600 mb-6">
-                <p className='text-[20px]'>
+              <div className="space-y-3 sm:space-y-4 text-gray-600 mb-5 sm:mb-6">
+                <p className='text-base sm:text-lg md:text-xl'>
                   Apply for IPOs for a chance to own the shares of up-and-coming 
                   companies right from their first listing.
                 </p>
-                <p className='text-[20px]'>
+                <p className='text-base sm:text-lg md:text-xl'>
                   IPOs offer early access to high-growth companies, letting you invest before 
                   they list. Ideal for both new investors and experienced market participants.
                 </p>
               </div>
-              <button className="bg-[#064D51] hover:bg-teal-800 text-white px-8 py-[14px] rounded-lg font-semibold transition-colors shadow-lg">
+              <button className="bg-[#064D51] hover:bg-teal-800 text-white px-6 sm:px-8 py-3 sm:py-[14px] rounded-lg font-semibold transition-colors shadow-lg w-full md:w-auto">
                 Apply for IPO Now
               </button>
             </div>
             {/* Right Side - IPO Images */}
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-end pointer-events-none select-none pr-2 md:pr-8 lg:pr-12 xl:pr-20">
+            <div className="relative w-full flex justify-center md:justify-end mb-6 md:mb-0 md:w-auto">
               <Image
                 src="/ipo/frame.png"
                 alt="IPO Frame"
                 width={380}
                 height={444}
-                className="w-[320px] sm:w-[380px] md:w-[380px] h-auto max-h-[444px] drop-shadow-xl"
+                className="w-48 sm:w-64 md:w-[320px] lg:w-[380px] h-auto max-h-[300px] md:max-h-[444px] drop-shadow-xl"
                 priority
               />
             </div>
@@ -112,36 +113,32 @@ const IPOPage: React.FC = () => {
         </div>
 
         {/* IPO Table Section */}
-        <div className="bg-white py-16 rounded-2xl mt-12 px-4 sm:px-8 md:px-12 lg:px-20">
+        <div className="bg-white py-10 sm:py-14 lg:py-16 rounded-2xl mt-8 sm:mt-10 lg:mt-12 px-2 sm:px-4 md:px-8 lg:px-20">
           <div className="w-full max-w-7xl mx-auto">
             {/* Tabs */}
-            <div className="flex border-b-2 pt-6 gap-x-8 lg:gap-x-20 overflow-x-auto scrollbar-hide mb-6 w-[600px]">
-              {(['Ongoing', 'Upcoming', 'Closed'] as Array<'Ongoing' | 'Upcoming' | 'Closed'>).map((tab) => (
-                <button
-                  key={tab}
-                  className={`px-3 sm:px-6 py-3 sm:py-4 font-semibold text-sm sm:text-base cursor-pointer whitespace-nowrap relative transition-colors border-b-2 ${
-                    selectedCategory === tab
-                      ? 'border-[#064D51] text-[#064D51]'
-                      : 'border-transparent text-gray-500 hover:text-[#064D51]'
-                  }`}
-                  onClick={() => setSelectedCategory(tab)}
-                >
-                  {tab}
-                  {selectedCategory === tab && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#064D51]" style={{ bottom: '0px', height: '2px' }}></span>
-                  )}
-                </button>
-              ))}
+            <div className="relative mb-4 sm:mb-6 pt-4 sm:pt-6">
+              <div className="flex gap-x-4 sm:gap-x-8 lg:gap-x-20 border-b border-gray-200 overflow-x-auto scrollbar-hide no-scrollbar">
+                {(['Ongoing', 'Upcoming', 'Closed'] as Array<'Ongoing' | 'Upcoming' | 'Closed'>).map((tab) => (
+                  <button
+                    key={tab}
+                    className={`px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 font-semibold text-xs sm:text-sm md:text-base cursor-pointer whitespace-nowrap relative transition-colors ${selectedCategory === tab ? 'text-[#064D51] font-semibold' : 'text-gray-500'}`}
+                    style={{ zIndex: selectedCategory === tab ? 10 : 1, borderBottom: selectedCategory === tab ? '4px solid #064D51' : '4px solid transparent', marginBottom: '-1px' }}
+                    onClick={() => setSelectedCategory(tab)}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
             </div>
             {/* Table */}
             <div className="overflow-x-auto scrollbar-hide rounded-xl border border-gray-200 bg-white">
-              <table className="min-w-full border-collapse">
+              <table className="min-w-full border-collapse text-xs sm:text-sm md:text-base">
                 <thead className="bg-gray-50">
-                  <tr style={{ height: "50px" }}>
-                    <th className="px-6 py-3 text-left text-[16px] font-semibold text-gray-700 uppercase tracking-wider">Stocks</th>
-                    <th className="px-6 py-3 text-left text-[16px] font-semibold text-gray-700 uppercase tracking-wider">IPO Date</th>
-                    <th className="px-6 py-3 text-left text-[16px] font-semibold text-gray-700 uppercase tracking-wider">Listing date</th>
-                    <th className="px-6 py-3 text-left text-[16px] font-semibold text-gray-700 uppercase tracking-wider">Price range</th>
+                  <tr style={{ height: "44px" }}>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-700 uppercase tracking-wider">Stocks</th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-700 uppercase tracking-wider">IPO Date</th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-700 uppercase tracking-wider">Listing date</th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-700 uppercase tracking-wider">Price range</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
@@ -193,20 +190,20 @@ const IPOPage: React.FC = () => {
                       priceRange: '₹153 – ₹161',
                     },
                   ].map((ipo, idx) => (
-                    <tr key={ipo.name + idx} className={idx % 2 === 1 ? 'bg-gray-50' : ''} style={{ height: "80px" }}>
-                      <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-3">
-                        <Image src={ipo.logo} alt={ipo.name} width={45} height={45} className="w-11 h-11" />
+                    <tr key={ipo.name + idx} className={idx % 2 === 1 ? 'bg-gray-50' : ''} style={{ height: "64px" }}>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap flex items-center space-x-2 sm:space-x-3">
+                        <Image src={ipo.logo} alt={ipo.name} width={36} height={36} className="w-8 h-8 sm:w-11 sm:h-11" />
                         <div>
-                          <div className="flex items-center space-x-2">
-                            <span className="font-regular text-gray-500 text-[16px]">{ipo.name}</span>
-                            <span className="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded ml-1">{ipo.badge}</span>
+                          <div className="flex items-center space-x-1 sm:space-x-2">
+                            <span className="font-regular text-gray-500 text-xs sm:text-[16px]">{ipo.name}</span>
+                            <span className="bg-purple-100 text-purple-700 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded ml-1">{ipo.badge}</span>
                           </div>
-                          <div className="text-[12px] font-regular text-gray-500">{ipo.subtitle}</div>
+                          <div className="text-[10px] sm:text-[12px] font-regular text-gray-500">{ipo.subtitle}</div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[16px] font-regular text-gray-500">{ipo.ipoDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[16px] font-regular text-gray-500">{ipo.listingDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[16px] font-regular text-gray-500">{ipo.priceRange}</td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-[16px] font-regular text-gray-500">{ipo.ipoDate}</td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-[16px] font-regular text-gray-500">{ipo.listingDate}</td>
+                      <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-[16px] font-regular text-gray-500">{ipo.priceRange}</td>
                     </tr>
                   ))}
                 </tbody>
