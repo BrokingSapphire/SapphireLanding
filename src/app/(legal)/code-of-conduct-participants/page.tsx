@@ -1,6 +1,23 @@
 /* eslint-disable */
 import React from "react";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Code of Conduct | Sapphire Broking: Smarter Trading, Expert Insights",
+  description:
+    "Sapphire Broking is committed to maintaining the highest standards of integrity, professionalism, and ethical conduct. Our Code of Conduct outlines the principles and expectations for all participants in our platform.",
+  keywords:
+    "code of conduct, sapphire broking, ethical practices, client service, compliance, trading platform",
+  openGraph: {
+    title: "Code of Conduct | Sapphire Broking: Smarter Trading, Expert Insights",
+    description:
+      "Sapphire Broking is committed to maintaining the highest standards of integrity, professionalism, and ethical conduct. Our Code of Conduct outlines the principles and expectations for all participants in our platform.",
+    url: "https://sapphirebroking.com/",
+    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+    type: "website",
+  },
+};
 
 // Code of Conduct data structure
 const codeOfConductData = [

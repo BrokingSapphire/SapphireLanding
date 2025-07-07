@@ -1,6 +1,22 @@
-
+import { Metadata } from "next";
 import React from "react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Investor Responsibility | Sapphire Broking: Smarter Trading, Expert Insights",
+  description:
+    "Essential guidelines for investors to make informed and responsible decisions.",
+  keywords:
+    "investor responsibility, trading guidelines, responsible investing, sapphire broking",
+  openGraph: {
+    title: "Investor Responsibility | Sapphire Broking: Smarter Trading, Expert Insights",
+    description:
+      "Essential guidelines for investors to make informed and responsible decisions.",
+    url: "https://sapphirebroking.com/",
+    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+    type: "website",
+  },
+};
 
 // Responsibilities data structure
 const responsibilitiesData = [
