@@ -117,18 +117,23 @@ const IPOPage: React.FC = () => {
           <div className="w-full max-w-7xl mx-auto">
             {/* Tabs */}
             <div className="relative mb-4 sm:mb-6 pt-4 sm:pt-6">
-              <div className="flex gap-x-4 sm:gap-x-8 lg:gap-x-20 border-b border-gray-200 overflow-x-auto scrollbar-hide no-scrollbar">
+                <div className="flex gap-x-4 sm:gap-x-8 lg:gap-x-20 border-b border-gray-200 overflow-x-auto scrollbar-hide no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {(['Ongoing', 'Upcoming', 'Closed'] as Array<'Ongoing' | 'Upcoming' | 'Closed'>).map((tab) => (
                   <button
-                    key={tab}
-                    className={`px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 font-semibold text-xs sm:text-sm md:text-base cursor-pointer whitespace-nowrap relative transition-colors ${selectedCategory === tab ? 'text-[#064D51] font-semibold' : 'text-gray-500'}`}
-                    style={{ zIndex: selectedCategory === tab ? 10 : 1, borderBottom: selectedCategory === tab ? '4px solid #064D51' : '4px solid transparent', marginBottom: '-1px' }}
-                    onClick={() => setSelectedCategory(tab)}
+                  key={tab}
+                  className={`px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 font-semibold text-xs sm:text-sm md:text-base cursor-pointer whitespace-nowrap relative transition-colors ${selectedCategory === tab ? 'text-[#064D51] font-semibold' : 'text-gray-500'}`}
+                  style={{ zIndex: selectedCategory === tab ? 10 : 1, borderBottom: selectedCategory === tab ? '4px solid #064D51' : '4px solid transparent', marginBottom: '-1px' }}
+                  onClick={() => setSelectedCategory(tab)}
                   >
-                    {tab}
+                  {tab}
                   </button>
                 ))}
-              </div>
+                <style jsx>{`
+                  div::-webkit-scrollbar {
+                  display: none;
+                  }
+                `}</style>
+                </div>
             </div>
             {/* Table */}
             <div className="overflow-x-auto scrollbar-hide rounded-xl border border-gray-200 bg-white">
