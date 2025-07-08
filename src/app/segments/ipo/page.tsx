@@ -121,7 +121,7 @@ const IPOPage: React.FC = () => {
                 {(['Ongoing', 'Upcoming', 'Closed'] as Array<'Ongoing' | 'Upcoming' | 'Closed'>).map((tab) => (
                   <button
                   key={tab}
-                  className={`px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 font-semibold text-xs sm:text-sm md:text-base cursor-pointer whitespace-nowrap relative transition-colors ${selectedCategory === tab ? 'text-[#064D51] font-semibold' : 'text-gray-500'}`}
+                  className={`px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 font-medium text-xs sm:text-sm md:text-base cursor-pointer whitespace-nowrap relative transition-colors ${selectedCategory === tab ? 'text-[#064D51] font-medium' : 'text-gray-500'}`}
                   style={{ zIndex: selectedCategory === tab ? 10 : 1, borderBottom: selectedCategory === tab ? '4px solid #064D51' : '4px solid transparent', marginBottom: '-1px' }}
                   onClick={() => setSelectedCategory(tab)}
                   >
