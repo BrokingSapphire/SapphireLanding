@@ -103,7 +103,7 @@ const IPOPage: React.FC = () => {
             </div>
             {/* Step 3 */}
             <div className="flex flex-col items-center text-center flex-1 min-w-[200px]">
-              <div className="p-6 mb-4 flex flex-col items-center">
+              <div className="py-6 mb-4 flex flex-col items-center">
                 <Image src="/ipo/upirequest.png" alt="UPI Request" width={100} height={100} className="w-[100px] h-[100px] mb-2" />
                 <h3 className="text-lg font-bold text-[#00706C] mb-1">Approve UPI Request</h3>
                 <p className="text-gray-600 text-base">Confirm the UPI payment mandate in your preferred UPI app.</p>
@@ -117,7 +117,7 @@ const IPOPage: React.FC = () => {
           <div className="w-full max-w-7xl mx-auto">
             {/* Tabs */}
             <div className="relative mb-4 sm:mb-6 pt-4 sm:pt-6">
-                <div className="flex gap-x-4 sm:gap-x-8 lg:gap-x-20 border-b border-gray-200 overflow-x-auto scrollbar-hide no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div className="flex gap-x-4 sm:gap-x-6 lg:gap-x-15 border-b border-gray-200 overflow-x-auto scrollbar-hide no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {(['Ongoing', 'Upcoming', 'Closed'] as Array<'Ongoing' | 'Upcoming' | 'Closed'>).map((tab) => (
                   <button
                   key={tab}
@@ -136,14 +136,14 @@ const IPOPage: React.FC = () => {
                 </div>
             </div>
             {/* Table */}
-            <div className="overflow-x-auto scrollbar-hide rounded-xl border border-gray-200 bg-white">
+            <div className="overflow-x-auto scrollbar-hide rounded-md border border-gray-200 bg-white">
               <table className="min-w-full border-collapse text-xs sm:text-sm md:text-base">
-                <thead className="bg-gray-50">
+                <thead className="bg-white border-b border-gray-200">
                   <tr style={{ height: "44px" }}>
-                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-700 uppercase tracking-wider">Stocks</th>
-                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-700 uppercase tracking-wider">IPO Date</th>
-                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-700 uppercase tracking-wider">Listing date</th>
-                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-gray-700 uppercase tracking-wider">Price range</th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-black font-poppins uppercase tracking-wider">Stocks</th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-black font-poppins uppercase tracking-wider">IPO Date</th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-black font-poppins uppercase tracking-wider">Listing date</th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left font-semibold text-black font-poppins uppercase tracking-wider">Price range</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
@@ -201,7 +201,7 @@ const IPOPage: React.FC = () => {
                         <div>
                           <div className="flex items-center space-x-1 sm:space-x-2">
                             <span className="font-regular text-gray-500 text-xs sm:text-[16px]">{ipo.name}</span>
-                            <span className="bg-purple-100 text-purple-700 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded ml-1">{ipo.badge}</span>
+                            <div className="bg-purple-100 text-purple-700 text-[10px] sm:text-[9px] font-regular h-[18px] w-[30px] flex items-center justify-center text-center rounded ml-1">{ipo.badge}</div>
                           </div>
                           <div className="text-[10px] sm:text-[12px] font-regular text-gray-500">{ipo.subtitle}</div>
                         </div>
