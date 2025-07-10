@@ -30,7 +30,7 @@ const BrokerageCalculator: React.FC = () => {
   const [quantity, setQuantity] = useState<string>('5');
 
   // Calculate all brokerage charges
-  const calculateCharges = (): BrokerageCharges => {
+  const calculateCharges = React.useCallback((): BrokerageCharges => {
     const buyPriceNum = parseFloat(buyPrice) || 0;
     const sellPriceNum = parseFloat(sellPrice) || 0;
     const qty = parseInt(quantity) || 0;
@@ -113,13 +113,13 @@ const BrokerageCalculator: React.FC = () => {
       pointsToBreakEven,
       netPL
     };
-  };
+  }, [buyPrice, sellPrice, quantity, deliveryType, exchange]);
 
   const [charges, setCharges] = useState<BrokerageCharges>(calculateCharges());
 
   useEffect(() => {
     setCharges(calculateCharges());
-  }, [buyPrice, sellPrice, quantity, deliveryType, exchange, activeTab]);
+  }, [calculateCharges]);
 
   // Format currency
   const formatCurrency = (amount: number): string => {

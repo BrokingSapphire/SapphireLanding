@@ -16,7 +16,7 @@ const SIPCalculator: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'SIPs' | 'Lumpsum'>('SIPs');
 
   // Calculate SIP returns
-  const calculateSIP = (): SIPCalculation => {
+  const calculateSIP = React.useCallback((): SIPCalculation => {
     const monthlyRate = returnRate / 100 / 12;
     const months = timePeriod * 12;
     const totalInvestment = investment * months;
@@ -30,13 +30,13 @@ const SIPCalculator: React.FC = () => {
       estimatedReturns,
       totalAmount: futureValue
     };
-  };
+  }, [investment, returnRate, timePeriod]);
 
   const [calculation, setCalculation] = useState<SIPCalculation>(calculateSIP());
 
   useEffect(() => {
     setCalculation(calculateSIP());
-  }, [investment, returnRate, timePeriod]);
+  }, [investment, returnRate, timePeriod, calculateSIP]);
 
   // Format currency
   const formatCurrency = (amount: number): string => {

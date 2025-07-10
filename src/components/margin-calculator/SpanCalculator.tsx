@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 type ExchangeType = 'Buy' | 'Sell';
 type OptionType = 'Call' | 'Put';
@@ -386,9 +387,11 @@ const SpanCalculator: React.FC = () => {
                     <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.exposure}</td>
                     <td className="py-3 px-2 sm:px-4 text-gray-600 text-xs sm:text-sm">{contract.total}</td>
                     <td className="py-3 px-2 sm:px-4 text-gray-600">
-                      <img 
+                      <Image 
                         src="/delete.svg" 
                         alt="Delete" 
+                        width={20}
+                        height={20}
                         className="w-4 h-4 sm:w-5 sm:h-5 cursor-pointer hover:opacity-70" 
                         onClick={() => handleDeleteContract(index)}
                       />
