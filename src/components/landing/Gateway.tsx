@@ -54,6 +54,12 @@ const GatewayCard = ({ title, icon, description }: GatewayItem) => (
                 Learn more
               </button>
             </Link>
+          ) : title === 'Mutual Fund' ? (
+            <Link href="/segments/mutual-funds">
+              <button className="px-3 sm:px-5 py-1.5 sm:py-2 border rounded-full bg-white text-gray-900 text-xs sm:text-sm">
+                Learn more
+              </button>
+            </Link>
           ) : (
             <button className="px-3 sm:px-5 py-1.5 sm:py-2 border rounded-full bg-white text-gray-900 text-xs sm:text-sm">
               Learn more
