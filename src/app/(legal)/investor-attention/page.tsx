@@ -3,6 +3,23 @@ import React from "react";
 import Link from "next/link";
 import { advisoryData } from "@/components/legal/investorattention";
 import { AdvisoryCard } from "@/components/InvestorAttentionComponents";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Investor Attention | Sapphire Broking: Smarter Trading, Expert Insights",
+  description:
+    "Stay informed with important updates, alerts, and notices for investors.",
+  keywords:
+    "investor attention, updates, alerts, notices, sapphire broking",
+  openGraph: {
+    title: "Investor Attention | Sapphire Broking: Smarter Trading, Expert Insights",
+    description:
+      "Stay informed with important updates, alerts, and notices for investors.",
+    url: "https://sapphirebroking.com/",
+    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+    type: "website",
+  },
+};
 
 const InvestorAttention: React.FC = () => {
   return (

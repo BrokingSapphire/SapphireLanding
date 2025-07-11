@@ -56,7 +56,7 @@ const MarginCalculator: React.FC = () => {
   );
 
   // Calculate margin for Bracket & Cover Orders
-  const calculateMargin = () => {
+  const calculateMargin = React.useCallback(() => {
     const priceNum = parseFloat(price) || 0;
     const qtyNum = parseInt(quantity) || 0;
 
@@ -72,11 +72,11 @@ const MarginCalculator: React.FC = () => {
         marginUtilized
       });
     }
-  };
+  }, [price, quantity]);
 
   useEffect(() => {
     calculateMargin();
-  }, [price, quantity, stopLossPrice, orderType]);
+  }, [price, quantity, stopLossPrice, orderType, calculateMargin]);
 
   const handleReset = () => {
     setSymbol('');

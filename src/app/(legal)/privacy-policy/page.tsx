@@ -1,4 +1,22 @@
 /* eslint-disable */
+import React from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Sapphire Broking: Smarter Trading, Expert Insights",
+  description:
+    "Essential information about the rights of investors to make informed and responsible decisions.",
+  keywords:
+    "privacy policy, trading rights, responsible investing, sapphire broking",
+  openGraph: {
+    title: "Privacy Policy | Sapphire Broking: Smarter Trading, Expert Insights",
+    description:
+      "Essential information about the rights of investors to make informed and responsible decisions.",
+    url: "https://sapphirebroking.com/",
+    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+    type: "website",
+  },
+};
 
 const PrivacyPolicy = () => {
   return (

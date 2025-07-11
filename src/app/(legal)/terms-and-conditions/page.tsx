@@ -1,4 +1,21 @@
 /* eslint-disable */
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms and Conditions | Sapphire Broking: Smarter Trading, Expert Insights",
+  description:
+    "Essential information about the rights of investors to make informed and responsible decisions.",
+  keywords:
+    "terms and conditions, trading rights, responsible investing, sapphire broking",
+  openGraph: {
+    title: "Terms and Conditions | Sapphire Broking: Smarter Trading, Expert Insights",
+    description:
+      "Essential information about the rights of investors to make informed and responsible decisions.",
+    url: "https://sapphirebroking.com/",
+    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+    type: "website",
+  },
+};
 
 const Home = () => {
   return (

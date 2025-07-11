@@ -3,6 +3,23 @@ import React from "react";
 import Link from "next/link";
 import { investorCharterData } from "@/components/legal/investorattention";
 import { DosAndDontsTable } from "@/components/InvestorAttentionComponents";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Investor Do's and Don'ts | Sapphire Broking: Smarter Trading, Expert Insights",
+  description:
+    "Essential guidelines for investors to make informed and responsible decisions.",
+  keywords:
+    "investor dos and donts, trading guidelines, responsible investing, sapphire broking",
+  openGraph: {
+    title: "Investor Do's and Don'ts | Sapphire Broking: Smarter Trading, Expert Insights",
+    description:
+      "Essential guidelines for investors to make informed and responsible decisions.",
+    url: "https://sapphirebroking.com/",
+    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+    type: "website",
+  },
+};
 
 const DosAndDonts: React.FC = () => {
   return (

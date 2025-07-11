@@ -12,6 +12,23 @@ import {
   MonthlyComplaintsTable,
   AnnualComplaintsTable,
 } from "@/components/InvestorAttentionComponents";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Investor Charter | Sapphire Broking: Smarter Trading, Expert Insights",
+  description:
+    "Know your rights, responsibilities, and protections as a market participant.",
+  keywords:
+    "investor charter, rights of investors, responsibilities, protections, sapphire broking",
+  openGraph: {
+    title: "Investor Charter | Sapphire Broking: Smarter Trading, Expert Insights",
+    description:
+      "Know your rights, responsibilities, and protections as a market participant.",
+    url: "https://sapphirebroking.com/",
+    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+    type: "website",
+  },
+};
 
 const InvestorCharter: React.FC = () => {
   return (

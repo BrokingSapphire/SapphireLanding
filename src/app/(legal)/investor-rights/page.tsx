@@ -1,6 +1,23 @@
 /* eslint-disable */
 import React from "react";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Investor Rights | Sapphire Broking: Smarter Trading, Expert Insights",
+  description:
+    "Essential information about the rights of investors to make informed and responsible decisions.",
+  keywords:
+    "investor rights, trading rights, responsible investing, sapphire broking",
+  openGraph: {
+    title: "Investor Rights | Sapphire Broking: Smarter Trading, Expert Insights",
+    description:
+      "Essential information about the rights of investors to make informed and responsible decisions.",
+    url: "https://sapphirebroking.com/",
+    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+    type: "website",
+  },
+};
 
 // Rights data structure
 const rightsData = [

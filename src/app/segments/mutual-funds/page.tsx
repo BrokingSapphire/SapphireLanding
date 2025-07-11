@@ -1,7 +1,8 @@
+// This file was moved from src/app/product/ipo/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 
 interface SIPCalculation {
   totalInvestment: number;
@@ -9,36 +10,33 @@ interface SIPCalculation {
   totalAmount: number;
 }
 
-const SIPCalculator: React.FC = () => {
+const MutualFundsPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'SIPs' | 'Lumpsum'>('Lumpsum');
   const [investment, setInvestment] = useState<number>(8000);
   const [returnRate, setReturnRate] = useState<number>(18);
   const [timePeriod, setTimePeriod] = useState<number>(16);
-  const [activeTab, setActiveTab] = useState<'SIPs' | 'Lumpsum'>('SIPs');
+  const [calculation, setCalculation] = useState<SIPCalculation>({ totalInvestment: 0, estimatedReturns: 0, totalAmount: 0 });
 
-  // Calculate SIP returns
-  const calculateSIP = React.useCallback((): SIPCalculation => {
+  // SIP calculation logic (reference from SIP calculator)
+  const calculateSIP = useCallback((): SIPCalculation => {
     const monthlyRate = returnRate / 100 / 12;
     const months = timePeriod * 12;
     const totalInvestment = investment * months;
-
-    // SIP Future Value formula: PMT * [((1 + r)^n - 1) / r] * (1 + r)
-    const futureValue = investment * (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate));
+    let futureValue = 0;
+    if (monthlyRate > 0) {
+      futureValue = investment * (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate));
+    } else {
+      futureValue = totalInvestment;
+    }
     const estimatedReturns = futureValue - totalInvestment;
-
-    return {
-      totalInvestment,
-      estimatedReturns,
-      totalAmount: futureValue
-    };
+    return { totalInvestment, estimatedReturns, totalAmount: futureValue };
   }, [investment, returnRate, timePeriod]);
-
-  const [calculation, setCalculation] = useState<SIPCalculation>(calculateSIP());
 
   useEffect(() => {
     setCalculation(calculateSIP());
-  }, [investment, returnRate, timePeriod, calculateSIP]);
+  }, [investment, returnRate, timePeriod, activeTab, calculateSIP]);
 
-  // Format currency
+  // Format currency (reference from SIP calculator)
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -48,39 +46,87 @@ const SIPCalculator: React.FC = () => {
     }).format(amount).replace('₹', 'Rs.');
   };
 
-
-  // Calculate chart percentages
-  const investedPercentage = (calculation.totalInvestment / calculation.totalAmount) * 100;
-  const returnsPercentage = (calculation.estimatedReturns / calculation.totalAmount) * 100;
+  // Chart percentages
+  const investedPercentage = calculation.totalAmount > 0 ? (calculation.totalInvestment / calculation.totalAmount) * 100 : 0;
+  const returnsPercentage = calculation.totalAmount > 0 ? (calculation.estimatedReturns / calculation.totalAmount) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-white pt-16 sm:pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <div className="bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
-            <nav className="flex items-center text-sm" aria-label="Breadcrumb">
-              <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
-              <span className="mx-2 text-gray-400">›</span>
-              <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Calculators</Link>
-              <span className="mx-2 text-gray-400">›</span>
-              <span className="text-[#064D51] font-regular">SIP Calculator</span>
-            </nav>
+    <div className="bg-white min-h-screen pt-20">
+      <div className="max-w-7xl mx-auto">
+        {/* Hero Section */}
+        <div className="bg-white py-10 pb-2 sm:py-14 sm:pb-0 lg:pb-0 lg:py-16 w-full">
+          <div className="flex flex-col-reverse md:flex-row items-center justify-between relative w-full min-h-[240px] md:min-h-[340px] px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20">
+            {/* Left Content */}
+            <div className="z-10 w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl pt-8 md:pt-0 pl-0 md:pl-8 lg:pl-8 xl:pl-15 text-center md:text-left">
+              <p className="text-[36px] sm:text-3xl lg:text-4xl font-medium text-gray-900 leading-tight mb-2 sm:mb-2 font-lexend">
+                Invest in Mutual Funds
+              </p>
+              <p className="text-[36px] sm:text-3xl lg:text-4xl font-medium text-gray-900 leading-tight mb-[24px] sm:mb-[24px] font-lexend">
+                with 0% Commission*
+              </p>
+              <div className="space-y-3 sm:space-y-3 text-gray-600 mb-6 sm:mb-6">
+                <p className='text-base sm:text-lg md:text-xl'>
+                  Mutual funds offer a simple and effective way to invest in a diversified basket of assets, managed by experienced professionals.
+                </p>
+                <p className='text-base sm:text-lg md:text-xl'>
+                  Whether you&#39;re a beginner or a seasoned investor, mutual funds help you build long-term wealth with reduced risk and steady growth potential.
+                </p>
+                <p className='text-base sm:text-lg md:text-xl'>
+                  With flexible investment options and accessibility, mutual funds make it easier than ever to work toward your financial goals.
+                </p>
+              </div>
+              <button className="bg-[#064D51] hover:bg-teal-800 text-white px-6 sm:px-8 py-3 sm:py-[14px] rounded-lg font-semibold transition-colors shadow-lg w-full md:w-auto">
+                Apply for IPO Now
+              </button>
+            </div>
+            {/* Right Side - IPO Images */}
+            <div className="relative w-full flex justify-center md:justify-end mb-6 md:mb-0 md:w-auto">
+              <Image
+                src="/mutual-funds/frame.png"
+                alt="Mutual Funds Frame"
+                width={364}
+                height={456}
+                className="w-48 sm:w-64 md:w-[320px] lg:w-[380px] h-auto max-h-[300px] md:max-h-[444px] drop-shadow-xl"
+                priority
+              />
+            </div>
           </div>
         </div>
 
-        {/* Header */}
-        <div className="bg-white">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">SIP Calculator</h1>
-            <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
-              Calculating your trading and investment finances made easy. Now access all of your favourite calculators from a common space.
-            </p>
+        {/* How Easy It Is Section */}
+        <div className="bg-[#F7F9FB] max-w-7xl h-[420px] mx-auto rounded-2xl mt-12 px-4 sm:px-8 md:px-12 flex flex-col md:flex-row items-center justify-center">
+          {/* Left Text Content */}
+          <div className='px-4 sm:px-8 md:px-10 bg-[#F7F9FB] max-w-7xl w-full flex flex-col md:flex-row items-center justify-center h-full'>
+            <div className="flex-1 md:mr-8 flex flex-col justify-center h-full px-2 sm:px-5 align-left text-center">
+              <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 font-lexend leading-tight">
+                5,000&#43; Mutual Funds. Your
+              </h2>
+              <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 mb-4 font-lexend leading-tight">
+                Growth Start&apos;s with Sapphire.
+              </h2>
+              <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
+                Invest with confidence in top-performing
+              </p>
+              <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
+                funds, curated for every kind of investor.
+              </p>
+            </div>
+            {/* Right Icon Frame SVG */}
+            <div className="flex-1 flex justify-center items-center h-full w-full max-w-[700px] px-2 sm:px-4 md:px-6 md:pt-0 lg:px-0">
+              <Image
+                src="/mutual-funds/icon-frame.svg"
+                alt="Mutual Funds Icon Frame"
+                width={700}
+                height={270}
+                className="w-full min-w-[120px] min-h-[80px] max-w-[220px] h-[120px] sm:min-w-[220px] sm:min-h-[150px] sm:max-w-[340px] sm:h-[180px] md:min-w-[300px] md:min-h-[180px] md:max-w-[450px] md:h-[250px] lg:max-w-[500px] lg:h-[240px] xl:max-w-[700px] xl:h-[270px] object-contain"
+                priority
+              />
+            </div>
           </div>
         </div>
 
         {/* Full Width Background Section with ColorGradient */}
-        <div className="w-full relative h-auto lg:h-[400px] mb-8 lg:mb-[15rem]" style={{
+        <div className="w-full relative h-auto lg:h-[400px] mb-8 lg:mb-[15rem] px-10" style={{
           backgroundImage: 'url(/ColorGradient.svg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -91,8 +137,8 @@ const SIPCalculator: React.FC = () => {
             <div className="flex rounded-full border border-gray-200 bg-white p-1 min-w-fit">
               <button
                 className={`px-6 sm:px-8 lg:px-10 py-3 font-semibold rounded-full transition-colors duration-200 h-15 text-sm sm:text-base ${activeTab === 'SIPs'
-                    ? 'bg-[#064D51] text-white w-[140px] sm:w-[160px] lg:w-[182px]'
-                    : 'bg-transparent text-gray-500 w-[140px] sm:w-[160px] lg:w-[182px]'
+                  ? 'bg-[#064D51] text-white w-[140px] sm:w-[160px] lg:w-[182px]'
+                  : 'bg-transparent text-gray-500 w-[140px] sm:w-[160px] lg:w-[182px]'
                   }`}
                 onClick={() => setActiveTab('SIPs')}
               >
@@ -100,8 +146,8 @@ const SIPCalculator: React.FC = () => {
               </button>
               <button
                 className={`px-6 sm:px-8 lg:px-10 py-3 font-semibold rounded-full transition-colors duration-200 text-sm sm:text-base ${activeTab === 'Lumpsum'
-                    ? 'bg-[#064D51] text-white w-[140px] sm:w-[160px] lg:w-[182px]'
-                    : 'bg-transparent text-gray-500 w-[140px] sm:w-[160px] lg:w-[182px]'
+                  ? 'bg-[#064D51] text-white w-[140px] sm:w-[160px] lg:w-[182px]'
+                  : 'bg-transparent text-gray-500 w-[140px] sm:w-[160px] lg:w-[182px]'
                   }`}
                 onClick={() => setActiveTab('Lumpsum')}
               >
@@ -111,7 +157,7 @@ const SIPCalculator: React.FC = () => {
           </div>
 
           {/* Main Content */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-8 pt-4">
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col items-stretch" style={{ minHeight: '420px', height: 'auto' }}>
               <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col lg:flex-row items-stretch" style={{ minHeight: '420px', height: 'auto' }}>
                 {/* Left Panel - Controls */}
@@ -138,7 +184,7 @@ const SIPCalculator: React.FC = () => {
                       step="1000"
                       value={investment}
                       onChange={(e) => setInvestment(Number(e.target.value))}
-                      className="custom-range w-full h-2 rounded-[4px] h-[6px] appearance-none cursor-pointer slider"
+                      className="custom-range w-full rounded-[4px] h-[6px] appearance-none cursor-pointer slider"
                       style={
                         {
                           '--range-progress': `${((investment - 1000) / (10000000 - 1000)) * 100}%`
@@ -169,7 +215,7 @@ const SIPCalculator: React.FC = () => {
                       step="0.5"
                       value={returnRate}
                       onChange={(e) => setReturnRate(Number(e.target.value))}
-                      className="custom-range w-full h-2 rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
+                      className="custom-range w-full rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
                       style={
                         {
                           '--range-progress': `${((returnRate - 1) / (30 - 1)) * 100}%`
@@ -233,14 +279,16 @@ const SIPCalculator: React.FC = () => {
                   {/* Donut Chart */}
                   <div className="relative w-[180px] h-[180px] sm:w-[200px] sm:h-[200px] lg:w-[230px] lg:h-[230px] mb-4 sm:mb-6">
                     <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      {/* Background circle (optional) */}
                       <circle
                         cx="50"
                         cy="50"
                         r="35"
                         fill="none"
-                        stroke="#064D51"
+                        stroke="#F1F1F1"
                         strokeWidth="20"
                       />
+                      {/* Estimated Returns (Dark) */}
                       <circle
                         cx="50"
                         cy="50"
@@ -252,6 +300,7 @@ const SIPCalculator: React.FC = () => {
                         strokeDashoffset="0"
                         className="transition-all duration-500"
                       />
+                      {/* Invested Amount (Yellow) */}
                       <circle
                         cx="50"
                         cy="50"
@@ -292,85 +341,6 @@ const SIPCalculator: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* SIP Calculator Info Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-12">
-          <h2 className="text-xl sm:text-2xl mb-3 mt-8 font-normal font-lexend text-gray-900">What is a SIP Calculator (Systematic Investment Plan)?</h2>
-          <p className="text-[#636363] text-sm sm:text-base mb-2">
-            A SIP Calculator is an intuitive online tool provided by Sapphire Broking to help investors estimate the future value of their mutual fund investments through Systematic Investment Plans (SIPs). SIPs are a disciplined approach to investing, where you contribute a fixed amount regularly into mutual funds.
-          </p>
-          <p className="text-[#636363] text-sm sm:text-base">
-            Using inputs like monthly investment, investment tenure, and expected annual return, the SIP calculator gives you a clear estimate of how much wealth you can accumulate over time. Thanks to the power of compounding, even small, consistent investments can grow substantially.
-          </p>
-        </div>
-
-        {/* How Does the Sapphire SIP Return Calculator Help You? */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-12">
-          <h2 className="text-xl sm:text-2xl mb-3 font-normal font-lexend text-gray-900">How Does the Sapphire SIP Return Calculator Help You?</h2>
-          <p className="text-[#636363] text-sm sm:text-base mb-2">The Sapphire Broking SIP Return Calculator empowers investors in multiple ways:</p>
-          <ol className="list-decimal list-inside text-[#5F5F5F] space-y-1 pl-4 font-weight-400">
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Estimate Future Returns:</span> Get a projected value of your investment over a chosen period, helping you align your investments with financial goals.</li>
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Compare Options:</span> Try different scenarios—amounts, durations, and rates—to compare potential outcomes across investment options.</li>
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Visualize Investment Growth:</span> See how your capital compounds over time, thanks to graphical insights offered by the calculator.</li>
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Strategic Investment:</span> Choose the right SIP frequency and amount to meet your financial milestones efficiently.</li>
-          </ol>
-        </div>
-
-        {/* How to Use the Sapphire SIP Calculator? */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-12">
-          <h2 className="text-xl sm:text-2xl mb-3 font-normal font-lexend text-gray-900">How to Use the Sapphire SIP Calculator?</h2>
-          <p className="text-[#636363] text-sm sm:text-base mb-2">Using Sapphire&apos;s SIP calculator is easy and quick. Just follow these steps:</p>
-          <ol className="list-decimal list-inside text-[#5F5F5F] space-y-1 pl-4 font-weight-400">
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Enter Monthly Investment:</span> Specify how much you want to invest monthly.</li>
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Enter Investment:</span> Choose how long you plan to invest, usually in years.</li>
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Expected Annual Return:</span> Provide a reasonable annual return estimate (based on mutual fund history or projections).</li>
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Calculation:</span> The calculator uses the SIP formula: P × [(1 + r)^n – 1]/r × (1 + r),</li>
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">View Results:</span> Get an immediate estimate of your final corpus and returns.</li>
-          </ol>
-        </div>
-
-        {/* Example: SIP Returns with Sapphire Broking */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-8">
-          <h2 className="text-xl sm:text-2xl mb-3 font-normal font-lexend text-gray-900">Example: SIP Returns with Sapphire Broking</h2>
-          <p className="text-[#636363] text-sm sm:text-base mb-2">Let&apos;s take a simple scenario:</p>
-          <ul className="list-disc list-inside text-[#5F5F5F] space-y-1 pl-4 font-weight-400">
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Monthly Investment (P):</span> ₹5,000</li>
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Investment Period (n):</span> 10 years (120 months)</li>
-            <li><span className="font-poppins text-sm sm:text-base font-weight-500">Expected Annual Return (r):</span> 12% (1% monthly)</li>
-          </ul>
-          <p className="text-[#5F5F5F] font-weight-400 mb-2 font-poppins text-sm sm:text-base">
-            <span className="font-poppins text-sm sm:text-base font-weight-500">Calculation:</span> Future Value = 5000 × [(1 + 0.01)^120 – 1] ÷ 0.01 × (1.01) ≈ ₹11,61,695
-          </p>
-          <p className="text-[#5F5F5F] font-weight-400 mb-2 font-poppins text-sm sm:text-base">
-            <span className="font-poppins text-sm sm:text-base font-weight-500">Result:</span> After 10 years of ₹5,000 SIPs with a 12% return rate, your investment will grow to approximately ₹11.61 lakhs—of which ₹6 lakhs is principal and ₹5.61 lakhs is gain.
-          </p>
-        </div>
-
-        {/* Why Choose SIP Over Lump-Sum Investments? */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-8">
-          <h2 className="text-xl sm:text-2xl mb-3 font-normal font-lexend text-gray-900">Why Choose SIP Over Lump-Sum Investments?</h2>
-          <p className="text-[#636363] text-sm sm:text-base mb-2">While both investment methods have their place, SIPs offer unique benefits for long-term investors:</p>
-          <ol className="list-decimal list-inside text-[#636363] space-y-1 pl-4">
-            <li><span className="font-medium">Rupee Cost Averaging:</span> Buy more units when markets dip and fewer when markets rise—reducing timing risk.</li>
-            <li><span className="font-medium">Disciplined Savings:</span> Automate your investment journey and develop a savings routine.</li>
-            <li><span className="font-medium">Power of Compounding:</span> Earn returns not just on your investments but also on past returns.</li>
-            <li><span className="font-medium">Lower Entry Barrier:</span> No need for large capital upfront—you can begin with as little as ₹500/month.</li>
-            <li><span className="font-medium">Flexibility and Control:</span> Pause, increase, or decrease your SIP amounts based on your financial comfort.</li>
-          </ol>
-        </div>
-
-        {/* Conclusion */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pb-12">
-          <h2 className="text-xl sm:text-2xl mb-3 font-normal font-lexend text-gray-900">Conclusion</h2>
-          <p className="text-[#636363] text-sm sm:text-base mb-2">The Sapphire Broking SIP Calculator is a must-have tool for any investor looking to build wealth systematically. Whether you&apos;re saving for your child&apos;s future, retirement, or any long-term goal, the SIP calculator helps you plan with confidence.</p>
-          <p className="text-[#636363] text-sm sm:text-base mb-2">With Sapphire&apos;s easy-to-use interface, you can:</p>
-          <ul className="list-disc list-inside text-[#636363] space-y-1 pl-4">
-            <li>Project returns</li>
-            <li>Compare investment strategies</li>
-            <li>Stay committed to your financial aspirations</li>
-          </ul>
-          <p className="text-[#636363] text-sm sm:text-base mb-2">Start planning smarter with the <a href="#" className="text-[#5F5F5F] underline">Sapphire SIP Calculator</a> today and unlock the power of consistent, goal-driven investing.</p>
         </div>
       </div>
 
@@ -434,4 +404,4 @@ const SIPCalculator: React.FC = () => {
   );
 };
 
-export default SIPCalculator;
+export default MutualFundsPage;
