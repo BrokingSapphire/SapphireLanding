@@ -387,7 +387,7 @@ const AccountClosure = () => {
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
-        <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+        <h1 className="text-4xl sm:text-6xl pt-6 font-bold text-green-heading mb-8 uppercase text-center">
           Account Closure
         </h1>
 

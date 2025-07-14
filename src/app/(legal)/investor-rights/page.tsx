@@ -463,7 +463,7 @@ const RightsOfInvestors: React.FC = () => {
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
-        <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+        <h1 className="text-4xl sm:text-6xl font-bold pt-6 text-green-heading mb-8 uppercase text-center">
           Rights of Investors
         </h1>
         <p className="text-gray-500 mb-14 text-center">

@@ -193,13 +193,13 @@ const AadhaarConsent = () => {
             <span className="mx-2 text-gray-400">›</span>
             <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Legal</Link>
             <span className="mx-2 text-gray-400">›</span>
-            <span className="text-[#064D51] font-regular">Aadhaar Consent</span>
+            <span className="text-[#064D51] font-regular ">Aadhaar Consent</span>
           </nav>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
         {/* Main content starts here */}
-        <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+        <h1 className="text-4xl sm:text-6xl pt-6 font-bold text-green-heading mb-8 uppercase text-center">
           Aadhaar Consent
         </h1>
 

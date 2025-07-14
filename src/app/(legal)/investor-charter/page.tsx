@@ -41,12 +41,12 @@ const InvestorCharter: React.FC = () => {
             <span className="mx-2 text-gray-400">›</span>
             <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Legal</Link>
             <span className="mx-2 text-gray-400">›</span>
-            <span className="text-[#064D51] font-regular">Investor Charter</span>
+            <span className="text-[#064D51] font-regular ">Investor Charter</span>
           </nav>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
-        <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+        <h1 className="text-4xl pt-6 sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
           Investor Charter
         </h1>
         <p className="text-gray-500 mb-14 text-center">
