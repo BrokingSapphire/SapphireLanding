@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import React from "react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Fund Transfer | Sapphire Broking: Smarter Trading, Expert Insights",
@@ -307,120 +308,134 @@ const BankSection: React.FC<BankSectionProps> = ({ subtitle, points, isTable, ta
 // Main component
 const BankAccount = () => {
   return (
-    <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
-        Fund Transfer
-      </h1>
-
-      <p className="text-gray-500 mb-14 text-center">
-        Complete guide for fund deposits, withdrawals, and bank account management.
-      </p>
-
-      <div className="space-y-10">
-        <hr />
-        
-        {/* Introduction */}
-        <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <div className="space-y-4 text-gray-500">
-            <p>
-              Manage your funds efficiently with Sapphire Broking&apos;s secure and convenient
-              fund transfer system. Transfer funds only from your registered bank account
-              to ensure compliance with SEBI regulations.
-            </p>
-            <p>
-              We provide multiple options for fund deposits and withdrawals to make your 
-              trading experience seamless and hassle-free.
-            </p>
-          </div>
+    <div className="min-h-screen bg-white pt-16 sm:pt-20 px-8">
+      {/* Breadcrumb */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
+          <nav className="flex items-center text-sm" aria-label="Breadcrumb">
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Account</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <span className="text-[#064D51] font-regular">Fund Transfer</span>
+          </nav>
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
+        <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+          Fund Transfer
+        </h1>
 
-        {/* Main Content */}
-        <div className="space-y-8">
-          {bankAccountData.map((category) => (
-            <section
-              id={category.id}
-              key={category.id}
-              className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
-            >
-              <h2 className="text-2xl font-semibold text-green-heading mb-6">
-                {category.title}
-              </h2>
+        <p className="text-gray-500 mb-14 text-center">
+          Complete guide for fund deposits, withdrawals, and bank account management.
+        </p>
 
-              <div className="space-y-6">
-                {category.sections.map((section) => (
-                  <BankSection
-                    key={section.id}
-                    subtitle={section.subtitle}
-                    points={section.points}
-                    isTable={section.isTable}
-                    tableData={section.tableData}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-
-        {/* Contact Information */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Contact Information
-          </h2>
-          <div className="space-y-4 text-gray-500">
-            <p>
-              For questions or issues related to fund transfers and bank accounts, please contact:
-            </p>
-            <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-              <h3 className="font-medium text-green-heading mb-2">
-                Fund Transfer Support
-              </h3>
-              <ul className="list-none space-y-2">
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Email:</span>{" "}
-                    support@sapphirebroking.com
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Phone:</span> [Fund Transfer Support Number]
-                  </span>
-                </li>
-              </ul>
+        <div className="space-y-10">
+          <hr />
+          
+          {/* Introduction */}
+          <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <div className="space-y-4 text-gray-500">
+              <p>
+                Manage your funds efficiently with Sapphire Broking&apos;s secure and convenient
+                fund transfer system. Transfer funds only from your registered bank account
+                to ensure compliance with SEBI regulations.
+              </p>
+              <p>
+                We provide multiple options for fund deposits and withdrawals to make your 
+                trading experience seamless and hassle-free.
+              </p>
             </div>
           </div>
-        </section>
 
-        <div className="text-gray-500 text-center mt-8">
-          <p>Last Updated: June 26, 2025</p>
+          {/* Main Content */}
+          <div className="space-y-8">
+            {bankAccountData.map((category) => (
+              <section
+                id={category.id}
+                key={category.id}
+                className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
+              >
+                <h2 className="text-2xl font-semibold text-green-heading mb-6">
+                  {category.title}
+                </h2>
+
+                <div className="space-y-6">
+                  {category.sections.map((section) => (
+                    <BankSection
+                      key={section.id}
+                      subtitle={section.subtitle}
+                      points={section.points}
+                      isTable={section.isTable}
+                      tableData={section.tableData}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          {/* Contact Information */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Contact Information
+            </h2>
+            <div className="space-y-4 text-gray-500">
+              <p>
+                For questions or issues related to fund transfers and bank accounts, please contact:
+              </p>
+              <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                <h3 className="font-medium text-green-heading mb-2">
+                  Fund Transfer Support
+                </h3>
+                <ul className="list-none space-y-2">
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Email:</span>{" "}
+                      support@sapphirebroking.com
+                    </span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Phone:</span> [Fund Transfer Support Number]
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <div className="text-gray-500 text-center mt-8 pb-12">
+            <p>Last Updated: June 26, 2025</p>
+          </div>
         </div>
       </div>
     </div>
