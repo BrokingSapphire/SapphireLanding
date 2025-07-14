@@ -299,7 +299,7 @@ type RiskSectionProps = {
   subtitle: string;
   points?: string[];
   isTable?: boolean;
-  tableData?: any[];
+  tableData?: Record<string, string>[];
 };
 
 const RiskSection: React.FC<RiskSectionProps> = ({ subtitle, points, isTable, tableData }) => {

@@ -200,7 +200,7 @@ const SIPCalculator: React.FC = () => {
                       step="1"
                       value={timePeriod}
                       onChange={(e) => setTimePeriod(Number(e.target.value))}
-                      className="custom-range w-full h-2 rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
+                      className="custom-range w-full rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
                       style={
                         {
                           '--range-progress': `${((timePeriod - 1) / (50 - 1)) * 100}%`
