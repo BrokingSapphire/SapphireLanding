@@ -23,47 +23,56 @@ export const metadata: Metadata = {
 
 const InvestorAttention: React.FC = () => {
   return (
-    <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
-        FOR INVESTOR'S ATTENTION
-      </h1>
-
-      <p className="text-gray-500 mb-14 text-center">
-        Stay informed with important updates, alerts, and notices for
-        investors.
-      </p>
-
-      <div className="space-y-10">
-        <hr />
-        {/* Advisories Section */}
-        <div className="space-y-8">
-          {advisoryData.map((advisory) => (
-            <AdvisoryCard
-              key={advisory.id}
-              title={advisory.title}
-              points={advisory.points}
-              description={advisory.description}
-              contact={advisory.contact}
-              sections={advisory.sections}
-            />
-          ))}
+    <div className="min-h-screen bg-white pt-16 sm:pt-20 px-8">
+      {/* Breadcrumb */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
+          <nav className="flex items-center text-sm" aria-label="Breadcrumb">
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Legal</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <span className="text-[#064D51] font-regular">Investor Attention</span>
+          </nav>
         </div>
-
-        <div className="text-gray-500 mt-8">
-          <p>This document was last updated on March 9, 2025.</p>
-        </div>
-
-        <div className="text-gray-500 mt-4 italic">
-          <p>
-            Disclaimer: The information provided in this document is subject to
-            change based on regulatory updates. For the most current
-            information, please visit our website or contact our customer
-            support.
-          </p>
-        </div>
-
-        <div className="text-gray-500 text-center mt-8">
-          <p>Last Updated: April 1, 2025</p>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
+        <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+          FOR INVESTOR'S ATTENTION
+        </h1>
+        <p className="text-gray-500 mb-14 text-center">
+          Stay informed with important updates, alerts, and notices for
+          investors.
+        </p>
+        <div className="space-y-10">
+          <hr />
+          {/* Advisories Section */}
+          <div className="space-y-8">
+            {advisoryData.map((advisory) => (
+              <AdvisoryCard
+                key={advisory.id}
+                title={advisory.title}
+                points={advisory.points}
+                description={advisory.description}
+                contact={advisory.contact}
+                sections={advisory.sections}
+              />
+            ))}
+          </div>
+          <div className="text-gray-500 mt-8">
+            <p>This document was last updated on March 9, 2025.</p>
+          </div>
+          <div className="text-gray-500 mt-4 italic">
+            <p>
+              Disclaimer: The information provided in this document is subject to
+              change based on regulatory updates. For the most current
+              information, please visit our website or contact our customer
+              support.
+            </p>
+          </div>
+          <div className="text-gray-500 text-center mt-8 pb-12">
+            <p>Last Updated: April 1, 2025</p>
+          </div>
         </div>
       </div>
     </div>
