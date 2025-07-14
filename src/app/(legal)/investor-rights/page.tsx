@@ -449,100 +449,112 @@ const RightSection: React.FC<{
 // Main component
 const RightsOfInvestors: React.FC = () => {
   return (
-    <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
-        Rights of Investors
-      </h1>
+    <div className="min-h-screen bg-white pt-16 sm:pt-20 px-8">
+      {/* Breadcrumb */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
+          <nav className="flex items-center text-sm" aria-label="Breadcrumb">
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Legal</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <span className="text-[#064D51] font-regular">Investor Rights</span>
+          </nav>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
+        <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+          Rights of Investors
+        </h1>
+        <p className="text-gray-500 mb-14 text-center">
+          Understand your rights as an investor and how they protect your
+          interests.
+        </p>
+        <div className="space-y-10">
+          <hr />
+          {/* Quick Access - Moved here from bottom */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Quick Access to Your Rights
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {rightsData.map((rightCategory) => (
+                <a
+                  key={rightCategory.id}
+                  href={`#${rightCategory.id}`}
+                  className="p-4 flex justify-center items-center bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center"
+                >
+                  <h3 className="text-green-heading font-medium">
+                    {rightCategory.title.split(".")[1].trim()}
+                  </h3>
+                </a>
+              ))}
+            </div>
+          </section>
 
-      <p className="text-gray-500 mb-14 text-center">
-        Understand your rights as an investor and how they protect your
-        interests.
-      </p>
-
-      <div className="space-y-10">
-        <hr />
-        {/* Quick Access - Moved here from bottom */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Quick Access to Your Rights
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Rights Content */}
+          <div className="space-y-8">
             {rightsData.map((rightCategory) => (
-              <a
+              <section
                 key={rightCategory.id}
-                href={`#${rightCategory.id}`}
-                className="p-4 flex justify-center items-center bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center"
+                className="p-6 border border-gray-200 rounded-lg shadow-sm"
               >
-                <h3 className="text-green-heading font-medium">
-                  {rightCategory.title.split(".")[1].trim()}
-                </h3>
-              </a>
+                <h2
+                  id={rightCategory.id}
+                  className="text-2xl font-semibold text-green-heading mb-6"
+                >
+                  {rightCategory.title}
+                </h2>
+
+                <div className="space-y-6">
+                  {rightCategory.sections.map((section) => (
+                    <RightSection
+                      key={section.id}
+                      subtitle={section.subtitle}
+                      points={section.points}
+                    />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
-        </section>
 
-        {/* Rights Content */}
-        <div className="space-y-8">
-          {rightsData.map((rightCategory) => (
-            <section
-              key={rightCategory.id}
-              className="p-6 border border-gray-200 rounded-lg shadow-sm"
-            >
-              <h2
-                id={rightCategory.id}
-                className="text-2xl font-semibold text-green-heading mb-6"
-              >
-                {rightCategory.title}
-              </h2>
+          {/* Conclusion */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Conclusion
+            </h2>
+            <div className="space-y-4 text-gray-500">
+              <p>
+                This document outlines your rights as an investor with Sapphire
+                Broking. Always remember that with rights come responsibilities.
+                Being a responsible investor not only protects your interests but
+                also contributes to maintaining market integrity.
+              </p>
+              <p>
+                For more information or clarification on your rights, please
+                contact Sapphire Broking's customer service at:
+              </p>
+              <ul className="list-none pl-6 space-y-2">
+                <li>
+                  <span className="font-medium">Email:</span>{" "}
+                  support@sapphirebroking.com
+                </li>
+                <li>
+                  <span className="font-medium">Phone:</span> [Customer Support
+                  Number]
+                </li>
+                <li>
+                  <span className="font-medium">Address:</span> [Sapphire Broking
+                  Address]
+                </li>
+              </ul>
+            </div>
+          </section>
 
-              <div className="space-y-6">
-                {rightCategory.sections.map((section) => (
-                  <RightSection
-                    key={section.id}
-                    subtitle={section.subtitle}
-                    points={section.points}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-
-        {/* Conclusion */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Conclusion
-          </h2>
-          <div className="space-y-4 text-gray-500">
-            <p>
-              This document outlines your rights as an investor with Sapphire
-              Broking. Always remember that with rights come responsibilities.
-              Being a responsible investor not only protects your interests but
-              also contributes to maintaining market integrity.
-            </p>
-            <p>
-              For more information or clarification on your rights, please
-              contact Sapphire Broking's customer service at:
-            </p>
-            <ul className="list-none pl-6 space-y-2">
-              <li>
-                <span className="font-medium">Email:</span>{" "}
-                support@sapphirebroking.com
-              </li>
-              <li>
-                <span className="font-medium">Phone:</span> [Customer Support
-                Number]
-              </li>
-              <li>
-                <span className="font-medium">Address:</span> [Sapphire Broking
-                Address]
-              </li>
-            </ul>
+          <div className="text-gray-500 text-center mt-8 pb-12">
+            <p>Last Updated: April 1, 2025</p>
           </div>
-        </section>
-
-        <div className="text-gray-500 text-center mt-8">
-          <p>Last Updated: April 1, 2025</p>
         </div>
       </div>
     </div>
