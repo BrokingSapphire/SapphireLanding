@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import React from "react";
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: "Aadhar Consent | Sapphire Broking: Smarter Trading, Expert Insights",
@@ -183,181 +184,82 @@ const ConsentSection = ({ subtitle, points }: ConsentSectionProps) => {
 // Main component
 const AadhaarConsent = () => {
   return (
-    <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
-        Aadhaar Consent
-      </h1>
-
-      <p className="text-gray-500 mb-14 text-center">
-        Understanding how we handle your Aadhaar information with complete transparency and security.
-      </p>
-
-      <div className="space-y-10">
-        <hr />
-        
-        {/* Introduction */}
-        <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <div className="space-y-4 text-gray-500">
-            <p>
-              At Sapphire Broking, we respect your privacy and are committed to protecting your personal information, 
-              including your Aadhaar details. This consent document explains how we handle Aadhaar information 
-              during the account opening process.
-            </p>
-            <p>
-              We believe in complete transparency about our data handling practices and want you to make an 
-              informed decision about sharing your Aadhaar information with us.
-            </p>
-          </div>
+    <div className="min-h-screen bg-white pt-16 sm:pt-20 px-8">
+      {/* Breadcrumb */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
+          <nav className="flex items-center text-sm" aria-label="Breadcrumb">
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Legal</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <span className="text-[#064D51] font-regular">Aadhaar Consent</span>
+          </nav>
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
+        {/* Main content starts here */}
+        <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+          Aadhaar Consent
+        </h1>
 
-        {/* Main Content */}
-        <div className="space-y-8">
-          {aadhaarConsentData.map((category) => (
-            <section
-              id={category.id}
-              key={category.id}
-              className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
-            >
-              <h2 className="text-2xl font-semibold text-green-heading mb-6">
-                {category.title}
-              </h2>
+        <p className="text-gray-500 mb-14 text-center">
+          Understanding how we handle your Aadhaar information with complete transparency and security.
+        </p>
 
-              <div className="space-y-6">
-                {category.sections.map((section) => (
-                  <ConsentSection
-                    key={section.id}
-                    subtitle={section.subtitle}
-                    points={section.points}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-
-        {/* Key Highlights */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Key Highlights
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                Completely Optional
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                Providing Aadhaar is entirely voluntary. You can always choose offline account opening.
+        <div className="space-y-10">
+          <hr />
+          {/* Introduction */}
+          <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <div className="space-y-4 text-gray-500">
+              <p>
+                At Sapphire Broking, we respect your privacy and are committed to protecting your personal information, 
+                including your Aadhaar details. This consent document explains how we handle Aadhaar information 
+                during the account opening process.
               </p>
-            </div>
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                No Direct Storage
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                Your complete Aadhaar details never touch our systems directly.
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                Authorized Partner
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                Surepass is UIDAI authorized and MeitY compliant for secure eKYC processing.
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                Minimal Retention
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                We only retain last 4 digits and basic KYC data as per UIDAI guidelines.
+              <p>
+                We believe in complete transparency about our data handling practices and want you to make an 
+                informed decision about sharing your Aadhaar information with us.
               </p>
             </div>
           </div>
-        </section>
 
-        {/* Contact Information */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Contact Information
-          </h2>
-          <div className="space-y-4 text-gray-500">
-            <p>
-              For questions or concerns regarding Aadhaar consent and data handling, please contact:
-            </p>
-            <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-              <h3 className="font-medium text-green-heading mb-2">
-                Data Protection Officer
-              </h3>
-              <ul className="list-none space-y-2">
-                <li className="flex items-center">
+          {/* Main Content */}
+          <div className="space-y-8">
+            {aadhaarConsentData.map((category) => (
+              <section
+                id={category.id}
+                key={category.id}
+                className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
+              >
+                <h2 className="text-2xl font-semibold text-green-heading mb-6">
+                  {category.title}
+                </h2>
+
+                <div className="space-y-6">
+                  {category.sections.map((section) => (
+                    <ConsentSection
+                      key={section.id}
+                      subtitle={section.subtitle}
+                      points={section.points}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          {/* Key Highlights */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Key Highlights
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <div className="text-green-heading mb-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
+                    className="h-10 w-10 mx-auto"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -366,18 +268,22 @@ const AadhaarConsent = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                     />
                   </svg>
-                  <span>
-                    <span className="font-medium">Email:</span>{" "}
-                    privacy@sapphirebroking.com
-                  </span>
-                </li>
-                <li className="flex items-center">
+                </div>
+                <h3 className="text-center font-medium text-green-heading mb-2">
+                  Completely Optional
+                </h3>
+                <p className="text-gray-500 text-sm text-center">
+                  Providing Aadhaar is entirely voluntary. You can always choose offline account opening.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <div className="text-green-heading mb-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
+                    className="h-10 w-10 mx-auto"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -386,20 +292,129 @@ const AadhaarConsent = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                     />
                   </svg>
-                  <span>
-                    <span className="font-medium">Phone:</span> [Privacy Officer Phone Number]
-                  </span>
-                </li>
-              </ul>
+                </div>
+                <h3 className="text-center font-medium text-green-heading mb-2">
+                  No Direct Storage
+                </h3>
+                <p className="text-gray-500 text-sm text-center">
+                  Your complete Aadhaar details never touch our systems directly.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <div className="text-green-heading mb-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-10 w-10 mx-auto"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-center font-medium text-green-heading mb-2">
+                  Authorized Partner
+                </h3>
+                <p className="text-gray-500 text-sm text-center">
+                  Surepass is UIDAI authorized and MeitY compliant for secure eKYC processing.
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <div className="text-green-heading mb-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-10 w-10 mx-auto"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-center font-medium text-green-heading mb-2">
+                  Minimal Retention
+                </h3>
+                <p className="text-gray-500 text-sm text-center">
+                  We only retain last 4 digits and basic KYC data as per UIDAI guidelines.
+                </p>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <div className="text-gray-500 mt-4">
-          <p>Last Updated: June 26, 2025</p>
+          {/* Contact Information */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 pb-12">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Contact Information
+            </h2>
+            <div className="space-y-4 text-gray-500">
+              <p>
+                For questions or concerns regarding Aadhaar consent and data handling, please contact:
+              </p>
+              <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                <h3 className="font-medium text-green-heading mb-2">
+                  Data Protection Officer
+                </h3>
+                <ul className="list-none space-y-2">
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Email:</span>{" "}
+                      privacy@sapphirebroking.com
+                    </span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Phone:</span> [Privacy Officer Phone Number]
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <div className="text-gray-500 mt-4 pb-12">
+            <p>Last Updated: June 26, 2025</p>
+          </div>
         </div>
       </div>
     </div>
