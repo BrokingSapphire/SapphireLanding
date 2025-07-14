@@ -138,7 +138,7 @@ const SIPCalculator: React.FC = () => {
                       step="1000"
                       value={investment}
                       onChange={(e) => setInvestment(Number(e.target.value))}
-                      className="custom-range w-full h-2 rounded-[4px] h-[6px] appearance-none cursor-pointer slider"
+                      className="custom-range w-full rounded-[4px] h-[6px] appearance-none cursor-pointer slider"
                       style={
                         {
                           '--range-progress': `${((investment - 1000) / (10000000 - 1000)) * 100}%`
@@ -169,7 +169,7 @@ const SIPCalculator: React.FC = () => {
                       step="0.5"
                       value={returnRate}
                       onChange={(e) => setReturnRate(Number(e.target.value))}
-                      className="custom-range w-full h-2 rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
+                      className="custom-range w-full rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
                       style={
                         {
                           '--range-progress': `${((returnRate - 1) / (30 - 1)) * 100}%`
@@ -200,7 +200,7 @@ const SIPCalculator: React.FC = () => {
                       step="1"
                       value={timePeriod}
                       onChange={(e) => setTimePeriod(Number(e.target.value))}
-                      className="custom-range w-full h-2 rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
+                      className="custom-range w-full rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
                       style={
                         {
                           '--range-progress': `${((timePeriod - 1) / (50 - 1)) * 100}%`

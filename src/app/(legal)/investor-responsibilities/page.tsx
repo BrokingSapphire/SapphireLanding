@@ -475,218 +475,232 @@ const ResponsibilitySection: React.FC<{
 // Main component
 const ResponsibilitiesOfInvestors: React.FC = () => {
   return (
-    <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
-        Responsibilities of Investors
-      </h1>
+    <div className="min-h-screen bg-white pt-16 sm:pt-20 px-8">
+      {/* Breadcrumb */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
+          <nav className="flex items-center text-sm" aria-label="Breadcrumb">
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Legal</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <span className="text-[#064D51] font-regular ">Investor Responsibilities</span>
+          </nav>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
+        <h1 className="text-4xl pt-6 sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+          Responsibilities of Investors
+        </h1>
 
-      <p className="text-gray-500 mb-14 text-center">
-        Know your duties to maintain ethical, transparent, and responsible
-        investing practices.
-      </p>
+        <p className="text-gray-500 mb-14 text-center">
+          Know your duties to maintain ethical, transparent, and responsible
+          investing practices.
+        </p>
 
-      <div className="space-y-10">
-        <hr />
-        {/* Navigation Links */}
+        <div className="space-y-10">
+          <hr />
+          {/* Navigation Links */}
 
-        {/* Quick Access Navigation */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Your Responsibilities at a Glance
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {/* Quick Access Navigation */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Your Responsibilities at a Glance
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              {responsibilitiesData.map((category) => (
+                <a
+                  key={category.id}
+                  href={`#${category.id}`}
+                  className="p-3 flex justify-center items-center bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center hover:bg-gray-50 transition-colors"
+                >
+                  <span className="text-green-heading font-medium text-sm">
+                    {category.title.substring(2)}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+
+          {/* Main Content */}
+          <div className="space-y-8">
             {responsibilitiesData.map((category) => (
-              <a
+              <section
+                id={category.id}
                 key={category.id}
-                href={`#${category.id}`}
-                className="p-3 flex justify-center items-center bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center hover:bg-gray-50 transition-colors"
+                className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
               >
-                <span className="text-green-heading font-medium text-sm">
-                  {category.title.substring(2)}
-                </span>
-              </a>
+                <h2 className="text-2xl font-semibold text-green-heading mb-6">
+                  {category.title}
+                </h2>
+
+                <div className="space-y-6">
+                  {category.sections.map((section) => (
+                    <ResponsibilitySection
+                      key={section.id}
+                      subtitle={section.subtitle}
+                      points={section.points}
+                    />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
-        </section>
 
-        {/* Main Content */}
-        <div className="space-y-8">
-          {responsibilitiesData.map((category) => (
-            <section
-              id={category.id}
-              key={category.id}
-              className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
-            >
-              <h2 className="text-2xl font-semibold text-green-heading mb-6">
-                {category.title}
-              </h2>
-
-              <div className="space-y-6">
-                {category.sections.map((section) => (
-                  <ResponsibilitySection
-                    key={section.id}
-                    subtitle={section.subtitle}
-                    points={section.points}
-                  />
-                ))}
+          {/* Conclusion */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Conclusion
+            </h2>
+            <div className="space-y-4 text-gray-500">
+              <p>
+                Remember, being a responsible investor not only protects your own
+                interests but also contributes to the overall integrity and
+                efficiency of the securities market. Sapphire Broking encourages
+                all investors to adopt these responsible practices for a safer and
+                more rewarding investment journey.
+              </p>
+              <p>
+                For any clarification or assistance regarding these
+                responsibilities, please contact:
+              </p>
+              <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                <h3 className="font-medium text-green-heading mb-2">
+                  Sapphire Broking
+                </h3>
+                <ul className="list-none space-y-2">
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Email:</span>{" "}
+                      support@sapphirebroking.com
+                    </span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Phone:</span> [Customer
+                      Support Number]
+                    </span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Address:</span> [Sapphire
+                      Broking Address]
+                    </span>
+                  </li>
+                </ul>
               </div>
-            </section>
-          ))}
-        </div>
+            </div>
+          </section>
 
-        {/* Conclusion */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Conclusion
-          </h2>
-          <div className="space-y-4 text-gray-500">
-            <p>
-              Remember, being a responsible investor not only protects your own
-              interests but also contributes to the overall integrity and
-              efficiency of the securities market. Sapphire Broking encourages
-              all investors to adopt these responsible practices for a safer and
-              more rewarding investment journey.
+          {/* Educational Resources */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Educational Resources
+            </h2>
+            <p className="text-gray-500 mb-4">
+              To help you fulfill your responsibilities as an investor, Sapphire
+              Broking offers the following educational resources:
             </p>
-            <p>
-              For any clarification or assistance regarding these
-              responsibilities, please contact:
-            </p>
-            <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-              <h3 className="font-medium text-green-heading mb-2">
-                Sapphire Broking
-              </h3>
-              <ul className="list-none space-y-2">
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Email:</span>{" "}
-                    support@sapphirebroking.com
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Phone:</span> [Customer
-                    Support Number]
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Address:</span> [Sapphire
-                    Broking Address]
-                  </span>
-                </li>
-              </ul>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <h3 className="font-medium text-green-heading mb-2">
+                  Market Education
+                </h3>
+                <p className="text-gray-500 text-sm mb-3">
+                  Learn about market fundamentals, trading strategies, and
+                  investment approaches.
+                </p>
+                <Link
+                  href="/education/market-fundamentals"
+                  className="text-sm text-green-heading font-medium hover:underline"
+                >
+                  Access resources →
+                </Link>
+              </div>
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <h3 className="font-medium text-green-heading mb-2">
+                  Risk Management
+                </h3>
+                <p className="text-gray-500 text-sm mb-3">
+                  Discover strategies to protect your investments and manage
+                  trading risks effectively.
+                </p>
+                <Link
+                  href="/education/risk-management"
+                  className="text-sm text-green-heading font-medium hover:underline"
+                >
+                  Access resources →
+                </Link>
+              </div>
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <h3 className="font-medium text-green-heading mb-2">
+                  Regulatory Compliance
+                </h3>
+                <p className="text-gray-500 text-sm mb-3">
+                  Stay updated with regulatory requirements and compliance
+                  obligations for investors.
+                </p>
+                <Link
+                  href="/education/compliance"
+                  className="text-sm text-green-heading font-medium hover:underline"
+                >
+                  Access resources →
+                </Link>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Educational Resources */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Educational Resources
-          </h2>
-          <p className="text-gray-500 mb-4">
-            To help you fulfill your responsibilities as an investor, Sapphire
-            Broking offers the following educational resources:
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <h3 className="font-medium text-green-heading mb-2">
-                Market Education
-              </h3>
-              <p className="text-gray-500 text-sm mb-3">
-                Learn about market fundamentals, trading strategies, and
-                investment approaches.
-              </p>
-              <Link
-                href="/education/market-fundamentals"
-                className="text-sm text-green-heading font-medium hover:underline"
-              >
-                Access resources →
-              </Link>
-            </div>
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <h3 className="font-medium text-green-heading mb-2">
-                Risk Management
-              </h3>
-              <p className="text-gray-500 text-sm mb-3">
-                Discover strategies to protect your investments and manage
-                trading risks effectively.
-              </p>
-              <Link
-                href="/education/risk-management"
-                className="text-sm text-green-heading font-medium hover:underline"
-              >
-                Access resources →
-              </Link>
-            </div>
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <h3 className="font-medium text-green-heading mb-2">
-                Regulatory Compliance
-              </h3>
-              <p className="text-gray-500 text-sm mb-3">
-                Stay updated with regulatory requirements and compliance
-                obligations for investors.
-              </p>
-              <Link
-                href="/education/compliance"
-                className="text-sm text-green-heading font-medium hover:underline"
-              >
-                Access resources →
-              </Link>
-            </div>
+          <div className="text-gray-500 text-center mt-8 pb-12">
+            <p>Last Updated: April 1, 2025</p>
           </div>
-        </section>
-
-        <div className="text-gray-500 text-center mt-8">
-          <p>Last Updated: April 1, 2025</p>
         </div>
       </div>
     </div>

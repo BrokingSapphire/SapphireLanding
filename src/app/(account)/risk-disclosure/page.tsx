@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import React from "react";
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: "Risk Disclosure | Sapphire Broking: Smarter Trading, Expert Insights",
@@ -298,7 +299,7 @@ type RiskSectionProps = {
   subtitle: string;
   points?: string[];
   isTable?: boolean;
-  tableData?: any[];
+  tableData?: Record<string, string>[];
 };
 
 const RiskSection: React.FC<RiskSectionProps> = ({ subtitle, points, isTable, tableData }) => {
@@ -353,170 +354,183 @@ const RiskSection: React.FC<RiskSectionProps> = ({ subtitle, points, isTable, ta
 // Main component
 const RiskDisclosure = () => {
   return (
-    <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
-        Risk Disclosure
-      </h1>
-
-      <p className="text-gray-500 mb-14 text-center">
-        Important information about risks associated with trading in equity, derivatives, and commodities.
-      </p>
-
-      <div className="space-y-10">
-        <hr />
-        
-        {/* Introduction */}
-        <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <div className="space-y-4 text-gray-500">
-            <p>
-              <strong className="text-red-600">IMPORTANT:</strong> Trading in equity, derivatives, and commodities 
-              involves substantial risk and may not be suitable for all investors. Please read this risk disclosure 
-              carefully before engaging in any trading activities.
-            </p>
-            <p>
-              The value of investments can go down as well as up, and you may receive back less than your original 
-              investment. Past performance is not indicative of future results. It is important to understand the 
-              risks involved before making any investment decisions.
-            </p>
-            <p>
-              <strong className="text-red-600">WARNING:</strong> Derivatives trading involves high risk and may result 
-              in loss of your entire investment. Please ensure you fully understand the risks before trading in 
-              derivatives.
+    <div className="min-h-screen bg-white pt-16 sm:pt-20 px-8">
+      {/* Breadcrumb */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
+          <nav className="flex items-center text-sm" aria-label="Breadcrumb">
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Account</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <span className="text-[#064D51] font-regular">Risk Disclosure</span>
+          </nav>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
+        {/* Header */}
+        <div className="bg-white">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Risk Disclosure</h1>
+            <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
+              Important information about risks associated with trading in equity, derivatives, and commodities.
             </p>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="space-y-8">
-          {riskDisclosureData.map((category) => (
-            <section
-              id={category.id}
-              key={category.id}
-              className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
-            >
-              <h2 className="text-2xl font-semibold text-green-heading mb-6">
-                {category.title}
-              </h2>
-
-              <div className="space-y-6">
-                {category.sections.map((section) => (
-                  <RiskSection
-                    key={section.id}
-                    subtitle={section.subtitle}
-                    points={section.points}
-                    isTable={section.isTable}
-                    tableData={section.tableData}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-
-        {/* Disclaimer */}
-        <section className="p-6 border border-red-200 bg-red-50 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-red-600 mb-4">
-            Important Disclaimers
-          </h2>
-          <div className="space-y-4 text-gray-700">
-            <p>
-              <strong>Investment Advice:</strong> This risk disclosure does not constitute investment advice. 
-              Please consult with qualified financial advisors before making investment decisions.
-            </p>
-            <p>
-              <strong>No Guarantee:</strong> Sapphire Broking does not guarantee profits or protection against 
-              losses. All trading involves risk, and past performance does not guarantee future results.
-            </p>
-            <p>
-              <strong>Regulatory Compliance:</strong> This disclosure is prepared in accordance with SEBI 
-              regulations and guidelines. Please ensure you comply with all applicable laws and regulations.
-            </p>
-            <p>
-              <strong>Updates:</strong> This risk disclosure may be updated periodically. Please check for 
-              the latest version on our website.
-            </p>
-          </div>
-        </section>
-
-        {/* Acknowledgment */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Client Acknowledgment
-          </h2>
-          <div className="space-y-4 text-gray-500">
-            <p>
-              By trading with Sapphire Broking, you acknowledge that:
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>You have read and understood this risk disclosure document</li>
-              <li>You understand the risks involved in trading equity, derivatives, and commodities</li>
-              <li>You have the financial capacity to bear potential losses</li>
-              <li>You will not hold Sapphire Broking liable for any losses incurred</li>
-              <li>You will comply with all applicable laws and regulations</li>
-            </ul>
-          </div>
-        </section>
-
-        {/* Contact Information */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Contact Information
-          </h2>
-          <div className="space-y-4 text-gray-500">
-            <p>
-              For questions or clarifications regarding this risk disclosure, please contact:
-            </p>
-            <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-              <h3 className="font-medium text-green-heading mb-2">
-                Risk Management Team
-              </h3>
-              <ul className="list-none space-y-2">
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Email:</span>{" "}
-                    risk@sapphirebroking.com
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Phone:</span> [Risk Management Support Number]
-                  </span>
-                </li>
-              </ul>
+        <div className="space-y-10 pb-12">
+          <hr />
+          {/* Introduction */}
+          <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <div className="space-y-4 text-gray-500">
+              <p>
+                <strong className="text-red-600">IMPORTANT:</strong> Trading in equity, derivatives, and commodities 
+                involves substantial risk and may not be suitable for all investors. Please read this risk disclosure 
+                carefully before engaging in any trading activities.
+              </p>
+              <p>
+                The value of investments can go down as well as up, and you may receive back less than your original 
+                investment. Past performance is not indicative of future results. It is important to understand the 
+                risks involved before making any investment decisions.
+              </p>
+              <p>
+                <strong className="text-red-600">WARNING:</strong> Derivatives trading involves high risk and may result 
+                in loss of your entire investment. Please ensure you fully understand the risks before trading in 
+                derivatives.
+              </p>
             </div>
           </div>
-        </section>
 
-        <div className="text-gray-500 text-center mt-8">
-          <p>Last Updated: July 14, 2025</p>
+          {/* Main Content */}
+          <div className="space-y-8">
+            {riskDisclosureData.map((category) => (
+              <section
+                id={category.id}
+                key={category.id}
+                className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
+              >
+                <h2 className="text-2xl font-semibold text-green-heading mb-6">
+                  {category.title}
+                </h2>
+
+                <div className="space-y-6">
+                  {category.sections.map((section) => (
+                    <RiskSection
+                      key={section.id}
+                      subtitle={section.subtitle}
+                      points={section.points}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          {/* Disclaimer */}
+          <section className="p-6 border border-red-200 bg-red-50 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-red-600 mb-4">
+              Important Disclaimers
+            </h2>
+            <div className="space-y-4 text-gray-700">
+              <p>
+                <strong>Investment Advice:</strong> This risk disclosure does not constitute investment advice. 
+                Please consult with qualified financial advisors before making investment decisions.
+              </p>
+              <p>
+                <strong>No Guarantee:</strong> Sapphire Broking does not guarantee profits or protection against 
+                losses. All trading involves risk, and past performance does not guarantee future results.
+              </p>
+              <p>
+                <strong>Regulatory Compliance:</strong> This disclosure is prepared in accordance with SEBI 
+                regulations and guidelines. Please ensure you comply with all applicable laws and regulations.
+              </p>
+              <p>
+                <strong>Updates:</strong> This risk disclosure may be updated periodically. Please check for 
+                the latest version on our website.
+              </p>
+            </div>
+          </section>
+
+          {/* Acknowledgment */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Client Acknowledgment
+            </h2>
+            <div className="space-y-4 text-gray-500">
+              <p>
+                By trading with Sapphire Broking, you acknowledge that:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>You have read and understood this risk disclosure document</li>
+                <li>You understand the risks involved in trading equity, derivatives, and commodities</li>
+                <li>You have the financial capacity to bear potential losses</li>
+                <li>You will not hold Sapphire Broking liable for any losses incurred</li>
+                <li>You will comply with all applicable laws and regulations</li>
+              </ul>
+            </div>
+          </section>
+
+          {/* Contact Information */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Contact Information
+            </h2>
+            <div className="space-y-4 text-gray-500">
+              <p>
+                For questions or clarifications regarding this risk disclosure, please contact:
+              </p>
+              <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                <h3 className="font-medium text-green-heading mb-2">
+                  Risk Management Team
+                </h3>
+                <ul className="list-none space-y-2">
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Email:</span>{' '}
+                      risk@sapphirebroking.com
+                    </span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Phone:</span> [Risk Management Support Number]
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <div className="text-gray-500 text-center mt-8">
+            <p>Last Updated: July 14, 2025</p>
+          </div>
         </div>
       </div>
     </div>

@@ -481,98 +481,163 @@ const CodeSection: React.FC<{
 // Main component
 const CodeOfConduct: React.FC = () => {
   return (
-    <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
-        Code of Conduct
-      </h1>
-
-      <p className="text-gray-500 mb-14 text-center">
-        Adhere to ethical standards and rules set for all market participants.
-      </p>
-
-      <div className="space-y-10">
-        <hr />
-        {/* Introduction */}
-        <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <div className="space-y-4 text-gray-500">
-            <p>
-              This Code of Conduct represents Sapphire Broking's commitment to
-              the highest standards of ethical business conduct. All directors,
-              employees, and authorized representatives are expected to adhere
-              to this code in their daily activities.
-            </p>
-            <p>
-              The code is a living document that will evolve as our business and
-              the regulatory environment change. It serves as a guide for how we
-              conduct business and interact with our stakeholders.
-            </p>
-          </div>
+    <div className="min-h-screen bg-white pt-16 sm:pt-20 px-8">
+      {/* Breadcrumb */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
+          <nav className="flex items-center text-sm" aria-label="Breadcrumb">
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Legal</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <span className="text-[#064D51] font-regular ">Code of Conduct</span>
+          </nav>
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
+        <h1 className="text-4xl pt-6 sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
+          Code of Conduct
+        </h1>
 
-        {/* Quick Navigation */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Quick Navigation
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <p className="text-gray-500 mb-14 text-center">
+          Adhere to ethical standards and rules set for all market participants.
+        </p>
+
+        <div className="space-y-10">
+          <hr />
+          {/* Introduction */}
+          <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <div className="space-y-4 text-gray-500">
+              <p>
+                This Code of Conduct represents Sapphire Broking's commitment to
+                the highest standards of ethical business conduct. All directors,
+                employees, and authorized representatives are expected to adhere
+                to this code in their daily activities.
+              </p>
+              <p>
+                The code is a living document that will evolve as our business and
+                the regulatory environment change. It serves as a guide for how we
+                conduct business and interact with our stakeholders.
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Navigation */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Quick Navigation
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {codeOfConductData.map((category) => (
+                <a
+                  key={category.id}
+                  href={`#${category.id}`}
+                  className="p-3 bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center hover:bg-gray-50 flex items-center justify-center transition-colors"
+                >
+                  <span className="text-green-heading font-medium text-sm">
+                    {category.title.slice(2)}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+
+          {/* Main Content */}
+          <div className="space-y-8">
             {codeOfConductData.map((category) => (
-              <a
+              <section
+                id={category.id}
                 key={category.id}
-                href={`#${category.id}`}
-                className="p-3 bg-white rounded-md shadow-sm hover:shadow border border-gray-200 text-center hover:bg-gray-50 flex items-center justify-center transition-colors"
+                className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
               >
-                <span className="text-green-heading font-medium text-sm">
-                  {category.title.slice(2)}
-                </span>
-              </a>
+                <h2 className="text-2xl font-semibold text-green-heading mb-6">
+                  {category.title}
+                </h2>
+
+                <div className="space-y-6">
+                  {category.sections.map((section) => (
+                    <CodeSection
+                      key={section.id}
+                      subtitle={section.subtitle}
+                      points={section.points}
+                    />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
-        </section>
 
-        {/* Main Content */}
-        <div className="space-y-8">
-          {codeOfConductData.map((category) => (
-            <section
-              id={category.id}
-              key={category.id}
-              className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
-            >
-              <h2 className="text-2xl font-semibold text-green-heading mb-6">
-                {category.title}
-              </h2>
-
-              <div className="space-y-6">
-                {category.sections.map((section) => (
-                  <CodeSection
-                    key={section.id}
-                    subtitle={section.subtitle}
-                    points={section.points}
-                  />
-                ))}
+          {/* Contact Information */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Contact Information
+            </h2>
+            <div className="space-y-4 text-gray-500">
+              <p>
+                For questions or concerns regarding this Code of Conduct, please
+                contact:
+              </p>
+              <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                <h3 className="font-medium text-green-heading mb-2">
+                  Compliance Officer
+                </h3>
+                <ul className="list-none space-y-2">
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Email:</span>{" "}
+                      compliance@sapphirebroking.com
+                    </span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Phone:</span> [Compliance
+                      Officer Phone Number]
+                    </span>
+                  </li>
+                </ul>
               </div>
-            </section>
-          ))}
-        </div>
+            </div>
+          </section>
 
-        {/* Contact Information */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Contact Information
-          </h2>
-          <div className="space-y-4 text-gray-500">
-            <p>
-              For questions or concerns regarding this Code of Conduct, please
-              contact:
-            </p>
-            <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-              <h3 className="font-medium text-green-heading mb-2">
-                Compliance Officer
-              </h3>
-              <ul className="list-none space-y-2">
-                <li className="flex items-center">
+          {/* Compliance Framework */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Compliance Framework
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <div className="text-green-heading mb-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
+                    className="h-10 w-10 mx-auto"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -581,18 +646,23 @@ const CodeOfConduct: React.FC = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                     />
                   </svg>
-                  <span>
-                    <span className="font-medium">Email:</span>{" "}
-                    compliance@sapphirebroking.com
-                  </span>
-                </li>
-                <li className="flex items-center">
+                </div>
+                <h3 className="text-center font-medium text-green-heading mb-2">
+                  Preventive Controls
+                </h3>
+                <p className="text-gray-500 text-sm text-center">
+                  Policies, procedures, and training to prevent violations of the
+                  Code of Conduct
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <div className="text-green-heading mb-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
+                    className="h-10 w-10 mx-auto"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -601,111 +671,55 @@ const CodeOfConduct: React.FC = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                     />
                   </svg>
-                  <span>
-                    <span className="font-medium">Phone:</span> [Compliance
-                    Officer Phone Number]
-                  </span>
-                </li>
-              </ul>
+                </div>
+                <h3 className="text-center font-medium text-green-heading mb-2">
+                  Detective Controls
+                </h3>
+                <p className="text-gray-500 text-sm text-center">
+                  Monitoring and oversight activities to identify potential
+                  violations
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                <div className="text-green-heading mb-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-10 w-10 mx-auto"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-center font-medium text-green-heading mb-2">
+                  Corrective Controls
+                </h3>
+                <p className="text-gray-500 text-sm text-center">
+                  Procedures for addressing violations and implementing corrective
+                  actions
+                </p>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Compliance Framework */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8 bg-gray-50">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Compliance Framework
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                Preventive Controls
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                Policies, procedures, and training to prevent violations of the
-                Code of Conduct
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                Detective Controls
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                Monitoring and oversight activities to identify potential
-                violations
-              </p>
-            </div>
-            <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200">
-              <div className="text-green-heading mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-center font-medium text-green-heading mb-2">
-                Corrective Controls
-              </h3>
-              <p className="text-gray-500 text-sm text-center">
-                Procedures for addressing violations and implementing corrective
-                actions
-              </p>
-            </div>
+          <div className="text-gray-500 text-center mt-8 pb-12">
+            <p>Last Updated: April 1, 2025</p>
           </div>
-        </section>
-
-        <div className="text-gray-500 text-center mt-8">
-          <p>Last Updated: April 1, 2025</p>
         </div>
       </div>
     </div>

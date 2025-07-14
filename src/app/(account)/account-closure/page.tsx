@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import React from "react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Account Closure | Sapphire Broking: Smarter Trading, Expert Insights",
@@ -372,207 +373,221 @@ const ClosureSection: React.FC<ClosureSectionProps> = ({ subtitle, points, isTab
 // Main component
 const AccountClosure = () => {
   return (
-    <div className="max-w-4xl py-40 mx-auto p-6 bg-white">
-      <h1 className="text-4xl sm:text-6xl font-bold text-green-heading mb-8 uppercase text-center">
-        Account Closure
-      </h1>
-
-      <p className="text-gray-500 mb-14 text-center">
-        Complete guide for closing your trading and demat account with Sapphire Broking.
-      </p>
-
-      <div className="space-y-10">
-        <hr />
-        
-        {/* Introduction */}
-        <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <div className="space-y-4 text-gray-500">
-            <p>
-              <strong className="text-green-heading">Important Notice:</strong> Account closure is a permanent action 
-              that will terminate all your trading and investment services with Sapphire Broking. Please ensure you 
-              have completed all necessary steps before initiating the closure process.
-            </p>
-            <p>
-              We recommend carefully reviewing your investment portfolio, settling all pending transactions, 
-              and downloading important documents before proceeding with account closure.
-            </p>
-            <p>
-              <strong className="text-amber-600">Note:</strong> Once an account is closed, the same account numbers 
-              cannot be reactivated. A fresh account opening process will be required if you wish to resume trading.
-            </p>
-          </div>
+    <div className="min-h-screen bg-white pt-16 sm:pt-20 px-8">
+      {/* Breadcrumb */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-3">
+          <nav className="flex items-center text-sm" aria-label="Breadcrumb">
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Home</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <Link href="/" className="text-gray-500 hover:text-[#064D51] transition-colors">Account</Link>
+            <span className="mx-2 text-gray-400">›</span>
+            <span className="text-[#064D51] font-regular">Account Closure</span>
+          </nav>
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
+        <h1 className="text-4xl sm:text-6xl pt-6 font-bold text-green-heading mb-8 uppercase text-center">
+          Account Closure
+        </h1>
 
-        {/* Pre-closure Checklist */}
-        <div className="p-6 border border-amber-200 bg-amber-50 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-amber-700 mb-4">
-            Pre-Closure Checklist
-          </h2>
-          <div className="space-y-3 text-gray-700">
-            <div className="flex items-start">
-              <input type="checkbox" className="mt-1 mr-3" disabled />
-              <span>All open positions have been closed and settled</span>
-            </div>
-            <div className="flex items-start">
-              <input type="checkbox" className="mt-1 mr-3" disabled />
-              <span>All pending orders have been cancelled</span>
-            </div>
-            <div className="flex items-start">
-              <input type="checkbox" className="mt-1 mr-3" disabled />
-              <span>Available funds have been withdrawn</span>
-            </div>
-            <div className="flex items-start">
-              <input type="checkbox" className="mt-1 mr-3" disabled />
-              <span>All outstanding dues have been cleared</span>
-            </div>
-            <div className="flex items-start">
-              <input type="checkbox" className="mt-1 mr-3" disabled />
-              <span>Important documents and statements have been downloaded</span>
-            </div>
-            <div className="flex items-start">
-              <input type="checkbox" className="mt-1 mr-3" disabled />
-              <span>Tax statements and reports have been collected</span>
+        <p className="text-gray-500 mb-14 text-center">
+          Complete guide for closing your trading and demat account with Sapphire Broking.
+        </p>
+
+        <div className="space-y-10">
+          <hr />
+          
+          {/* Introduction */}
+          <div className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <div className="space-y-4 text-gray-500">
+              <p>
+                <strong className="text-green-heading">Important Notice:</strong> Account closure is a permanent action 
+                that will terminate all your trading and investment services with Sapphire Broking. Please ensure you 
+                have completed all necessary steps before initiating the closure process.
+              </p>
+              <p>
+                We recommend carefully reviewing your investment portfolio, settling all pending transactions, 
+                and downloading important documents before proceeding with account closure.
+              </p>
+              <p>
+                <strong className="text-amber-600">Note:</strong> Once an account is closed, the same account numbers 
+                cannot be reactivated. A fresh account opening process will be required if you wish to resume trading.
+              </p>
             </div>
           </div>
-        </div>
 
-        {/* Main Content */}
-        <div className="space-y-8">
-          {accountClosureData.map((category) => (
-            <section
-              id={category.id}
-              key={category.id}
-              className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
-            >
-              <h2 className="text-2xl font-semibold text-green-heading mb-6">
-                {category.title}
-              </h2>
-
-              <div className="space-y-6">
-                {category.sections.map((section) => (
-                  <ClosureSection
-                    key={section.id}
-                    subtitle={section.subtitle}
-                    points={section.points}
-                    isTable={section.isTable}
-                    tableData={section.tableData}
-                  />
-                ))}
+          {/* Pre-closure Checklist */}
+          <div className="p-6 border border-amber-200 bg-amber-50 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-amber-700 mb-4">
+              Pre-Closure Checklist
+            </h2>
+            <div className="space-y-3 text-gray-700">
+              <div className="flex items-start">
+                <input type="checkbox" className="mt-1 mr-3" disabled />
+                <span>All open positions have been closed and settled</span>
               </div>
-            </section>
-          ))}
-        </div>
-
-        {/* Important Warning */}
-        <section className="p-6 border border-red-200 bg-red-50 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-red-600 mb-4">
-            Final Warning
-          </h2>
-          <div className="space-y-4 text-gray-700">
-            <p>
-              <strong>Irreversible Action:</strong> Account closure is permanent and cannot be undone. 
-              All trading privileges, research access, and platform features will be permanently terminated.
-            </p>
-            <p>
-              <strong>Data Loss:</strong> Historical data, watchlists, and personalized settings will be 
-              permanently deleted and cannot be recovered.
-            </p>
-            <p>
-              <strong>Reopening Requirements:</strong> If you wish to trade again in the future, you will 
-              need to complete a fresh account opening process with new documentation.
-            </p>
-            <p>
-              <strong>Alternative Solutions:</strong> Consider account suspension or reduced services instead 
-              of permanent closure if you may return to trading in the future.
-            </p>
-          </div>
-        </section>
-
-        {/* Contact Information */}
-        <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
-          <h2 className="text-2xl font-semibold text-green-heading mb-4">
-            Contact Information
-          </h2>
-          <div className="space-y-4 text-gray-500">
-            <p>
-              For account closure assistance or to discuss alternatives, please contact our dedicated team:
-            </p>
-            <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-              <h3 className="font-medium text-green-heading mb-2">
-                Account Closure Support
-              </h3>
-              <ul className="list-none space-y-2">
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Email:</span>{" "}
-                    closure@sapphirebroking.com
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Phone:</span> [Account Closure Support Number]
-                  </span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-2 text-green-heading"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <span>
-                    <span className="font-medium">Office Hours:</span> Monday to Friday, 9:00 AM to 6:00 PM
-                  </span>
-                </li>
-              </ul>
+              <div className="flex items-start">
+                <input type="checkbox" className="mt-1 mr-3" disabled />
+                <span>All pending orders have been cancelled</span>
+              </div>
+              <div className="flex items-start">
+                <input type="checkbox" className="mt-1 mr-3" disabled />
+                <span>Available funds have been withdrawn</span>
+              </div>
+              <div className="flex items-start">
+                <input type="checkbox" className="mt-1 mr-3" disabled />
+                <span>All outstanding dues have been cleared</span>
+              </div>
+              <div className="flex items-start">
+                <input type="checkbox" className="mt-1 mr-3" disabled />
+                <span>Important documents and statements have been downloaded</span>
+              </div>
+              <div className="flex items-start">
+                <input type="checkbox" className="mt-1 mr-3" disabled />
+                <span>Tax statements and reports have been collected</span>
+              </div>
             </div>
           </div>
-        </section>
 
-        <div className="text-gray-500 text-center mt-8">
-          <p>Last Updated: July 14, 2025</p>
+          {/* Main Content */}
+          <div className="space-y-8">
+            {accountClosureData.map((category) => (
+              <section
+                id={category.id}
+                key={category.id}
+                className="p-6 border border-gray-200 rounded-lg shadow-sm scroll-mt-20"
+              >
+                <h2 className="text-2xl font-semibold text-green-heading mb-6">
+                  {category.title}
+                </h2>
+
+                <div className="space-y-6">
+                  {category.sections.map((section) => (
+                    <ClosureSection
+                      key={section.id}
+                      subtitle={section.subtitle}
+                      points={section.points}
+                      isTable={section.isTable}
+                      tableData={section.tableData}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          {/* Important Warning */}
+          <section className="p-6 border border-red-200 bg-red-50 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-red-600 mb-4">
+              Final Warning
+            </h2>
+            <div className="space-y-4 text-gray-700">
+              <p>
+                <strong>Irreversible Action:</strong> Account closure is permanent and cannot be undone. 
+                All trading privileges, research access, and platform features will be permanently terminated.
+              </p>
+              <p>
+                <strong>Data Loss:</strong> Historical data, watchlists, and personalized settings will be 
+                permanently deleted and cannot be recovered.
+              </p>
+              <p>
+                <strong>Reopening Requirements:</strong> If you wish to trade again in the future, you will 
+                need to complete a fresh account opening process with new documentation.
+              </p>
+              <p>
+                <strong>Alternative Solutions:</strong> Consider account suspension or reduced services instead 
+                of permanent closure if you may return to trading in the future.
+              </p>
+            </div>
+          </section>
+
+          {/* Contact Information */}
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm mb-8">
+            <h2 className="text-2xl font-semibold text-green-heading mb-4">
+              Contact Information
+            </h2>
+            <div className="space-y-4 text-gray-500">
+              <p>
+                For account closure assistance or to discuss alternatives, please contact our dedicated team:
+              </p>
+              <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                <h3 className="font-medium text-green-heading mb-2">
+                  Account Closure Support
+                </h3>
+                <ul className="list-none space-y-2">
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Email:</span>{" "}
+                      closure@sapphirebroking.com
+                    </span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Phone:</span> [Account Closure Support Number]
+                    </span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2 text-green-heading"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    <span>
+                      <span className="font-medium">Office Hours:</span> Monday to Friday, 9:00 AM to 6:00 PM
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <div className="text-gray-500 text-center mt-8 pb-12">
+            <p>Last Updated: July 14, 2025</p>
+          </div>
         </div>
       </div>
     </div>
