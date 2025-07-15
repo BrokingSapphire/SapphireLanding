@@ -347,18 +347,12 @@ export const investorCharterData = {
     },
     {
       id: 10,
-      service: "Settlement of Securities",
-      timeline:
-        "30 or 90 days (as per preference of client) from receipt of running account settlement form",
-    },
-    {
-      id: 11,
       service: "Statement of Accounts for Funds and Securities",
       timeline:
         "Quarterly within 15 days from end of quarter or monthly within 5 working days from end of month (as per client preference)",
     },
     {
-      id: 12,
+      id: 11,
       service: "Redressal of Investor Grievances",
       timeline: "30 days from receipt of complaint",
     },
@@ -368,7 +362,7 @@ export const investorCharterData = {
     {
       step: "Filing Complaint with Sapphire Broking",
       details: [
-        "File your complaint against Sapphire Broking in writing through email or physical letter",
+        "File your complaint against Sapphire Broking in writing through email or physical letter or contact us through telephone on number mentioned in customer  support on our website",
         "Submit your complaint to the designated grievance email ID: grievance@sapphirebroking.com",
         "Alternatively, send your complaint to the head office address",
         "Ensure you provide all relevant details including your client ID, the nature of your complaint, and supporting documents",
