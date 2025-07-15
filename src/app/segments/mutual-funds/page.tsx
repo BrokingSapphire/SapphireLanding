@@ -94,43 +94,34 @@ const MutualFundsPage: React.FC = () => {
         </div>
 
         {/* How Easy It Is Section */}
-<div className="bg-[#F7F9FB] max-w-7xl h-[420px] mx-auto rounded-2xl mt-12 px-4 sm:px-8 md:px-12 flex flex-col md:flex-row items-center justify-center overflow-hidden">
-  {/* Content Container */}
-  <div className='w-full h-full flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8'>
-    
-    {/* Left Text Content */}
-    <div className="flex-1 flex flex-col justify-center h-full text-center md:text-left max-w-md">
+<div className="bg-[#F7F9FB] max-w-7xl h-[420px] mx-auto rounded-2xl mt-12 px-4 sm:px-8 md:px-12 flex flex-col md:flex-row items-center justify-center">
+  {/* Left Text Content */}
+  <div className='px-4 sm:px-8 md:px-10 bg-[#F7F9FB] max-w-7xl w-full flex flex-col md:flex-row items-center justify-center h-full'>
+    <div className="flex-1 md:mr-8 flex flex-col justify-center h-full px-2 sm:px-5 align-left text-center">
       <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 font-lexend leading-tight">
-        5,000+ Mutual Funds. Your
+        5,000&#43; Mutual Funds. Your
       </h2>
       <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 mb-4 font-lexend leading-tight">
         Growth Start&apos;s with Sapphire.
       </h2>
-      <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl">
+      <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
         Invest with confidence in top-performing
       </p>
-      <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl">
+      <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
         funds, curated for every kind of investor.
       </p>
     </div>
-    
-    {/* Right Icon Frame */}
-    <div className="flex-1 flex justify-center items-center h-full w-full max-w-lg">
+    {/* Right Icon Frame SVG */}
+    <div className="flex-1 flex justify-center items-center h-full w-full max-w-[700px] px-2 sm:px-4 md:px-6 md:pt-0 lg:px-0">
       <Image
-        src="/mutual-funds/icon-frame.svg"
-        alt="Mutual Funds Icon Frame"
-        width={800}
-        height={400}
-        className="w-full h-auto 
-                   min-w-[200px] min-h-[120px] 
-                   sm:min-w-[280px] sm:min-h-[180px] 
-                   md:min-w-[350px] md:min-h-[220px] 
-                   lg:min-w-[420px] lg:min-h-[260px] 
-                   xl:min-w-[500px] xl:min-h-[300px] 
-                   max-w-[600px] max-h-[360px] 
-                   object-contain"
-        priority
-      />
+  src="/mutual-funds/icon-frame.svg"
+  alt="Mutual Funds Icon Frame"
+  width={700}
+  height={270}
+  className="w-full min-w-[280px] min-h-[190px] max-w-[380px] h-[220px] sm:min-w-[220px] sm:min-h-[150px] sm:max-w-[340px] sm:h-[180px] md:min-w-[300px] md:min-h-[180px] md:max-w-[450px] md:h-[250px] lg:max-w-[500px] lg:h-[240px] xl:max-w-[700px] xl:h-[270px] object-contain"
+  priority
+/>
+
     </div>
   </div>
 </div>
