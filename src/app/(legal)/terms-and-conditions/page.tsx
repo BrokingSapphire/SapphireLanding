@@ -172,7 +172,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               4. SAPPHIRE TERMINAL
             </h2>
@@ -215,7 +215,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               5. FEES AND CHARGES
             </h2>
@@ -250,7 +250,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               6. MODIFICATIONS OF DETAILS
             </h2>
@@ -270,7 +270,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               7. ORDERS AND EXECUTION
             </h2>
@@ -334,7 +334,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               8. MARGIN REQUIREMENTS
             </h2>
@@ -364,7 +364,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               9. RISKS OF ONLINE TRADING
             </h2>
@@ -393,7 +393,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               10. RESEARCH AND MARKET INFORMATION
             </h2>
@@ -417,7 +417,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               11. INTELLECTUAL PROPERTY
             </h2>
@@ -439,7 +439,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               12. DATA PRIVACY AND SECURITY
             </h2>
@@ -466,7 +466,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               13. LIMITATION OF LIABILITY
             </h2>
@@ -504,7 +504,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               14. INDEMNIFICATION
             </h2>
@@ -525,7 +525,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               15. TERMINATION
             </h2>
@@ -571,7 +571,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               16. FORCE MAJEURE
             </h2>
@@ -587,7 +587,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               17. AMENDMENTS
             </h2>
@@ -608,7 +608,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               18. GOVERNING LAW AND DISPUTE RESOLUTION
             </h2>
@@ -635,7 +635,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               19. GENERAL PROVISIONS
             </h2>
@@ -682,7 +682,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               20. CONTACT INFORMATION
             </h2>
@@ -708,7 +708,7 @@ const Home = () => {
           </div>
 
           <div className="text-gray-500 text-center mt-8 pb-12">
-            <p>Last Updated: April 1, 2025</p>
+            <p>Last Updated: July 15, 2025</p>
           </div>
         </div>
       </div>
