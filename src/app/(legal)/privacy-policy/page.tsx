@@ -653,7 +653,7 @@ const PrivacyPolicy = () => {
           </div>
 
           <div className="text-gray-500 text-center mt-8 pb-12">
-            <p>Last Updated: May 15, 2025</p>
+            <p>Last Updated: July 15, 2025</p>
           </div>
         </div>
       </div>
