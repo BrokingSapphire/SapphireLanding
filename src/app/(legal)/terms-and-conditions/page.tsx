@@ -45,26 +45,29 @@ const Home = () => {
 
         <div className="space-y-8">
            <hr />
-          <div className="text-gray-500">
-            <p className="mb-4">
-              These Terms and Conditions ("Terms") constitute a legally binding
-              agreement between you (hereinafter referred to as "User", "Client",
-              "you" or "your") and Sapphire Broking (hereinafter referred to as
-              "Sapphire", "we", "us" or "our"), a stock broker registered with the
-              Securities and Exchange Board of India (SEBI).
-            </p>
-            <p className="mb-4">
-              These Terms govern your access to and use of the Sapphire Terminal
-              mobile application and website (collectively referred to as "Platform") and
-              the services offered therein. By registering on or using our
-              Platform, you agree to be bound by these Terms.
-            </p>
-            <p className="mb-4">
-              Sapphire broking is registered under The Indian Partnership Act, 1932 (ACT NO. IX of 1932) भारतीय भागीदारी अिधिनयम, १९३२  ( सन १९३२ चा अिधिनयम  मांक ९ ) with registration no. NG000010895 with its registered head office at  First Floor, East Side (Front), Plot No. 84A, Kh No. 72 & 73, Mouza Khamla, Ward No. 75, Pande Layout, New Sneh Nagar, Nagpur, Maharashtra , 440015. India.
-            </p>
+          {/* Introduction */}
+          <div className="p-6 border border-gray-200 rounded-lg shadow-sm">
+            <div className="space-y-4 text-gray-500">
+              <p>
+                These Terms and Conditions ("Terms") constitute a legally binding
+                agreement between you (hereinafter referred to as "User", "Client",
+                "you" or "your") and Sapphire Broking (hereinafter referred to as
+                "Sapphire", "we", "us" or "our"), a stock broker registered with the
+                Securities and Exchange Board of India (SEBI).
+              </p>
+              <p>
+                These Terms govern your access to and use of the Sapphire Terminal
+                mobile application and website (collectively referred to as "Platform") and
+                the services offered therein. By registering on or using our
+                Platform, you agree to be bound by these Terms.
+              </p>
+              <p>
+                Sapphire broking is registered under The Indian Partnership Act, 1932 (ACT NO. IX of 1932) भारतीय भागीदारी अिधिनयम, १९३२  ( सन १९३२ चा अिधिनयम  मांक ९ ) with registration no. NG000010895 with its registered head office at  First Floor, East Side (Front), Plot No. 84A, Kh No. 72 & 73, Mouza Khamla, Ward No. 75, Pande Layout, New Sneh Nagar, Nagpur, Maharashtra , 440015. India.
+              </p>
+            </div>
           </div>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               1. DEFINITIONS
             </h2>
@@ -96,7 +99,7 @@ const Home = () => {
             </ul>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               2. ELIGIBILITY AND ACCOUNT REGISTRATION
             </h2>
@@ -144,7 +147,7 @@ const Home = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               3. SERVICE OFFERINGS
             </h2>
@@ -705,7 +708,7 @@ const Home = () => {
           </div>
 
           <div className="text-gray-500 text-center mt-8 pb-12">
-            <p>Last Updated: July 15, 2025</p>
+            <p>Last Updated: April 1, 2025</p>
           </div>
         </div>
       </div>
