@@ -59,9 +59,6 @@ const InvestorAttention: React.FC = () => {
               />
             ))}
           </div>
-          <div className="text-gray-500 mt-8">
-            <p>This document was last updated on March 9, 2025.</p>
-          </div>
           <div className="text-gray-500 mt-4 italic">
             <p>
               Disclaimer: The information provided in this document is subject to
@@ -71,7 +68,7 @@ const InvestorAttention: React.FC = () => {
             </p>
           </div>
           <div className="text-gray-500 text-center mt-8 pb-12">
-            <p>Last Updated: April 1, 2025</p>
+            <p>Last Updated: May 15, 2025</p>
           </div>
         </div>
       </div>
