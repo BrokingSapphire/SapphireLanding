@@ -46,7 +46,30 @@ const PrivacyPolicy = () => {
 
         <div className="space-y-8">
           <br />
-          <section className="space-y-4">
+          {/* Introduction */}
+          <div className="p-6 border border-gray-200 rounded-lg shadow-sm">
+            <div className="space-y-4 text-gray-500">
+              <p>
+                Sapphire Broking ("Sapphire", "we", "us", or "our") is committed
+                to protecting your privacy and ensuring the security of your
+                personal information. This Privacy Policy describes how we
+                collect, use, disclose, and protect your information when you
+                visit our website, use our mobile applications, or utilize our
+                services, including the Sapphire Terminal trading platform.
+              </p>
+              <p>
+                By accessing our website, using our applications, or availing our
+                services, you consent to the practices described in this Privacy
+                Policy. We encourage you to read this policy carefully to
+                understand our practices regarding your personal information.
+              </p>
+              <p>
+                The term "Sapphire Terminal" will include sapphire mobile application and Sapphire Web Portal, Sapphire's Website.
+              </p>
+            </div>
+          </div>
+
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               1. INTRODUCTION
             </h2>
@@ -71,7 +94,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               2. ABOUT SAPPHIRE BROKING
             </h2>
@@ -94,7 +117,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               3. INFORMATION WE COLLECT
             </h2>
@@ -181,7 +204,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               4. HOW WE USE YOUR INFORMATION
             </h2>
@@ -248,7 +271,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               5. LEGAL BASIS FOR PROCESSING
             </h2>
@@ -282,7 +305,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               6. INFORMATION SHARING AND DISCLOSURE
             </h2>
@@ -348,7 +371,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               7. DATA RETENTION
             </h2>
@@ -373,7 +396,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               8. YOUR RIGHTS AND CHOICES
             </h2>
@@ -434,7 +457,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               9. DATA SECURITY
             </h2>
@@ -464,7 +487,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               10. INTERNATIONAL DATA TRANSFERS
             </h2>
@@ -492,7 +515,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               11. CHILDREN'S PRIVACY
             </h2>
@@ -507,7 +530,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               12. COOKIES AND SIMILAR TECHNOLOGIES
             </h2>
@@ -549,7 +572,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               13. THIRD-PARTY LINKS AND SERVICES
             </h2>
@@ -564,7 +587,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               14. CHANGES TO THIS PRIVACY POLICY
             </h2>
@@ -581,7 +604,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               15. GRIEVANCE OFFICER
             </h2>
@@ -601,7 +624,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               16. CONTACT US
             </h2>
@@ -630,7 +653,7 @@ const PrivacyPolicy = () => {
           </div>
 
           <div className="text-gray-500 text-center mt-8 pb-12">
-            <p>Last Updated: July 15, 2025</p>
+            <p>Last Updated: April 1, 2025</p>
           </div>
         </div>
       </div>
