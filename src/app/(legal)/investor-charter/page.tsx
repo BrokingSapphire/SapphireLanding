@@ -158,7 +158,7 @@ const InvestorCharter: React.FC = () => {
           </section>
 
           <div className="text-gray-500 text-center mt-8 pb-12">
-            <p>Last Updated: April 1, 2025</p>
+            <p>Last Updated: July 15, 2025</p>
           </div>
         </div>
       </div>

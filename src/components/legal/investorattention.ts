@@ -37,7 +37,7 @@ export const advisoryData = [
     points: [
       "KYC (Know Your Customer) documentation is a one-time exercise while dealing in securities markets",
       "If you have already completed KYC with any SEBI registered intermediary, you need not undergo the same process again when you approach Sapphire Broking",
-      "Update your KYC information whenever there is a change in the details provided earlier",
+      "The KYC must be updated in the event of any regulatory changes mandated by the regulatory bodies governing Sapphire Broking.",
     ],
   },
   {
@@ -145,7 +145,7 @@ export const advisoryData = [
     id: "inactive-accounts",
     title: "INACTIVE/DORMANT ACCOUNTS",
     points: [
-      'Trading accounts with no transactions for 12 months are marked as "Inactive" or "Dormant"',
+      'Trading accounts with no transactions for 24 months are marked as "Inactive" or "Dormant"',
       "To reactivate, you need to submit a request with necessary documents as per the regulatory requirements",
       "Sapphire may levy charges for maintaining/reactivating dormant accounts as per the schedule of charges",
     ],
@@ -191,9 +191,9 @@ export const advisoryData = [
     title: "CONTACT US FOR GRIEVANCES",
     contact: {
       company: "Sapphire Broking",
-      email: "grievance@sapphirebroking.com",
-      phone: "[Grievance Officer Phone Number]",
-      address: "[Sapphire Broking Address]",
+      email: "support@sapphirebroking.com",
+      phone: "+91 98903 36989",
+      address: "Plot No. 84-A, Pande Layout, New Sneh Nagar, Khamla, Ward No. 75, Nagpur, Maharashtra – 440025",
     },
   },
   {
@@ -213,7 +213,7 @@ export const advisoryData = [
       {
         subtitle: "Please report such incidents immediately to:",
         points: [
-          "Sapphire Broking: vigilance@sapphirebroking.com",
+          "Sapphire Broking: support@sapphirebroking.com",
           "SEBI: https://scores.gov.in",
           "Exchanges: NSE: ignse@nse.co.in, BSE: is@bseindia.com",
         ],
@@ -347,18 +347,12 @@ export const investorCharterData = {
     },
     {
       id: 10,
-      service: "Settlement of Securities",
-      timeline:
-        "30 or 90 days (as per preference of client) from receipt of running account settlement form",
-    },
-    {
-      id: 11,
       service: "Statement of Accounts for Funds and Securities",
       timeline:
         "Quarterly within 15 days from end of quarter or monthly within 5 working days from end of month (as per client preference)",
     },
     {
-      id: 12,
+      id: 11,
       service: "Redressal of Investor Grievances",
       timeline: "30 days from receipt of complaint",
     },
@@ -368,7 +362,7 @@ export const investorCharterData = {
     {
       step: "Filing Complaint with Sapphire Broking",
       details: [
-        "File your complaint against Sapphire Broking in writing through email or physical letter",
+        "File your complaint against Sapphire Broking in writing through email or physical letter or contact us through telephone on number mentioned in customer  support on our website",
         "Submit your complaint to the designated grievance email ID: grievance@sapphirebroking.com",
         "Alternatively, send your complaint to the head office address",
         "Ensure you provide all relevant details including your client ID, the nature of your complaint, and supporting documents",

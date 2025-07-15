@@ -41,12 +41,35 @@ const PrivacyPolicy = () => {
 
         <p className="text-gray-500 mb-14 text-center">
           Discover how we protect your personal data and ensure secure
-          transactions."
+          transactions.
         </p>
 
         <div className="space-y-8">
           <br />
-          <section className="space-y-4">
+          {/* Introduction */}
+          <div className="p-6 border border-gray-200 rounded-lg shadow-sm">
+            <div className="space-y-4 text-gray-500">
+              <p>
+                Sapphire Broking ("Sapphire", "we", "us", or "our") is committed
+                to protecting your privacy and ensuring the security of your
+                personal information. This Privacy Policy describes how we
+                collect, use, disclose, and protect your information when you
+                visit our website, use our mobile applications, or utilize our
+                services, including the Sapphire Terminal trading platform.
+              </p>
+              <p>
+                By accessing our website, using our applications, or availing our
+                services, you consent to the practices described in this Privacy
+                Policy. We encourage you to read this policy carefully to
+                understand our practices regarding your personal information.
+              </p>
+              <p>
+                The term "Sapphire Terminal" will include sapphire mobile application and Sapphire Web Portal, Sapphire's Website.
+              </p>
+            </div>
+          </div>
+
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               1. INTRODUCTION
             </h2>
@@ -65,35 +88,36 @@ const PrivacyPolicy = () => {
                 Policy. We encourage you to read this policy carefully to
                 understand our practices regarding your personal information.
               </p>
+              <p>
+                The term "Sapphire Terminal" will include sapphire mobile application and Sapphire Web Portal, Sapphire's Website.
+              </p>
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               2. ABOUT SAPPHIRE BROKING
             </h2>
             <div className="space-y-4 text-gray-500">
               <p>
-                Sapphire Broking is a partnership firm registered in India and
-                regulated by the Securities and Exchange Board of India (SEBI). We
-                are a stockbroker and depository participant providing trading and
-                investment services across various market segments.
+                Sapphire Broking is a partnership firm registered under The Indian Partnership Act, 1932 (ACT NO. IX of 1932) भारतीय भागीदारी अिधिनयम, १९३२  ( सन १९३२ चा अिधिनयम  मांक ९ ) with registration no. NG000010895 with its registered head office at  1st Floor, East Side (Front), Plot No. 84A , Kh No. 72 & 73, Mouza Khamla, Ward No. 75 , Pande Layout, New Sneh Nagar , Nagpur , Maharashtra , 440015. India. in India and regulated by the Securities and Exchange Board of India (SEBI). We are a stockbroker and depository participant providing trading and investment services across various market segments.
               </p>
               <p>
                 Sapphire Broking is registered with the following authorities:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-gray-500">
-                <li>Securities and Exchange Board of India (SEBI)</li>
-                <li>National Stock Exchange of India Limited (NSE)</li>
-                <li>BSE Limited (BSE)</li>
-                <li>Multi Commodity Exchange of India Limited (MCX)</li>
-                <li>National Securities Depository Limited (NSDL)</li>
-                <li>Central Depository Services (India) Limited (CDSL)</li>
+                <li>Securities and Exchange Board of India (SEBI): Number</li>
+                <li>National Stock Exchange of India Limited (NSE): Number</li>
+                <li>BSE Limited (BSE): Number</li>
+                <li>Multi Commodity Exchange of India Limited (MCX): Number</li>
+                <li>National Securities Depository Limited (NSDL): Number</li>
+                <li>Association of Mutual Funds of India (AMFI): ARN-333966</li>
+                <li>BSE Star MF: Number</li>
               </ul>
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               3. INFORMATION WE COLLECT
             </h2>
@@ -112,8 +136,7 @@ const PrivacyPolicy = () => {
                   identification details
                 </li>
                 <li>
-                  Contact Information: Email address, phone number, residential
-                  address, and correspondence address
+                  Contact Information: Email address, phone number, permanent address and correspondence address
                 </li>
                 <li>
                   Financial Information: Bank account details, income information,
@@ -138,7 +161,7 @@ const PrivacyPolicy = () => {
                   browser type, and mobile device identifiers
                 </li>
                 <li>
-                  Usage Information: Pages visited, features used, trading
+                  Usage Information: Pages visited in sapphire terminal, features used, trading
                   behavior, time spent on the platform, and interactions with our
                   content
                 </li>
@@ -181,7 +204,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               4. HOW WE USE YOUR INFORMATION
             </h2>
@@ -248,14 +271,14 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               5. LEGAL BASIS FOR PROCESSING
             </h2>
             <div className="space-y-4 text-gray-500">
               <p>
                 We process your personal information based on one or more of the
-                following legal bases:
+                following legal basis:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-gray-500">
                 <li>
@@ -282,7 +305,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               6. INFORMATION SHARING AND DISCLOSURE
             </h2>
@@ -297,7 +320,7 @@ const PrivacyPolicy = () => {
               </h3>
               <ul className="list-disc pl-6 space-y-2 text-gray-500">
                 <li>Securities and Exchange Board of India (SEBI)</li>
-                <li>Stock exchanges (NSE, BSE, MCX, etc.)</li>
+                <li>Stock exchanges (NSE, BSE, MCX, NCDEX)</li>
                 <li>Depositories (NSDL, CDSL)</li>
                 <li>Tax authorities and other government agencies</li>
                 <li>Law enforcement agencies when legally required</li>
@@ -348,7 +371,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               7. DATA RETENTION
             </h2>
@@ -373,7 +396,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               8. YOUR RIGHTS AND CHOICES
             </h2>
@@ -434,7 +457,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               9. DATA SECURITY
             </h2>
@@ -464,7 +487,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               10. INTERNATIONAL DATA TRANSFERS
             </h2>
@@ -492,13 +515,13 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               11. CHILDREN'S PRIVACY
             </h2>
             <div className="space-y-4 text-gray-500">
               <p>
-                Our services are not directed to individuals under the age of 18.
+                Our services are not directed to individuals under the age of 18 (Not in case of minor accounts).
                 We do not knowingly collect personal information from children. If
                 you are a parent or guardian and believe that your child has
                 provided us with personal information, please contact us, and we
@@ -507,7 +530,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               12. COOKIES AND SIMILAR TECHNOLOGIES
             </h2>
@@ -549,7 +572,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               13. THIRD-PARTY LINKS AND SERVICES
             </h2>
@@ -564,7 +587,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               14. CHANGES TO THIS PRIVACY POLICY
             </h2>
@@ -581,7 +604,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               15. GRIEVANCE OFFICER
             </h2>
@@ -601,7 +624,7 @@ const PrivacyPolicy = () => {
             </div>
           </section>
 
-          <section className="space-y-4">
+          <section className="p-6 border border-gray-200 rounded-lg shadow-sm space-y-4">
             <h2 className="text-2xl font-semibold text-green-heading">
               16. CONTACT US
             </h2>
@@ -612,9 +635,9 @@ const PrivacyPolicy = () => {
               </p>
               <ul className="list-none space-y-1">
                 <li>Sapphire Broking</li>
-                <li>Email: privacy@sapphirebroking.com</li>
-                <li>Phone: [Customer Support Phone Number]</li>
-                <li>Address: [Sapphire Broking Address]</li>
+                <li>Email: support@sapphirebroking.com</li>
+                <li>Phone: +91 98903 36989</li>
+                <li>Address: Plot No. 84-A, Pande Layout, New Sneh Nagar, Khamla, Ward No. 75, Nagpur, Maharashtra – 440025</li>
               </ul>
               <p>
                 We will respond to your inquiry as soon as reasonably possible.
@@ -630,7 +653,7 @@ const PrivacyPolicy = () => {
           </div>
 
           <div className="text-gray-500 text-center mt-8 pb-12">
-            <p>Last Updated: April 1, 2025</p>
+            <p>Last Updated: May 15, 2025</p>
           </div>
         </div>
       </div>
