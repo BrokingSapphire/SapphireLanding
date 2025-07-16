@@ -30,37 +30,37 @@ const PartnerBenefitCard = ({ icon, title, description, alt }: PartnerBenefitPro
 const Section3 = () => {
   const partnerBenefits = [
     {
-      icon: "/become-partner/one.png",
+      icon: "/become-partner/1.svg",
       alt: "Technology Icon",
       title: "Access to Cutting-Edge Technology",
       description: "Leverage innovative fintech tools and solutions to enhance efficiency and customer experience."
     },
     {
-      icon: "/become-partner/one.png",
+      icon: "/become-partner/2.svg",
       alt: "Support Icon", 
       title: "Expert Support and Guidance",
       description: "Gain insights and personalized support from our industry experts to maximize success."
     },
     {
-      icon: "/become-partner/one.png",
+      icon: "/become-partner/3.svg",
       alt: "Data Icon",
       title: "Access to Data-Driven Insights", 
       description: "Utilize analytics and reporting tools to make informed business decisions."
     },
     {
-       icon: "/become-partner/one.png",
+       icon: "/become-partner/4.svg",
       alt: "Growth Icon",
       title: "Revenue Growth Opportunities",
       description: "Unlock new revenue streams through our partnership programs, shared profits, and exclusive offers."
     },
     {
-       icon: "/become-partner/one.png",
+       icon: "/become-partner/5.svg",
       alt: "Brand Icon",
       title: "Brand Association and Credibility",
       description: "Strengthen your brand by partnering with a trusted and reputable fintech company."
     },
     {
-      icon: "/become-partner/one.png",
+      icon: "/become-partner/6.svg",
       alt: "Training Icon", 
       title: "Exclusive Training and Resources",
       description: "Benefit from specialized workshops, training programs, and partner-exclusive materials."
