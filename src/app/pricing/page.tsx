@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 const Home = () => {
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div className="max-w-7xl mx-auto">
         <SubHero
           chipText="Pricing"
@@ -33,7 +33,8 @@ const Home = () => {
         <div className="py-6 px-4 sm:py-11 bg-[#F5F7FA] rounded-lg">
           <Charges />
         </div>
-        <div className="overflow-x-auto">
+        {/* Removed overflow-x-auto from here to prevent tooltip clipping */}
+        <div className="relative">
           <ChargesTable />
         </div>
         {/* <Opportunities /> */}
