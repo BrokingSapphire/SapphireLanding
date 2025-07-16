@@ -94,36 +94,37 @@ const MutualFundsPage: React.FC = () => {
         </div>
 
         {/* How Easy It Is Section */}
-        <div className="bg-[#F7F9FB] max-w-7xl h-[420px] mx-auto rounded-2xl mt-12 px-4 sm:px-8 md:px-12 flex flex-col md:flex-row items-center justify-center">
-          {/* Left Text Content */}
-          <div className='px-4 sm:px-8 md:px-10 bg-[#F7F9FB] max-w-7xl w-full flex flex-col md:flex-row items-center justify-center h-full'>
-            <div className="flex-1 md:mr-8 flex flex-col justify-center h-full px-2 sm:px-5 align-left text-center">
-              <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 font-lexend leading-tight">
-                5,000&#43; Mutual Funds. Your
-              </h2>
-              <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 mb-4 font-lexend leading-tight">
-                Growth Start&apos;s with Sapphire.
-              </h2>
-              <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
-                Invest with confidence in top-performing
-              </p>
-              <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
-                funds, curated for every kind of investor.
-              </p>
-            </div>
-            {/* Right Icon Frame SVG */}
-            <div className="flex-1 flex justify-center items-center h-full w-full max-w-[700px] px-2 sm:px-4 md:px-6 md:pt-0 lg:px-0">
-              <Image
-                src="/mutual-funds/icon-frame.svg"
-                alt="Mutual Funds Icon Frame"
-                width={700}
-                height={270}
-                className="w-full min-w-[120px] min-h-[80px] max-w-[220px] h-[120px] sm:min-w-[220px] sm:min-h-[150px] sm:max-w-[340px] sm:h-[180px] md:min-w-[300px] md:min-h-[180px] md:max-w-[450px] md:h-[250px] lg:max-w-[500px] lg:h-[240px] xl:max-w-[700px] xl:h-[270px] object-contain"
-                priority
-              />
-            </div>
-          </div>
-        </div>
+<div className="bg-[#F7F9FB] max-w-7xl h-[420px] mx-auto rounded-2xl mt-12 px-4 sm:px-8 md:px-12 flex flex-col md:flex-row items-center justify-center">
+  {/* Left Text Content */}
+  <div className='px-4 sm:px-8 md:px-10 bg-[#F7F9FB] max-w-7xl w-full flex flex-col md:flex-row items-center justify-center h-full'>
+    <div className="flex-1 md:mr-8 flex flex-col justify-center h-full px-2 sm:px-5 align-left text-center">
+      <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 font-lexend leading-tight">
+        5,000&#43; Mutual Funds. Your
+      </h2>
+      <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 mb-4 font-lexend leading-tight">
+        Growth Start&apos;s with Sapphire.
+      </h2>
+      <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
+        Invest with confidence in top-performing
+      </p>
+      <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
+        funds, curated for every kind of investor.
+      </p>
+    </div>
+    {/* Right Icon Frame SVG */}
+    <div className="flex-1 flex justify-center items-center h-full w-full max-w-[700px] px-2 sm:px-4 md:px-6 md:pt-0 lg:px-0">
+      <Image
+  src="/mutual-funds/icon-frame.svg"
+  alt="Mutual Funds Icon Frame"
+  width={700}
+  height={270}
+  className="w-full min-w-[280px] min-h-[190px] max-w-[380px] h-[220px] sm:min-w-[220px] sm:min-h-[150px] sm:max-w-[340px] sm:h-[180px] md:min-w-[300px] md:min-h-[180px] md:max-w-[450px] md:h-[250px] lg:max-w-[500px] lg:h-[240px] xl:max-w-[700px] xl:h-[270px] object-contain"
+  priority
+/>
+
+    </div>
+  </div>
+</div>
 
         {/* Full Width Background Section with ColorGradient */}
         <div className="w-full relative h-auto lg:h-[400px] mb-8 lg:mb-[15rem] px-10" style={{
