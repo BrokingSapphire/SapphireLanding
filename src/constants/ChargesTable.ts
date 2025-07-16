@@ -89,7 +89,7 @@ export interface EquityRowType {
       options: "₹0 brokerage upto ₹500 for first 30 days*\nThen, ₹20 per executed order",
     },
     {
-      type: "STT (Securities Transaction Tax)",
+      type: "Transaction Charges",
       futures: "₹0",
       options: "₹0",
     },
@@ -99,7 +99,7 @@ export interface EquityRowType {
       options: "0.002%",
     },
     {
-      type: "GST**",
+      type: "GST",
       futures: "18%",
       options: "18%",
     },

@@ -76,7 +76,7 @@ const MutualFundsPage: React.FC = () => {
                 </p>
               </div>
               <button className="bg-[#064D51] hover:bg-teal-800 text-white px-6 sm:px-8 py-3 sm:py-[14px] rounded-lg font-semibold transition-colors shadow-lg w-full md:w-auto">
-                Apply for IPO Now
+                Open a Free Demat Account Now
               </button>
             </div>
             {/* Right Side - IPO Images */}

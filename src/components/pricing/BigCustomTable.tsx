@@ -15,26 +15,40 @@ import ChargesExplained from "./ChargesExplained";
 
 // Info content for each charge type
 const infoContent = {
-  "Brokerage": "Brokerage is the fee charged by the broker for executing trades. It's typically calculated as a percentage of the trade value or a flat fee per trade.",
-  "STT": "Securities Transaction Tax (STT) is a tax levied by the government on the purchase and sale of securities listed on Indian stock exchanges.",
-  "Exchange txn charge": "Exchange transaction charges are fees levied by stock exchanges (NSE/BSE) for using their trading platform and infrastructure.",
-  "GST": "Goods and Services Tax (GST) is applied on brokerage and other charges as per government regulations. Currently charged at 18%.",
-  "SEBI charges": "Securities and Exchange Board of India (SEBI) charges a regulatory fee to fund market oversight and investor protection activities.",
-  "Stamp charges": "Stamp duty is a tax charged by state governments on the transfer of securities. Rates vary by state.",
-  "DP charges": "Depository Participant (DP) charges are fees for maintaining your demat account and processing transactions through the depository system."
+  "Brokerage": "Brokerage is the fee charged by the broker for facilitating buy and sell transactions. It can be a fixed fee or a percentage of the trade value, depending on the broker's pricing model.",
+  "Security Transaction Tax": "Securities Transaction Tax (STT) is a government-imposed tax on the purchase and sale of securities listed on Indian stock exchanges. The rate varies based on the type of transaction and security.",
+  "Transaction Charges": "Transaction charges are fees levied by the exchanges (NSE, BSE, MCX, NCDEX) for providing their trading platform and infrastructure. These charges are calculated per trade and may differ across segments and exchanges.",
+  "GST": "Goods and Services Tax (GST) is applicable at 18% on brokerage, transaction charges, SEBI charges, and other applicable service fees as per government regulations.",
+  "SEBI Charges": "SEBI (Securities and Exchange Board of India) charges a nominal regulatory fee on turnover to fund regulatory operations, ensure market transparency, and protect investor interests.",
+  "Stamp Duty Charges": "Stamp duty is a tax imposed by respective state governments on the transfer of securities. It is charged as a percentage of the transaction value and varies based on the state and type of security.",
+  "IPFT": "Investor Protection Fund Trust (IPFT) contribution is a small fee collected to compensate investors in case of defaults by trading members, thereby promoting investor confidence and market stability.",
+  "CTT (Commodities Transaction Tax)": "Commodities Transaction Tax (CTT) is a tax levied on the trading of non-agricultural commodity derivatives on recognized exchanges. It is similar to STT but applicable only on the sell side of certain commodity trades.",
+  "Risk Management Fee (NCDEX)": "NCDEX levies a Risk Management Fee to cover the costs of maintaining robust risk management systems. This fee helps in ensuring market integrity and protecting against counterparty defaults."
 };
 
 const ChargesTable: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("Equity");
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
-  // Tooltip component
-  const InfoTooltip: React.FC<{ content: string; isVisible: boolean }> = ({ content, isVisible }) => {
+  // Tooltip component with improved positioning
+  const InfoTooltip: React.FC<{ content: string; isVisible: boolean; position?: 'top' | 'bottom' }> = ({ 
+    content, 
+    isVisible, 
+    position = 'top' 
+  }) => {
     if (!isVisible) return null;
     
+    const tooltipClasses = position === 'top' 
+      ? "bottom-full mb-2" 
+      : "top-full mt-2";
+    
+    const arrowClasses = position === 'top'
+      ? "top-full border-t-white border-t-4 border-l-4 border-r-4 border-b-0"
+      : "bottom-full border-b-white border-b-4 border-l-4 border-r-4 border-t-0";
+    
     return (
-      <div className="absolute z-50 w-80 p-3 bg-white border border-gray-200 rounded-lg shadow-lg text-sm text-gray-700 -top-2 left-8">
-        <div className="absolute -left-2 top-4 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-white"></div>
+      <div className={`absolute z-[1000] w-80 p-3 bg-white border border-gray-200 rounded-lg shadow-lg text-sm text-gray-700 left-8 ${tooltipClasses}`}>
+        <div className={`absolute left-[-8px] w-0 h-0 border-transparent ${arrowClasses}`}></div>
         {content}
       </div>
     );
@@ -66,15 +80,15 @@ const ChargesTable: React.FC = () => {
             {equityData.map((row: EquityRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
                 <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
-                  <div className="flex items-center relative">
-                    <span>{row.type}</span>
+                  <div className="flex items-start gap-2 min-h-[20px]">
+                    <span className="flex-1 leading-tight">{row.type}</span>
                     {index < 7 && (
-                      <div className="relative ml-2">
+                      <div className="relative">
                         <button
                           onMouseEnter={() => setActiveTooltip(`${row.type}-${index}`)}
                           onMouseLeave={() => setActiveTooltip(null)}
                           onClick={() => setActiveTooltip(activeTooltip === `${row.type}-${index}` ? null : `${row.type}-${index}`)}
-                          className="text-current"
+                          className="text-current flex-shrink-0 p-1"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -95,6 +109,7 @@ const ChargesTable: React.FC = () => {
                         <InfoTooltip 
                           content={infoContent[row.type as keyof typeof infoContent] || "Information about this charge type."} 
                           isVisible={activeTooltip === `${row.type}-${index}`}
+                          position={index < 3 ? 'bottom' : 'top'}
                         />
                       </div>
                     )}
@@ -139,14 +154,14 @@ const ChargesTable: React.FC = () => {
             {currencyData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
                 <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
-                  <div className="flex items-center relative">
-                    <span>{row.type}</span>
-                    <div className="relative ml-2">
+                  <div className="flex items-start gap-2 min-h-[20px]">
+                    <span className="flex-1 leading-tight">{row.type}</span>
+                    <div className="relative">
                       <button
                         onMouseEnter={() => setActiveTooltip(`currency-${row.type}-${index}`)}
                         onMouseLeave={() => setActiveTooltip(null)}
                         onClick={() => setActiveTooltip(activeTooltip === `currency-${row.type}-${index}` ? null : `currency-${row.type}-${index}`)}
-                        className="text-current"
+                        className="text-current flex-shrink-0 p-1"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -167,6 +182,7 @@ const ChargesTable: React.FC = () => {
                       <InfoTooltip 
                         content={infoContent[row.type as keyof typeof infoContent] || "Information about this charge type for currency trading."} 
                         isVisible={activeTooltip === `currency-${row.type}-${index}`}
+                        position={index < 3 ? 'bottom' : 'top'}
                       />
                     </div>
                   </div>
@@ -204,14 +220,14 @@ const ChargesTable: React.FC = () => {
             {commodityData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
                 <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
-                  <div className="flex items-center relative">
-                    <span>{row.type}</span>
-                    <div className="relative ml-2">
+                  <div className="flex items-start gap-2 min-h-[20px]">
+                    <span className="flex-1 leading-tight">{row.type}</span>
+                    <div className="relative">
                       <button
                         onMouseEnter={() => setActiveTooltip(`commodity-${row.type}-${index}`)}
                         onMouseLeave={() => setActiveTooltip(null)}
                         onClick={() => setActiveTooltip(activeTooltip === `commodity-${row.type}-${index}` ? null : `commodity-${row.type}-${index}`)}
-                        className="text-current"
+                        className="text-current flex-shrink-0 p-1"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -232,6 +248,7 @@ const ChargesTable: React.FC = () => {
                       <InfoTooltip 
                         content={infoContent[row.type as keyof typeof infoContent] || "Information about this charge type for commodity trading."} 
                         isVisible={activeTooltip === `commodity-${row.type}-${index}`}
+                        position={index < 3 ? 'bottom' : 'top'}
                       />
                     </div>
                   </div>
@@ -265,7 +282,7 @@ const ChargesTable: React.FC = () => {
 
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8 mb-8 overflow-x-auto scrollbar-hide">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-24 space-y-6 sm:space-y-8 mb-8">
         {/* Navigation Bar */}
         <div className="flex border-b pt-6 gap-x-8 lg:gap-x-20 overflow-x-auto scrollbar-hide">
           {["Equity", "Currency", "Commodity"].map((tab: string) => (
@@ -292,8 +309,10 @@ const ChargesTable: React.FC = () => {
           ))}
         </div>
 
-        {/* Trading Charges Table - Dynamically render based on active tab */}
-        {renderActiveTable()}
+        {/* Trading Charges Table Container - Removed overflow-x-auto from here */}
+        <div className="relative">
+          {renderActiveTable()}
+        </div>
 
         {/* Non Trade Charges */}
         <div>
