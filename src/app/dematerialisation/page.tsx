@@ -8,6 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Link from 'next/dist/client/link';
 
 const DematerializationPage: React.FC = () => {
   const [isLargeScreen, setIsLargeScreen] = useState(false);
@@ -90,10 +91,12 @@ const DematerializationPage: React.FC = () => {
                   are secure, accessible, and ready for the modern market.
                 </p>
               </div>
-              
-              <button className="bg-[#064D51] hover:bg-teal-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold transition-colors shadow-lg text-sm sm:text-base">
-                Convert Your Physical Shares Now
-              </button>
+
+              <Link href="https://support.sapphirebroking.com/create-ticket?subject=Dematerialisation-of-Physical-Shares" target="_blank">
+                <a className="bg-[#064D51] hover:bg-teal-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold transition-colors shadow-lg text-sm sm:text-base">
+                  Convert Your Physical Shares Now
+                </a>
+              </Link>
             </div>
 
             {/* Right Illustration */}
