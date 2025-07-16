@@ -138,10 +138,10 @@ const ChargesTable: React.FC = () => {
   const renderCurrencyTable = (): React.ReactNode => (
     <div className="overflow-x-auto scrollbar-hide">
       <div className="min-w-[600px]">
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse table-fixed">
           <thead>
             <tr className="bg-gray-100">
-              <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base"></th>
+              <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base w-80"></th>
               <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base">
                 Currency Futures
               </th>
@@ -153,7 +153,7 @@ const ChargesTable: React.FC = () => {
           <tbody>
             {currencyData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
-                <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
+                <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base w-80">
                   <div className="flex items-start gap-2 min-h-[20px]">
                     <span className="flex-1 leading-tight">{row.type}</span>
                     <div className="relative">
@@ -204,10 +204,10 @@ const ChargesTable: React.FC = () => {
   const renderCommodityTable = (): React.ReactNode => (
     <div className="overflow-x-auto scrollbar-hide">
       <div className="min-w-[600px]">
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse table-fixed">
           <thead>
             <tr className="bg-gray-100">
-              <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base"></th>
+              <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base w-80"></th>
               <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base">
                 Commodities Futures
               </th>
@@ -219,7 +219,7 @@ const ChargesTable: React.FC = () => {
           <tbody>
             {commodityData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
-                <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
+                <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base w-80">
                   <div className="flex items-start gap-2 min-h-[20px]">
                     <span className="flex-1 leading-tight">{row.type}</span>
                     <div className="relative">
