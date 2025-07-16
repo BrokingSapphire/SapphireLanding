@@ -101,13 +101,15 @@ const DematerializationPage: React.FC = () => {
                 </p>
               </div>
 
-              <Link
-                href="https://support.sapphirebroking.com/create-ticket?subject=Dematerialisation-of-Physical-Shares"
-                target="_blank"
-                className="bg-[#064D51] hover:bg-teal-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold transition-colors shadow-lg text-sm sm:text-base"
-              >
-                Convert Your Physical Shares Now
-              </Link>
+              <div className="pt-2">
+                <Link
+                  href="https://support.sapphirebroking.com/create-ticket?subject=Dematerialisation-of-Physical-Shares"
+                  target="_blank"
+                  className="inline-block bg-[#064D51] hover:bg-teal-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold transition-colors shadow-lg text-sm sm:text-base"
+                >
+                  Convert Your Physical Shares Now
+                </Link>
+              </div>
             </div>
 
             {/* Right Illustration */}
