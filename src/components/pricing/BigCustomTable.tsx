@@ -15,13 +15,15 @@ import ChargesExplained from "./ChargesExplained";
 
 // Info content for each charge type
 const infoContent = {
-  "Brokerage": "Brokerage is the fee charged by the broker for executing trades. It's typically calculated as a percentage of the trade value or a flat fee per trade.",
-  "STT": "Securities Transaction Tax (STT) is a tax levied by the government on the purchase and sale of securities listed on Indian stock exchanges.",
-  "Exchange txn charge": "Exchange transaction charges are fees levied by stock exchanges (NSE/BSE) for using their trading platform and infrastructure.",
-  "GST": "Goods and Services Tax (GST) is applied on brokerage and other charges as per government regulations. Currently charged at 18%.",
-  "SEBI charges": "Securities and Exchange Board of India (SEBI) charges a regulatory fee to fund market oversight and investor protection activities.",
-  "Stamp charges": "Stamp duty is a tax charged by state governments on the transfer of securities. Rates vary by state.",
-  "DP charges": "Depository Participant (DP) charges are fees for maintaining your demat account and processing transactions through the depository system."
+  "Brokerage": "Brokerage is the fee charged by the broker for facilitating buy and sell transactions. It can be a fixed fee or a percentage of the trade value, depending on the broker’s pricing model.",
+  "Security Transaction Tax": "Securities Transaction Tax (STT) is a government-imposed tax on the purchase and sale of securities listed on Indian stock exchanges. The rate varies based on the type of transaction and security.",
+  "Transaction Charges": "Transaction charges are fees levied by the exchanges (NSE, BSE, MCX, NCDEX) for providing their trading platform and infrastructure. These charges are calculated per trade and may differ across segments and exchanges.",
+  "GST": "Goods and Services Tax (GST) is applicable at 18% on brokerage, transaction charges, SEBI charges, and other applicable service fees as per government regulations.",
+  "SEBI Charges": "SEBI (Securities and Exchange Board of India) charges a nominal regulatory fee on turnover to fund regulatory operations, ensure market transparency, and protect investor interests.",
+  "Stamp Duty Charges": "Stamp duty is a tax imposed by respective state governments on the transfer of securities. It is charged as a percentage of the transaction value and varies based on the state and type of security.",
+  "IPFT": "Investor Protection Fund Trust (IPFT) contribution is a small fee collected to compensate investors in case of defaults by trading members, thereby promoting investor confidence and market stability.",
+  "CTT (Commodities Transaction Tax)": "Commodities Transaction Tax (CTT) is a tax levied on the trading of non-agricultural commodity derivatives on recognized exchanges. It is similar to STT but applicable only on the sell side of certain commodity trades.",
+  "Risk Management Fee (NCDEX)": "NCDEX levies a Risk Management Fee to cover the costs of maintaining robust risk management systems. This fee helps in ensuring market integrity and protecting against counterparty defaults."
 };
 
 const ChargesTable: React.FC = () => {
