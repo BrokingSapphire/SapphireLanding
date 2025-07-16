@@ -15,7 +15,7 @@ import ChargesExplained from "./ChargesExplained";
 
 // Info content for each charge type
 const infoContent = {
-  "Brokerage": "Brokerage is the fee charged by the broker for facilitating buy and sell transactions. It can be a fixed fee or a percentage of the trade value, depending on the broker’s pricing model.",
+  "Brokerage": "Brokerage is the fee charged by the broker for facilitating buy and sell transactions. It can be a fixed fee or a percentage of the trade value, depending on the broker's pricing model.",
   "Security Transaction Tax": "Securities Transaction Tax (STT) is a government-imposed tax on the purchase and sale of securities listed on Indian stock exchanges. The rate varies based on the type of transaction and security.",
   "Transaction Charges": "Transaction charges are fees levied by the exchanges (NSE, BSE, MCX, NCDEX) for providing their trading platform and infrastructure. These charges are calculated per trade and may differ across segments and exchanges.",
   "GST": "Goods and Services Tax (GST) is applicable at 18% on brokerage, transaction charges, SEBI charges, and other applicable service fees as per government regulations.",
@@ -68,15 +68,15 @@ const ChargesTable: React.FC = () => {
             {equityData.map((row: EquityRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
                 <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
-                  <div className="flex items-center relative">
-                    <span>{row.type}</span>
+                  <div className="flex items-start gap-2 min-h-[20px]">
+                    <span className="flex-1 leading-tight">{row.type}</span>
                     {index < 7 && (
-                      <div className="relative ml-2">
+                      <div className="relative mt-0.5">
                         <button
                           onMouseEnter={() => setActiveTooltip(`${row.type}-${index}`)}
                           onMouseLeave={() => setActiveTooltip(null)}
                           onClick={() => setActiveTooltip(activeTooltip === `${row.type}-${index}` ? null : `${row.type}-${index}`)}
-                          className="text-current"
+                          className="text-current flex-shrink-0"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -141,14 +141,14 @@ const ChargesTable: React.FC = () => {
             {currencyData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
                 <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
-                  <div className="flex items-center relative">
-                    <span>{row.type}</span>
-                    <div className="relative ml-2">
+                  <div className="flex items-start gap-2 min-h-[20px]">
+                    <span className="flex-1 leading-tight">{row.type}</span>
+                    <div className="relative mt-0.5">
                       <button
                         onMouseEnter={() => setActiveTooltip(`currency-${row.type}-${index}`)}
                         onMouseLeave={() => setActiveTooltip(null)}
                         onClick={() => setActiveTooltip(activeTooltip === `currency-${row.type}-${index}` ? null : `currency-${row.type}-${index}`)}
-                        className="text-current"
+                        className="text-current flex-shrink-0"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -206,14 +206,14 @@ const ChargesTable: React.FC = () => {
             {commodityData.map((row: OtherRowType, index: number) => (
               <tr key={index} className="border-b border-gray-200">
                 <td className="py-3 px-4 font-medium text-gray-700 text-sm sm:text-base">
-                  <div className="flex items-center relative">
-                    <span>{row.type}</span>
-                    <div className="relative ml-2">
+                  <div className="flex items-start gap-2 min-h-[20px]">
+                    <span className="flex-1 leading-tight">{row.type}</span>
+                    <div className="relative mt-0.5">
                       <button
                         onMouseEnter={() => setActiveTooltip(`commodity-${row.type}-${index}`)}
                         onMouseLeave={() => setActiveTooltip(null)}
                         onClick={() => setActiveTooltip(activeTooltip === `commodity-${row.type}-${index}` ? null : `commodity-${row.type}-${index}`)}
-                        className="text-current"
+                        className="text-current flex-shrink-0"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
