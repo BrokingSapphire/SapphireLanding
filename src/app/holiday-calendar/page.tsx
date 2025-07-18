@@ -195,7 +195,7 @@ export default function HolidayCalendarPage() {
         </table>
       </div>
       <p className="mt-6 text-[#5B5B5B] text-[14px] font-poppins text-regular">
-        *Note: The data displayed is only indicative and is subject to change without prior notice. You can also visit individual exchanges' links as mentioned above.
+        *Note: The data displayed is only indicative and is subject to change without prior notice. You can also visit individual exchanges links as mentioned above.
       </p>
       <p className="mt-2 text-[#5B5B5B] text-[14px] font-poppins text-regular">
       *Muhurat Trading will be conducted on Tuesday, October 21, 2025. Timings of Muhurat Trading shall be notified subsequently.
