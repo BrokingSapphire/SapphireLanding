@@ -31,6 +31,7 @@ const Home = () => {
       
       <div className="y-10 sm:space-y-20 pt-16 pb-20">
         <AboutInfo />
+        
         <ReasonToChoose />
         <ReadyToopen />
         <Downloadapp />
