@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 "use client"
 import Link from 'next/link';
 import Image from 'next/image';
@@ -10,17 +8,17 @@ const faqs = [
   {
     question: 'Can I invest in US stocks from India through Sapphire Broking?',
     answer:
-      'Yes, Indian investors and NRIs can invest in US stocks and ETFs through Sapphire Broking, powered by Vested.',
+      'You can open your account online in minutes by submitting your PAN card, Aadhaar, and bank details, or visit our office for assistance.',
   },
   {
     question: 'Is there a minimum investment amount required?',
     answer:
-      'You can start investing with as little as $1, thanks to fractional investing.',
+      'We provide stock broking, mutual fund distribution, portfolio management, insurance solutions, and expert financial advisory.',
   },
   {
     question: 'Are my investments in US stocks safe?',
     answer:
-      'Your investments are held with a US SEC-registered advisor and are protected by regulatory safeguards.',
+      'Yes, we are SEBI-registered and comply with all regulatory guidelines to ensure the security of your investments.',
   },
 ];
 
@@ -65,13 +63,13 @@ export default function UsStocksPage() {
         </div>
 
         {/* Why Invest Section */}
-        <section id="why-invest" className="bg-gray-100 py-14 px-20 md:px-2">
-          <div className="max-w-7xl px-20 mx-6">
+        <section id="why-invest" className="bg-gray-100 py-14 px-4 sm:px-6 md:px-8 lg:px-20">
+          <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold mb-4 text-gray-900">Why Invest in US Stocks via Sapphire</h2>
             <p className="text-lg text-[#717171] mb-2">Invest in US stocks and ETFs easily through the Sapphire Broking app, powered by Vested, a US SEC-registered advisor. Indian investors and NRIs can access global markets with a trusted platform and expert-backed portfolios.</p>
             <p className="text-lg text-[#717171] mb-8">Start your global investing journey today with Sapphire Broking.</p>
             <div className="hidden md:block border-t border-gray-300"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-300">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 divide-y sm:divide-y-0 md:divide-x divide-gray-300">
               <div className="flex flex-col items-start px-0 md:px-8 py-8 md:py-0">
                 <div className="pt-6 w-full flex items-center">
                   <Image src="/us-stocks/1st.svg" alt="Curated Portfolios" width={24} height={24} className="mb-4" />
@@ -98,47 +96,51 @@ export default function UsStocksPage() {
         </section>
 
         {/* Explore Calculators */}
-        <section className="py-10 px-10 md:px-20">
-          <h3 className="text-2xl font-bold mb-8 px-5 text-gray-900">Explore Calculators</h3>
-          <div className="grid grid-cols-1 px-8 md:grid-cols-3 gap-8">
+        <section className="py-10 px-4 sm:px-6 md:px-8 lg:px-20">
+          <h3 className="text-2xl font-bold mb-8 px-2 sm:px-5 text-gray-900">Explore Calculators</h3>
+          <div className="grid grid-cols-1 gap-6 md:gap-8 w-full overflow-hidden"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
+            }}>
             <Link href="/calculators/sip" className="group">
-              <div className="bg-[#F7F9FB] rounded-lg transition flex items-center px-4 pr-5 py-6 cursor-pointer w-full h-full">
+              <div className="bg-[#F7F9FB] rounded-lg transition flex flex-wrap items-center px-4 py-6 cursor-pointer w-full h-full">
                 <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-full bg-[#F1F3F6] mr-6">
                   <Image src="/us-stocks/calculator.png" alt="SIP Calculator" width={54} height={54} />
                 </div>
-                <div className="flex-1">
-                  <div className="font-poppins text-[18px] text-regular  text-black mb-1">SIP Calculator</div>
-                  <div className="font-poppins text-[16px] text-regular text-[#717171] truncate whitespace-nowrap">Plan smart monthly SIPs</div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-poppins text-[18px] text-regular text-black mb-1">SIP Calculator</div>
+                  <div className="font-poppins text-[16px] text-regular text-[#717171] truncate">Plan smart monthly SIPs</div>
                 </div>
-                <div className="ml-0 transform transition-transform duration-300 group-hover:translate-x-2">
+                <div className="ml-4 flex items-center">
                   <Image src="/us-stocks/rightarrow.svg" alt="Right Arrow" width={24} height={24} />
                 </div>
               </div>
             </Link>
             <Link href="/calculators/brokerage" className="group">
-              <div className="bg-[#F7F9FB] rounded-lg transition flex items-center px-4 pr-5 py-6 cursor-pointer w-full h-full">
+              <div className="bg-[#F7F9FB] rounded-lg transition flex flex-wrap items-center px-4 py-6 cursor-pointer w-full h-full">
                 <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-full bg-[#F1F3F6] mr-6">
                   <Image src="/us-stocks/calculator.png" alt="Brokerage Calculator" width={54} height={54} />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="font-poppins text-[18px] text-regular text-black mb-1">Brokerage Calculator</div>
-                  <div className="font-poppins text-[16px] text-regular text-[#717171] truncate whitespace-nowrap">Calculate brokerage in seconds</div>
+                  <div className="font-poppins text-[16px] text-regular text-[#717171] truncate">Calculate brokerage in seconds</div>
                 </div>
-                <div className="ml-0 transform transition-transform duration-300 group-hover:translate-x-2">
+                <div className="ml-4 flex items-center">
                   <Image src="/us-stocks/rightarrow.svg" alt="Right Arrow" width={24} height={24} />
                 </div>
               </div>
             </Link>
             <Link href="/calculators/margin" className="group">
-              <div className="bg-[#F7F9FB] rounded-lg transition flex items-center px-4 pr-5 py-6 cursor-pointer w-full h-full">
+              <div className="bg-[#F7F9FB] rounded-lg transition flex flex-wrap items-center px-4 py-6 cursor-pointer w-full h-full">
                 <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-full bg-[#F1F3F6] mr-6">
                   <Image src="/us-stocks/calculator.png" alt="Margin Calculator" width={54} height={54} />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="font-poppins text-[18px] text-regular text-black mb-1">Margin Calculator</div>
-                  <div className="font-poppins text-[16px] text-regular text-[#717171] truncate whitespace-nowrap">Check required trading margin</div>
+                  <div className="font-poppins text-[16px] text-regular text-[#717171] truncate">Check required trading margin</div>
                 </div>
-                <div className="ml-0 transform transition-transform duration-300 group-hover:translate-x-2">
+                <div className="ml-4 flex items-center">
                   <Image src="/us-stocks/rightarrow.svg" alt="Right Arrow" width={24} height={24} />
                 </div>
               </div>
