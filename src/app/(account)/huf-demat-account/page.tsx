@@ -25,14 +25,14 @@ export default function HufDematAccountPage() {
         <div className="w-full max-w-7xl mx-auto">
             {/* Hero Section - US Stocks / IPO / Dematerialisation style */}
             <div className="bg-white py-10 sm:py-14 lg:py-16 w-full mt-20">
-                <div className="flex flex-col-reverse md:flex-row items-center justify-between relative w-full min-h-[240px] md:min-h-[340px] px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20">
+                <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between relative w-full min-h-[240px] md:min-h-[340px] px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20">
                     {/* Left Content */}
                     <div className="z-10 w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl pt-8 md:pt-0 pl-0 md:pl-8 lg:pl-8 xl:pl-15 text-center md:text-left">
-                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-3 sm:mb-4 font-lexend">
+                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-black leading-tight mb-3 sm:mb-4 font-lexend">
                             Secure Your Family’s Wealth with a <br />
-                            <span className="text-[#1e293b]">Sapphire HUF Demat Account.</span>
+                            <span className="text-black">Sapphire HUF Demat Account.</span>
                         </h1>
-                        <div className="space-y-3 sm:space-y-4 text-gray-600 mb-5 sm:mb-6 text-base sm:text-lg md:text-xl">
+                        <div className="space-y-3 sm:space-y-4 text-gray-600 mb-5 sm:mb-6 text-base sm:text-lg md:text-xl font-poppins font-normal">
                             <p>
                                 Why limit your family’s financial growth to traditional savings when you can invest collectively and grow wealth under a single umbrella?
                             </p>
@@ -51,9 +51,9 @@ export default function HufDematAccountPage() {
                         <Image
                             src="/huf-demat-account/image.png"
                             alt="HUF Demat Illustration"
-                            width={319}
-                            height={319}
-                            className="w-[319px] sm:w-[280px] md:w-[319px] h-auto max-h-[319px] object-contain"
+                            width={420}
+                            height={420}
+                            className="w-[220px] sm:w-[300px] md:w-[380px] lg:w-[420px] h-auto max-h-[420px] object-contain"
                             priority
                         />
                     </div>
@@ -96,43 +96,43 @@ export default function HufDematAccountPage() {
             </div>
 
             {/* Steps/How it Works Section - Minor Demat style */}
-            <div className="relative w-full h-[500px] bg-white overflow-hidden mt-16 rounded-[64px]">
+            <div className="relative w-full bg-white overflow-hidden mt-16 rounded-[32px] md:rounded-[64px] px-4 sm:px-8 md:px-0 py-10 md:py-0">
                 {/* Main heading */}
-                <div className="absolute top-[93px] left-1/2 transform -translate-x-1/2 w-[700px] text-center h-[40px] z-10">
-                    <h2 className="font-lexend text-[32px] font-medium text-black">Ready to open a HUF Demat Account?</h2>
+                <div className="w-full flex justify-center mb-8 md:mb-0">
+                    <h2 className="font-lexend text-[24px] sm:text-[28px] md:text-[32px] font-medium text-black text-center max-w-3xl">Ready to open a HUF Demat Account?</h2>
                 </div>
-                {/* Gradient background box */}
-                <div className="absolute top-[242px] left-[108px] w-[1224px] h-[258px] rounded-[64px]" style={{ background: 'linear-gradient(173.66deg, rgba(255,255,255,0.2) 0.86%, rgba(255,222,85,0.06) 55.98%, rgba(163,247,148,0.16) 95.84%)' }} />
+                {/* Gradient background box - hide on mobile */}
+                <div className="hidden md:block absolute top-[242px] left-[108px] w-[1224px] h-[258px] rounded-[64px]" style={{ background: 'linear-gradient(173.66deg, rgba(255,255,255,0.2) 0.86%, rgba(255,222,85,0.06) 55.98%, rgba(163,247,148,0.16) 95.84%)' }} />
                 {/* Steps */}
-                <div className="absolute top-[210px] left-[167px] w-[1106px] h-[153px] flex justify-between items-start gap-[61px] z-10">
+                <div className="flex flex-col md:flex-row justify-between items-start gap-8 md:gap-[61px] z-10 relative w-full max-w-6xl mx-auto">
                     {/* Step 1 */}
-                    <div className="flex flex-col items-center w-[328px]">
+                    <div className="flex flex-col items-center w-full md:w-[328px] mb-8 md:mb-0">
                         <div className="w-[60px] h-[60px] rounded-full bg-[#64748B] flex items-center justify-center mb-[20px]">
                             <Image src="/huf-demat-account/1.png" alt="1" width={60} height={60} className="object-contain" />
                         </div>
-                        <div className="w-[328px] h-[27px] text-center mb-[12px] font-poppins font-semibold text-[18px] text-black">Karta Setup</div>
-                        <div className="w-[328px] h-[54px] text-center font-poppins text-[12px] text-[#717171]">Add the HUF Karta’s basic information like name, PAN, Aadhaar, and contact number. This helps verify the Karta’s identity as the primary representative of the HUF.</div>
+                        <div className="w-full text-center mb-[12px] font-poppins font-semibold text-[16px] sm:text-[18px] text-black">Karta Setup</div>
+                        <div className="w-full text-center font-poppins text-[12px] text-[#717171]">Add the HUF Karta’s basic information like name, PAN, Aadhaar, and contact number. This helps verify the Karta’s identity as the primary representative of the HUF.</div>
                     </div>
                     {/* Step 2 */}
-                    <div className="flex flex-col items-center w-[328px]">
+                    <div className="flex flex-col items-center w-full md:w-[328px] mb-8 md:mb-0">
                         <div className="w-[60px] h-[60px] rounded-full bg-[#64748B] flex items-center justify-center mb-[20px]">
                             <Image src="/huf-demat-account/2.png" alt="2" width={60} height={60} className="object-contain" />
                         </div>
-                        <div className="w-[328px] h-[27px] text-center mb-[12px] font-poppins font-semibold text-[18px] text-black">HUF Details & Documents</div>
-                        <div className="w-[328px] h-[54px] text-center font-poppins text-[12px] text-[#717171]">Provide HUF details such as HUF PAN, Deed or Declaration, and the HUF bank account details. You’ll also need to upload documents like the Karta’s PAN, Aadhaar, and a recent photo.</div>
+                        <div className="w-full text-center mb-[12px] font-poppins font-semibold text-[16px] sm:text-[18px] text-black">HUF Details & Documents</div>
+                        <div className="w-full text-center font-poppins text-[12px] text-[#717171]">Provide HUF details such as HUF PAN, Deed or Declaration, and the HUF bank account details. You’ll also need to upload documents like the Karta’s PAN, Aadhaar, and a recent photo.</div>
                     </div>
                     {/* Step 3 */}
-                    <div className="flex flex-col items-center w-[328px]">
+                    <div className="flex flex-col items-center w-full md:w-[328px]">
                         <div className="w-[60px] h-[60px] rounded-full bg-[#64748B] flex items-center justify-center mb-[20px]">
                             <Image src="/huf-demat-account/3.png" alt="3" width={60} height={60} className="object-contain" />
                         </div>
-                        <div className="w-[328px] h-[27px] text-center mb-[12px] font-poppins font-semibold text-[18px] text-black">eSign & Activate</div>
-                        <div className="w-[328px] h-[54px] text-center font-poppins text-[12px] text-[#717171]">Complete the eSign process using Aadhaar OTP (of the Karta). Once verified, the HUF Demat Account will be created and ready to use.</div>
+                        <div className="w-full text-center mb-[12px] font-poppins font-semibold text-[16px] sm:text-[18px] text-black">eSign & Activate</div>
+                        <div className="w-full text-center font-poppins text-[12px] text-[#717171]">Complete the eSign process using Aadhaar OTP (of the Karta). Once verified, the HUF Demat Account will be created and ready to use.</div>
                     </div>
                 </div>
                 {/* Sign Up Button */}
-                <div className="absolute top-[430px] left-[628px] w-[184px] h-[43px] rounded-[6px] bg-[#064D51] mb-4 flex items-center justify-center gap-[18px] cursor-pointer hover:opacity-90 transition-opacity z-20" style={{ paddingTop: '7px', paddingRight: '21px', paddingBottom: '7px', paddingLeft: '21px' }}>
-                    <Link href="/signup" className="flex items-center gap-2">
+                <div className="flex justify-center mt-10 md:mt-16">
+                    <Link href="/signup" className="flex items-center gap-2 bg-[#064D51] hover:bg-teal-800 rounded-[6px] px-8 py-3 cursor-pointer transition-opacity">
                         <span className="font-poppins font-medium text-[14px] text-white">Sign Up</span>
                         <ArrowRight size={16} color="#fff" />
                     </Link>
@@ -141,21 +141,21 @@ export default function HufDematAccountPage() {
 
             {/* How Does HUF Demat Account Work? (refined positioning) */}
             <div className="bg-white py-14 px-4 sm:px-6 lg:px-20 mt-20">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-0 items-center">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-0 items-center">
                     {/* Left: Text and How it works SVG */}
                     <div className="relative flex flex-col justify-center md:col-span-3">
-                        <div className="relative mb-2" style={{ minHeight: 48 }}>
-                            <Image src="/huf-demat-account/how 1.svg" alt="How it works arrow" width={145} height={84} className="absolute -top-15 -left-2" />
+                        <div className="relative mb-2 min-h-[48px]">
+                            <Image src="/huf-demat-account/how 1.svg" alt="How it works arrow" width={145} height={84} className="absolute -top-8 -left-2 hidden md:block" />
                         </div>
-                        <div className='pl-20'>
-                            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 mt-2 md:mt-0 text-left md:text-left">How Does HUF Demat Account Work?</h3>
-                            <p className="text-gray-600 text-lg sm:text-xl md:text-[20px] text-left md:text-left">
+                        <div className='pl-0 md:pl-20'>
+                            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 mt-2 md:mt-0 text-left">How Does HUF Demat Account Work?</h3>
+                            <p className="text-gray-600 text-lg sm:text-xl md:text-[20px] text-left">
                                 Think of it as a shared family account for holding investments, managed by the Karta. When the HUF buys shares, they’re credited to the HUF’s Demat account. Sale proceeds go directly to the HUF’s linked bank account. As your Depository Participant (DP) with CDSL, Dhan ensures all electronic transactions, corporate actions, and pledges are securely managed and smoothly settled.
                             </p>
                         </div>
                     </div>
                     {/* Right: Illustration */}
-                    <div className="flex justify-center items-center w-full h-full md:col-span-2">
+                    <div className="flex justify-center items-center w-full h-full md:col-span-2 mt-8 md:mt-0">
                         <Image src="/huf-demat-account/image 67.png" alt="HUF Avatars" width={299} height={299} className="max-w-[299px] w-full h-auto" />
                     </div>
                 </div>
