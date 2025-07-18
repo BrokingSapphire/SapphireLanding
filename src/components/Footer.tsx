@@ -214,6 +214,7 @@ const Footer = () => {
   const ACCOUNT_LINKS = [
     { title: "Open an Account", href: "https://signup.sapphirebroking.com" },
      { title: "Minor Demat Account", href:"https://signup.sapphirebroking.com/minor"},
+     {title: "HUF Demat Account", href:"/huf-demat-account"},
      {title: "NRI Demat Account", href:"https://signup.sapphirebroking.com/nri"},
      {title: "Corporate Demat Account", href:"https://signup.sapphirebroking.com/corporate"},
     { title: "Fund Transfer", href: "/fund-transfer" },
