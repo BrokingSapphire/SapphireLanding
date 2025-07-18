@@ -5,9 +5,9 @@ const MinorDematAccount: React.FC = () => {
   return (
     <>
       {/* Desktop/Tablet Layout */}
-      <div className="relative w-[1440px] h-[500px] bg-white overflow-hidden hidden md:block">
+      <div className="relative w-[1440px] h-[500px]  bg-white overflow-hidden hidden md:block">
         {/* How it works text with arrow */}
-        <div className="absolute top-[36px] left-[342px]">
+        <div className="absolute top-[6px] left-[342px]">
           <Image 
             src="/minor-demat/howitworks.png" 
             alt="How it works" 
@@ -18,7 +18,7 @@ const MinorDematAccount: React.FC = () => {
         </div>
         {/* Main heading */}
         <div
-          className="absolute top-[93px] left-1/2 transform -translate-x-1/2 w-[700px] text-centre h-[40px]"
+          className="absolute top-[63px] left-1/2 transform -translate-x-1/2 w-[700px] text-centre h-[40px]"
           style={{
             fontFamily: 'Lexend',
             fontWeight: 500,
@@ -33,13 +33,13 @@ const MinorDematAccount: React.FC = () => {
         </div>
         {/* Gradient background box */}
         <div 
-          className="absolute top-[242px] left-[108px] w-[1224px] h-[258px] rounded-[64px]"
+          className="absolute top-[212px] left-[108px] w-[1224px] h-[280px] rounded-[64px]"
           style={{
             background: 'linear-gradient(173.66deg, rgba(255, 255, 255, 0.2) 0.86%, rgba(255, 222, 85, 0.06) 55.98%, rgba(163, 247, 148, 0.16) 95.84%)'
           }}
         />
         {/* Content container with 3 steps */}
-        <div className="absolute top-[210px] left-[167px] w-[1106px] h-[153px] flex justify-between items-start gap-[61px]">
+        <div className="absolute top-[180px] left-[167px] w-[1106px] h-[153px] flex justify-between items-start gap-[61px]">
           {/* Step 1 - Guardian Setup */}
           <div className="flex flex-col items-center w-[328px]">
             {/* Number circle */}
@@ -166,7 +166,7 @@ const MinorDematAccount: React.FC = () => {
         </div>
         {/* Sign Up Button */}
         <div 
-          className="absolute top-[430px] left-[628px] w-[184px] h-[43px] rounded-[6px] bg-[#064D51] mb-4 flex items-center justify-center gap-[18px] cursor-pointer hover:opacity-90 transition-opacity"
+          className="absolute top-[400px] left-[628px] w-[184px] h-[43px] rounded-[6px] bg-[#064D51] mb-4 flex items-center justify-center gap-[18px] cursor-pointer hover:opacity-90 transition-opacity"
           style={{
             paddingTop: '7px',
             paddingRight: '21px',

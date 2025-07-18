@@ -11,17 +11,17 @@ const faqs = [
   {
     question: 'Who can open a Minor Demat Account?',
     answer:
-      'Yes, you can invest in US stocks from India through Sapphire Broking. We provide international investment opportunities with proper regulatory compliance and support.',
+      'You can open your account online in minutes by submitting your PAN card, Aadhaar, and bank details, or visit our office for assistance.',
   },
   {
     question: 'Can a Minor Demat Account be used for trading?',
     answer:
-      'The minimum investment amount varies depending on the specific stocks and investment plans. Please contact our team for detailed information about minimum investment requirements.',
+      'We provide stock broking, mutual fund distribution, portfolio management, insurance solutions, and expert financial advisory.',
   },
   {
     question: 'What happens to the Minor Demat Account when the minor turns 18?',
     answer:
-      'Yes, we are SEBI-registered and comply with all regulatory guidelines to ensure the security of your investments. Your investments are protected under international investment frameworks.',
+      'Yes, we are SEBI-registered and comply with all regulatory guidelines to ensure the security of your investments.',
   },
 ];
 

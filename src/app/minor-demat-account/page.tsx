@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 const Home = () => {
   return (
-    <div className="w-full max-w-7xl mx-auto">
+    <div className="w-full">
       
       <div className="y-10 sm:space-y-20 pt-16 pb-20">
         <AboutInfo />

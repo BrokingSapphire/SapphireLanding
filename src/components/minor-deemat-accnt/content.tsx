@@ -7,35 +7,37 @@ interface SapphireDematCardProps {
 
 const SapphireDematCard: React.FC<SapphireDematCardProps> = ({ className = '' }) => {
   return (
-    <div className={`w-full max-w-screen-xl mx-auto bg-white px-4 md:px-8 pt-4 md:pt-16   flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-16 ${className}`}>
-      <div className="w-full  h-auto ">
-        <div className="w-full h-full px-2 gap-16 lg:gap-28 flex flex-col lg:flex-row justify-between items-center py-6">
+    <div className={`w-full bg-white pt-4 md:pt-14 px-4 md:px-12 lg:px-24 flex flex-col lg:flex-row items-start justify-between gap-8 ${className}`}>
+      <div className="w-full h-auto">
+        <div className="w-full h-full flex flex-col lg:flex-row justify-between items-stretch py-6 gap-8">
           {/* Text Area */}
-          <div className="w-full lg:w-[754px] h-auto flex flex-col justify-center gap-4 md:gap-8 py-[3px]">
+          <div className="flex-[2] flex flex-col justify-center gap-8 py-[3px]">
             {/* Main Heading */}
             <h1 
-              className="w-full lg:w-[657px] text-black opacity-100 leading-tight text-2xl md:text-3xl lg:text-[36px] font-medium"
+              className="w-full text-black opacity-100 leading-tight text-2xl md:text-3xl lg:text-[36px] font-medium"
               style={{
                 fontFamily: 'Lexend',
                 fontWeight: 500,
+                fontSize: '36px',
                 lineHeight: '45px',
                 letterSpacing: '-0.72px'
               }}
-            >
-              Secure Your Childs Future with Sapphire Minor Demat Account.
+              >
+              Secure Your Childs Future with Sapphire<br />
+              Minor Demat Account.
             </h1>
-            
             {/* Small Text Box */}
             <div 
-              className="w-full lg:w-[754px] flex flex-col justify-center gap-2 md:gap-3 text-gray-600 opacity-100 text-base md:text-lg lg:text-[20px]"
+              className="w-full flex flex-col justify-center gap-3 text-gray-600 opacity-100 text-base md:text-lg lg:text-[20px]"
               style={{
                 fontFamily: 'Poppins',
                 fontWeight: 400,
+                fontSize: '20px',
                 lineHeight: '30px',
                 letterSpacing: '0%'
               }}
             >
-              <p className="mb-2 md:mb-3">
+              <p className="mb-3">
                 Why settle for outdated childrens plans that offer limited growth, when you 
                 can give your child a future backed by real financial potential?
               </p>
@@ -48,15 +50,14 @@ const SapphireDematCard: React.FC<SapphireDematCardProps> = ({ className = '' })
               </p>
             </div>
           </div>
-          
           {/* Image Area */}
-          <div className="w-full max-w-[550px] h-auto flex items-center justify-center mt-6 lg:mt-0">
+          <div className="flex-1 flex items-center justify-end">
             <Image
-              src="/minor-demat/minor deemat.png" // Replace with your actual image path
+              src="/minor-demat/minor deemat.png"
               alt="Sapphire Minor Demat Account Illustration"
               width={550}
               height={500}
-              className="w-full max-w-[550px] h-auto"
+              className="w-full h-auto max-w-[550px]"
             />
           </div>
         </div>
