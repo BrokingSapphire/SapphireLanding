@@ -121,17 +121,17 @@ const LegalSection = () => {
       <div className="grid gap-4">
         {/* Legal Name */}
         <p>
-          <strong>Legal Name:</strong> <strong>Sapphire Broking</strong>: Registered Office: <strong><span className="underline decoration-dotted decoration-slate-400">Plot No. 84A, First Floor, Pande Layout, New Sneh Nagar, Khamla, Nagpur (MH) - 440025</span></strong>, FRN: <strong><span className="underline decoration-dotted decoration-slate-400">NG000010895</span></strong>, SEBI Registration No.: <span className="font-bold underline decoration-dotted decoration-slate-400">INZ923930210</span> – Member of <span className="font-bold underline decoration-dotted decoration-slate-400">NSE, BSE, MCX, and NCDEX</span>. Association of Mutual Funds in India (AMFI) Member Code: <strong><span className="underline decoration-dotted decoration-slate-400">ARN-333966</span></strong>. Clearing House: <strong><span className="underline decoration-dotted decoration-slate-400">Globe Capital Services Ltd.</span></strong>: DP ID: <strong><span className="underline decoration-dotted decoration-slate-400">12020600</span></strong>. Compliance Officer: <strong><span className="underline decoration-dotted decoration-slate-400">Mr. Yash Katyari</span></strong>, Tel: <strong><a href="tel:+919359561831" className="underline decoration-dotted decoration-slate-400 text-inherit">+91 93595 61831</a></strong>, Email: <strong><a href="mailto:yash.katyari@sapphirebroking.com" className="underline decoration-dotted decoration-slate-400 text-inherit">yash.katyari@sapphirebroking.com</a></strong>.
+          <strong>Legal Name:</strong> <strong>Sapphire Broking</strong>: Registered Office: <strong><span className="none">Plot No. 84A, First Floor, Pande Layout, New Sneh Nagar, Khamla, Nagpur (MH) - 440025</span></strong>, FRN: <strong><span className="none">NG000010895</span></strong>, SEBI Registration No.: <span className="font-bold none">INZ923930210</span> – Member of <span className="font-bold none">NSE, BSE, MCX, and NCDEX</span>. Association of Mutual Funds in India (AMFI) Member Code: <strong><span className="none">ARN-333966</span></strong>. Clearing House: <strong><span className="none">Globe Capital Services Ltd.</span></strong>: DP ID: <strong><span className="none">12020600</span></strong>. Compliance Officer: <strong><span className="none">Mr. Yash Katyari</span></strong>, Tel: <strong><a href="tel:+919359561831" className="none text-inherit">+91 93595 61831</a></strong>, Email: <strong><a href="mailto:yash.katyari@sapphirebroking.com" className="none text-inherit">yash.katyari@sapphirebroking.com</a></strong>.
         </p>
 
         {/* Grievance Redressal */}
         <p>
-          <strong>Grievance Redressal:</strong> For complaints related to broking services, email us at <a href="mailto:support@sapphirebroking.com" className="font-bold underline decoration-dotted decoration-slate-400 text-inherit">support@sapphirebroking.com</a>. For depository-related issues, email us at <a href="mailto:dp@sapphirebroking.com" className="font-bold underline decoration-dotted decoration-slate-400 text-inherit">dp@sapphirebroking.com</a>. To escalate unresolved issues, contact our Grievance Redressal Officer: Mr. Undefined, Mobile: +91 Undefined. Alternatively, file complaints on the SEBI SCORES portal by registering with mandatory details like Name, PAN, Address, Mobile Number, and Email ID.
+          <strong>Grievance Redressal:</strong> For complaints related to broking services, email us at <a href="mailto:support@sapphirebroking.com" className="font-bold none text-inherit">support@sapphirebroking.com</a>. For depository-related issues, email us at <a href="mailto:dp@sapphirebroking.com" className="font-bold none text-inherit">dp@sapphirebroking.com</a>. To escalate unresolved issues, contact our Grievance Redressal Officer: Mr. Undefined, Mobile: +91 Undefined. Alternatively, file complaints on the SEBI SCORES portal by registering with mandatory details like Name, PAN, Address, Mobile Number, and Email ID.
         </p>
 
         {/* Cybersecurity Issues */}
         <p>
-          <strong>Cybersecurity Issues:</strong> Report cybersecurity concerns to <a href="mailto:abhigya.krishna@sapphirebroking.com" className="font-bold underline decoration-dotted decoration-slate-400 text-inherit">abhigya.krishna@sapphirebroking.com</a> or call us at <a href="tel:+919890336989" className="font-bold underline decoration-dotted decoration-slate-400 text-inherit">+91 98903 36989</a>.
+          <strong>Cybersecurity Issues:</strong> Report cybersecurity concerns to <a href="mailto:abhigya.krishna@sapphirebroking.com" className="font-bold none text-inherit">abhigya.krishna@sapphirebroking.com</a> or call us at <a href="tel:+919890336989" className="font-bold none text-inherit">+91 98903 36989</a>.
         </p>
 
         {/* Regulatory Compliance */}
@@ -156,13 +156,13 @@ const LegalSection = () => {
         <p>
           <strong>ODR Portal:</strong> Resolve disputes efficiently using SEBI&apos;s Online Dispute Resolution Portal:{" "}
           <Link target="_blank" href="https://smartodr.in/login">
-            <span className="font-bold underline decoration-dotted decoration-slate-400">Smart ODR Portal</span>
+            <span className="font-bold none">Smart ODR Portal</span>
           </Link>
         </p>
         <p>
           <strong>Charts are powered by:</strong>{" "}
           <Link target="_blank" href="https://www.tradingview.com">
-            <span className="font-bold underline decoration-dotted decoration-slate-400">TradingView</span>
+            <span className="font-bold none">TradingView</span>
           </Link>
         </p>
       </div>
