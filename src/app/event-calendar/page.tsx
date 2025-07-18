@@ -1,10 +1,10 @@
 'use client';
 import React, { useState } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
-import { format, isWithinInterval, parse, addMonths, subMonths } from 'date-fns';
-import { FiCalendar, FiFilter, FiSearch } from 'react-icons/fi';
+import { format, addMonths, subMonths } from 'date-fns';
+import { FiCalendar, FiSearch } from 'react-icons/fi';
+import Image from 'next/image';
 
 // Set default date range to 1 June - 1 July of the current year
 const currentYear = new Date().getFullYear();
@@ -161,10 +161,6 @@ const eventData = [
 // const [activeTags, setActiveTags] = useState(filterTags);
 // const [appliedTags, setAppliedTags] = useState(filterTags);
 
-function parseEventDate(dateStr: string) {
-  return parse(dateStr.split(',')[0] + ',' + dateStr.split(',')[1], 'MMM d, yyyy', new Date());
-}
-
 export default function EventCalendarPage() {
   // Filter option states (not applied yet)
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: defaultFrom, to: defaultTo });
@@ -197,13 +193,6 @@ export default function EventCalendarPage() {
   const [marketCap, setMarketCap] = useState<{ large: boolean; mid: boolean; small: boolean }>({ large: false, mid: false, small: false });
   // Applied filter states
   const [appliedDateRange, setAppliedDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: defaultFrom, to: defaultTo });
-  const [appliedSearch, setAppliedSearch] = useState('');
-  // Remove filterTags and related state
-  // const [activeTags, setActiveTags] = useState(filterTags);
-  // const [appliedTags, setAppliedTags] = useState(filterTags);
-  const [calendarOpen, setCalendarOpen] = useState(false);
-
-  // Add state for filter popover open/close
   const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
 
   // Add state for applied filters
@@ -212,12 +201,6 @@ export default function EventCalendarPage() {
   const [appliedMarketCap, setAppliedMarketCap] = useState<typeof marketCap>(marketCap);
 
   // Handler for calendar date range selection
-  function handleDateRangeChange(range: { from?: Date; to?: Date } | undefined) {
-    if (!range) return;
-    setDateRange({ from: range.from, to: range.to });
-  }
-
-  // Handler for shifting date range by exactly 1 month
   function shiftDateRange(direction: 'back' | 'forward') {
     if (!dateRange.from || !dateRange.to) return;
     let newFrom, newTo;
@@ -232,18 +215,10 @@ export default function EventCalendarPage() {
     setAppliedDateRange({ from: newFrom, to: newTo });
   }
 
-  // Apply filters when button is clicked
-  function applyFilters() {
-    setAppliedTypeOfEvents(typeOfEvents);
-    setAppliedShowEventsFrom(showEventsFrom);
-    setAppliedMarketCap(marketCap);
-    setFilterPopoverOpen(false);
-  }
-
   // Filtered events (only when filters are applied)
   const filteredEventData = eventData.map(group => {
     // Only filter by typeOfEvents (purpose) for now
-    const activeTypes = Object.entries(appliedTypeOfEvents).filter(([_, v]) => v).map(([k]) => k.toLowerCase());
+    const activeTypes = Object.entries(appliedTypeOfEvents).filter(([, v]) => v).map(([k]) => k.toLowerCase());
     return {
       ...group,
       events: group.events.filter(event => {
@@ -256,11 +231,8 @@ export default function EventCalendarPage() {
   }).filter(group => group.events.length > 0);
 
   // Show all events if no filters are applied
-  const showAll = !appliedDateRange.from && !appliedDateRange.to && appliedSearch === '' && appliedTypeOfEvents.dividend === false && appliedTypeOfEvents.bonus === false && appliedTypeOfEvents.split === false && appliedTypeOfEvents.reverseSplit === false && appliedTypeOfEvents.rights === false && appliedTypeOfEvents.merger === false && appliedTypeOfEvents.demerger === false && appliedTypeOfEvents.results === false && appliedTypeOfEvents.buyback === false && appliedTypeOfEvents.reductionOfCapital === false && marketCap.large === false && marketCap.mid === false && marketCap.small === false;
+  const showAll = !appliedDateRange.from && !appliedDateRange.to && search === '' && appliedTypeOfEvents.dividend === false && appliedTypeOfEvents.bonus === false && appliedTypeOfEvents.split === false && appliedTypeOfEvents.reverseSplit === false && appliedTypeOfEvents.rights === false && appliedTypeOfEvents.merger === false && appliedTypeOfEvents.demerger === false && appliedTypeOfEvents.results === false && appliedTypeOfEvents.buyback === false && appliedTypeOfEvents.reductionOfCapital === false && marketCap.large === false && marketCap.mid === false && marketCap.small === false;
   const displayData = showAll ? eventData : filteredEventData;
-
-  // Calculate total number of events after filtering
-  const totalFilteredEvents = displayData.reduce((sum, group) => sum + group.events.length, 0);
 
   // Calculate event counts for each type for the popover
   const eventTypeCounts: Record<string, number> = {
@@ -374,7 +346,7 @@ export default function EventCalendarPage() {
             <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2 px-4 py-2 text-gray-700 text-sm border bg-white hover:bg-white hover:text-gray-700 focus:bg-white focus:text-gray-700 active:bg-white active:text-gray-700" style={{ borderColor: '#EBEBEB' }}>
-                  <img src="/event-calendar/filter.svg" alt="Filter" className="w-4 h-4" />
+                  <Image src="/event-calendar/filter.svg" alt="Filter" width={16} height={16} />
                   <span className='text-[14px] font-medium font-poppins text-[#717171]'>Apply Filter</span>
                 </Button>
               </PopoverTrigger>
@@ -625,9 +597,11 @@ export default function EventCalendarPage() {
                           <span className="flex items-center gap-2">
                             {event.purpose}
                             <span className="relative group/info">
-                              <img
+                              <Image
                                 src="/event-calendar/info.svg"
                                 alt="Info"
+                                width={20}
+                                height={20}
                                 className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer align-middle"
                               />
                               {/* Tooltip on hover */}
@@ -637,9 +611,11 @@ export default function EventCalendarPage() {
                             </span>
                           </span>
                           <span className="flex-shrink-0 ml-4">
-                            <img
+                            <Image
                               src="/event-calendar/bell.svg"
                               alt="Notification"
+                              width={20}
+                              height={20}
                               className="w-5 h-5 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer align-middle"
                               style={{ display: 'block' }}
                             />

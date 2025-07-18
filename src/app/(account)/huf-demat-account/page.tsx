@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
-import { Plus, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const faqs = [
     {

@@ -1,7 +1,6 @@
 "use client"
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const faqs = [
@@ -23,8 +22,6 @@ const faqs = [
 ];
 
 export default function UsStocksPage() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
   return (
     <div className="bg-white min-h-screen mt-20">
       <div className="max-w-7xl mx-auto">
