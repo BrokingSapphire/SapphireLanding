@@ -62,19 +62,14 @@ const staticData: CollateralRow[] = [
     },
 ];
 
-const TABS = ["Equity", "ETF", "Mutual Funds"];
+const TABS_NON_CASH = ["Equity", "ETF", "Mutual Funds"];
+const TABS_CASH = ["ETF", "Mutual funds", "SGB", "G-Sec", "T-bills"];
 
 export default function CollateralHaircutPage() {
     const [activeTab, setActiveTab] = useState("Equity");
     const [selectedOption, setSelectedOption] = useState("Non-Cash");
     const dropdownOptions = ["Non-Cash", "Cash"];
-    const secondaryTabs = ["ETF", "Mutual funds", "SGB", "G-Sec", "T-bills"];
-    const [activeSecondaryTab, setActiveSecondaryTab] = useState("ETF");
-
     const [sortConfig, setSortConfig] = useState<{ key: keyof CollateralRow; direction: 'asc' | 'desc' } | null>(null);
-
-    const TABS_NON_CASH = ["Equity", "ETF", "Mutual Funds"];
-    const TABS_CASH = ["ETF", "Mutual funds", "SGB", "G-Sec", "T-bills"];
 
     const getTabs = () => selectedOption === "Cash" ? TABS_CASH : TABS_NON_CASH;
     // If switching to cash, reset activeTab to ETF
@@ -88,12 +83,15 @@ export default function CollateralHaircutPage() {
     const getSortedData = () => {
         if (!sortConfig) return staticData;
         const sorted = [...staticData].sort((a, b) => {
-            let aValue = a[sortConfig.key];
-            let bValue = b[sortConfig.key];
+            const aValue = a[sortConfig.key];
+            const bValue = b[sortConfig.key];
             // Remove % for numeric sort
             if (sortConfig.key === 'haircut' || sortConfig.key === 'collateral') {
-                aValue = parseFloat(aValue.replace('%', '')) as any;
-                bValue = parseFloat(bValue.replace('%', '')) as any;
+                const aNum = parseFloat(aValue.replace('%', ''));
+                const bNum = parseFloat(bValue.replace('%', ''));
+                if (aNum < bNum) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (aNum > bNum) return sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
             }
             if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
             if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
