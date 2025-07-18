@@ -3,7 +3,7 @@ import React from 'react'
 function ChargesExplained() {
   return (
     <div className='flex flex-col justify-start gap-y-6 py-[42px]  max-w-7xl mx-auto'>
-      <h1 className='font-lexend font-medium text-4xl mb-[8px]'>Charges explained</h1>
+      <h1 className='font-lexend font-semibold text-2xl mb-[8px]'>Charges explained</h1>
       
       {/* Securities/Commodities transaction tax */}
       <div className='rounded-lg'>
