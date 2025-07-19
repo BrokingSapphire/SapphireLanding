@@ -1,8 +1,7 @@
-import AboutInfo from "@/components/minor-deemat-accnt/content";
-import ReasonToChoose from "@/components/minor-deemat-accnt/ReasonToChoose";
-import ReadyToopen from "@/components/minor-deemat-accnt/readytoopen";
-import Downloadapp from "@/components/minor-deemat-accnt/downloadapp";
-import FAQ from "@/components/minor-deemat-accnt/f&q";
+import AboutInfo from "@/components/stocks/content";
+import FAQ from "@/components/stocks/FAQ";
+import ReasonToChoose from "@/components/stocks/ReasonToChoose";
+
 
 import { Metadata } from "next";
 import React from "react";
@@ -31,11 +30,12 @@ const Home = () => {
       
       <div className="y-4 sm:space-y-16 pt-16 pb-20">
         <AboutInfo />
-        
         <ReasonToChoose />
-        <ReadyToopen />
-        <Downloadapp />
         <FAQ />
+        
+
+        
+        
         
       </div>
     </div>
