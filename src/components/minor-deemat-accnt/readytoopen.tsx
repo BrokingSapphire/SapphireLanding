@@ -33,13 +33,13 @@ const MinorDematAccount: React.FC = () => {
         </div>
         {/* Gradient background box */}
         <div 
-          className="absolute top-[212px] left-[108px] w-[1224px] h-[280px] rounded-[64px]"
+          className="absolute top-[212px] left-[80px] w-[1330px] h-[280px] rounded-[64px]"
           style={{
             background: 'linear-gradient(173.66deg, rgba(255, 255, 255, 0.2) 0.86%, rgba(255, 222, 85, 0.06) 55.98%, rgba(163, 247, 148, 0.16) 95.84%)'
           }}
         />
         {/* Content container with 3 steps */}
-        <div className="absolute top-[180px] left-[167px] w-[1106px] h-[153px] flex justify-between items-start gap-[61px]">
+        <div className="absolute top-[180px] left-[150px] w-[1200px] h-[153px] flex justify-between items-start gap-[61px]">
           {/* Step 1 - Guardian Setup */}
           <div className="flex flex-col items-center w-[328px]">
             {/* Number circle */}
@@ -72,8 +72,8 @@ const MinorDematAccount: React.FC = () => {
               style={{
                 fontFamily: 'Poppins',
                 fontWeight: 400,
-                fontSize: '12px',
-                lineHeight: '100%',
+                fontSize: '14px',
+                lineHeight: '140%',
                 letterSpacing: '0%',
                 color: '#717171'
               }}
@@ -112,10 +112,10 @@ const MinorDematAccount: React.FC = () => {
               className="w-[328px] h-[54px] text-center"
               style={{
                 fontFamily: 'Poppins',
-                fontWeight: 400,
-                fontSize: '12px',
-                lineHeight: '100%',
-                letterSpacing: '0%',
+                fontWeight: 500,
+                fontSize: '14px',
+                lineHeight: '140%',
+                letterSpacing: '0.5%',
                 color: '#717171'
               }}
             >
@@ -153,9 +153,9 @@ const MinorDematAccount: React.FC = () => {
               className="w-[328px] h-[54px] text-center"
               style={{
                 fontFamily: 'Poppins',
-                fontWeight: 400,
-                fontSize: '12px',
-                lineHeight: '100%',
+                fontWeight: 500,
+                fontSize: '14px',
+                lineHeight: '140%',
                 letterSpacing: '0%',
                 color: '#717171'
               }}
@@ -166,7 +166,7 @@ const MinorDematAccount: React.FC = () => {
         </div>
         {/* Sign Up Button */}
         <div 
-          className="absolute top-[400px] left-[628px] w-[184px] h-[43px] rounded-[6px] bg-[#064D51] mb-4 flex items-center justify-center gap-[18px] cursor-pointer hover:opacity-90 transition-opacity"
+          className="absolute top-[420px] left-[628px] w-[184px] h-[43px] rounded-[6px] bg-[#064D51] mb-4 flex items-center justify-center gap-[18px] cursor-pointer hover:opacity-90 transition-opacity group"
           style={{
             paddingTop: '7px',
             paddingRight: '21px',
@@ -186,8 +186,15 @@ const MinorDematAccount: React.FC = () => {
           >
             Sign Up
           </span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3.33334 8H12.6667M12.6667 8L8.00001 3.33333M12.6667 8L8.00001 12.6667" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg 
+            width="20" 
+            height="16" 
+            viewBox="0 0 20 16" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+            className="transition-transform group-hover:translate-x-1"
+          >
+            <path d="M3.33334 8H15.6667M15.6667 8L10.00001 3.33333M15.6667 8L10.00001 12.6667" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </div>

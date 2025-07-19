@@ -25,7 +25,7 @@ export default function AppDownloadSection() {
           }} 
         > 
           <Image 
-            src="/minor-demat/mobile.png" 
+            src="/minor-demat/newmobile.png" 
             alt="Mobile App Screenshot" 
             width={275} 
             height={350} 

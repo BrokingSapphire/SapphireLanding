@@ -29,12 +29,12 @@ const FeatureBox: React.FC<FeatureBoxProps> = ({ iconSrc, title, description }) 
       </div>
       {/* Description */}
       <p
-        className="text-gray-600 opacity-100 text-sm lg:text-[16px]"
+        className="text-gray-600 opacity-100 text-sm lg:text-[16px] pl-7"
         style={{
           fontFamily: 'Poppins',
           fontWeight: 400,
           lineHeight: '140%',
-          letterSpacing: '-0.5px'
+          letterSpacing: '0px'
         }}
       >
         {description}
@@ -51,7 +51,7 @@ const ReasonsToChooseUs: React.FC<ReasonsToChooseUsProps> = ({ className = '' })
   return (
     <div
       className={`w-full h-auto lg:h-[325px] bg-[#F5F7FA] mx-auto flex flex-col gap-8 opacity-100 px-4 md:px-8 lg:px-20 ${className}`}
-      style={{ paddingTop: '24px', paddingBottom: '24px' }}
+      style={{ paddingTop: '48px', paddingBottom: '24px' }}
     >
       {/* Main Heading */}
       <div className="w-full h-[40px] opacity-100 flex items-center justify-center">
