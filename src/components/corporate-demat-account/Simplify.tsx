@@ -70,7 +70,7 @@ const Simplify: React.FC<SimplifyProps> = ({ className = '' }) => {
             
             {/* Description */}
             <p
-              className="w-full text-black opacity-100 text-base lg:text-lg max-w-3xl mx-auto"
+              className="w-full text-black opacity-100 text-base lg:text-lg max-w-4xl lg:max-w-5xl mx-auto"
               style={{
                 fontFamily: 'Poppins',
                 fontWeight: 400,
