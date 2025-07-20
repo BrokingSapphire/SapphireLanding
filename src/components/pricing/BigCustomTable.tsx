@@ -9,7 +9,8 @@ import {
   mtfCharges,
   EquityRowType,
   OtherRowType,
-  ChargeType
+  ChargeType,
+  accountOpeningData,
 } from "@/constants/ChargesTable";
 import ChargesExplained from "./ChargesExplained";
 
@@ -325,7 +326,7 @@ const ChargesTable: React.FC = () => {
                 <thead>
                   <tr className="bg-gray-100">
                     <th className="py-3 px-4 text-left font-semibold text-gray-700 w-1/2 text-sm sm:text-base">
-                      Charges
+                      Head
                     </th>
                     <th className="py-3 px-4 text-left font-semibold text-gray-700 w-1/2 text-sm sm:text-base">
                       Charges
@@ -349,6 +350,50 @@ const ChargesTable: React.FC = () => {
           </div>
         </div>
 
+        {/* Account Opening Charges */}
+        <div>
+          <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
+            Account Opening Charges
+          </div>
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="min-w-[600px]">
+              <table className="w-full border-collapse">
+  <thead>
+    <tr className="bg-gray-100">
+      <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base w-1/2">
+        Account Type
+      </th>
+      <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base w-1/2">
+        Charges
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {accountOpeningData.length > 0 ? (
+      accountOpeningData.map((item) => (
+        <tr key={item.type} className="border-b border-gray-200">
+          <td className="py-3 px-4 text-gray-600 text-sm sm:text-base">
+            {item.type}
+          </td>
+          <td className="py-3 px-4 text-gray-600 whitespace-pre-line text-sm sm:text-base">
+            {item.charges}
+          </td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan={2} className="py-3 px-4 text-center text-gray-500">
+          No data available.
+        </td>
+      </tr>
+    )}
+  </tbody>
+</table>
+
+            </div>
+          </div>
+        </div>
+
         {/* MTF Charges */}
         <div className="">
           <div className="font-lexend ml-3 py-4 text-xl sm:text-2xl font-semibold text-gray-800">
@@ -360,7 +405,7 @@ const ChargesTable: React.FC = () => {
                 <thead>
                   <tr className="bg-gray-100">
                     <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base">
-                      Charges
+                      Head
                     </th>
                     <th className="py-3 px-4 text-left font-semibold text-gray-700 text-sm sm:text-base">
                       Charges
