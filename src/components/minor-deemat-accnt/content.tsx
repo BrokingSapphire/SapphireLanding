@@ -17,10 +17,10 @@ const SapphireDematCard: React.FC<SapphireDematCardProps> = ({ className = '' })
           </h1>
           <div className="space-y-3 sm:space-y-4 text-gray-600 mb-5 sm:mb-6 text-base sm:text-lg md:text-xl font-poppins font-normal">
             <p>
-              Why settle for outdated children&apos;s plans that offer limited growth, when you can give your child a future backed by real financial potential?
+              Why settle for outdated children&#39;s plans that offer limited growth, when you can give your child a future backed by real financial potential?
             </p>
             <p>
-              At Sapphire, we offer a modern, market-driven investment approach that outshines traditional savings and insurance-based child plans. Designed to build long-term wealth with stability and flexibility, our platform empowers you to invest in a way that truly supports your child&apos;s dreams — whether it&apos;s education, entrepreneurship, or a head start in life.
+              At Sapphire, we offer a modern, market-driven investment approach that outshines traditional savings and insurance-based child plans. Designed to build long-term wealth with stability and flexibility, our platform empowers you to invest in a way that truly supports your child&#39;s dreams — whether it&#39;s education, entrepreneurship, or a head start in life.
             </p>
           </div>
         </div>

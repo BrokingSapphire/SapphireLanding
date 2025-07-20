@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 
-function ChargesExplained() {
+const ChargesExplained: React.FC = () => {
   return (
-    <div className='flex flex-col justify-start gap-y-6 py-[42px]  max-w-7xl mx-auto'>
+    <div className='flex flex-col justify-start gap-y-6 py-[42px] max-w-7xl mx-auto'>
       <h1 className='font-lexend font-semibold text-2xl mb-[8px]'>Charges explained</h1>
       
       {/* Securities/Commodities transaction tax */}
@@ -267,7 +267,7 @@ function ChargesExplained() {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ChargesExplained
+export default ChargesExplained;
