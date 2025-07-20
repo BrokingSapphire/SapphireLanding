@@ -9,26 +9,26 @@ import {
 
 const faqs = [
   {
-    question: 'Who can open a Minor Demat Account?',
+    question: 'What is F&O trading?',
     answer:
-      'You can open your account online in minutes by submitting your PAN card, Aadhaar, and bank details, or visit our office for assistance.',
+      'Futures & Options are derivative contracts that let you speculate or hedge on the future price of stocks, indices, or commodities.',
   },
   {
-    question: 'Can a Minor Demat Account be used for trading?',
+    question: 'How is F&O different from equity trading?',
     answer:
-      'We provide stock broking, mutual fund distribution, portfolio management, insurance solutions, and expert financial advisory.',
+      'F&O involves contracts with expiry, leverage, and margin requirements, unlike equity trading where you directly own shares without time-bound obligations.',
   },
   {
-    question: 'What happens to the Minor Demat Account when the minor turns 18?',
+    question: 'What are the risks in F&O trading?',
     answer:
-      'Yes, we are SEBI-registered and comply with all regulatory guidelines to ensure the security of your investments.',
+      'F&O trading involves significant risk due to leverage and expiry. Prices can move quickly—risk management and proper strategies are essential.',
   },
 ];
 
 const FAQ = () => {
   return (
-    <div className="w-full mb-6 sm:mb-8 lg:mb-10  px-4 sm:px-8 lg:px-14 py-6 sm:py-8 ">
-      <div className="max-w-6xl mx-auto flex flex-col space-y-3 sm:space-y-4 lg:space-y-6 items-center justify-center">
+    <div className="w-full mb-6 sm:mb-8 lg:mb-10  px-4 sm:px-8 lg:px-14 py-3 sm:py-10 lg:py-8">
+      <div className="max-w-6xl mx-auto flex flex-col space-y-3 sm:space-y-4 lg:space-y-10 items-center justify-center">
         <h1 className="font-lexend text-2xl sm:text-3xl lg:text-4xl font-medium text-center px-2">
           Frequently Asked Questions (FAQs)
         </h1>
