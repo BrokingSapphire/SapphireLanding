@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from "react";
 import Link from "next/link";
 import { investorCharterData } from "@/components/legal/investorattention";

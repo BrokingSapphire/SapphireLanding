@@ -1,13 +1,11 @@
 import AboutInfo from "@/components/NRI-account/context";
 import EasyToUse from "@/components/NRI-account/Easytouse";
 import Downloadapp from "@/components/minor-deemat-accnt/downloadapp";
-import FAQ from "@/components/corporate-demat-account/FAQ";
+import FAQ from "@/components/NRI-account/FAQ";
 import Simplify from "@/components/NRI-account/Simplify";
 
 import { Metadata } from "next";
 import React from "react";
-
-
 
 export const metadata: Metadata = {
   title: "About | Sapphire Broking: Smarter Trading, Expert Insights",
@@ -25,23 +23,35 @@ export const metadata: Metadata = {
   },
 };
 
-const Home = () => {
+const NriAccountPage = () => {
   return (
-    <div className="w-full">
-      
-      <div className="y-4 sm:space-y-16 pt-16 pb-20">
+    <div className="w-full max-w-7xl mx-auto">
+      {/* Hero/About Section */}
+      <section className="bg-white mt-10">
         <AboutInfo />
-        <EasyToUse />
-        <Simplify />
-        <Downloadapp />
-        <FAQ />
+      </section>
 
-        
-        
-        
-      </div>
+      {/* Easy To Use Section */}
+      <section className="w-full bg-[#F5F7FA] ">
+        <EasyToUse />
+      </section>
+
+      {/* Simplify Section */}
+      <section className="w-full bg-white ">
+        <Simplify />
+      </section>
+
+      {/* App Download Section */}
+      <section className="w-full bg-[#F5F7FA]">
+        <Downloadapp />
+      </section>
+
+      {/* FAQ Section */}
+      <section className="w-full bg-white ">
+        <FAQ />
+      </section>
     </div>
   );
 };
 
-export default Home;
+export default NriAccountPage;
