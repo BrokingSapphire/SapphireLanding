@@ -2,12 +2,10 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  FaWhatsapp,
   FaInstagram,
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FiYoutube, FiGithub } from "react-icons/fi";
-import { AiOutlineFacebook } from "react-icons/ai";
 import { PiLinkedinLogo } from "react-icons/pi";
 interface LinkSectionProps {
   title: string;
@@ -31,8 +29,6 @@ const LinkSection = ({ title, links }: LinkSectionProps) => (
 
 const SocialLinks = () => {
   const SOCIAL_ICONS = [
-    { Icon: FaWhatsapp, href: "https://wa.me/9890336989" },
-    { Icon: AiOutlineFacebook, href: "https://facebook.com/BrokingSapphire" },
     { Icon: PiLinkedinLogo, href: "https://linkedin.com/company/BrokingSapphire" },
     { Icon: FaInstagram, href: "https://instagram.com/BrokingSapphire" },
     { Icon: FiYoutube, href: "https://youtube.com/c/@BrokingSapphire" },
