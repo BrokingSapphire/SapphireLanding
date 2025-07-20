@@ -7,8 +7,6 @@ import FAQ from "@/components/minor-deemat-accnt/f&q";
 import { Metadata } from "next";
 import React from "react";
 
-
-
 export const metadata: Metadata = {
   title: "About | Sapphire Broking: Smarter Trading, Expert Insights",
   description:
@@ -28,15 +26,14 @@ export const metadata: Metadata = {
 const Home = () => {
   return (
     <div className="w-full">
-      
-      <div className="y-4 sm:space-y-16 pt-16 pb-20">
+      <div>
         <AboutInfo />
-        
         <ReasonToChoose />
-        <ReadyToopen />
+        <div className="mb-20 md:mb-20">
+          <ReadyToopen />
+        </div>
         <Downloadapp />
         <FAQ />
-        
       </div>
     </div>
   );
