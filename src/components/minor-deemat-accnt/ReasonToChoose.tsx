@@ -44,7 +44,7 @@ export default function ReasonsToChooseUs() {
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="font-poppins text-[18px] font-medium text-black">Best Savings Plan for Your Child</h3>
               </div>
-              <p className="font-poppins text-[16px] text-gray-600">Open a minor account with no minimum balance, and start investing in mutual funds early to support your child's future dreams.</p>
+              <p className="font-poppins text-[16px] text-gray-600">Open a minor account with no minimum balance, and start investing in mutual funds early to support your child&apos;s future dreams.</p>
             </div>
           </div>
         </div>

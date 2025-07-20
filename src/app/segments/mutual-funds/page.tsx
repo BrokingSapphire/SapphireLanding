@@ -1,408 +1,220 @@
-// This file was moved from src/app/product/ipo/page.tsx
-'use client';
+import React from 'react';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
+const TradingCalendar = () => {
+  const tradingData = [
+    { date: '2025-01-15', holiday: 'Makar Sankranti', segment: 'Equity', currency: 'INR', category: 'equity' },
+    { date: '2025-01-26', holiday: 'Republic Day', segment: 'F&O', currency: 'USD', category: 'fno' },
+    { date: '2025-02-12', holiday: 'Maha Shivratri', segment: 'Commodity', currency: 'INR', category: 'commodity' },
+    { date: '2025-03-14', holiday: 'Holi', segment: 'Clearing', currency: 'EUR', category: 'clearing' },
+    { date: '2025-04-18', holiday: 'Good Friday', segment: 'Equity', currency: 'INR', category: 'equity' },
+    { date: '2025-05-01', holiday: 'Labour Day', segment: 'F&O', currency: 'USD', category: 'fno' },
+    { date: '2025-08-15', holiday: 'Independence Day', segment: 'Commodity', currency: 'INR', category: 'commodity' },
+    { date: '2025-10-02', holiday: 'Gandhi Jayanti', segment: 'Clearing', currency: 'GBP', category: 'clearing' },
+  ];
 
-interface SIPCalculation {
-  totalInvestment: number;
-  estimatedReturns: number;
-  totalAmount: number;
-}
-
-const MutualFundsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'SIPs' | 'Lumpsum'>('Lumpsum');
-  const [investment, setInvestment] = useState<number>(8000);
-  const [returnRate, setReturnRate] = useState<number>(18);
-  const [timePeriod, setTimePeriod] = useState<number>(16);
-  const [calculation, setCalculation] = useState<SIPCalculation>({ totalInvestment: 0, estimatedReturns: 0, totalAmount: 0 });
-
-  // SIP calculation logic (reference from SIP calculator)
-  const calculateSIP = useCallback((): SIPCalculation => {
-    const monthlyRate = returnRate / 100 / 12;
-    const months = timePeriod * 12;
-    const totalInvestment = investment * months;
-    let futureValue = 0;
-    if (monthlyRate > 0) {
-      futureValue = investment * (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate));
-    } else {
-      futureValue = totalInvestment;
+  const getCategoryColor = (category) => {
+    switch (category) {
+      case 'equity':
+        return '#1A73E8';
+      case 'fno':
+        return '#FFAC00';
+      case 'commodity':
+        return '#D93434';
+      case 'clearing':
+        return '#A75EFF';
+      default:
+        return '#2D8A4F';
     }
-    const estimatedReturns = futureValue - totalInvestment;
-    return { totalInvestment, estimatedReturns, totalAmount: futureValue };
-  }, [investment, returnRate, timePeriod]);
-
-  useEffect(() => {
-    setCalculation(calculateSIP());
-  }, [investment, returnRate, timePeriod, activeTab, calculateSIP]);
-
-  // Format currency (reference from SIP calculator)
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount).replace('₹', 'Rs.');
   };
 
-  // Chart percentages
-  const investedPercentage = calculation.totalAmount > 0 ? (calculation.totalInvestment / calculation.totalAmount) * 100 : 0;
-  const returnsPercentage = calculation.totalAmount > 0 ? (calculation.estimatedReturns / calculation.totalAmount) * 100 : 0;
-
   return (
-    <div className="bg-white min-h-screen pt-20">
-      <div className="max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div className="bg-white py-10 pb-2 sm:py-14 sm:pb-0 lg:pb-0 lg:py-16 w-full">
-          <div className="flex flex-col-reverse md:flex-row items-center justify-between relative w-full min-h-[240px] md:min-h-[340px] px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20">
-            {/* Left Content */}
-            <div className="z-10 w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl pt-8 md:pt-0 pl-0 md:pl-8 lg:pl-8 xl:pl-15 text-center md:text-left">
-              <p className="text-[36px] sm:text-3xl lg:text-4xl font-medium text-gray-900 leading-tight mb-2 sm:mb-2 font-lexend">
-                Invest in Mutual Funds
-              </p>
-              <p className="text-[36px] sm:text-3xl lg:text-4xl font-medium text-gray-900 leading-tight mb-[24px] sm:mb-[24px] font-lexend">
-                with 0% Commission*
-              </p>
-              <div className="space-y-3 sm:space-y-3 text-gray-600 mb-6 sm:mb-6">
-                <p className='text-base sm:text-lg md:text-xl'>
-                  Mutual funds offer a simple and effective way to invest in a diversified basket of assets, managed by experienced professionals.
-                </p>
-                <p className='text-base sm:text-lg md:text-xl'>
-                  Whether you&#39;re a beginner or a seasoned investor, mutual funds help you build long-term wealth with reduced risk and steady growth potential.
-                </p>
-                <p className='text-base sm:text-lg md:text-xl'>
-                  With flexible investment options and accessibility, mutual funds make it easier than ever to work toward your financial goals.
-                </p>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Trading Calendar</h1>
+          <p className="text-gray-600">Market holidays and important dates</p>
+        </div>
+
+        {/* Table Container */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-4 bg-black text-white">
+            <div className="px-4 py-3 text-center">
+              <span 
+                style={{
+                  fontFamily: 'Lexend, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#FFFFFF'
+                }}
+              >
+                Date
+              </span>
+            </div>
+            <div className="px-4 py-3 text-center">
+              <span 
+                style={{
+                  fontFamily: 'Lexend, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#FFFFFF'
+                }}
+              >
+                Holiday
+              </span>
+            </div>
+            <div className="px-4 py-3 text-center">
+              <span 
+                style={{
+                  fontFamily: 'Lexend, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#FFFFFF'
+                }}
+              >
+                Segment
+              </span>
+            </div>
+            <div className="px-4 py-3 text-center">
+              <span 
+                style={{
+                  fontFamily: 'Lexend, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#FFFFFF'
+                }}
+              >
+                Currency
+              </span>
+            </div>
+          </div>
+
+          {/* Table Body */}
+          <div className="divide-y divide-gray-200">
+            {tradingData.map((item, index) => (
+              <div key={index} className="grid grid-cols-4 hover:bg-gray-50 transition-colors">
+                {/* Date Column */}
+                <div className="px-4 py-4 text-center flex items-center justify-center">
+                  <span 
+                    style={{
+                      fontFamily: 'Poppins, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      letterSpacing: '0%',
+                      color: '#636363'
+                    }}
+                  >
+                    {item.date}
+                  </span>
+                </div>
+
+                {/* Holiday Column */}
+                <div className="px-4 py-4 text-center flex items-center justify-center">
+                  <span 
+                    style={{
+                      fontFamily: 'Poppins, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      letterSpacing: '0%',
+                      color: '#636363'
+                    }}
+                  >
+                    {item.holiday}
+                  </span>
+                </div>
+
+                {/* Segment Column */}
+                <div className="px-4 py-4 text-center flex items-center justify-center">
+                  <span 
+                    className="px-3 py-1 rounded-full text-white text-xs font-medium"
+                    style={{
+                      backgroundColor: getCategoryColor(item.category),
+                      fontFamily: 'Poppins, sans-serif',
+                      fontWeight: 500,
+                      fontSize: '12px',
+                      lineHeight: '100%',
+                      letterSpacing: '0%'
+                    }}
+                  >
+                    {item.segment}
+                  </span>
+                </div>
+
+                {/* Currency Column */}
+                <div className="px-4 py-4 text-center flex items-center justify-center">
+                  <span 
+                    style={{
+                      fontFamily: 'SF Pro, system-ui, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      lineHeight: '100%',
+                      letterSpacing: '0%',
+                      color: '#636363'
+                    }}
+                  >
+                    {item.currency}
+                  </span>
+                </div>
               </div>
-              <button className="bg-[#064D51] hover:bg-teal-800 text-white px-6 sm:px-8 py-3 sm:py-[14px] rounded-lg font-semibold transition-colors shadow-lg w-full md:w-auto">
-                Open a Free Demat Account Now
-              </button>
-            </div>
-            {/* Right Side - IPO Images */}
-            <div className="relative w-full flex justify-center md:justify-end mb-6 md:mb-0 md:w-auto">
-              <Image
-                src="/mutual-funds/frame.png"
-                alt="Mutual Funds Frame"
-                width={364}
-                height={456}
-                className="w-48 sm:w-64 md:w-[320px] lg:w-[380px] h-auto max-h-[300px] md:max-h-[444px] drop-shadow-xl"
-                priority
-              />
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* How Easy It Is Section */}
-<div className="bg-[#F7F9FB] max-w-7xl h-[420px] mx-auto rounded-2xl mt-12 px-4 sm:px-8 md:px-12 flex flex-col md:flex-row items-center justify-center">
-  {/* Left Text Content */}
-  <div className='px-4 sm:px-8 md:px-10 bg-[#F7F9FB] max-w-7xl w-full flex flex-col md:flex-row items-center justify-center h-full'>
-    <div className="flex-1 md:mr-8 flex flex-col justify-center h-full px-2 sm:px-5 align-left text-center">
-      <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 font-lexend leading-tight">
-        5,000&#43; Mutual Funds. Your
-      </h2>
-      <h2 className="text-[24px] sm:text-3xl lg:text-4xl font-medium text-gray-900 mb-4 font-lexend leading-tight">
-        Growth Start&apos;s with Sapphire.
-      </h2>
-      <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
-        Invest with confidence in top-performing
-      </p>
-      <p className="text-gray-600 text-regular font-poppins text-base sm:text-lg md:text-xl text-center">
-        funds, curated for every kind of investor.
-      </p>
-    </div>
-    {/* Right Icon Frame SVG */}
-    <div className="flex-1 flex justify-center items-center h-full w-full max-w-[700px] px-2 sm:px-4 md:px-6 md:pt-0 lg:px-0">
-      <Image
-  src="/mutual-funds/icon-frame.svg"
-  alt="Mutual Funds Icon Frame"
-  width={700}
-  height={270}
-  className="w-full min-w-[280px] min-h-[190px] max-w-[380px] h-[220px] sm:min-w-[220px] sm:min-h-[150px] sm:max-w-[340px] sm:h-[180px] md:min-w-[300px] md:min-h-[180px] md:max-w-[450px] md:h-[250px] lg:max-w-[500px] lg:h-[240px] xl:max-w-[700px] xl:h-[270px] object-contain"
-  priority
-/>
-
-    </div>
-  </div>
-</div>
-
-        {/* Full Width Background Section with ColorGradient */}
-        <div className="w-full relative h-auto lg:h-[400px] mb-8 lg:mb-[15rem] px-10" style={{
-          backgroundImage: 'url(/ColorGradient.svg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}>
-          {/* Tabs */}
-          <div className="flex mb-5 max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 pt-8 overflow-x-auto">
-            <div className="flex rounded-full border border-gray-200 bg-white p-1 min-w-fit">
-              <button
-                className={`px-6 sm:px-8 lg:px-10 py-3 font-semibold rounded-full transition-colors duration-200 h-15 text-sm sm:text-base ${activeTab === 'SIPs'
-                  ? 'bg-[#064D51] text-white w-[140px] sm:w-[160px] lg:w-[182px]'
-                  : 'bg-transparent text-gray-500 w-[140px] sm:w-[160px] lg:w-[182px]'
-                  }`}
-                onClick={() => setActiveTab('SIPs')}
-              >
-                SIPs
-              </button>
-              <button
-                className={`px-6 sm:px-8 lg:px-10 py-3 font-semibold rounded-full transition-colors duration-200 text-sm sm:text-base ${activeTab === 'Lumpsum'
-                  ? 'bg-[#064D51] text-white w-[140px] sm:w-[160px] lg:w-[182px]'
-                  : 'bg-transparent text-gray-500 w-[140px] sm:w-[160px] lg:w-[182px]'
-                  }`}
-                onClick={() => setActiveTab('Lumpsum')}
-              >
-                Lumpsum
-              </button>
+        {/* Legend */}
+        <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">Segment Categories</h3>
+          <div className="flex flex-wrap gap-4">
+            <div className="flex items-center">
+              <div 
+                className="w-4 h-4 rounded-full mr-2" 
+                style={{ backgroundColor: '#1A73E8' }}
+              ></div>
+              <span className="text-sm text-gray-700">Equity</span>
             </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-8 pt-4">
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col items-stretch" style={{ minHeight: '420px', height: 'auto' }}>
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col lg:flex-row items-stretch" style={{ minHeight: '420px', height: 'auto' }}>
-                {/* Left Panel - Controls */}
-                <div className="w-full lg:w-1/2 space-y-4 sm:space-y-6 py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-10 flex flex-col h-full">
-                  {/* Total Investment Amount */}
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <label className="text-gray-700 font-medium text-xs sm:text-sm">Total Investment Amount</label>
-                      <span
-                        className="text-sm sm:text-base lg:text-lg"
-                        style={{
-                          fontFamily: 'Poppins, sans-serif',
-                          fontWeight: 500,
-                          fontStyle: 'normal',
-                        }}
-                      >
-                        {formatCurrency(investment)}
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="1000"
-                      max="10000000"
-                      step="1000"
-                      value={investment}
-                      onChange={(e) => setInvestment(Number(e.target.value))}
-                      className="custom-range w-full rounded-[4px] h-[6px] appearance-none cursor-pointer slider"
-                      style={
-                        {
-                          '--range-progress': `${((investment - 1000) / (10000000 - 1000)) * 100}%`
-                        } as React.CSSProperties
-                      }
-                    />
-                  </div>
-
-                  {/* Expected Return Rate */}
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <label className="text-gray-700 font-medium text-xs sm:text-sm">Expected Return Rate(p.a)</label>
-                      <span
-                        className="text-sm sm:text-base lg:text-lg"
-                        style={{
-                          fontFamily: 'Poppins, sans-serif',
-                          fontWeight: 500,
-                          fontStyle: 'normal',
-                        }}
-                      >
-                        {returnRate}%
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="30"
-                      step="0.5"
-                      value={returnRate}
-                      onChange={(e) => setReturnRate(Number(e.target.value))}
-                      className="custom-range w-full rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
-                      style={
-                        {
-                          '--range-progress': `${((returnRate - 1) / (30 - 1)) * 100}%`
-                        } as React.CSSProperties
-                      }
-                    />
-                  </div>
-
-                  {/* Time Period */}
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <label className="text-gray-700 font-medium text-xs sm:text-sm">Time Period</label>
-                      <span
-                        className="text-sm sm:text-base lg:text-lg"
-                        style={{
-                          fontFamily: 'Poppins, sans-serif',
-                          fontWeight: 500,
-                          fontStyle: 'normal',
-                        }}
-                      >
-                        {timePeriod} years <span className='ml-1 text-xs sm:text-sm lg:text-base normal regular'>({timePeriod * 12} months)</span>
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="50"
-                      step="1"
-                      value={timePeriod}
-                      onChange={(e) => setTimePeriod(Number(e.target.value))}
-                      className="custom-range w-full rounded-[6px] h-[6px] appearance-none cursor-pointer slider"
-                      style={
-                        {
-                          '--range-progress': `${((timePeriod - 1) / (50 - 1)) * 100}%`
-                        } as React.CSSProperties
-                      }
-                    />
-                  </div>
-
-                  {/* Total Income Generated */}
-                  <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center border border-gray-200">
-                    <div
-                      className="mb-1 text-lg sm:text-xl lg:text-2xl"
-                      style={{
-                        fontFamily: 'Poppins, sans-serif',
-                        fontWeight: 500,
-                        color: '#064D51',
-                      }}
-                    >
-                      {formatCurrency(calculation.totalAmount)}
-                    </div>
-                    <div className="text-gray-600 text-xs sm:text-sm">Total Income Generated</div>
-                  </div>
-                </div>
-
-                {/* Vertical Divider - Hidden on mobile */}
-                <div className="hidden lg:block w-[1px] bg-gray-200 mx-4 h-full z-10 relative" />
-
-                {/* Right Panel - Chart and Results */}
-                <div className="w-full lg:w-1/2 flex flex-col items-center justify-center h-full py-6 sm:py-8 lg:py-9 px-4 sm:px-6">
-                  {/* Donut Chart */}
-                  <div className="relative w-[180px] h-[180px] sm:w-[200px] sm:h-[200px] lg:w-[230px] lg:h-[230px] mb-4 sm:mb-6">
-                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                      {/* Background circle (optional) */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="35"
-                        fill="none"
-                        stroke="#F1F1F1"
-                        strokeWidth="20"
-                      />
-                      {/* Estimated Returns (Dark) */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="35"
-                        fill="none"
-                        stroke="#064D51"
-                        strokeWidth="20"
-                        strokeDasharray={`${returnsPercentage * 2.2} ${(100 - returnsPercentage) * 2.2}`}
-                        strokeDashoffset="0"
-                        className="transition-all duration-500"
-                      />
-                      {/* Invested Amount (Yellow) */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="35"
-                        fill="none"
-                        stroke="#FFD62D"
-                        strokeWidth="20"
-                        strokeDasharray={`${investedPercentage * 2.2} ${(100 - investedPercentage) * 2.2}`}
-                        strokeDashoffset={`-${returnsPercentage * 2.2}`}
-                        className="transition-all duration-500"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* Legend */}
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
-                    <div className="flex items-center justify-center sm:justify-start">
-                      <div className="w-3 h-3 sm:w-4 sm:h-4 bg-[#064D51] rounded-full mr-2"></div>
-                      <div>
-                        <div className="font-poppins text-regular text-gray-900 text-xs sm:text-sm">Estimated Returns</div>
-                        <div className="text-gray-700 font-semibold text-xs sm:text-sm">{formatCurrency(calculation.estimatedReturns)}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-center sm:justify-start">
-                      <div className="w-3 h-3 sm:w-4 sm:h-4 bg-[#FFD62D] rounded-full mr-2"></div>
-                      <div>
-                        <div className="font-poppins text-regular text-gray-900 text-xs sm:text-sm">Invested Amount</div>
-                        <div className="text-gray-700 font-semibold text-xs sm:text-sm">{formatCurrency(calculation.totalInvestment)}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Start Investing Button */}
-                  <button className="bg-[#064D51] text-white px-4 sm:px-6 py-2 rounded-lg font-medium hover:bg-teal-800 transition-colors text-sm sm:text-base w-full sm:w-auto">
-                    Start Investing Now
-                  </button>
-                </div>
-              </div>
+            <div className="flex items-center">
+              <div 
+                className="w-4 h-4 rounded-full mr-2" 
+                style={{ backgroundColor: '#FFAC00' }}
+              ></div>
+              <span className="text-sm text-gray-700">F&O</span>
+            </div>
+            <div className="flex items-center">
+              <div 
+                className="w-4 h-4 rounded-full mr-2" 
+                style={{ backgroundColor: '#D93434' }}
+              ></div>
+              <span className="text-sm text-gray-700">Commodity</span>
+            </div>
+            <div className="flex items-center">
+              <div 
+                className="w-4 h-4 rounded-full mr-2" 
+                style={{ backgroundColor: '#A75EFF' }}
+              ></div>
+              <span className="text-sm text-gray-700">Clearing</span>
+            </div>
+            <div className="flex items-center">
+              <div 
+                className="w-4 h-4 rounded-full mr-2" 
+                style={{ backgroundColor: '#2D8A4F' }}
+              ></div>
+              <span className="text-sm text-gray-700">General</span>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Custom Slider Styles */}
-      <style jsx global>{`
-        .custom-range {
-          background: transparent;
-        }
-        .custom-range::-webkit-slider-runnable-track {
-          height: 6px;
-          border-radius: 6px;
-          background: linear-gradient(
-            to right,
-            #FFD62D 0%,
-            #FFD62D var(--range-progress, 0%),
-            #F1F1F1 var(--range-progress, 0%),
-            #F1F1F1 100%
-          );
-        }
-        .custom-range::-webkit-slider-thumb {
-          appearance: none;
-          width: 4px;
-          height: 16px;
-          border-radius: 3px;
-          background: #374151;
-          cursor: pointer;
-          margin-top: -5px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .custom-range:focus {
-          outline: none;
-        }
-        .custom-range::-moz-range-thumb {
-          width: 4px;
-          height: 16px;
-          border-radius: 3px;
-          background: #374151;
-          cursor: pointer;
-        }
-        .custom-range::-ms-fill-lower {
-          background: #FFD62D;
-          border-radius: 6px;
-        }
-        .custom-range::-ms-fill-upper {
-          background: #F1F1F1;
-          border-radius: 6px;
-        }
-        .custom-range::-moz-range-track {
-          height: 6px;
-          border-radius: 6px;
-          background: linear-gradient(
-            to right,
-            #FFD62D 0%,
-            #FFD62D var(--range-progress, 0%),
-            #F1F1F1 var(--range-progress, 0%),
-            #F1F1F1 100%
-          );
-        }
-      `}</style>
     </div>
   );
 };
 
-export default MutualFundsPage;
+export default TradingCalendar;

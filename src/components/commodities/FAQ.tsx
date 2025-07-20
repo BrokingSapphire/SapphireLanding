@@ -9,25 +9,25 @@ import {
 
 const faqs = [
   {
-    question: 'Who can open a Minor Demat Account?',
+    question: 'What are commodities in trading?',
     answer:
-      'You can open your account online in minutes by submitting your PAN card, Aadhaar, and bank details, or visit our office for assistance.',
+      'Commodities are tradable raw materials like gold, crude oil, and wheat, exchanged via contracts on platforms like MCX through futures and options.',
   },
   {
-    question: 'Can a Minor Demat Account be used for trading?',
+    question: 'How is commodity trading different from stocks?',
     answer:
-      'We provide stock broking, mutual fund distribution, portfolio management, insurance solutions, and expert financial advisory.',
+      'Commodity trading involves contracts with expiry and is driven by global demand-supply, unlike stocks that rely on company performance and market sentiment.',
   },
   {
-    question: 'What happens to the Minor Demat Account when the minor turns 18?',
+    question: 'Do I need a separate account for commodities?',
     answer:
-      'Yes, we are SEBI-registered and comply with all regulatory guidelines to ensure the security of your investments.',
+      'No, you can trade commodities through your Sapphire account by activating the commodity segment—no need for a separate trading account.',
   },
 ];
 
 const FAQ = () => {
   return (
-    <div className="w-full mb-6 sm:mb-8 lg:mb-10  px-4 sm:px-8 lg:px-14 py-6 sm:py-8 ">
+    <div className="w-full mb-6 sm:mb-8 lg:mb-10 mt-2 px-4 sm:px-8 lg:px-14 py-6 sm:py-8 lg:py-12">
       <div className="max-w-6xl mx-auto flex flex-col space-y-3 sm:space-y-4 lg:space-y-6 items-center justify-center">
         <h1 className="font-lexend text-2xl sm:text-3xl lg:text-4xl font-medium text-center px-2">
           Frequently Asked Questions (FAQs)

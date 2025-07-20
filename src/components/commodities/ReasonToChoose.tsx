@@ -9,7 +9,7 @@ interface FeatureBoxProps {
 
 const FeatureBox: React.FC<FeatureBoxProps> = ({ iconSrc, title, description }) => {
   return (
-    <div className="flex-1 h-[191px] bg-[#F5F7FA] border-t-[0.5px] border-gray-300 flex flex-col gap-2 opacity-100 px-7 py-6">
+    <div className="flex-1 h-[170px] bg-[#F5F7FA] border-t-[0.5px] border-gray-300 flex flex-col gap-2 opacity-100 px-7 py-6">
       {/* Icon + Heading in one line */}
       <div className="flex items-center gap-2 mb-2">
         <div className="w-5 h-5 flex items-center justify-center">
@@ -50,8 +50,8 @@ interface ReasonsToChooseUsProps {
 const ReasonsToChooseUs: React.FC<ReasonsToChooseUsProps> = ({ className = '' }) => {
   return (
     <div
-      className={`w-full h-auto lg:h-[490px] bg-[#F5F7FA] mx-auto flex flex-col gap-6 opacity-100 px-4 md:px-8 lg:px-20 ${className}`}
-      style={{ paddingTop: '48px', paddingBottom: '16px' }}
+      className={`w-full h-auto lg:h-[500px] bg-[#F5F7FA] mx-auto flex flex-col gap-8 opacity-100 px-4 md:px-8 lg:px-20 ${className}`}
+      style={{ paddingTop: '60px', paddingBottom: '30px' }}
     >
       {/* Main Heading */}
       <div className="w-full opacity-100 flex items-center justify-start sm:ml-4 lg:ml-4 mb-4">
@@ -64,7 +64,7 @@ const ReasonsToChooseUs: React.FC<ReasonsToChooseUsProps> = ({ className = '' })
             letterSpacing: '-2%'
           }}
         >
-          Simplified Access to Indian Stock Markets
+          Your Gateway to India&apos;s Thriving Commodity Markets
         </h2>
       </div>
       
@@ -72,7 +72,7 @@ const ReasonsToChooseUs: React.FC<ReasonsToChooseUsProps> = ({ className = '' })
       <div className="w-full opacity-100 flex items-center justify-start mb-8">
         <div className="w-full sm:ml-4 lg:ml-4">
           <p
-            className="text-gray-600 opacity-100 text-sm lg:text-[18px] mb-4"
+            className="text-gray-600 opacity-100 text-sm lg:text-[18px] "
             style={{
               fontFamily: 'Poppins',
               fontWeight: 400,
@@ -80,45 +80,35 @@ const ReasonsToChooseUs: React.FC<ReasonsToChooseUsProps> = ({ className = '' })
               letterSpacing: '0px'
             }}
           >
-            From large-cap giants to promising mid and small-cap companies, Sapphire gives you access to the entire Indian stock landscape.
+            Tap into the pulse of global trade — from energy and metals to agricultural futures. Sapphire empowers both speculators and hedgers to trade confidently in the high-opportunity world of commodities.
           </p>
-          <p
-            className="text-gray-600 opacity-100 text-sm lg:text-[18px]"
-            style={{
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              lineHeight: '140%',
-              letterSpacing: '0px'
-            }}
-          >
-            Easily explore NSE and BSE-listed stocks, view sector-wise performance, analyze charts, and make informed decisions—all without switching between platforms.
-          </p>
+          
         </div>
       </div>
 
       {/* Three Boxes Container */}
-      <div className="w-full flex flex-col lg:flex-row lg:h-[191px] opacity-100">
+      <div className="w-full flex flex-col lg:flex-row lg:h-[191px] opacity-100 mb-16 ">
         {/* Box 1: Option Chain in glance */}
         <FeatureBox
-          iconSrc="/minor-demat/arrow.png"
-          title="Option Chain in glance"
-          description="Analyze market depth and strike prices across indices and stocks—everything you need, clearly laid out in one view."
+          iconSrc="/commodities/search.svg"
+          title="Track Global Supply & Demand Trends"
+          description="Go beyond charts — stay updated with real-world factors affecting prices like weather, inventory levels, and global news that move the markets."
         />
         {/* Divider: only show on desktop */}
         <div className="hidden lg:block w-[1px] bg-gray-300 h-full"></div>
         {/* Box 2: 10x productivity with terminal */}
         <FeatureBox
-          iconSrc="/minor-demat/pointer.png"
-          title="10x productivity with terminal"
-          description="Access powerful trading tools, real-time data, and a fast interface—designed to help you act quickly and trade smarter."
+          iconSrc="/commodities/arrow.svg"
+          title="Precision Trading Tools for Volatile Markets"
+          description="Designed for the fast-paced nature of commodity markets, our tools help you spot breakouts, set smart stop-losses, and optimize entries with speed and clarity."
         />
         {/* Divider: only show on desktop */}
         <div className="hidden lg:block w-[1px] bg-gray-300 h-full"></div>
         {/* Box 3: Expected P&L */}
         <FeatureBox
-          iconSrc="/minor-demat/coins.png"
-          title="Expected P&L"
-          description="Estimate your potential returns in real time before placing an order. Stay in control with transparent profit-loss projections."
+          iconSrc="/commodities/increment.svg"
+          title="Smart Margin Insights & Risk Forecasting"
+          description="Automatically calculate margins, exposure, and expected drawdowns. Trade with full awareness of cost, risk, and potential returns before every move."
         />
       </div>
     </div>

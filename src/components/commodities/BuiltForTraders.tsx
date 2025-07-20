@@ -32,7 +32,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ iconSrc, title, description }
           <Image src={iconSrc} alt={title} width={24} height={24} />
         </div>
         <h3
-          className="text-sm lg:text-base xl:text-lg w-full"
+          className="text-sm lg:text-base xl:text-lg w-full "
           style={{
             fontFamily: 'Lexend',
             fontWeight: 500,
@@ -52,7 +52,7 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ iconSrc, title, description }
         className="text-xs lg:text-sm xl:text-base w-full"
         style={{
           fontFamily: 'Poppins',
-          fontWeight: 400,
+          fontWeight: 500,
           lineHeight: '140%',
           color: '#666666',
           marginLeft: '36px',
@@ -83,13 +83,13 @@ const BuiltForTraders: React.FC = () => {
       <div
         className="w-full mb-10 max-w-[1440px] mx-auto"
         style={{
-          height: '420px',
-          gap: '20px',
+          height: '410px',
+          gap: '16px',
           opacity: 1,
           paddingTop: '8px',
           paddingRight: '20px',
-          paddingBottom: '100px',
-          paddingLeft: '20px',
+          paddingBottom: '60px',
+          paddingLeft: '35px',
           backgroundColor: '#FFFFFF',
           display: 'flex',
           alignItems: 'flex-start',
@@ -98,10 +98,10 @@ const BuiltForTraders: React.FC = () => {
       >
         {/* Inner Container */}
         <div
-          className="w-full max-w-[1230px]"
+          className="w-full max-w-[1340px]"
           style={{
             height: '380px',
-            gap: '80px',
+            gap: '160px',
             opacity: 1,
             display: 'flex',
             alignItems: 'flex-start',
@@ -109,42 +109,20 @@ const BuiltForTraders: React.FC = () => {
             marginLeft: '0px'
           }}
         >
-          {/* Left Section - Image */}
+          {/* Left Section - Content */}
           <div
-            className="flex-shrink-0"
+            className="flex-shrink-0 min-w-0"
             style={{
-              width: '476px',
-              height: '314px',
-              opacity: 1,
-              borderRadius: '18px',
-              position: 'relative',
-              overflow: 'hidden',
-              marginTop: '40px',
-              marginRight: '12px',
-              marginLeft: '20px'
-            }}
-          >
-            <Image
-              src="/fando/builtfortrader.svg"
-              alt="Trading and Investment"
-              fill
-              style={{ objectFit: 'cover', borderRadius: '18px' }}
-            />
-          </div>
-
-          {/* Right Section - Content */}
-          <div
-            className="flex-1 min-w-0"
-            style={{
-              width: '850px',
-              maxWidth: '75%',
+              width: '750px',
+              maxWidth: '60%',
               height: '320px',
               gap: '8px',
               opacity: 1,
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-start',
-              marginTop: '0px'
+              marginTop: '0px',
+              marginLeft: '20px'
             }}
           >
             {/* Main Heading */}
@@ -170,7 +148,7 @@ const BuiltForTraders: React.FC = () => {
                   width: '100%'
                 }}
               >
-                Built for both traders and investors
+                Trade, Hedge, and Grow — All in One Place
               </h2>
             </div>
 
@@ -196,15 +174,15 @@ const BuiltForTraders: React.FC = () => {
                 }}
               >
                 <FeatureItem
-                  iconSrc="/fando/gift.svg"
-                  title="Instant Margin and Pledge Benefits"
-                  description="Get benefits such as Margin Trading Funding (T+5), Instant Credit, Loan Against Securities and much more"
+                  iconSrc="/commodities/star.svg"
+                  title="Instant Margin & Collateral Access"
+                  description="Trade gold, silver, or crude with benefits like Commodity Margin Trading, Loan Against Holdings, and same-day funding."
                 />
                 
                 <FeatureItem
                   iconSrc="/fando/touch.svg"
-                  title="Guided Choice"
-                  description="Delve deeper into 3500+ stocks with Stock Report Plus, curate your own screeners and Invest using stock baskets based on analyst picks"
+                  title="Smart Commodity Insights"
+                  description="Track global commodity trends, volatility reports, and curated watchlists to help you take timely positions."
                 />
               </div>
 
@@ -218,17 +196,40 @@ const BuiltForTraders: React.FC = () => {
               >
                 <FeatureItem
                   iconSrc="/fando/newspaper.svg"
-                  title="Stock Analysis & News"
-                  description="Get periodic stock updates and stay ahead of the curve with the latest fundamental and technical analysis from Fisdom's in-house research desk"
+                  title="Market News & Research"
+                  description="Stay updated with expert insights, global economic indicators, and commodity-specific research straight from our desk."
                 />
                 
                 <FeatureItem
                   iconSrc="/fando/ruppes.svg"
-                  title="Competitive Pricing"
-                  description="Open your account for free and start trading at flat INR 20/trade. "
+                  title="Transparent & Affordable Pricing"
+                  description="Trade commodities at competitive rates — no hidden fees, just INR 20/order with real-time data access. "
                 />
               </div>
             </div>
+          </div>
+
+          {/* Right Section - Image */}
+          <div
+            className="flex-shrink-0 ml-2"
+            style={{
+              width: '430px',
+              height: '314px',
+              opacity: 1,
+              borderRadius: '18px',
+              position: 'relative',
+              overflow: 'hidden',
+              marginTop: '40px',
+              marginRight: '0px',
+              marginLeft: '0px'
+            }}
+          >
+            <Image
+              src="/fando/builtfortrader.svg"
+              alt="Trading and Investment"
+              fill
+              style={{ objectFit: 'cover', borderRadius: '18px' }}
+            />
           </div>
         </div>
       </div>
