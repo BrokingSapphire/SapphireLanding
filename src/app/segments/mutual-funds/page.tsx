@@ -1,5 +1,7 @@
 import React from 'react';
 
+type Category = 'equity' | 'fno' | 'commodity' | 'clearing' | string;
+
 const TradingCalendar = () => {
   const tradingData = [
     { date: '2025-01-15', holiday: 'Makar Sankranti', segment: 'Equity', currency: 'INR', category: 'equity' },
@@ -12,7 +14,7 @@ const TradingCalendar = () => {
     { date: '2025-10-02', holiday: 'Gandhi Jayanti', segment: 'Clearing', currency: 'GBP', category: 'clearing' },
   ];
 
-  const getCategoryColor = (category) => {
+  const getCategoryColor = (category: Category) => {
     switch (category) {
       case 'equity':
         return '#1A73E8';
