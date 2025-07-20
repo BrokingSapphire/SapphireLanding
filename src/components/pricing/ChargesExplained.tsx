@@ -13,7 +13,7 @@ const ChargesExplained: React.FC = () => {
             Tax by the government when transacting on the exchanges. Charged as above on both buy and sell sides when trading equity delivery. Charged only on selling side when trading intraday or on F&O.
           </p>
           <p className='text-[#636363] text-base leading-relaxed'>
-            When trading at Zerodha, STT/CTT can be a lot more than the brokerage we charge. Important to keep a tab.
+            When trading at Sapphire, STT/CTT can be a lot more than the brokerage we charge. Important to keep a tab.
           </p>
         </div>
       </div>
@@ -22,7 +22,7 @@ const ChargesExplained: React.FC = () => {
       <div className='space-y-4'>
         <h2 className='font-lexend font-normal text-2xl text-gray-900'>Transaction/Turnover Charges</h2>
         <p className='text-[#636363] text-base'>
-          Charged by exchanges (NSE, BSE, MCX) on the value of your transactions.
+          Charged by exchanges (NSE, BSE, MCX, and NCDEX) on the value of your transactions.
         </p>
         
         <div className='space-y-4'>
@@ -48,7 +48,7 @@ const ChargesExplained: React.FC = () => {
       <div className='space-y-4'>
         <h2 className='font-lexend font-normal text-2xl text-gray-900'>Call & trade</h2>
         <p className='text-[#636363] text-base'>
-          Additional charges of ₹50 per order for orders placed through a dealer at Zerodha including auto square off orders.
+          Additional charges of ₹50 per order for orders placed through a dealer at Sapphire including auto square off orders.
         </p>
       </div>
 
@@ -74,13 +74,13 @@ const ChargesExplained: React.FC = () => {
             <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 
                 <div className='w-3 h-3 bg-[#91E8AACC] rounded-full'></div>
             </div>
-            <p className='text-[#636363] text-base'>For a non-PIS account, 0.5% or ₹100 per executed order for equity (whichever is lower).</p>
+            <p className='text-[#636363] text-base'>For a non-PIS account, 0.05% or ₹100 per executed order for equity (whichever is lower).</p>
           </div>
           <div className='flex items-start'>
             <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 
                 <div className='w-3 h-3 bg-[#91E8AACC] rounded-full'></div>
             </div>
-            <p className='text-[#636363] text-base'>For a PIS account, 0.5% or ₹200 per executed order for equity (whichever is lower).</p>
+            <p className='text-[#636363] text-base'>For a PIS account, 0.05% or ₹200 per executed order for equity (whichever is lower).</p>
           </div>
           <div className='flex items-start'>
             <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 
@@ -121,37 +121,6 @@ const ChargesExplained: React.FC = () => {
             </div>
             <p className='text-[#636363] text-base'>Currency - ₹0.05 per lakh + GST of turnover for Futures and ₹2 per lakh + GST of premium for Options.</p>
           </div>
-          <div className='flex items-start'>
-            <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 
-                <div className='w-3 h-3 bg-[#91E8AACC] rounded-full'></div>
-            </div>
-            <p className='text-[#636363] text-base'>₹500 + GST as yearly account maintenance charges (AMC) charges.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Margin Trading Facility (MTF) */}
-      <div className='space-y-4'>
-        <h2 className='font-lexend font-normal text-2xl text-gray-900'>Margin Trading Facility (MTF)</h2>
-        <div className='space-y-2'>
-          <div className='flex items-start'>
-            <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 
-                <div className='w-3 h-3 bg-[#91E8AACC] rounded-full'></div>
-            </div>
-            <p className='text-[#636363] text-base'>MTF Interest: 0.04% per day (₹40 per lakh) on the funded amount. The interest is applied from T+1 day until the day MTF stocks are sold.</p>
-          </div>
-          <div className='flex items-start'>
-            <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 
-                <div className='w-3 h-3 bg-[#91E8AACC] rounded-full'></div>
-            </div>
-            <p className='text-[#636363] text-base'>MTF Brokerage: 0.3% or Rs. 20/executed order, whichever is lower.</p>
-          </div>
-          <div className='flex items-start'>
-            <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 
-                <div className='w-3 h-3 bg-[#91E8AACC] rounded-full'></div>
-            </div>
-            <p className='text-[#636363] text-base'>MTF pledge charge: ₹15 + GST per pledge and unpledge request per ISIN.</p>
-          </div>
         </div>
       </div>
 
@@ -171,41 +140,12 @@ const ChargesExplained: React.FC = () => {
         </p>
       </div>
 
-      {/* DP (Depository participant) charges */}
-      <div className='space-y-4'>
-        <h2 className='font-lexend font-normal text-2xl text-gray-900'>DP (Depository participant) charges</h2>
-        <div className='space-y-3'>
-          <p className='text-[#636363] text-base'>
-            ₹15.34 per scrip (₹3.5 CDSL fee + ₹9.5 Zerodha fee + ₹2.34 GST) is charged on the trading account ledger when stocks are sold, irrespective of quantity.
-          </p>
-          <p className='text-[#636363] text-base'>
-            Female demat account holders (as first holder) will enjoy a discount of ₹0.25 per transaction on the CDSL fee.
-          </p>
-          <p className='text-[#636363] text-base'>
-            Debit transactions of mutual funds & bonds get an additional discount of ₹0.25 on the CDSL fee.
-          </p>
-        </div>
-      </div>
-
       {/* Pledging charges */}
       <div className='space-y-4'>
         <h2 className='font-lexend font-normal text-2xl text-gray-900'>Pledging charges</h2>
         <p className='text-[#636363] text-base'>
-          ₹30 + GST per pledge request per ISIN.
+          ₹25 + GST per pledge request per ISIN.
         </p>
-      </div>
-
-      {/* AMC (Account maintenance charges) */}
-      <div className='space-y-4'>
-        <h2 className='font-lexend font-normal text-2xl text-gray-900'>AMC (Account maintenance charges)</h2>
-        <div className='space-y-3'>
-          <p className='text-[#636363] text-base'>
-            For BSDA demat account: Zero charges if the holding value is less than ₹4,00,000. To learn more about BSDA, <span className='text-blue-600 underline cursor-pointer'>Click here</span>
-          </p>
-          <p className='text-[#636363] text-base'>
-            For non-BSDA demat accounts: ₹300/year + 18% GST charged quarterly (90 days). To learn more about AMC, <span className='text-blue-600 underline cursor-pointer'>Click here</span>
-          </p>
-        </div>
       </div>
 
       {/* Corporate action order charges */}
@@ -220,7 +160,7 @@ const ChargesExplained: React.FC = () => {
       <div className='space-y-4'>
         <h2 className='font-lexend font-normal text-2xl text-gray-900'>Off-market transfer charges</h2>
         <p className='text-[#636363] text-base'>
-          ₹25 per transaction.
+          ₹50 / outgoing transaction.
         </p>
       </div>
 
@@ -246,25 +186,6 @@ const ChargesExplained: React.FC = () => {
         <p className='text-[#636363] text-base'>
           Interest is levied at 18% a year or 0.05% per day on the debit balance in your trading account. <span className='text-blue-600 underline cursor-pointer'>Learn more</span>
         </p>
-      </div>
-
-      {/* Trading using 3-in-1 account with block functionality */}
-      <div className='space-y-4'>
-        <h2 className='font-lexend font-normal text-2xl text-gray-900'>Trading using 3-in-1 account with block functionality</h2>
-        <div className='space-y-2'>
-          <div className='flex items-start'>
-            <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 
-                <div className='w-3 h-3 bg-[#91E8AACC] rounded-full'></div>
-            </div>
-            <p className='text-[#636363] text-base'>Delivery & MTF Brokerage: 0.5% per executed order.</p>
-          </div>
-          <div className='flex items-start'>
-            <div className='flex justify-center items-center w-6 h-6 bg-[#E6FFED] rounded-full mr-3 flex-shrink-0'> 
-                <div className='w-3 h-3 bg-[#91E8AACC] rounded-full'></div>
-            </div>
-            <p className='text-[#636363] text-base'>Intraday Brokerage: 0.05% per executed order.</p>
-          </div>
-        </div>
       </div>
     </div>
   );
