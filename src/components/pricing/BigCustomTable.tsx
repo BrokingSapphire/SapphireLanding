@@ -399,12 +399,6 @@ const ChargesTable: React.FC = () => {
           not exceed the rates specified by SEBI and the exchanges. All
           statutory and regulatory charges will be levied as actuals. Brokerage
           is also charged on expired, exercised and assigned options contracts.
-          Free investments are available only for our retail individual clients.
-          Companies, Partnerships, Trusts, and HUF would pay ₹15 + ₹3 (minimum
-          of ₹1 per trade (except delivery)). Additional charges for investors
-          who opt for physical delivery of payout of securities, where physical
-          delivery happens. For renewal of packages for continued where physical
-          delivery happens is ₹199 per month.
         </p>
       </div>
 
