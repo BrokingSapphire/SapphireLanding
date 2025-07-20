@@ -28,11 +28,11 @@ export interface EquityRowType {
     {
       type: "Brokerage",
       equityDelivery:
-        "₹0 brokerage upto ₹500 for first 30 days*\nThen lower of ₹20 or 0.1% per executed order, minimum ₹1",
+        "₹0 brokerage upto ₹500 for first 30 days*\nThen lower of ₹20 or 0.05% per executed order, minimum ₹2.5",
       equityIntraday:
-        "₹0 brokerage upto ₹500 for first 30 days*\nThen lower of ₹20 or 0.03%",
+        "₹0 brokerage upto ₹500 for first 30 days*\nThen lower of ₹20 or 0.05% per executed order, minimum ₹2.5",
       equityFutures:
-        "₹0 brokerage upto ₹500 for first 30 days*\nThen, ₹20 per executed order",
+        "₹0 brokerage upto ₹500 for first 30 days*\nThen lower of ₹20 or 0.05% per executed order, minimum ₹2.5",
       equityOptions:
         "₹0 brokerage upto ₹500 for first 30 days*\nThen, ₹20 per executed order",
     },
@@ -85,7 +85,7 @@ export interface EquityRowType {
   export const currencyData = [
     {
       type: "Brokerage",
-      futures: "₹0 brokerage upto ₹500 for first 30 days*\nThen, ₹20 per executed order",
+      futures: "₹0 brokerage upto ₹500 for first 30 days*\nThen, lower of ₹20 or 0.05% per executed order, minimum ₹2.5",
       options: "₹0 brokerage upto ₹500 for first 30 days*\nThen, ₹20 per executed order",
     },
     {
@@ -119,7 +119,7 @@ export interface EquityRowType {
   export const commodityData = [
     {
       type: "Brokerage",
-      futures: "₹0 brokerage upto ₹500 for first 30 days*\nThen, ₹20 per executed order",
+      futures: "₹0 brokerage upto ₹500 for first 30 days*\nThen, lower of ₹20 or 0.05% per executed order, minimum ₹2.5",
       options: "₹0 brokerage upto ₹500 for first 30 days*\nThen, ₹20 per executed order",
     },
     {
@@ -149,55 +149,53 @@ export interface EquityRowType {
     },
   ];
   
-  // // Account Opening Charges Data
-  // export const accountOpeningData = [
-  //   { type: "Individual Account", charges: "₹99/-" },
-  //   { type: "Company Account", charges: "₹799/-" },
-  //   { type: "Partnership Account", charges: "₹499/-" },
-  //   { type: "LLP Account", charges: "₹499/-" },
-  //   { type: "Hindu Undivided Family (HUF) Account", charges: "₹199/-" },
-  //   { type: "Trust Account", charges: "₹499/-" },
-  //   { type: "Association of Persons (AOP) Account", charges: "₹299/-" },
-  // ];
+  // Account Opening Charges Data
+  export const accountOpeningData = [
+    { type: "Individual Account", charges: "Free" },
+    { type: "HUF Account", charges: "Free" },
+    { type: "Corporate Account", charges: "₹599/-" },
+    { type: "Partnership/LLP Account", charges: "₹599/-" },
+    { type: "Association of Persons (AOP) Account", charges: "₹599/-" },
+    { type: "Trust Account", charges: "₹599/-" },
+  ];
   
   // Non Trade Charges
   export const nonTradeCharges = [
     {
-      title: "Account Maintenance charges (free for first 3 months)",
+      title: "Account Maintenance Charges",
       charges:
-        "For BSDA (Basic Services Demat Account) Clients:\n• Value of holding in Demat account upto Rs. 1 Lakh - NIL\n• Value of holdings in Demat account between Rs. 1 Lakh and above - Rs. 25 + GST / Month\n\nFor non-BSDA clients:\n₹50 + GST per month",
+        "For BSDA (Basic Services Demat Account) Clients:\n• Value of holding in Demat account upto Rs. ₹4,00,000 - NIL\n• Value of holdings in Demat account between Rs. ₹4,00,000 to ₹10,00,000 - ₹100 + GST / Annually\n\nFor non-BSDA clients (Holdings in Demat Account exceeds ₹10,00,000 or Total No. of Demat Account is more than one):\n₹50 + GST / Quarterly",
     },
     {
       title: "Cash collateral charges",
       charges:
-        "0.041% per Day\n(For cash or cash equivalent margin shortfall exceeding ₹2,000)",
+        "0.041% / Day\n(For cash or cash equivalent margin shortfall exceeding ₹50,000)",
     },
-    { title: "Debit balance", charges: "0.049% per day" },
+    { title: "Debit balance", charges: "0.049% / day" },
     { title: "Call & Trade", charges: "₹50 / per executed order" },
     {
       title: "DP charges",
       charges:
-        "₹20.00 per scrip (₹8.5 CDSL fee + ₹11.5 Sapphire fee + ₹3.6 GST)",
+        "Equity ISINs: ₹13.00 + GST\n• Male: ₹3.5 CDSL fee + ₹9.5 Sapphire fee + GST\n• Female: ₹3.25 CDSL fee + ₹9.75 Sapphire fee + GST",
     },
-    { title: "Pledging charges", charges: "₹25 + GST / per scrip" },
+    { title: "Pledging charges", charges: "₹25 + GST / scrip" },
     {
       title: "Corporate action charges",
       charges:
-        "₹20 plus GST will be charged for OFS / buyback / takeover / delisting orders",
+        "₹20 + GST will be charged for OFS / buyback / takeover / delisting orders",
     },
-    { title: "Corporate action charges", charges: "₹20 per scrips" },
   ];
   
   // MTF Charges
   export const mtfCharges = [
     {
       title: "MTF Interest",
-      charges: "0.041% per day (₹41 per lakh) on the funded amount.",
+      charges: "0.041% / day (₹41 / lakh) on the borrowed amount.",
     },
     {
       title: "MTF Brokerage",
       charges:
-        "0.03% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Equity Delivery across NSE and BSE.",
+        "0.05% or Flat ₹20 per executed order (whichever is lower), minimum ₹2.5 on Equity Delivery across NSE and BSE.",
     },
-    { title: "MTF Pledge", charges: "₹50 + GST per pledge request per ISIN." },
+    { title: "MTF Pledge", charges: "₹25 + GST per pledge request per ISIN." },
   ];

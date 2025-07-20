@@ -33,11 +33,9 @@ const Home = () => {
         <div className="py-6 px-4 sm:py-11 bg-[#F5F7FA] rounded-lg">
           <Charges />
         </div>
-        {/* Removed overflow-x-auto from here to prevent tooltip clipping */}
         <div className="relative">
           <ChargesTable />
         </div>
-        {/* <Opportunities /> */}
       </div>
     </div>
   );
