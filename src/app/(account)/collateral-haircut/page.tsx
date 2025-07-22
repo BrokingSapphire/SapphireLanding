@@ -111,17 +111,17 @@ export default function CollateralHaircutPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-6 sm:py-8 lg:py-10 mt-8 sm:mt-12 lg:mt-20">
-            <div className="max-w-7xl px-0 sm:px-6 lg:px-20">
-                <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-lexend font-medium text-center mb-4 sm:mb-8">Collateral Haircut</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-6 sm:py-8 lg:py-10 mt-20 sm:mt-20 lg:mt-20">
+            <div className="max-w-7xl px-0 sm:px-6 lg:px-15">
+                <h1 className="text-xl sm:text-2xl lg:text-[42px] font-lexend font-medium text-center mb-4 sm:mb-8">Collateral Haircut</h1>
                 {/* Controls */}
                 <div className="flex flex-col sm:flex-row justify-end mb-4 sm:mb-6 gap-3 sm:gap-4">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                        <div className="relative w-full sm:w-auto">
+                        <div className="relative w-full sm:w-auto min-w-[180px]">
                             <input
                                 type="text"
                                 placeholder="Search Stocks..."
-                                className="w-full sm:w-64 border rounded px-4 py-2 pl-10 focus:outline-none text-[#717171] text-[14px] sm:text-[14px] font-medium font poppins placeholder-gray-400"
+                                className="w-full sm:w-64 border rounded px-4 py-2 pl-10 focus:outline-none text-[#717171] text-[13px] sm:text-[14px] font-medium font-poppins placeholder-gray-400"
                                 style={{ fontWeight: 500 }}
                             />
                             <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -131,7 +131,7 @@ export default function CollateralHaircutPage() {
                         {/* Custom Dropdown */}
                         <div className="relative min-w-[100px] w-full sm:w-auto">
                             <select
-                                className="w-full border border-[#D1D5DB] rounded-sm pr-4 h-[42px] text-[#717171] text-[14px] sm:text-[14px] font-medium font poppins bg-white transition focus:outline-none"
+                                className="w-full border border-[#D1D5DB] rounded-sm pr-4 h-[42px] text-[#717171] text-[13px] sm:text-[14px] font-medium font-poppins bg-white transition focus:outline-none"
                                 value={selectedOption}
                                 onChange={e => handleSelect(e.target.value)}
                             >
@@ -142,18 +142,18 @@ export default function CollateralHaircutPage() {
                                 ))}
                             </select>
                         </div>
-                        <button className="flex items-center gap-2 border rounded px-4 py-2 h-10 text-[#717171] text-[14px] sm:text-[14px] font-medium font poppins w-full sm:w-auto justify-center" style={{ fontWeight: 500 }}>
+                        <button className="flex items-center gap-2 border rounded px-4 py-2 h-10 text-[#717171] text-[13px] sm:text-[14px] font-medium font-poppins w-full sm:w-auto justify-center" style={{ fontWeight: 500 }}>
                             <Image src="/collateral-haircut/download.svg" alt="Download" width={24} height={24} />
                             Download
                         </button>
                     </div>
                 </div>
                 {/* Tabs styled as in calculators/pricing */}
-                <div className="flex border-b-2 border-gray-200 gap-x-4 sm:gap-x-8 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
+                <div className="flex border-b-2 border-gray-200 gap-x-2 sm:gap-x-8 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
                     {getTabs().map((tab) => (
                         <button
                             key={tab}
-                            className={`min-w-[100px] sm:min-w-[140px] px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 font-semibold text-xs sm:text-sm lg:text-base cursor-pointer whitespace-nowrap relative transition-colors border-b-2 -mb-px ${activeTab === tab
+                            className={`min-w-[80px] sm:min-w-[120px] px-2 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 font-semibold text-xs sm:text-sm lg:text-base cursor-pointer whitespace-nowrap relative transition-colors border-b-2 -mb-px ${activeTab === tab
                                 ? "border-[#064D51] text-[#064D51]"
                                 : "border-transparent text-gray-500 hover:text-[#064D51]"
                             }`}
@@ -167,11 +167,13 @@ export default function CollateralHaircutPage() {
                     ))}
                 </div>
                 {/* Table */}
-                <div className="overflow-x-auto bg-white rounded-sm">
-                    <table className="min-w-full text-xs sm:text-sm border-[0.5px] border-[#D1D5DB]">
+                <div className="w-full overflow-x-auto bg-white rounded-sm">
+                    <table
+                        className="min-w-[600px] sm:min-w-[800px] md:min-w-[1000px] lg:min-w-[1230px] xl:min-w-[1400px] text-[11px] sm:text-sm border-[0.5px] border-[#D1D5DB]"
+                    >
                         <thead>
                             <tr className="bg-[#ffffff]">
-                                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[16px] font-poppins text-[#1A1A1A] font-semibold cursor-pointer select-none" onClick={() => handleSort('isin')}>
+                                <th className="px-1 sm:px-4 py-2 sm:py-3 text-left text-[13px] sm:text-[16px] font-poppins text-[#1A1A1A] font-semibold cursor-pointer select-none" onClick={() => handleSort('isin')}>
                                     <div className="flex items-center justify-between w-full">
                                         <span>ISIN</span>
                                         <span className="ml-2 flex-shrink-0">
@@ -179,7 +181,7 @@ export default function CollateralHaircutPage() {
                                         </span>
                                     </div>
                                 </th>
-                                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[16px] font-poppins text-[#1A1A1A] font-semibold cursor-pointer select-none" onClick={() => handleSort('symbol')}>
+                                <th className="px-1 sm:px-4 py-2 sm:py-3 text-left text-[13px] sm:text-[16px] font-poppins text-[#1A1A1A] font-semibold cursor-pointer select-none" onClick={() => handleSort('symbol')}>
                                     <div className="flex items-center justify-between w-full">
                                         <span>Symbol</span>
                                         <span className="ml-2 flex-shrink-0">
@@ -187,7 +189,7 @@ export default function CollateralHaircutPage() {
                                         </span>
                                     </div>
                                 </th>
-                                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold cursor-pointer select-none" onClick={() => handleSort('name')}>
+                                <th className="px-1 sm:px-4 py-2 sm:py-3 text-left font-semibold cursor-pointer select-none" onClick={() => handleSort('name')}>
                                     <div className="flex items-center justify-between w-full">
                                         <span>{activeTab === "Mutual Funds" ? "Fund name" : "Security Name"}</span>
                                         <span className="ml-2 flex-shrink-0">
@@ -195,7 +197,7 @@ export default function CollateralHaircutPage() {
                                         </span>
                                     </div>
                                 </th>
-                                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[16px] font-poppins text-[#1A1A1A] font-semibold cursor-pointer select-none" onClick={() => handleSort('haircut')}>
+                                <th className="px-1 sm:px-4 py-2 sm:py-3 text-left text-[13px] sm:text-[16px] font-poppins text-[#1A1A1A] font-semibold cursor-pointer select-none" onClick={() => handleSort('haircut')}>
                                     <div className="flex items-center justify-between w-full">
                                         <span>Haircut</span>
                                         <span className="ml-2 flex-shrink-0">
@@ -203,7 +205,7 @@ export default function CollateralHaircutPage() {
                                         </span>
                                     </div>
                                 </th>
-                                <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-[16px] font-poppins text-[#1A1A1A] font-semibold cursor-pointer select-none" onClick={() => handleSort('collateral')}>
+                                <th className="px-1 sm:px-4 py-2 sm:py-3 text-left text-[13px] sm:text-[16px] font-poppins text-[#1A1A1A] font-semibold cursor-pointer select-none" onClick={() => handleSort('collateral')}>
                                     <div className="flex items-center justify-between w-full">
                                         <span>Collateral</span>
                                         <span className="ml-2 flex-shrink-0">
@@ -213,14 +215,14 @@ export default function CollateralHaircutPage() {
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="text-xs sm:text-[16px] text-regular font-poppins text-[#6B7280]">
+                        <tbody className="text-[11px] sm:text-[16px] text-regular font-poppins text-[#6B7280]">
                             {getSortedData().map((row, idx) => (
                                 <tr key={idx} className={idx % 2 === 0 ? "bg-[#f5f7fa]" : "bg-white"}>
-                                    <td className="px-2 sm:px-4 py-2 sm:py-3">{row.isin}</td>
-                                    <td className="px-2 sm:px-4 py-2 sm:py-3">{row.symbol}</td>
-                                    <td className="px-2 sm:px-4 py-2 sm:py-3">{row.name}</td>
-                                    <td className="px-2 sm:px-4 py-2 sm:py-3">{row.haircut}</td>
-                                    <td className="px-2 sm:px-4 py-2 sm:py-3">{row.collateral}</td>
+                                    <td className="px-1 sm:px-4 py-2 sm:py-3">{row.isin}</td>
+                                    <td className="px-1 sm:px-4 py-2 sm:py-3">{row.symbol}</td>
+                                    <td className="px-1 sm:px-4 py-2 sm:py-3">{row.name}</td>
+                                    <td className="px-1 sm:px-4 py-2 sm:py-3">{row.haircut}</td>
+                                    <td className="px-1 sm:px-4 py-2 sm:py-3">{row.collateral}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -228,5 +230,5 @@ export default function CollateralHaircutPage() {
                 </div>
             </div>
         </div>
-    );
-}
+    )
+};

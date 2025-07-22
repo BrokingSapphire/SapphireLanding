@@ -10,13 +10,7 @@ interface FeatureBoxProps {
 const FeatureBox: React.FC<FeatureBoxProps> = ({ iconSrc, text, width }) => {
   return (
     <div 
-      className={`h-[72px] bg-[#ECFDF5] rounded-[18px] flex items-center gap-[16px] ${width || ''}`}
-      style={{
-        paddingTop: '20px',
-        paddingRight: '24px',
-        paddingBottom: '20px',
-        paddingLeft: '24px'
-      }}
+      className={`min-h-[72px] bg-[#ECFDF5] rounded-[18px] flex items-center gap-4 px-5 py-4 w-full ${width || ''}`}
     >
       <div className="w-7 h-7 flex-shrink-0">
         <Image
@@ -28,15 +22,8 @@ const FeatureBox: React.FC<FeatureBoxProps> = ({ iconSrc, text, width }) => {
         />
       </div>
       <span
-        className="opacity-100 whitespace-nowrap"
-        style={{
-          fontFamily: 'Poppins',
-          fontWeight: 550,
-          fontSize: '16px',
-          lineHeight: '100%',
-          letterSpacing: '-2%',
-          color: '#047857'
-        }}
+        className="opacity-100 break-words text-[16px] font-semibold text-[#047857] font-poppins"
+        style={{ letterSpacing: '-2%' }}
       >
         {text}
       </span>
@@ -82,30 +69,30 @@ const Simplify: React.FC<SimplifyProps> = ({ className = '' }) => {
           </div>
           
           {/* Feature Boxes Grid */}
-          <div className="w-full flex justify-center">
-            <div className="flex flex-col space-y-5 lg:space-y-7">
-              <div className="flex flex-col sm:flex-row gap-4 lg:gap-5 sm:ml-16 lg:ml-16">
+          <div className="w-full flex justify-center items-center">
+            <div className="flex flex-col space-y-5 lg:space-y-7 w-full items-center">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 lg:gap-5 w-full justify-center items-center">
                 <FeatureBox
                   iconSrc="/NRI-account/one.png"
                   text="Hassle-free registration process"
-                  width="w-full sm:w-[380px]"
+                  width="sm:w-[380px]"
                 />
                 <FeatureBox
                   iconSrc="/NRI-account/fingerprint.png"
                   text="Fully digital onboarding"
-                  width="w-full sm:w-[320px]"
+                  width="sm:w-[320px]"
                 />
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 lg:gap-5">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 lg:gap-5 w-full justify-center items-center">
                 <FeatureBox
                   iconSrc="/NRI-account/lock.png"
                   text="Bank-grade security"
-                  width="w-full sm:w-[300px]"
+                  width="sm:w-[300px]"
                 />
                 <FeatureBox
                   iconSrc="/NRI-account/calendar.png"
                   text="One-time documentation, lifetime access"
-                  width="w-full sm:w-[480px]"
+                  width="sm:w-[480px]"
                 />
               </div>
             </div>

@@ -10,13 +10,7 @@ interface FeatureBoxProps {
 const FeatureBox: React.FC<FeatureBoxProps> = ({ iconSrc, text, width }) => {
   return (
     <div 
-      className={`h-[72px] bg-[#F8F6FF] rounded-[18px] flex items-center gap-[16px] ${width || ''}`}
-      style={{
-        paddingTop: '20px',
-        paddingRight: '24px',
-        paddingBottom: '20px',
-        paddingLeft: '24px'
-      }}
+      className={`min-h-[72px] bg-[#F8F6FF] rounded-[18px] flex items-center gap-4 px-5 py-4 w-full ${width || ''}`}
     >
       <div className="w-7 h-7 flex-shrink-0">
         <Image
@@ -28,15 +22,8 @@ const FeatureBox: React.FC<FeatureBoxProps> = ({ iconSrc, text, width }) => {
         />
       </div>
       <span
-        className="opacity-100 whitespace-nowrap"
-        style={{
-          fontFamily: 'Poppins',
-          fontWeight: 550,
-          fontSize: '16px',
-          lineHeight: '100%',
-          letterSpacing: '-2%',
-          color: '#4B2E83'
-        }}
+        className="opacity-100 break-words text-[16px] font-semibold text-[#4B2E83] font-poppins"
+        style={{ letterSpacing: '-2%' }}
       >
         {text}
       </span>
@@ -82,30 +69,31 @@ const Simplify: React.FC<SimplifyProps> = ({ className = '' }) => {
           </div>
           
           {/* Feature Boxes Grid */}
-          <div className="w-full flex justify-center">
-            <div className="flex flex-col space-y-5 lg:space-y-7">
-              <div className="flex flex-col sm:flex-row gap-4 lg:gap-5 sm:ml-12 lg:ml-24">
+          <div className="w-full flex justify-center items-center">
+            <div className="flex flex-col space-y-5 lg:space-y-7 w-full items-center">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 lg:gap-5 w-full justify-center items-center">
                 <FeatureBox
                   iconSrc="/corporate-demat-account/one.png"
                   text="Same day withdrawal"
-                  width="w-full sm:w-[280px]"
+                  width="sm:w-[280px]"
                 />
                 <FeatureBox
                   iconSrc="/corporate-demat-account/paperleaf.png"
                   text="Paper Less KYC"
-                  width="w-full sm:w-[220px]"
+                  width="sm:w-[220px]"
                 />
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 lg:gap-5">
+
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 lg:gap-5 w-full justify-center items-center">
                 <FeatureBox
                   iconSrc="/corporate-demat-account/bag.png"
                   text="Free portfolio analysis"
-                  width="w-full sm:w-[320px]"
+                  width="sm:w-[320px]"
                 />
                 <FeatureBox
                   iconSrc="/corporate-demat-account/calendar.png"
                   text="Zero* annual maintenance charges"
-                  width="w-full sm:w-auto"
+                  width="sm:w-auto"
                 />
               </div>
             </div>
