@@ -69,9 +69,9 @@ const Simplify: React.FC<SimplifyProps> = ({ className = '' }) => {
           </div>
           
           {/* Feature Boxes Grid */}
-          <div className="w-full flex justify-center">
-            <div className="flex flex-col space-y-5 lg:space-y-7 w-full">
-              <div className="flex flex-col sm:flex-row flex-wrap gap-4 lg:gap-5 w-full">
+          <div className="w-full flex justify-center items-center">
+            <div className="flex flex-col space-y-5 lg:space-y-7 w-full items-center">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 lg:gap-5 w-full justify-center items-center">
                 <FeatureBox
                   iconSrc="/NRI-account/one.png"
                   text="Hassle-free registration process"
@@ -83,7 +83,7 @@ const Simplify: React.FC<SimplifyProps> = ({ className = '' }) => {
                   width="sm:w-[320px]"
                 />
               </div>
-              <div className="flex flex-col sm:flex-row flex-wrap gap-4 lg:gap-5 w-full">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 lg:gap-5 w-full justify-center items-center">
                 <FeatureBox
                   iconSrc="/NRI-account/lock.png"
                   text="Bank-grade security"

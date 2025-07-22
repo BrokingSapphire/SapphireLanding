@@ -41,78 +41,14 @@ interface EasyToUseProps {
 
 const EasyToUse: React.FC<EasyToUseProps> = ({ className = '' }) => {
   return (
-    <div className={`w-full bg-[#F5F7FA] relative overflow-hidden ${className}`}>
-      {/* Mobile Layout */}
-      <div className="block lg:hidden px-4 py-12">
-        <div className="max-w-md mx-auto">
-          {/* Heading */}
-          <h2
-            className="text-2xl font-medium text-black text-center mb-8"
-            style={{
-              fontFamily: 'Lexend',
-              letterSpacing: '-2%'
-            }}
-          >
+    <div className={`w-full bg-[#F5F7FA] py-10 sm:py-14 lg:py-16 ${className}`}>
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20">
+        {/* Left Content */}
+        <div className="w-full lg:max-w-2xl xl:max-w-3xl text-center lg:text-left flex flex-col gap-8">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-black mb-4 font-lexend">
             Easy to Use for Corporates
           </h2>
-          
-          {/* Text Box with Features */}
-          <div className="flex flex-col gap-6 mb-8">
-            <FeatureItem
-              iconSrc="/corporate-demat-account/pick.png"
-              description="Open your Corporate Demat Account in days with seamless documentation and guided onboarding support."
-            />
-            <FeatureItem
-              iconSrc="/corporate-demat-account/graph.png"
-              description="Manage securities, transfers, and corporate actions in just a few clicks no complex steps or delays."
-            />
-            <FeatureItem
-              iconSrc="/corporate-demat-account/security.png"
-              description="Set permissions for different teams or departments, with centralized visibility across all branches."
-            />
-          </div>
-          
-          {/* Mobile Image */}
-          <div className="flex justify-center">
-            <div className="w-64 h-auto">
-              <Image
-                src="/corporate-demat-account/Easytouse.png"
-                alt="Corporate Demat Account Management"
-                width={256}
-                height={216}
-                className="w-full h-auto object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop Layout */}
-      <div className="hidden lg:block w-full h-[420px] relative">
-        {/* Left Content Area */}
-        <div 
-          className="absolute w-[782px] h-[260px] flex flex-col gap-[28px]"
-          style={{
-            top: '73px',
-            left: '105px'
-          }}
-        >
-          {/* Heading */}
-          <h2
-            className="w-[782px] h-[40px] text-black opacity-100"
-            style={{
-              fontFamily: 'Lexend',
-              fontWeight: 500,
-              fontSize: '32px',
-              lineHeight: '100%',
-              letterSpacing: '-2%'
-            }}
-          >
-            Easy to Use for Corporates
-          </h2>
-          
-          {/* Text Box with Features */}
-          <div className="w-[782px] h-[192px] flex flex-col gap-[32px]">
+          <div className="flex flex-col gap-6">
             <FeatureItem
               iconSrc="/corporate-demat-account/pick.png"
               description="Open your Corporate Demat Account in days with seamless documentation and guided onboarding support."
@@ -127,21 +63,14 @@ const EasyToUse: React.FC<EasyToUseProps> = ({ className = '' }) => {
             />
           </div>
         </div>
-        
-        {/* Right Image */}
-        <div
-          className="absolute w-[387.7285461425781px] h-[327px]"
-          style={{
-            top: '37px',
-            left: '995px'
-          }}
-        >
+        {/* Right Side - Illustration */}
+        <div className="w-full flex justify-center lg:justify-end lg:w-auto">
           <Image
             src="/corporate-demat-account/Easytouse.png"
             alt="Corporate Demat Account Management"
-            width={387.7285461425781}
+            width={388}
             height={327}
-            className="w-full h-full object-contain"
+            className="w-[220px] sm:w-[300px] md:w-[340px] lg:w-[388px] h-auto max-h-[388px] object-contain"
           />
         </div>
       </div>
