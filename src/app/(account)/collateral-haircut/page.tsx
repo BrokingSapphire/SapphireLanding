@@ -167,9 +167,10 @@ export default function CollateralHaircutPage() {
                     ))}
                 </div>
                 {/* Table */}
-                <div className="w-full overflow-x-auto bg-white rounded-sm">
+                <div className="w-full max-w-7xl mx-auto bg-white rounded-sm overflow-x-auto sm:overflow-x-visible">
                     <table
-                        className="min-w-[600px] sm:min-w-[800px] md:min-w-[1000px] lg:min-w-[1230px] xl:min-w-[1400px] text-[11px] sm:text-sm border-[0.5px] border-[#D1D5DB]"
+                        className="w-full text-[11px] sm:text-sm border-[0.5px] border-[#D1D5DB]"
+                        style={{ minWidth: '600px' }}
                     >
                         <thead>
                             <tr className="bg-[#ffffff]">

@@ -26,21 +26,23 @@ export const metadata: Metadata = {
 
 const Home = () => {
   return (
-    <div className="w-full">
-      <div>
-        <div className="mb-20">
+    <main className="w-full bg-white">
+      <section className="bg-white w-full">
+        <div className="max-w-7xl mx-auto pb-4 sm:pb-6 lg:pb-8 mt-10">
           <AboutInfo />
         </div>
-        
-        <div className="mb-12">
+      </section>
+      <section className="bg-white w-full">
+        <div className="max-w-7xl mx-auto pb-6 sm:pb-10 lg:pb-12">
           <ReasonToChoose />
         </div>
-        <FAQ />
-       </div>
-    </div>
-        
-        
-      
+      </section>
+      <section className="bg-white w-full">
+        <div className="max-w-7xl mx-auto">
+          <FAQ />
+        </div>
+      </section>
+    </main>
   );
 };
 

@@ -7,7 +7,7 @@ interface SapphireDematCardProps {
 
 const SapphireDematCard: React.FC<SapphireDematCardProps> = ({ className = '' }) => {
   return (
-    <div className={`bg-white pt-10 sm:pt-14 lg:pt-16 w-full mt-10 ${className}`}>
+    <div className={`bg-white py-8 sm:py-12 lg:py-16 w-full ${className}`}>
       <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between relative w-full min-h-[240px] md:min-h-[340px] px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20">
         {/* Left Content */}
         <div className="z-10 w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl pt-8 md:pt-0 pl-0 md:pl-8 lg:pl-8 xl:pl-15 text-center md:text-left">
@@ -34,9 +34,9 @@ const SapphireDematCard: React.FC<SapphireDematCardProps> = ({ className = '' })
           <Image
             src="/Stocks/context.png"
             alt="Sapphire Corporate Demat Account Illustration"
-            width={520}
-            height={420}
-            className="w-[260px] sm:w-[340px] md:w-[420px] lg:w-[520px] h-auto max-h-[520px] object-contain"
+            width={820}
+            height={700}
+            className="w-[320px] sm:w-[440px] md:w-[560px] lg:w-[820px] h-auto max-h-[700px] object-contain"
             priority
           />
         </div>

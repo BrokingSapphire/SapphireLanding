@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 
 const Home = () => {
 	return (
-		<main className="w-full bg-white">
-			<div className="bg-white w-full">
+		<main className="w-full bg-white mt-5">
+			<div className="bg-white w-full mt-10">
 				<AboutInfo />
 			</div>
 			<div className="bg-white w-full">
