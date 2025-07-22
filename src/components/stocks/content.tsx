@@ -7,87 +7,38 @@ interface SapphireDematCardProps {
 
 const SapphireDematCard: React.FC<SapphireDematCardProps> = ({ className = '' }) => {
   return (
-    <div className={`w-full bg-white pt-6 md:pt-20 px-4 md:px-12 lg:pl-24 lg:pr-1 flex flex-col lg:flex-row items-start justify-between gap-8 ${className}`} style={{ minHeight: '450px', maxHeight: '505px' }}>
-      <div className="w-full h-auto">
-        <div className="w-full h-full flex flex-col lg:flex-row justify-between items-stretch py-4 gap-0">
-          {/* Image Area - Mobile First */}
-          <div className="w-[550px] h-full lg:order-2 flex items-center justify-center lg:justify-end mb-8 lg:mb-0 ml-2 mt-6">
-            <Image
-              src="/Stocks/context.png"
-              alt="Sapphire Corporate Demat Account Illustration"
-              width={550}
-              height={500}
-              className="w-full"
-            />
-          </div>
-          {/* Text Area */}
-          <div className="flex-1 lg:order-1 flex flex-col justify-center gap-8 py-12 ">
-            {/* Main Heading */}
-            <h1 
-              className="w-full text-black opacity-100 leading-tight text-2xl md:text-3xl lg:text-[36px] font-medium"
-              style={{
-                fontFamily: 'Lexend',
-                fontWeight: 500,
-                fontSize: '36px',
-                lineHeight: '45px',
-                letterSpacing: '-0.72px'
-              }}
-              >
-              Commodities: Smart Diversification, Smarter Platform
-              
-            </h1>
-            {/* Small Text Box */}
-            <div 
-              className="w-full flex flex-col justify-center gap-3 text-gray-600 opacity-100 text-base md:text-lg lg:text-[20px]"
-              style={{
-                fontFamily: 'Poppins',
-                fontWeight: 400,
-                fontSize: '20px',
-                lineHeight: '34px',
-                letterSpacing: '0%'
-              }}
-            >
-              <p className="mb-3">
+    <div className={`bg-white pt-10 sm:pt-14 lg:pt-16 w-full mt-10 ${className}`}>
+      <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between relative w-full min-h-[240px] md:min-h-[340px] px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20">
+        {/* Left Content */}
+        <div className="z-10 w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl pt-8 md:pt-0 pl-0 md:pl-8 lg:pl-8 xl:pl-15 text-center md:text-left">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-black leading-tight mb-3 sm:mb-4 font-lexend">
+            Commodities: Smart Diversification, Smarter Platform
+          </h1>
+          <div className="space-y-3 sm:space-y-4 text-gray-600 mb-5 sm:mb-6 text-base sm:text-lg md:text-xl font-poppins font-normal">
+            <p>
               Sapphire makes it easy to diversify beyond stocks. Enter the world of commodities with advanced tools, powerful insights, and a simplified experience.
-              </p>
-              <p>
-              Commodities offer a smart hedge against market volatility. With Sapphire, you get a seamless trading experience and live market insights — all in one place. 
-              </p>
-            </div>
-            {/* Get Started Button */}
-            <div 
-              className="w-[184px] h-[43px] rounded-[6px] bg-[#064D51] flex items-center justify-center gap-[12px] cursor-pointer hover:opacity-90 transition-opacity group"
-              style={{
-                paddingTop: '7px',
-                paddingRight: '21px',
-                paddingBottom: '7px',
-                paddingLeft: '21px'
-              }}
-            >
-              <span 
-                style={{
-                  fontFamily: 'Poppins',
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  lineHeight: '145%',
-                  letterSpacing: '1%',
-                  color: '#FFFFFF'
-                }}
-              >
-                Start Investing
-              </span>
-              <svg 
-                width="20" 
-                height="16" 
-                viewBox="0 0 20 16" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-                className="transition-transform group-hover:translate-x-1"
-              >
-                <path d="M3.33334 8H15.6667M15.6667 8L10.00001 3.33333M15.6667 8L10.00001 12.6667" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
+            </p>
+            <p>
+              Commodities offer a smart hedge against market volatility. With Sapphire, you get a seamless trading experience and live market insights — all in one place.
+            </p>
           </div>
+          <button className="bg-[#064D51] hover:bg-[#04605e] text-white font-semibold rounded-lg px-6 py-3 text-base sm:text-lg shadow transition-all duration-150 w-full md:w-auto flex items-center justify-center gap-2">
+            <span>Start Investing</span>
+            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-transform group-hover:translate-x-1 ml-2">
+              <path d="M3.33334 8H15.6667M15.6667 8L10.00001 3.33333M15.6667 8L10.00001 12.6667" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+        {/* Right Side - Illustration */}
+        <div className="relative w-full flex justify-center md:justify-end mb-6 md:mb-0 md:w-auto">
+          <Image
+            src="/Stocks/context.png"
+            alt="Sapphire Corporate Demat Account Illustration"
+            width={520}
+            height={420}
+            className="w-[260px] sm:w-[340px] md:w-[420px] lg:w-[520px] h-auto max-h-[520px] object-contain"
+            priority
+          />
         </div>
       </div>
     </div>
