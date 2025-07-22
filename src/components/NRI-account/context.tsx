@@ -7,7 +7,7 @@ interface SapphireDematCardProps {
 
 const SapphireDematCard: React.FC<SapphireDematCardProps> = ({ className = '' }) => {
   return (
-    <div className="bg-white py-10 sm:py-14 lg:py-16 w-full">
+    <div className={`bg-white py-10 sm:py-14 lg:py-16 w-full ${className}`}>
       <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between relative w-full min-h-[240px] md:min-h-[340px] px-2 sm:px-4 md:px-8 lg:px-12 xl:px-20">
         {/* Left Content */}
         <div className="z-10 w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl pt-8 md:pt-0 pl-0 md:pl-8 lg:pl-8 xl:pl-15 text-center md:text-left">
@@ -16,7 +16,7 @@ const SapphireDematCard: React.FC<SapphireDematCardProps> = ({ className = '' })
           </h1>
           <div className="space-y-3 sm:space-y-4 text-gray-600 mb-5 sm:mb-6 text-base sm:text-lg md:text-xl font-poppins font-normal">
             <p>
-              Sapphire's NRI Demat Account lets you invest, manage, and repatriate funds seamlessly—compliant, paperless, and expertly supported from anywhere in the world.
+              Sapphire&apos;s NRI Demat Account lets you invest, manage, and repatriate funds seamlessly—compliant, paperless, and expertly supported from anywhere in the world.
             </p>
             <p>
               Now grow your Indian portfolio with global ease.

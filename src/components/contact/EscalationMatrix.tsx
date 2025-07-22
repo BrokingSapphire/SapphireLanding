@@ -64,9 +64,9 @@ const ContactDetails: React.FC = () => {
     },
     {
       details: "Head of Operations",
-      contactPerson: "Mr. Rakesh Sharma",
-      emailId: "rakesh.sharma@sapphirebroking.com",
-      contactNo: "0811-5883899",
+      contactPerson: "Mr. Akshit Rana",
+      emailId: "akshit.rana@sapphirebroking.com",
+      contactNo: "+91 70183 29860",
       workingHours: "11:00 AM - 06:00 PM",
     },
     {
