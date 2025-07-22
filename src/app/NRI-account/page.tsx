@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
     type: "website",
   },
-};
+}; 
 
 const NriAccountPage = () => {
   return (
