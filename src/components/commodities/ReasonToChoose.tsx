@@ -1,53 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 
-interface FeatureBoxProps {
-  iconSrc: string;
-  title: string;
-  description: string;
-}
-
-const FeatureBox: React.FC<FeatureBoxProps> = ({ iconSrc, title, description }) => {
-  return (
-    <div className="flex-1 h-[170px] bg-[#F5F7FA] border-t-[0.5px] border-gray-300 flex flex-col gap-2 opacity-100 px-7 py-6">
-      {/* Icon + Heading in one line */}
-      <div className="flex items-center gap-2 mb-2">
-        <div className="w-5 h-5 flex items-center justify-center">
-          <Image src={iconSrc} alt={title + ' icon'} width={20} height={20} />
-        </div>
-        <h3
-          className="text-black opacity-100 text-base lg:text-[18px]"
-          style={{
-            fontFamily: 'Poppins',
-            fontWeight: 500,
-            lineHeight: '120%',
-            letterSpacing: '-0.5px'
-          }}
-        >
-          {title}
-        </h3>
-      </div>
-      {/* Description */}
-      <p
-        className="text-gray-600 opacity-100 text-sm lg:text-[16px] pl-7"
-        style={{
-          fontFamily: 'Poppins',
-          fontWeight: 400,
-          lineHeight: '140%',
-          letterSpacing: '0px'
-        }}
-      >
-        {description}
-      </p>
-    </div> 
-  );
-};
-
-interface ReasonsToChooseUsProps {
-  className?: string;
-}
-
-const ReasonsToChooseUs: React.FC<ReasonsToChooseUsProps> = ({ className = '' }) => {
+const ReasonsToChooseUs: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="w-full bg-[#F5F7FA] flex flex-col gap-8 py-12 px-4 sm:px-10 md:px-20">
