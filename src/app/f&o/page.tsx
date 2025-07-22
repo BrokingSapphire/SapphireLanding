@@ -1,6 +1,6 @@
 import AboutInfo from "@/components/stocks/content";
 import FAQ from "@/components/f&o/FAQ";
-import ReasonToChoose from "@/components/stocks/ReasonToChoose";
+import ReasonToChoose from "@/components/f&o/ReasonToChoose";
 import BuiltForTraders from "@/components/f&o/BuiltForTraders";
 
 import { Metadata } from "next";

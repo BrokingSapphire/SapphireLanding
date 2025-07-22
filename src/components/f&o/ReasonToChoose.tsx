@@ -8,7 +8,7 @@ export default function ReasonsToChooseUs() {
         <div className="w-full flex flex-col gap-2 mb-6">
           <h2 className="text-black text-2xl sm:text-3xl md:text-4xl lg:text-[32px] font-lexend font-medium leading-tight mb-2">Simplified Access to Indian Stock Markets</h2>
           <p className="text-gray-600 text-base sm:text-lg md:text-xl font-poppins font-normal leading-relaxed">From large-cap giants to promising mid and small-cap companies, Sapphire gives you access to the entire Indian stock landscape.</p>
-          <p className="text-gray-600 text-base sm:text-lg md:text-xl font-poppins font-normal leading-relaxed">Easily explore NSE and BSE-listed stocks, view sector-wise performance, analyze charts, and make informed decisions—all without switching between platforms.</p>
+          
         </div>
         <div className="flex flex-col md:flex-row w-full gap-0 md:gap-0">
           {/* Box 1 */}
