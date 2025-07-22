@@ -59,14 +59,14 @@ const ContactDetails: React.FC = () => {
       details: "Head of Customer Care",
       contactPerson: "Mr. Pralhad Singh",
       emailId: "pralhad.singh@sapphirebroking.com",
-      contactNo: "+91 7018329860",
+      contactNo: "0811-5883899",
       workingHours: "11:00 AM - 06:00 PM",
     },
     {
       details: "Head of Operations",
       contactPerson: "Mr. Akshit Rana",
       emailId: "akshit.rana@sapphirebroking.com",
-      contactNo: "0811-5883899",
+      contactNo: "+91 7018329860",
       workingHours: "11:00 AM - 06:00 PM",
     },
     {
