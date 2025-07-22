@@ -13,7 +13,7 @@ export default function ReasonsToChooseUs() {
         <div className="flex flex-col md:flex-row w-full gap-0 md:gap-0">
           {/* Box 1 */}
           <div className="flex-1 flex flex-row gap-2 bg-[#F5F7FA] border-t border-gray-300 px-7 py-6">
-            <div className='w-20 h-20 mr-1 flex items-center justify-center'>
+            <div className='w-20 h-20 mr-1 flex items-start justify-start'>
               <Image src="/minor-demat/arrow.png" alt="Option Chain in glance" width={24} height={24} />
             </div>
             <div>
@@ -26,7 +26,7 @@ export default function ReasonsToChooseUs() {
           <div className="w-[1px] bg-gray-300 h-auto hidden md:block"></div>
           {/* Box 2 */}
           <div className="flex-1 flex flex-row gap-2 bg-[#F5F7FA] border-t border-gray-300 px-7 py-6">
-            <div className='w-20 h-20 mr-1 flex items-center justify-center'>
+            <div className='w-20 h-20 mr-1 flex items-start justify-start'>
               <Image src="/minor-demat/pointer.png" alt="10x productivity with terminal" width={24} height={24} />
             </div>
             <div>
@@ -39,7 +39,7 @@ export default function ReasonsToChooseUs() {
           <div className="w-[1px] bg-gray-300 h-auto hidden md:block"></div>
           {/* Box 3 */}
           <div className="flex-1 flex flex-row gap-2 bg-[#F5F7FA] border-t border-gray-300 px-7 py-6">
-            <div className='w-20 h-20 mr-1 flex items-center justify-center'>
+            <div className='w-20 h-20 mr-1 flex items-start justify-start'>
               <Image src="/minor-demat/coins.png" alt="Expected P&L" width={24} height={24} />
             </div>
             <div>

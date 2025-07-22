@@ -25,17 +25,24 @@ export const metadata: Metadata = {
   },
 };
 
+
 const Home = () => {
-  return (
-    <div className="w-7xl mx-auto">
-      <div>
-        <AboutInfo />
-        <BuiltForTraders />
-        <ReasonToChoose />
-        <FAQ />
-       </div>
-    </div>
-  );
+    return (
+        <main className="w-full bg-white mt-5">
+            <div className="bg-white w-full mt-10">
+                <AboutInfo />
+            </div>
+            <div className="bg-white w-full">
+                <BuiltForTraders />
+            </div>
+            <div className="bg-white max-w-7xl mx-auto">
+                <ReasonToChoose />
+            </div>
+            <div className="bg-white w-full">
+                <FAQ />
+            </div>
+        </main>
+    );
 };
 
 export default Home;

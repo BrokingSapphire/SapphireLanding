@@ -27,15 +27,15 @@ const faqs = [
 
 const FAQ = () => {
   return (
-    <div className="w-full mb-6 sm:mb-8 lg:mb-10 mt-2 px-4 sm:px-8 lg:px-14 py-6 sm:py-8 lg:py-12">
-      <div className="max-w-6xl mx-auto flex flex-col space-y-3 sm:space-y-4 lg:space-y-6 items-center justify-center">
-        <h1 className="font-lexend text-2xl sm:text-3xl lg:text-4xl font-medium text-center px-2">
+    <div className="w-full mt-10 sm:mt-8 lg:mt-12 px-2 sm:px-4 md:px-8 lg:px-14 py-4 sm:py-6 lg:py-12">
+      <div className="max-w-6xl mx-auto flex flex-col space-y-2 sm:space-y-4 lg:space-y-6 items-center justify-center">
+        <h1 className="font-lexend text-xl sm:text-2xl lg:text-4xl font-medium text-center px-2">
           Frequently Asked Questions (FAQs)
         </h1>
         <Accordion
           type="single"
           collapsible
-          className="w-full space-y-2 sm:space-y-3 mt-3 sm:mt-4 lg:mt-6"
+          className="w-full space-y-1 sm:space-y-2 md:space-y-3 mt-2 sm:mt-4 lg:mt-6"
         >
           {faqs.map((faq, index) => (
             <AccordionItem
