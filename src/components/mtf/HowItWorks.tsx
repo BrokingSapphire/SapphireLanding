@@ -38,7 +38,7 @@ const HowItWorks: React.FC = () => {
         <div className="w-full flex justify-center -ml-96 mr-28">
           <Image src="/mtf/howitwork.svg" alt="How it works" width={160} height={40} />
         </div>
-        <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-lexend font-semibold text-center mb-14 -mt-4">
+        <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-lexend font-medium text-center mb-14 -mt-4">
           How does MTF Trading works
         </h2>
         {/* Steps */}
