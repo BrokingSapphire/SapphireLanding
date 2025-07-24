@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Metadata } from "next";
 
-
 export const metadata: Metadata = {
   title: "Collateral Haircut | Sapphire Broking: Smarter Trading, Expert Insights",
   description:

@@ -8,17 +8,22 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Corporate Demat Account | Sapphire Broking",
+  title: "Corporate Demat Account | Sapphire Broking: Smarter Trading, Expert Insights",
   description:
-    "Open a Corporate Demat Account with Sapphire Broking. Manage your company's investments with our secure, streamlined platform. Get expert support and paperless operations.",
+    "Open a Corporate Demat and Trading Account with Sapphire Broking. Simplify your company's investment operations with secure, compliant, and paperless account management. Get expert guidance, seamless onboarding, and efficient portfolio tracking for your business entity.",
   keywords:
-    "corporate demat account, company demat account, business demat account, corporate trading account, institutional demat account, corporate investment account, ESOP management, securities management",
+    "corporate demat account, company demat account, business demat account, corporate trading account, institutional demat account, corporate investment account, ESOP management, securities management, open corporate demat account online, demat for private limited company, LLP demat account, demat for corporate entity, Sapphire Broking business account, demat for startups, company stock account, corporate holdings demat, investment account for companies",
   openGraph: {
-    title: "Corporate Demat Account | Sapphire Broking",
+    title: "Corporate Demat Account | Sapphire Broking: Smarter Trading, Expert Insights",
     description:
-      "Sapphire has a next-generation trading platform designed for investors seeking expert insights and advanced trading tools. Get professional trade recommendations and stay updated with real-time corporate announcements from all listed entities. Our high-tech features ensure seamless execution, empowering both beginners and experienced traders to make well-informed market decisions.",
-    url: "https://sapphirebroking.com/",
-    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+      "Streamline your company’s investments with Sapphire Broking’s Corporate Demat Account. Paperless onboarding, secure holdings, and expert assistance for managing business trading and compliance.",
+    url: "https://www.sapphirebroking.com/corporate-demat-account",
+    images: [
+      {
+        url: "https://www.sapphirebroking.com/logo-white.svg",
+        alt: "Sapphire Broking Logo",
+      },
+    ],
     type: "website",
   },
 };

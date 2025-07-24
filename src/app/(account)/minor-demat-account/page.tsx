@@ -8,17 +8,22 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "About | Sapphire Broking: Smarter Trading, Expert Insights",
+  title: "Minor Demat Account | Sapphire Broking: Smarter Trading, Expert Insights",
   description:
-    "Sapphire has a next-generation trading platform designed for investors seeking expert insights and advanced trading tools. Get professional trade recommendations and stay updated with real-time corporate announcements from all listed entities. Our high-tech features ensure seamless execution, empowering both beginners and experienced traders to make well-informed market decisions.",
+    "Open a Minor Demat Account with Sapphire Broking to start investing early for your child's future. Learn about the eligibility, documents, guardian role, and seamless process to open a demat account for a minor in India.",
   keywords:
-    "about sapphire broking, online trading platform India, stock market analysis tools, real-time market insights, professional trading recommendations, BSE NSE live updates, smart trading solutions, expert trading insights, stock market for beginners, advanced trading platform, corporate announcement tracker, investment decision tools, market intelligence platform, stock trading alerts India, seamless trade execution, next-gen trading platform, stock market education, technical analysis tools India, fundamental analysis platform, market trend analyzer, financial market insights, algorithmic trading India, trading platform comparison, best online broker India, intraday trading platform, portfolio management tools, stock screening tools India, equity research platform, investment analytics India, market data analysis, trading charts and indicators, mobile trading app India, derivatives trading platform, commodity trading solutions, forex trading tools India",
+    "minor demat account, open demat account for minor, child demat account, guardian demat account, Sapphire Broking minor account, minor trading account, investing for children, demat account for minors India, documents for minor demat account, PAN card for minor, stock investment for kids, minor stock trading, minor portfolio account, guardian trading account, child investment demat, how to open demat for minor, minor account rules SEBI, minor account eligibility, minor account Sapphire Broking",
   openGraph: {
-    title: "About | Sapphire Broking: Smarter Trading, Expert Insights",
+    title: "Minor Demat Account | Sapphire Broking: Smarter Trading, Expert Insights",
     description:
-      "Sapphire has a next-generation trading platform designed for investors seeking expert insights and advanced trading tools. Get professional trade recommendations and stay updated with real-time corporate announcements from all listed entities. Our high-tech features ensure seamless execution, empowering both beginners and experienced traders to make well-informed market decisions.",
-    url: "https://sapphirebroking.com/",
-    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+      "Start your child’s investment journey with Sapphire Broking's Minor Demat Account. Get complete guidance on the process, required documentation, and guardian responsibilities.",
+    url: "https://www.sapphirebroking.com/minor-demat-account",
+    images: [
+      {
+        url: "https://www.sapphirebroking.com/logo-white.svg",
+        alt: "Sapphire Broking Logo",
+      },
+    ],
     type: "website",
   },
 };

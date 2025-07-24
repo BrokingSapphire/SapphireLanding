@@ -8,20 +8,25 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "About | Sapphire Broking: Smarter Trading, Expert Insights",
+  title: "NRI Demat Account | Sapphire Broking: Smarter Trading, Expert Insights",
   description:
-    "Sapphire has a next-generation trading platform designed for investors seeking expert insights and advanced trading tools. Get professional trade recommendations and stay updated with real-time corporate announcements from all listed entities. Our high-tech features ensure seamless execution, empowering both beginners and experienced traders to make well-informed market decisions.",
+    "Open an NRI Demat and Trading Account with Sapphire Broking to invest in Indian equities, mutual funds, and more. Learn about PIS and Non-PIS routes, required documents, NRE/NRO accounts, and compliance for seamless NRI investing.",
   keywords:
-    "about sapphire broking, online trading platform India, stock market analysis tools, real-time market insights, professional trading recommendations, BSE NSE live updates, smart trading solutions, expert trading insights, stock market for beginners, advanced trading platform, corporate announcement tracker, investment decision tools, market intelligence platform, stock trading alerts India, seamless trade execution, next-gen trading platform, stock market education, technical analysis tools India, fundamental analysis platform, market trend analyzer, financial market insights, algorithmic trading India, trading platform comparison, best online broker India, intraday trading platform, portfolio management tools, stock screening tools India, equity research platform, investment analytics India, market data analysis, trading charts and indicators, mobile trading app India, derivatives trading platform, commodity trading solutions, forex trading tools India",
+    "NRI demat account, open NRI trading account, NRI investment account India, Sapphire Broking NRI account, NRI stock market investment, NRI PIS account, NRI non-PIS demat, NRE account trading, NRO account trading, NRI demat documents, how to open NRI demat account, Indian stock market for NRIs, RBI PIS guidelines, NRI mutual fund investment, NRI trading with Sapphire, NRI account charges, NRI tax compliance trading, online NRI demat account, NRI equity trading India",
   openGraph: {
-    title: "About | Sapphire Broking: Smarter Trading, Expert Insights",
+    title: "NRI Demat Account | Sapphire Broking: Smarter Trading, Expert Insights",
     description:
-      "Sapphire has a next-generation trading platform designed for investors seeking expert insights and advanced trading tools. Get professional trade recommendations and stay updated with real-time corporate announcements from all listed entities. Our high-tech features ensure seamless execution, empowering both beginners and experienced traders to make well-informed market decisions.",
-    url: "https://sapphirebroking.com/",
-    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+      "Open your NRI Demat Account with Sapphire Broking and start investing in Indian markets from abroad. Easy onboarding, RBI-compliant process, and expert support for PIS and Non-PIS accounts.",
+    url: "https://www.sapphirebroking.com/nri-demat-account",
+    images: [
+      {
+        url: "https://www.sapphirebroking.com/logo-white.svg",
+        alt: "Sapphire Broking Logo",
+      },
+    ],
     type: "website",
   },
-}; 
+};
 
 const NriAccountPage = () => {
   return (
