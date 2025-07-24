@@ -1,7 +1,6 @@
-import AboutInfo from "@/components/commodities/content";
-import FAQ from "@/components/commodities/FAQ";
-import ReasonToChoose from "@/components/commodities/ReasonToChoose";
-import BuiltForTraders from "@/components/commodities/BuiltForTraders";
+import AboutInfo from "@/components/stocks/content";
+import FAQ from "@/components/stocks/FAQ";
+import ReasonToChoose from "@/components/stocks/ReasonToChoose";
 
 
 import { Metadata } from "next";
@@ -27,14 +26,23 @@ export const metadata: Metadata = {
 
 const Home = () => {
   return (
-    <div className="w-7xl mx-auto">
-      <div>
-        <AboutInfo />
-        <BuiltForTraders />
-        <ReasonToChoose />
-        <FAQ />
-       </div>
-    </div>
+    <main className="w-full bg-white">
+      <section className="bg-white w-full">
+        <div className="max-w-7xl mx-auto pb-4 sm:pb-6 lg:pb-8 mt-10">
+          <AboutInfo />
+        </div>
+      </section>
+      <section className="bg-white w-full">
+        <div className="max-w-7xl mx-auto pb-6 sm:pb-10 lg:pb-12">
+          <ReasonToChoose />
+        </div>
+      </section>
+      <section className="bg-white w-full">
+        <div className="max-w-7xl mx-auto">
+          <FAQ />
+        </div>
+      </section>
+    </main>
   );
 };
 

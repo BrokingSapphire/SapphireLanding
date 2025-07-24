@@ -1,11 +1,13 @@
-import AboutInfo from "@/components/NRI-account/context";
-import EasyToUse from "@/components/NRI-account/Easytouse";
-import Downloadapp from "@/components/minor-deemat-accnt/downloadapp";
-import FAQ from "@/components/NRI-account/FAQ";
-import Simplify from "@/components/NRI-account/Simplify";
+import AboutInfo from "@/components/mtf/content";
+import FAQ from "@/components/mtf/FAQ";
+import ReasonToChoose from "@/components/mtf/ReasonToChoose";
+import BuiltForTraders from "@/components/mtf/HowItWorks";
+
 
 import { Metadata } from "next";
 import React from "react";
+
+
 
 export const metadata: Metadata = {
   title: "About | Sapphire Broking: Smarter Trading, Expert Insights",
@@ -21,37 +23,26 @@ export const metadata: Metadata = {
     images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
     type: "website",
   },
-}; 
-
-const NriAccountPage = () => {
-  return (
-    <div className="w-full max-w-7xl mx-auto">
-      {/* Hero/About Section */}
-      <section className="bg-white mt-10">
-        <AboutInfo />
-      </section>
-
-      {/* Easy To Use Section */}
-      <section className="w-full bg-[#F5F7FA] ">
-        <EasyToUse />
-      </section>
-
-      {/* Simplify Section */}
-      <section className="w-full bg-white ">
-        <Simplify />
-      </section>
-
-      {/* App Download Section */}
-      <section className="w-full bg-[#F5F7FA]">
-        <Downloadapp />
-      </section>
-
-      {/* FAQ Section */}
-      <section className="w-full bg-white ">
-        <FAQ />
-      </section>
-    </div>
-  );
 };
 
-export default NriAccountPage;
+
+const Home = () => {
+    return (
+        <main className="w-full bg-white mt-5">
+            <div className="bg-white w-full mt-20 ">
+                <AboutInfo />
+            </div>
+            <div className="bg-white w-full -mt-3 mb-6">
+                <BuiltForTraders />
+            </div>
+            <div className="bg-white ml-3 max-w-7xl mx-auto">
+                <ReasonToChoose />
+            </div>
+            <div className="bg-white w-full -mt-4">
+                <FAQ />
+            </div>
+        </main>
+    );
+};
+
+export default Home;

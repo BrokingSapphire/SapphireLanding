@@ -1,6 +1,6 @@
 import AboutInfo from "@/components/stocks/content";
 import FAQ from "@/components/f&o/FAQ";
-import ReasonToChoose from "@/components/stocks/ReasonToChoose";
+import ReasonToChoose from "@/components/f&o/ReasonToChoose";
 import BuiltForTraders from "@/components/f&o/BuiltForTraders";
 
 import { Metadata } from "next";
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 
 const Home = () => {
 	return (
-		<main className="w-full bg-white">
-			<div className="bg-white w-full">
+		<main className="w-full bg-white mt-5">
+			<div className="bg-white w-full mt-10">
 				<AboutInfo />
 			</div>
 			<div className="bg-white w-full">

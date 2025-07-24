@@ -4,6 +4,28 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { ArrowRight } from 'lucide-react';
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "HUF Demat Account | Sapphire Broking: Smarter Trading, Expert Insights",
+  description:
+    "Open a HUF Demat and Trading Account with Sapphire Broking. Understand eligibility, required documents, and the complete process to invest in the stock market under a Hindu Undivided Family structure. Enjoy expert support and seamless onboarding.",
+  keywords:
+    "HUF demat account, Hindu Undivided Family demat account, open HUF trading account, HUF account opening process, documents for HUF demat account, HUF account in stock market, Sapphire Broking HUF account, HUF investment account, HUF Karta demat, stock trading under HUF, how to open HUF demat account, HUF PAN card for demat, HUF account online, HUF trading benefits, HUF income from capital market, joint family investment account",
+  openGraph: {
+    title: "HUF Demat Account | Sapphire Broking: Smarter Trading, Expert Insights",
+    description:
+      "Looking to open a Demat and Trading Account for your Hindu Undivided Family? Sapphire Broking offers complete guidance, eligibility criteria, and document checklist to start investing as a HUF.",
+    url: "https://www.sapphirebroking.com/huf-demat-account",
+    images: [
+      {
+        url: "https://www.sapphirebroking.com/logo-white.svg",
+        alt: "Sapphire Broking Logo",
+      },
+    ],
+    type: "website",
+  },
+};
 
 const faqs = [
     {

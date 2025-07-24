@@ -5,15 +5,20 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Fund Transfer | Sapphire Broking: Smarter Trading, Expert Insights",
   description:
-    "Sapphire has a next-generation trading platform designed for investors seeking expert insights and advanced trading tools. Get professional trade recommendations and stay updated with real-time corporate announcements from all listed entities. Our high-tech features ensure seamless execution, empowering both beginners and experienced traders to make well-informed market decisions.",
+    "Easily transfer funds to and from your Sapphire Broking trading account using UPI, net banking, or IMPS. Learn about deposit methods, withdrawal timelines, fund limits, and seamless integration for a hassle-free trading experience.",
   keywords:
-    "about sapphire broking, online trading platform India, stock market analysis tools, real-time market insights, professional trading recommendations, BSE NSE live updates, smart trading solutions, expert trading insights, stock market for beginners, advanced trading platform, corporate announcement tracker, investment decision tools, market intelligence platform, stock trading alerts India, seamless trade execution, next-gen trading platform, stock market education, technical analysis tools India, fundamental analysis platform, market trend analyzer, financial market insights, algorithmic trading India, trading platform comparison, best online broker India, intraday trading platform, portfolio management tools, stock screening tools India, equity research platform, investment analytics India, market data analysis, trading charts and indicators, mobile trading app India, derivatives trading platform, commodity trading solutions, forex trading tools India",
+    "fund transfer, add funds trading account, withdraw funds broking account, Sapphire Broking fund transfer, UPI fund transfer, net banking trading account, IMPS deposit Sapphire, fund transfer time, trading account deposit methods, fund withdrawal timeline, how to transfer money to demat account, online fund transfer India, trading account balance, broker fund transfer charges, instant fund transfer, fund transfer support, seamless fund transfer India, trading platform fund management, transfer funds securely, deposit money for trading, withdrawal process Sapphire Broking, online trading account funding, UPI for brokers, bank to trading account transfer, fund limits Sapphire, account funding guide, fast money transfer trading",
   openGraph: {
     title: "Fund Transfer | Sapphire Broking: Smarter Trading, Expert Insights",
     description:
-      "Sapphire has a next-generation trading platform designed for investors seeking expert insights and advanced trading tools. Get professional trade recommendations and stay updated with real-time corporate announcements from all listed entities. Our high-tech features ensure seamless execution, empowering both beginners and experienced traders to make well-informed market decisions.",
-    url: "https://sapphirebroking.com/",
-    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+      "Discover fast and secure ways to transfer or withdraw funds with Sapphire Broking. Support for UPI, net banking, IMPS, and more for seamless trading account transactions.",
+    url: "https://www.sapphirebroking.com/fund-transfer",
+    images: [
+      {
+        url: "https://www.sapphirebroking.com/logo-white.svg",
+        alt: "Sapphire Broking Logo",
+      },
+    ],
     type: "website",
   },
 };

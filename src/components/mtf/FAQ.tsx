@@ -9,19 +9,19 @@ import {
 
 const faqs = [
   {
-    question: 'What are commodities in trading?',
+    question: 'Can I trade using MTF through Sapphire Broking?',
     answer:
-      'Commodities are tradable raw materials like gold, crude oil, and wheat, exchanged via contracts on platforms like MCX through futures and options.',
+      'Yes, Sapphire Broking offers Margin Trading Facility (MTF) to eligible clients. You can activate it in just a few clicks and start trading with leverage on select stocks.',
   },
   {
-    question: 'How is commodity trading different from stocks?',
+    question: 'What is the minimum margin amount required?',
     answer:
-      'Commodity trading involves contracts with expiry and is driven by global demand-supply, unlike stocks that rely on company performance and market sentiment.',
+      'You can start using MTF with a minimum margin as per the stock-specific exchange guidelines. There is no fixed amount — it depends on the stock you are trading and your available funds.',
   },
   {
-    question: 'Do I need a separate account for commodities?',
+    question: 'Is interest charged on MTF trades?',
     answer:
-      'No, you can trade commodities through your Sapphire account by activating the commodity segment—no need for a separate trading account.',
+      'Yes, interest is charged daily on the funded portion of your MTF trades. You can view the applicable interest rates transparently before placing an order.',
   },
 ];
 

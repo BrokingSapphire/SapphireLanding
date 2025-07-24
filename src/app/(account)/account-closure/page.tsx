@@ -5,15 +5,20 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Account Closure | Sapphire Broking: Smarter Trading, Expert Insights",
   description:
-    "Complete guide for closing your trading account with Sapphire Broking. Learn about the account closure process, required documents, timeline, and important considerations before closing your account.",
+    "Learn how to close your trading or demat account with Sapphire Broking. This complete guide covers the account closure process, required documents, timelines, charges, and important points to consider before initiating closure.",
   keywords:
-    "account closure, close trading account, demat account closure, trading account termination, account closure process, SEBI account closure, broker account closure, investment account closure, trading account cancellation, account closure documents, account closure timeline, account closure charges, account closure procedure",
+    "account closure, close trading account, demat account closure, trading account termination, trading account closure process, close demat account online, account closure documents, account closure charges, SEBI account closure rules, investment account closure, NRI demat account closure, broker account termination, how to close trading account, Sapphire Broking account closure, closure form, account closure turnaround time",
   openGraph: {
     title: "Account Closure | Sapphire Broking: Smarter Trading, Expert Insights",
     description:
-      "Complete guide for closing your trading account with Sapphire Broking. Learn about the account closure process, required documents, timeline, and important considerations before closing your account.",
-    url: "https://sapphirebroking.com/",
-    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+      "Step-by-step guidance on how to close your trading or demat account with Sapphire Broking. Know the procedure, required documentation, charges, and timeline.",
+    url: "https://www.sapphirebroking.com/account-closure",
+    images: [
+      {
+        url: "https://www.sapphirebroking.com/logo-white.svg",
+        alt: "Sapphire Broking Logo",
+      },
+    ],
     type: "website",
   },
 };

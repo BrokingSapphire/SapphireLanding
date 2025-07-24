@@ -8,12 +8,12 @@ export default function ReasonsToChooseUs() {
         <div className="w-full flex flex-col gap-2 mb-6">
           <h2 className="text-black text-2xl sm:text-3xl md:text-4xl lg:text-[32px] font-lexend font-medium leading-tight mb-2">Simplified Access to Indian Stock Markets</h2>
           <p className="text-gray-600 text-base sm:text-lg md:text-xl font-poppins font-normal leading-relaxed">From large-cap giants to promising mid and small-cap companies, Sapphire gives you access to the entire Indian stock landscape.</p>
-          <p className="text-gray-600 text-base sm:text-lg md:text-xl font-poppins font-normal leading-relaxed">Easily explore NSE and BSE-listed stocks, view sector-wise performance, analyze charts, and make informed decisions—all without switching between platforms.</p>
+          
         </div>
         <div className="flex flex-col md:flex-row w-full gap-0 md:gap-0">
           {/* Box 1 */}
           <div className="flex-1 flex flex-row gap-2 bg-[#F5F7FA] border-t border-gray-300 px-7 py-6">
-            <div className='w-20 h-20 -mr-2 flex items-start justify-start'>
+            <div className='w-20 h-20 mr-1 flex items-start justify-start'>
               <Image src="/minor-demat/arrow.png" alt="Option Chain in glance" width={24} height={24} />
             </div>
             <div>
@@ -26,7 +26,7 @@ export default function ReasonsToChooseUs() {
           <div className="w-[1px] bg-gray-300 h-auto hidden md:block"></div>
           {/* Box 2 */}
           <div className="flex-1 flex flex-row gap-2 bg-[#F5F7FA] border-t border-gray-300 px-7 py-6">
-            <div className='w-20 h-20 -mr-2 flex items-start justify-start'>
+            <div className='w-20 h-20 mr-1 flex items-start justify-start'>
               <Image src="/minor-demat/pointer.png" alt="10x productivity with terminal" width={24} height={24} />
             </div>
             <div>
@@ -39,7 +39,7 @@ export default function ReasonsToChooseUs() {
           <div className="w-[1px] bg-gray-300 h-auto hidden md:block"></div>
           {/* Box 3 */}
           <div className="flex-1 flex flex-row gap-2 bg-[#F5F7FA] border-t border-gray-300 px-7 py-6">
-            <div className='w-20 h-20 -mr-2 flex items-start justify-start'>
+            <div className='w-20 h-20 mr-1 flex items-start justify-start'>
               <Image src="/minor-demat/coins.png" alt="Expected P&L" width={24} height={24} />
             </div>
             <div>
