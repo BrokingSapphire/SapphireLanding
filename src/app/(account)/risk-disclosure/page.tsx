@@ -5,15 +5,20 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: "Risk Disclosure | Sapphire Broking: Smarter Trading, Expert Insights",
   description:
-    "Understand the risks associated with trading in equity, derivatives, and commodities. Sapphire Broking provides comprehensive risk disclosure to help investors make informed decisions about their trading activities.",
+    "Get a clear understanding of the potential risks involved in trading equities, derivatives, commodities, and margin products. Sapphire Broking’s detailed risk disclosure helps you assess market volatility, leverage impact, and systemic risks to make informed investment decisions.",
   keywords:
-    "risk disclosure, trading risks, investment risks, equity trading risks, derivatives trading risks, commodity trading risks, market risks, financial risks, SEBI risk disclosure, stock market risks, trading warnings, investment disclaimers, margin trading risks, futures and options risks, volatile markets, risk management, trading education",
+    "risk disclosure, trading risks, investment risks, equity trading risks, derivatives trading risks, commodity trading risks, stock market risk factors, SEBI risk disclosure norms, margin trading risk, futures and options risk, leveraged trading risk, volatile market impact, systemic risk in trading, market risk factors, financial market risks, investor risk awareness, risk management in trading, trading disclaimers, investment caution, regulatory risk disclosure, Sapphire Broking risk policy",
   openGraph: {
     title: "Risk Disclosure | Sapphire Broking: Smarter Trading, Expert Insights",
     description:
-      "Understand the risks associated with trading in equity, derivatives, and commodities. Sapphire Broking provides comprehensive risk disclosure to help investors make informed decisions about their trading activities.",
-    url: "https://sapphirebroking.com/",
-    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+      "Review Sapphire Broking’s comprehensive risk disclosure to understand the financial and market risks of trading in equity, F&O, and commodities. Make better decisions with full awareness of potential losses and leverage implications.",
+    url: "https://www.sapphirebroking.com/risk-disclosure",
+    images: [
+      {
+        url: "https://www.sapphirebroking.com/logo-white.svg",
+        alt: "Sapphire Broking Logo",
+      },
+    ],
     type: "website",
   },
 };
