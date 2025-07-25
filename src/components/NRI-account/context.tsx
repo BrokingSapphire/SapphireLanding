@@ -12,7 +12,7 @@ const SapphireDematCard: React.FC = () => {
           </h1>
           <div className="space-y-3 sm:space-y-4 text-gray-600 mb-5 sm:mb-6 text-base sm:text-lg md:text-xl font-poppins font-normal">
             <p>
-              Sapphire's NRI Demat Account lets you invest, manage, and repatriate funds seamlessly—compliant, paperless, and expertly supported from anywhere in the world.
+              Sapphire&apos;s NRI Demat Account lets you invest, manage, and repatriate funds seamlessly—compliant, paperless, and expertly supported from anywhere in the world.
             </p>
             <p>
               Now grow your Indian portfolio with global ease.
