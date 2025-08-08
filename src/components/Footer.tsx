@@ -1,9 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  FaInstagram,
-} from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FiYoutube, FiGithub } from "react-icons/fi";
 import { PiLinkedinLogo } from "react-icons/pi";
@@ -18,7 +16,10 @@ const LinkSection = ({ title, links }: LinkSectionProps) => (
     <ul className="space-y-2">
       {links.map((link) => (
         <li key={link.title}>
-          <a href={link.href} className="text-xs sm:text-[14px] hover:text-gray-300">
+          <a
+            href={link.href}
+            className="text-xs sm:text-[14px] hover:text-gray-300"
+          >
             {link.title}
           </a>
         </li>
@@ -29,7 +30,10 @@ const LinkSection = ({ title, links }: LinkSectionProps) => (
 
 const SocialLinks = () => {
   const SOCIAL_ICONS = [
-    { Icon: PiLinkedinLogo, href: "https://linkedin.com/company/BrokingSapphire" },
+    {
+      Icon: PiLinkedinLogo,
+      href: "https://linkedin.com/company/BrokingSapphire",
+    },
     { Icon: FaInstagram, href: "https://instagram.com/BrokingSapphire" },
     { Icon: FiYoutube, href: "https://youtube.com/c/@BrokingSapphire" },
     { Icon: FaXTwitter, href: "https://twitter.com/BrokingSapphire" },
@@ -38,22 +42,23 @@ const SocialLinks = () => {
 
   return (
     <>
-    <p className="text-sm pb-4 max-w-[250px] md:max-w-[250px] lg:max-w-[180px] xl:max-w-[220px]">
-      Copyright © {new Date().getFullYear()} Sapphire Broking, All rights reserved.
-    </p>
-    <div className="grid grid-cols-7 sm:grid-cols-7 md:grid-cols-7 lg:grid-cols-4 xl:grid-cols-4 gap-1.5 mb-6 max-w-[250px] md:max-w-[250px] lg:max-w-[180px] xl:max-w-[220px]">
-      {SOCIAL_ICONS.map(({ Icon, href }) => (
-        <a
-          key={href}
-          href={href}
-          className="hover:opacity-80"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Icon className="text-2xl" />
-        </a>
-      ))}
-    </div>
+      <p className="text-sm pb-4 max-w-[250px] md:max-w-[250px] lg:max-w-[180px] xl:max-w-[220px]">
+        Copyright © {new Date().getFullYear()} Sapphire Broking, All rights
+        reserved.
+      </p>
+      <div className="grid grid-cols-7 sm:grid-cols-7 md:grid-cols-7 lg:grid-cols-4 xl:grid-cols-4 gap-1.5 mb-6 max-w-[250px] md:max-w-[250px] lg:max-w-[180px] xl:max-w-[220px]">
+        {SOCIAL_ICONS.map(({ Icon, href }) => (
+          <a
+            key={href}
+            href={href}
+            className="hover:opacity-80"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon className="text-2xl" />
+          </a>
+        ))}
+      </div>
     </>
   );
 };
@@ -71,12 +76,20 @@ const QuickLinks = () => {
     <ul className="space-y-2">
       {Links.map((link) => (
         <li key={link.name}>
-          {link.href && link.href.startsWith('/') ? (
-            <Link href={link.href} className="text-xs sm:text-[14px] hover:text-gray-300">
+          {link.href && link.href.startsWith("/") ? (
+            <Link
+              href={link.href}
+              className="text-xs sm:text-[14px] hover:text-gray-300"
+            >
               {link.name}
             </Link>
           ) : (
-            <a href={link.href} className="text-xs sm:text-[14px] hover:text-gray-300" target="_blank" rel="noopener noreferrer">
+            <a
+              href={link.href}
+              className="text-xs sm:text-[14px] hover:text-gray-300"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {link.name}
             </a>
           )}
@@ -91,7 +104,7 @@ const LegalSection = () => {
     { name: "NSE", link: "https://www.nseindia.com/" },
     { name: "BSE", link: "https://www.bseindia.com/" },
     { name: "MCX", link: "https://www.mcxindia.com/" },
-    { name: "NCDEX", link: "https://www.ncdex.com" }
+    { name: "NCDEX", link: "https://www.ncdex.com" },
   ];
 
   const INVESTOR_POINTS = [
@@ -103,9 +116,13 @@ const LegalSection = () => {
 
   // Create a copy of EXCHANGES and interchange BSE and MCX
   const modifiedExchanges = [...EXCHANGES];
-  const bseIndex = modifiedExchanges.findIndex(exchange => exchange.name.includes("BSE"));
-  const mcxIndex = modifiedExchanges.findIndex(exchange => exchange.name.includes("MCX"));
-  
+  const bseIndex = modifiedExchanges.findIndex((exchange) =>
+    exchange.name.includes("BSE")
+  );
+  const mcxIndex = modifiedExchanges.findIndex((exchange) =>
+    exchange.name.includes("MCX")
+  );
+
   if (bseIndex !== -1 && mcxIndex !== -1) {
     const temp = modifiedExchanges[bseIndex];
     modifiedExchanges[bseIndex] = modifiedExchanges[mcxIndex];
@@ -117,27 +134,114 @@ const LegalSection = () => {
       <div className="grid gap-4">
         {/* Legal Name */}
         <p>
-          <strong>Legal Name:</strong> <strong>Sapphire Broking</strong>: Registered Office: <strong><span className="none">Plot No. 84A, First Floor, Pande Layout, New Sneh Nagar, Khamla, Nagpur (MH) - 440025</span></strong>, FRN: <strong><span className="none">NG000010895</span></strong>, SEBI Registration No.: <span className="font-bold none">INZ923930210</span> – Member of <span className="font-bold none">NSE, BSE, MCX, and NCDEX</span>. Association of Mutual Funds in India (AMFI) Member Code: <strong><span className="none">ARN-333966</span></strong>. BSE Membership No.: <span className="font-bold underline decoration-dotted decoration-slate-400">6957.</span> Clearing House: <strong><span className="none">Globe Capital Services Ltd.</span></strong>: DP ID: <strong><span className="none">12020600</span></strong>. Compliance Officer: <strong><span className="none">Mr. Yash Katyari</span></strong>, Tel: <strong><a href="tel:+919359561831" className="none text-inherit">+91 93595 61831</a></strong>, Email: <strong><a href="mailto:yash.katyari@sapphirebroking.com" className="none text-inherit">yash.katyari@sapphirebroking.com</a></strong>.
+          <strong>Legal Name:</strong> <strong>Sapphire Broking</strong>:
+          Registered Office:{" "}
+          <strong>
+            <span className="none">
+              Plot No. 84A, First Floor, Pande Layout, New Sneh Nagar, Khamla,
+              Nagpur (MH) - 440025
+            </span>
+          </strong>
+          , FRN:{" "}
+          <strong>
+            <span className="none">NG000010895</span>
+          </strong>
+          , SEBI Registration No.:{" "}
+          <span className="font-bold none">INZ923930210</span> – Member of{" "}
+          <span className="font-bold none">NSE, BSE, MCX, and NCDEX</span>.
+          Association of Mutual Funds in India (AMFI) Member Code:{" "}
+          <strong>
+            <span className="none">ARN-333966</span>
+          </strong>
+          . BSE Membership No.:{" "}
+          <span className="font-bold underline decoration-dotted decoration-slate-400">
+            6957.
+          </span>{" "}
+          Clearing House:{" "}
+          <strong>
+            <span className="none">Globe Capital Services Ltd.</span>
+          </strong>
+          : DP ID:{" "}
+          <strong>
+            <span className="none">12020600</span>
+          </strong>
+          . Compliance Officer:{" "}
+          <strong>
+            <span className="none">Mr. Yash Katyari</span>
+          </strong>
+          , Tel:{" "}
+          <strong>
+            <a href="tel:+919359561831" className="none text-inherit">
+              +91 93595 61831
+            </a>
+          </strong>
+          , Email:{" "}
+          <strong>
+            <a
+              href="mailto:yash.katyari@sapphirebroking.com"
+              className="none text-inherit"
+            >
+              yash.katyari@sapphirebroking.com
+            </a>
+          </strong>
+          .
         </p>
 
         {/* Grievance Redressal */}
         <p>
-          <strong>Grievance Redressal:</strong> For complaints related to broking services, email us at <a href="mailto:support@sapphirebroking.com" className="font-bold none text-inherit">support@sapphirebroking.com</a>. For depository-related issues, email us at <a href="mailto:dp@sapphirebroking.com" className="font-bold none text-inherit">dp@sapphirebroking.com</a>. To escalate unresolved issues, contact our Grievance Redressal Officer: Mr. Undefined, Mobile: +91 Undefined. Alternatively, file complaints on the SEBI SCORES portal by registering with mandatory details like Name, PAN, Address, Mobile Number, and Email ID.
+          <strong>Grievance Redressal:</strong> For complaints related to
+          broking services, email us at{" "}
+          <a
+            href="mailto:support@sapphirebroking.com"
+            className="font-bold none text-inherit"
+          >
+            support@sapphirebroking.com
+          </a>
+          . For depository-related issues, email us at{" "}
+          <a
+            href="mailto:dp@sapphirebroking.com"
+            className="font-bold none text-inherit"
+          >
+            dp@sapphirebroking.com
+          </a>
+          . To escalate unresolved issues, contact our Grievance Redressal
+          Officer: Mr. Undefined, Mobile: +91 Undefined. Alternatively, file
+          complaints on the SEBI SCORES portal by registering with mandatory
+          details like Name, PAN, Address, Mobile Number, and Email ID.
         </p>
 
         {/* Cybersecurity Issues */}
         <p>
-          <strong>Cybersecurity Issues:</strong> Report cybersecurity concerns to <a href="mailto:abhigya.krishna@sapphirebroking.com" className="font-bold none text-inherit">abhigya.krishna@sapphirebroking.com</a> or call us at <a href="tel:+919890336989" className="font-bold none text-inherit">+91 98903 36989</a>.
+          <strong>Cybersecurity Issues:</strong> Report cybersecurity concerns
+          to{" "}
+          <a
+            href="mailto:abhigya.krishna@sapphirebroking.com"
+            className="font-bold none text-inherit"
+          >
+            abhigya.krishna@sapphirebroking.com
+          </a>{" "}
+          or call us at{" "}
+          <a href="tel:+919890336989" className="font-bold none text-inherit">
+            +91 98903 36989
+          </a>
+          .
         </p>
 
         {/* Regulatory Compliance */}
         <p>
-          <strong>Regulatory Compliance:</strong> Investments in the securities market are subject to market risks. Please read all related documents carefully before investing. Brokerage will not exceed the SEBI-prescribed limit.
+          <strong>Regulatory Compliance:</strong> Investments in the securities
+          market are subject to market risks. Please read all related documents
+          carefully before investing. Brokerage will not exceed the
+          SEBI-prescribed limit.
         </p>
 
         {/* Communication Policy */}
         <p>
-          <strong>Communication Policy:</strong> By sharing your contact details, you consent to receive communication from us via Call/SMS/Email for a period of 12 months, even if registered under DND. We use your information for legitimate business purposes only and do not sell or rent your contact details to third parties.
+          <strong>Communication Policy:</strong> By sharing your contact
+          details, you consent to receive communication from us via
+          Call/SMS/Email for a period of 12 months, even if registered under
+          DND. We use your information for legitimate business purposes only and
+          do not sell or rent your contact details to third parties.
         </p>
 
         <div>
@@ -150,7 +254,8 @@ const LegalSection = () => {
         </div>
 
         <p>
-          <strong>ODR Portal:</strong> Resolve disputes efficiently using SEBI&apos;s Online Dispute Resolution Portal:{" "}
+          <strong>ODR Portal:</strong> Resolve disputes efficiently using
+          SEBI&apos;s Online Dispute Resolution Portal:{" "}
           <Link target="_blank" href="https://smartodr.in/login">
             <span className="font-bold none">Smart ODR Portal</span>
           </Link>
@@ -171,7 +276,9 @@ const LegalSection = () => {
             target="_blank"
             rel="noopener noreferrer"
             className={`text-gray-400 ${
-              index !== array.length - 1 ? "sm:border-r border-white sm:pr-4" : ""
+              index !== array.length - 1
+                ? "sm:border-r border-white sm:pr-4"
+                : ""
             }`}
           >
             {exchange.name}
@@ -203,22 +310,27 @@ const Footer = () => {
     { title: "Aadhar Consent", href: "/aadhar-consent" },
     { title: "Do's and Don'ts of Investors", href: "/investor-dos-and-donts" },
     { title: "Rights of Investors", href: "/investor-rights" },
-    { title: "Responsibilities of Investors", href: "/investor-responsibilities" },
-    { title: "Code of Conduct for Participants", href: "/code-of-conduct-participants" },
+    {
+      title: "Responsibilities of Investors",
+      href: "/investor-responsibilities",
+    },
+    {
+      title: "Code of Conduct for Participants",
+      href: "/code-of-conduct-participants",
+    },
   ];
 
   const ACCOUNT_LINKS = [
     { title: "Open an Account", href: "https://signup.sapphirebroking.com" },
-     { title: "Minor Demat Account", href:"/minor-demat-account"},
-     {title: "HUF Demat Account", href:"/huf-demat-account"},
-     {title: "NRI Demat Account", href:"/nri-account"},
-     {title: "Corporate Demat Account", href:"/corporate-demat-account"},
+    { title: "Minor Demat Account", href: "/minor-demat-account" },
+    { title: "HUF Demat Account", href: "/huf-demat-account" },
+    { title: "NRI Demat Account", href: "/nri-account" },
+    { title: "Corporate Demat Account", href: "/corporate-demat-account" },
     { title: "Fund Transfer", href: "/fund-transfer" },
     { title: "MTF", href: "/mtf" },
     { title: "Account Closure", href: "/account-closure" },
     { title: "Collateral Haircut", href: "/collateral-haircut" },
     { title: "Risk Disclosure", href: "/risk-disclosure" },
-   
   ];
 
   return (
@@ -253,11 +365,11 @@ const Footer = () => {
               {/* Right Column: Account and Follow us + Download */}
               <div className="col-span-1 space-y-8">
                 <LinkSection title="Account" links={ACCOUNT_LINKS} />
-                
+
                 <div>
                   <h3 className="font-bold mb-4 text-lg">Quick Links</h3>
                   {/* <SocialLinks /> */}
-                  
+
                   <QuickLinks />
                   <h3 className="font-bold mb-4 text-lg">Download Our App</h3>
                   <div className="flex items-center justify-start gap-4">
@@ -292,8 +404,9 @@ const Footer = () => {
                     height={30}
                     priority
                   />
-                  <h3 className="font-bold ml-2 text-[20px]">Sapphire</h3>
+                  <h3 className="font-bold ml-1 text-[20px]">Sapphire</h3>
                 </div>
+
                 <SocialLinks />
                 <div className="hidden lg:flex flex-col justify-start gap-4">
                   <Image
@@ -327,12 +440,14 @@ const Footer = () => {
                   <LinkSection title="Company" links={COMPANY_LINKS} />
                   <LinkSection title="Legal" links={LEGAL_LINKS} />
                   <LinkSection title="Account" links={ACCOUNT_LINKS} />
-                  
+
                   <div className="col-span-1">
                     <h3 className="font-bold mb-4 text-[20px]">Quick Links</h3>
                     <QuickLinks />
 
-                    <h3 className="font-bold mb-4 text-[20px]">Download Our App</h3>
+                    <h3 className="font-bold mb-4 text-[20px]">
+                      Download Our App
+                    </h3>
                     <div className="flex items-center justify-start gap-4">
                       <Image
                         src="/appstore.svg"
@@ -360,7 +475,7 @@ const Footer = () => {
               </div>
             </div>
           </div>
-          
+
           <LegalSection />
         </div>
       </footer>

@@ -29,10 +29,10 @@ export const metadata: Metadata = {
 const Home = () => {
     return (
         <main className="w-full bg-white mt-5">
-            <div className="bg-white w-full mt-20 ">
+            <div className="bg-white w-full mt-20 ml-2 sm:ml-0">
                 <AboutInfo />
             </div>
-            <div className="bg-white w-full -mt-3 mb-6">
+            <div className="bg-white w-full xsm:-mt-4 xsm:mb-8 mt-8 mb-2 ">
                 <BuiltForTraders />
             </div>
             <div className="bg-white ml-3 max-w-7xl mx-auto">
