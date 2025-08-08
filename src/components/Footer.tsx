@@ -285,15 +285,16 @@ const Footer = () => {
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-2 mb-8">
               <div className="col-span-2 lg:col-span-1">
                 <div className="flex items-center mb-4">
-                  <Image
-                    src="/logo-white.svg"
-                    alt="Logo"
-                    width={30}
-                    height={30}
-                    priority
-                  />
-                  <h3 className="font-bold ml-2 text-[20px]">Sapphire</h3>
-                </div>
+  <Image
+    src="/logo-white.svg"
+    alt="Logo"
+    width={30}
+    height={30}
+    priority
+  />
+  <h3 className="font-bold ml-1 text-[20px]">Sapphire</h3>
+</div>
+
                 <SocialLinks />
                 <div className="hidden lg:flex flex-col justify-start gap-4">
                   <Image
