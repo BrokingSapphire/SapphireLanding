@@ -3,13 +3,13 @@ import { Award, TrendingUp } from 'lucide-react';
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Nakul Thakur - Managing Partner | Sapphire Broking: Smarter Trading, Expert Insights",
+  title: "Nakul Thakur - Founder & Managing Partner | Sapphire Broking: Smarter Trading, Expert Insights",
   description:
-    "Meet Nakul Thakur, Founder & Managing Director of Sapphire Broking. MBA Finance from IIM Indore with 12+ years experience. Leading 2,500+ clients with ₹650Cr+ AUM through transparent investment advisory services in Nagpur, Maharashtra. SEBI registered (INZ923930210).",
+    "Meet Nakul Thakur, Founder & Managing Partner of Sapphire Broking. MBA Finance from IIM Indore with 12+ years experience. Leading 2,500+ clients with ₹650Cr+ AUM through transparent investment advisory services in Nagpur, Maharashtra. SEBI registered (INZ923930210).",
   keywords:
     "Nakul Thakur, Sapphire Broking founder, investment advisor Nagpur, IIM Indore MBA, SEBI registered advisor INZ923930210, ICICI Direct, HDFC Securities, Sharekhan, transparent financial services, portfolio management, wealth management Nagpur, Maharashtra investment advisor",
   openGraph: {
-    title: "Nakul Thakur - Founder & Managing Director | Sapphire Broking",
+    title: "Nakul Thakur - Founder & Managing Partner | Sapphire Broking",
     description:
       "MBA Finance from IIM Indore, 12+ years experience, 2,500+ clients, ₹650Cr+ AUM. SEBI registered investment advisor providing transparent financial services in Nagpur, Maharashtra.",
     url: "https://sapphirebroking.com/about-nakul-thakur",
