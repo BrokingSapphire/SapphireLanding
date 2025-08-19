@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Award, TrendingUp } from 'lucide-react';
+import { Award, TrendingUp } from 'lucide-react';
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -52,7 +52,7 @@ const NakulAboutPage = () => {
                   <p className="text-gray-600 leading-relaxed">
                     After spending eight years in traditional brokerages including <em>ICICI Direct, HDFC Securities, and Sharekhan</em>, I witnessed firsthand how complicated and expensive 
                     investing had become for regular people. At Sapphire Broking, we focus on transparent pricing, clear 
-                    communication, and personalized investment advice that aligns with each client's unique financial goals.
+                    communication, and personalized investment advice that aligns with each client&apos;s unique financial goals.
                   </p>
                 </div>
 
@@ -187,7 +187,7 @@ const NakulAboutPage = () => {
             <article className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
                 <TrendingUp className="mr-3 text-red-500" size={24} aria-hidden="true" />
-                What We Don't Do - Our Commitments
+                What We Don&apos;t Do - Our Commitments
               </h3>
               <ul className="space-y-4" role="list">
                 <li className="flex items-start">
@@ -200,7 +200,7 @@ const NakulAboutPage = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="text-red-500 mr-3 mt-1" aria-hidden="true">✗</span>
-                  <span className="text-gray-700">Sell financial products that don't match client needs</span>
+                  <span className="text-gray-700">Sell financial products that don&apos;t match client needs</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-red-500 mr-3 mt-1" aria-hidden="true">✗</span>
@@ -225,7 +225,7 @@ const NakulAboutPage = () => {
             <article className="md:col-span-2">
               <div className="space-y-6">
                 <p className="text-gray-600 leading-relaxed">
-                  We're building <strong>India's most transparent brokerage platform</strong> where every client interaction, 
+                  We&apos;re building <strong>India&apos;s most transparent brokerage platform</strong> where every client interaction, 
                   trade confirmation, and fee structure is completely transparent. Our technology platform 
                   provides real-time portfolio tracking, comprehensive research reports, and personalized 
                   investment recommendations for investors across Maharashtra and beyond.
@@ -239,7 +239,7 @@ const NakulAboutPage = () => {
                 
                 <p className="text-gray-600 leading-relaxed">
                   Our ultimate goal is to make quality <em>investment advice and wealth management services</em> accessible 
-                  to India's growing middle class, helping them achieve their financial dreams through disciplined, 
+                  to India&apos;s growing middle class, helping them achieve their financial dreams through disciplined, 
                   long-term investing strategies tailored for the Indian market.
                 </p>
               </div>
@@ -283,7 +283,7 @@ const NakulAboutPage = () => {
           
           <div className="space-y-8">
             <article>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Nakul Thakur's educational background?</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Nakul Thakur&apos;s educational background?</h3>
               <p className="text-gray-600">Nakul Thakur holds an MBA in Finance from IIM Indore (2008-2010), where he specialized in Financial Markets and Investment Banking. He completed his internship at NSE during the 2008-09 market volatility.</p>
             </article>
             
@@ -293,8 +293,8 @@ const NakulAboutPage = () => {
             </article>
             
             <article>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Sapphire Broking's Assets Under Management (AUM)?</h3>
-              <p className="text-gray-600">Under Nakul Thakur's leadership, Sapphire Broking manages over ₹650 crores in assets and serves more than 2,500 active clients with transparent, client-first financial services.</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Sapphire Broking&apos;s Assets Under Management (AUM)?</h3>
+              <p className="text-gray-600">Under Nakul Thakur&apos;s leadership, Sapphire Broking manages over ₹650 crores in assets and serves more than 2,500 active clients with transparent, client-first financial services.</p>
             </article>
             
             <article>
