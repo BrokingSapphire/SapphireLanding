@@ -18,6 +18,11 @@ const MeetOurTeam = () => {
       role: 'Partner',
       image: '/about/9d0779c1-5a9e-446f-82ca-2dfa1d7172da.JPG',
     },
+    {
+      name: 'Akshit Rana',
+      role: 'Head of Operations',
+      image: '/about/8433f5e3-5dd8-4c19-8eee-d08db88bfa3c.JPG',
+    },
   ];
   
   return (
