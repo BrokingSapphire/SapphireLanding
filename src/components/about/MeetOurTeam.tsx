@@ -10,13 +10,18 @@ const MeetOurTeam = () => {
     },
     {
       name: 'Yash Katyari',
-      role: 'Partner',
+      role: 'Partner & Comliance Officer',
       image: '/about/8433f5e3-5dd8-4c19-8eee-d08db88bfa4b.JPG', 
     },
     {
       name: 'Prakash Katyari',
       role: 'Partner',
       image: '/about/9d0779c1-5a9e-446f-82ca-2dfa1d7172da.JPG',
+    },
+    {
+      name: 'Akshit Rana',
+      role: 'Head of Operations',
+      image: '/about/8433f5e3-5dd8-4c19-8eee-d08db88bfa3c.JPG',
     },
   ];
   
@@ -29,15 +34,15 @@ const MeetOurTeam = () => {
         Our philosophy is simple — hire a team of diverse, passionate people and
         foster a culture that empowers you to do your best work.
       </p>
-      <div className="flex flex-wrap justify-center gap-10 sm:gap-40 mt-16 w-full">
+      <div className="flex flex-wrap justify-center gap-8 sm:gap-12 mt-16 max-w-5xl mx-auto px-4">
         {teamMembers.map((member, index) => (
-          <div key={index} className="space-y-1.5 text-center flex flex-col items-center">
+          <div key={index} className="space-y-1.5 text-center flex flex-col items-center w-full sm:w-64 lg:w-72">
             <div className="w-40 h-40 relative mx-auto mb-6">
               <Image
                 src={member.image}
                 alt={member.name}
                 fill
-                className="rounded-full object-cover"
+                className="rounded-full object-cover object-center"
               />
             </div>
             <h1 className="text-xl sm:text-3xl font-semibold">{member.name}</h1>
