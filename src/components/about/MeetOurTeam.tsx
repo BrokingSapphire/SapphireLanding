@@ -10,7 +10,7 @@ const MeetOurTeam = () => {
     },
     {
       name: 'Yash Katyari',
-      role: 'Partner',
+      role: 'Partner & Comliance Officer',
       image: '/about/8433f5e3-5dd8-4c19-8eee-d08db88bfa4b.JPG', 
     },
     {
