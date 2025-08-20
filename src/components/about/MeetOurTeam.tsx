@@ -34,15 +34,15 @@ const MeetOurTeam = () => {
         Our philosophy is simple — hire a team of diverse, passionate people and
         foster a culture that empowers you to do your best work.
       </p>
-      <div className="flex flex-wrap justify-center gap-10 sm:gap-40 mt-16 w-full">
+      <div className="flex flex-wrap justify-center gap-8 sm:gap-12 mt-16 max-w-5xl mx-auto px-4">
         {teamMembers.map((member, index) => (
-          <div key={index} className="space-y-1.5 text-center flex flex-col items-center">
+          <div key={index} className="space-y-1.5 text-center flex flex-col items-center w-full sm:w-64 lg:w-72">
             <div className="w-40 h-40 relative mx-auto mb-6">
               <Image
                 src={member.image}
                 alt={member.name}
                 fill
-                className="rounded-full object-cover"
+                className="rounded-full object-cover object-center"
               />
             </div>
             <h1 className="text-xl sm:text-3xl font-semibold">{member.name}</h1>
