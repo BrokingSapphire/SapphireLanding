@@ -230,19 +230,19 @@ const AkshitAboutPage = () => {
                 <p className="text-gray-600 leading-relaxed">
                   My current initiatives focus on <strong>building next-generation operational infrastructure</strong> that 
                   combines artificial intelligence, machine learning, and advanced analytics to create predictive 
-                  operational models. We're implementing smart automation systems that can anticipate client needs, 
+                  operational models. We&apos;re implementing smart automation systems that can anticipate client needs, 
                   optimize resource allocation, and ensure zero-downtime operations.
                 </p>
                 
                 <p className="text-gray-600 leading-relaxed">
-                  I'm leading digital transformation projects that integrate all our operational touchpoints into a 
+                  I&apos;m leading digital transformation projects that integrate all our operational touchpoints into a 
                   unified, intelligent platform. This includes developing advanced client portals, real-time reporting 
                   systems, and automated compliance monitoring tools that enhance both efficiency and transparency 
                   across all business functions.
                 </p>
                 
                 <p className="text-gray-600 leading-relaxed">
-                  Looking ahead, we're building operational resilience through cloud-based infrastructure, 
+                  Looking ahead, we&apos;re building operational resilience through cloud-based infrastructure, 
                   comprehensive disaster recovery systems, and scalable technology architecture that positions 
                   Sapphire Broking as a technology leader in the Indian financial services sector while maintaining 
                   our commitment to personalized client service.
@@ -386,7 +386,7 @@ const AkshitAboutPage = () => {
           
           <div className="space-y-8">
             <article>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Akshit Rana's role at Sapphire Broking?</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Akshit Rana&apos;s role at Sapphire Broking?</h3>
               <p className="text-gray-600">Akshit Rana serves as Head of Operations at Sapphire Broking, responsible for managing all operational processes, technology systems, and ensuring seamless daily operations for 2,500+ clients and ₹650+ crores AUM with 99.9% system uptime.</p>
             </article>
             
@@ -397,7 +397,7 @@ const AkshitAboutPage = () => {
             
             <article>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">What operational metrics has Akshit achieved for the firm?</h3>
-              <p className="text-gray-600">Under Akshit's leadership, Sapphire Broking maintains 99.9% system uptime, less than 2-minute average trade execution time, 24/7 operational support coverage, and 100% regulatory compliance rate while managing daily operations for thousands of clients.</p>
+              <p className="text-gray-600">Under Akshit&apos;s leadership, Sapphire Broking maintains 99.9% system uptime, less than 2-minute average trade execution time, 24/7 operational support coverage, and 100% regulatory compliance rate while managing daily operations for thousands of clients.</p>
             </article>
             
             <article>

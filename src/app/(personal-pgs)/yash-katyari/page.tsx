@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, TrendingUp, CheckCircle } from 'lucide-react';
+import { Shield, CheckCircle } from 'lucide-react';
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -52,7 +52,7 @@ const YashAboutPage = () => {
                 <div>
                   <p className="text-gray-600 leading-relaxed">
                     My role encompasses comprehensive risk management, regulatory oversight, and the development of robust 
-                    compliance frameworks that protect our clients' interests while enabling them to achieve their financial 
+                    compliance frameworks that protect our clients&apos; interests while enabling them to achieve their financial 
                     goals through transparent and legally sound investment strategies.
                   </p>
                 </div>
@@ -227,8 +227,8 @@ const YashAboutPage = () => {
             <article className="md:col-span-2">
               <div className="space-y-6">
                 <p className="text-gray-600 leading-relaxed">
-                  My primary focus is maintaining <strong>Sapphire Broking's exemplary compliance record</strong> while 
-                  implementing cutting-edge risk management technologies that protect our clients' investments. 
+                  My primary focus is maintaining <strong>Sapphire Broking&apos;s exemplary compliance record</strong> while 
+                  implementing cutting-edge risk management technologies that protect our clients&apos; investments. 
                   I work closely with regulatory bodies to ensure we exceed industry standards and anticipate 
                   regulatory changes before they impact our operations.
                 </p>
@@ -342,18 +342,18 @@ const YashAboutPage = () => {
           
           <div className="space-y-8">
             <article>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Yash Katyari's role at Sapphire Broking?</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Yash Katyari&apos;s role at Sapphire Broking?</h3>
               <p className="text-gray-600">Yash Katyari serves as Partner & Compliance Officer at Sapphire Broking, responsible for ensuring regulatory compliance, risk management, and maintaining the highest standards of client protection across all business operations.</p>
             </article>
             
             <article>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">How does Yash ensure client protection and compliance?</h3>
-              <p className="text-gray-600">Yash maintains comprehensive compliance frameworks, conducts regular internal audits, implements robust risk management systems, and ensures 100% adherence to SEBI regulations and other financial authorities' guidelines.</p>
+              <p className="text-gray-600">Yash maintains comprehensive compliance frameworks, conducts regular internal audits, implements robust risk management systems, and ensures 100% adherence to SEBI regulations and other financial authorities&apos; guidelines.</p>
             </article>
             
             <article>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Sapphire Broking's compliance record under Yash's oversight?</h3>
-              <p className="text-gray-600">Under Yash Katyari's compliance oversight, Sapphire Broking maintains a perfect regulatory record with zero violations, protecting over ₹650 crores in client assets and ensuring transparent, compliant services for 2,500+ clients.</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Sapphire Broking&apos;s compliance record under Yash&apos;s oversight?</h3>
+              <p className="text-gray-600">Under Yash Katyari&apos;s compliance oversight, Sapphire Broking maintains a perfect regulatory record with zero violations, protecting over ₹650 crores in client assets and ensuring transparent, compliant services for 2,500+ clients.</p>
             </article>
             
             <article>

@@ -53,7 +53,7 @@ const PrakashAboutPage = () => {
                 <div>
                   <p className="text-gray-600 leading-relaxed">
                     I believe in the power of long-term partnerships—both with our clients and within our team. 
-                    By combining strategic vision with hands-on execution, we've built a firm that prioritizes 
+                    By combining strategic vision with hands-on execution, we&apos;ve built a firm that prioritizes 
                     client success and maintains the highest standards of service quality in the Indian financial services industry.
                   </p>
                 </div>
@@ -228,21 +228,21 @@ const PrakashAboutPage = () => {
             <article className="md:col-span-2">
               <div className="space-y-6">
                 <p className="text-gray-600 leading-relaxed">
-                  My current focus centers on <strong>scaling Sapphire Broking's impact</strong> while maintaining our 
-                  commitment to personalized service and transparent practices. I'm leading initiatives to enhance our 
+                  My current focus centers on <strong>scaling Sapphire Broking&apos;s impact</strong> while maintaining our 
+                  commitment to personalized service and transparent practices. I&apos;m leading initiatives to enhance our 
                   digital platform capabilities, expand our research offerings, and strengthen our position as 
-                  Maharashtra's most trusted investment advisory firm.
+                  Maharashtra&apos;s most trusted investment advisory firm.
                 </p>
                 
                 <p className="text-gray-600 leading-relaxed">
                   I work closely with our team to identify emerging market opportunities, develop innovative service 
-                  offerings, and ensure we're always ahead of our clients' evolving financial needs. Our strategic 
+                  offerings, and ensure we&apos;re always ahead of our clients&apos; evolving financial needs. Our strategic 
                   partnerships and continuous process improvements help us deliver exceptional value while maintaining 
                   competitive pricing structures.
                 </p>
                 
                 <p className="text-gray-600 leading-relaxed">
-                  Looking ahead, we're building infrastructure to serve the next generation of Indian investors through 
+                  Looking ahead, we&apos;re building infrastructure to serve the next generation of Indian investors through 
                   enhanced technology, comprehensive financial education programs, and strategic alliances that 
                   expand our service capabilities while preserving the personal touch that defines Sapphire Broking.
                 </p>
@@ -350,7 +350,7 @@ const PrakashAboutPage = () => {
                   <div className="w-2 h-2 bg-emerald-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-1">Integrity First</h4>
-                    <p className="text-gray-600 text-sm">Always acting in our clients' best interests with complete transparency and honesty.</p>
+                    <p className="text-gray-600 text-sm">Always acting in our clients&apos; best interests with complete transparency and honesty.</p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -364,7 +364,7 @@ const PrakashAboutPage = () => {
                   <div className="w-2 h-2 bg-emerald-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-1">Long-term Partnership</h4>
-                    <p className="text-gray-600 text-sm">Building lasting relationships that grow and evolve with our clients' financial journeys.</p>
+                    <p className="text-gray-600 text-sm">Building lasting relationships that grow and evolve with our clients&apos; financial journeys.</p>
                   </div>
                 </div>
               </div>
@@ -407,8 +407,8 @@ const PrakashAboutPage = () => {
           
           <div className="space-y-8">
             <article>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Prakash Katyari's role at Sapphire Broking?</h3>
-              <p className="text-gray-600">Prakash Katyari serves as Partner at Sapphire Broking, focusing on strategic business development, client relations, and operational excellence. He plays a key role in driving growth while maintaining the firm's commitment to transparent, client-first financial services.</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Prakash Katyari&apos;s role at Sapphire Broking?</h3>
+              <p className="text-gray-600">Prakash Katyari serves as Partner at Sapphire Broking, focusing on strategic business development, client relations, and operational excellence. He plays a key role in driving growth while maintaining the firm&apos;s commitment to transparent, client-first financial services.</p>
             </article>
             
             <article>
@@ -417,7 +417,7 @@ const PrakashAboutPage = () => {
             </article>
             
             <article>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Prakash's experience in financial services?</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Prakash&apos;s experience in financial services?</h3>
               <p className="text-gray-600">Prakash brings over 15 years of experience in financial services, including senior roles in business development and client relations. He co-founded Sapphire Broking in 2018 and has been instrumental in scaling the business while maintaining quality service standards.</p>
             </article>
             

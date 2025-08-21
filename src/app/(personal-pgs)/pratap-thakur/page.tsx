@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Globe, Lightbulb } from 'lucide-react';
+import { BarChart3, Globe } from 'lucide-react';
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -111,7 +111,7 @@ const PratapAboutPage = () => {
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-gray-900 mb-3">Partner & Chief Investment Strategist, Sapphire Broking</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Lead investment strategy and research initiatives for <strong>Sapphire Broking's</strong> ₹650+ crores AUM. 
+                    Lead investment strategy and research initiatives for <strong>Sapphire Broking&apos;s</strong> ₹650+ crores AUM. 
                     Develop comprehensive market analysis, sector research, and portfolio optimization strategies. Created proprietary 
                     research frameworks that have consistently delivered superior risk-adjusted returns for 2,500+ client portfolios.
                   </p>
@@ -229,20 +229,20 @@ const PratapAboutPage = () => {
               <div className="space-y-6">
                 <p className="text-gray-600 leading-relaxed">
                   My current focus revolves around <strong>leveraging technology and data analytics</strong> to enhance our 
-                  investment research capabilities and deliver more precise, personalized investment strategies. I'm developing 
+                  investment research capabilities and deliver more precise, personalized investment strategies. I&apos;m developing 
                   advanced portfolio optimization models that factor in ESG considerations, market volatility patterns, 
                   and emerging sector dynamics specific to the Indian market.
                 </p>
                 
                 <p className="text-gray-600 leading-relaxed">
-                  I lead our research team in identifying tomorrow's investment themes today—from renewable energy and 
+                  I lead our research team in identifying tomorrow&apos;s investment themes today—from renewable energy and 
                   digitalization trends to demographic shifts and consumption patterns. Our proprietary research framework 
                   combines traditional fundamental analysis with modern data science techniques to uncover hidden value 
                   and anticipate market movements.
                 </p>
                 
                 <p className="text-gray-600 leading-relaxed">
-                  Looking ahead, we're building sophisticated risk management systems and alternative investment strategies 
+                  Looking ahead, we&apos;re building sophisticated risk management systems and alternative investment strategies 
                   that help our clients achieve their financial goals while navigating an increasingly complex global 
                   investment landscape. Our commitment to research excellence ensures we stay ahead of market trends 
                   and deliver consistent value to our investors.
@@ -394,18 +394,18 @@ const PratapAboutPage = () => {
           
           <div className="space-y-8">
             <article>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Pratap Thakur's role at Sapphire Broking?</h3>
-              <p className="text-gray-600">Pratap Thakur serves as Partner & Investment Strategist at Sapphire Broking, specializing in investment research, portfolio optimization, and strategic market analysis. He leads the research team and develops investment strategies for the firm's ₹650+ crores AUM.</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Pratap Thakur&apos;s role at Sapphire Broking?</h3>
+              <p className="text-gray-600">Pratap Thakur serves as Partner & Investment Strategist at Sapphire Broking, specializing in investment research, portfolio optimization, and strategic market analysis. He leads the research team and develops investment strategies for the firm&apos;s ₹650+ crores AUM.</p>
             </article>
             
             <article>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Pratap's investment philosophy and approach?</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">What is Pratap&apos;s investment philosophy and approach?</h3>
               <p className="text-gray-600">Pratap follows a research-driven investment approach combining fundamental analysis with quantitative methods. His philosophy emphasizes long-term value creation, rigorous risk management, and continuous portfolio optimization based on changing market dynamics.</p>
             </article>
             
             <article>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">What kind of returns has Pratap achieved for clients?</h3>
-              <p className="text-gray-600">Under Pratap's investment strategies, client portfolios have achieved an average annual return of 15%+. His research-driven approach and systematic risk management have consistently delivered superior risk-adjusted returns for Sapphire Broking's 2,500+ clients.</p>
+              <p className="text-gray-600">Under Pratap&apos;s investment strategies, client portfolios have achieved an average annual return of 15%+. His research-driven approach and systematic risk management have consistently delivered superior risk-adjusted returns for Sapphire Broking&apos;s 2,500+ clients.</p>
             </article>
             
             <article>
