@@ -1,5 +1,27 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Holiday Calendar | Sapphire Broking: NSE, BSE, MCX & NCDEX Market Holidays",
+  description:
+    "Check the latest stock market holiday calendar with Sapphire Broking. Stay updated on NSE, BSE, MCX, and NCDEX trading holidays for equities, derivatives, commodities, and currency markets to plan your trades better.",
+  keywords:
+    "market holiday calendar, NSE holidays, BSE holidays, MCX trading holidays, NCDEX market holidays, stock market holiday list India, trading holidays 2025, equity market holidays, commodity market holidays, forex trading holidays India, derivatives market holidays, stock exchange holiday calendar, financial market holidays India, trading day schedule, Indian stock market holidays, investment planning holidays",
+  openGraph: {
+    title: "Holiday Calendar | Sapphire Broking: NSE, BSE, MCX & NCDEX Market Holidays",
+    description:
+      "Stay updated with Sapphire Broking’s holiday calendar for NSE, BSE, MCX, and NCDEX. Find trading holidays for equities, derivatives, commodities, and currency markets to plan your investments effectively.",
+    url: "https://www.sapphirebroking.com/holiday-calendar",
+    images: [
+      {
+        url: "https://www.sapphirebroking.com/logo-white.svg",
+        alt: "Sapphire Broking Logo",
+      },
+    ],
+    type: "website",
+  },
+};
 
 // Segment colors mapping
 const segmentColors = {
