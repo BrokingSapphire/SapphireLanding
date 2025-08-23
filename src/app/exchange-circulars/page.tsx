@@ -1,6 +1,25 @@
 "use client";
+
+import { Metadata } from "next";
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Search, ArrowUpDown, ExternalLink, FileText, Loader2, RefreshCw, Home, ChevronRight, WifiOff, X, Check } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: "Exchange Circulars | Sapphire Broking: Stay Updated with Market Regulations",
+  description:
+    "Access the latest exchange circulars from NSE, BSE, MCX, and NCDEX all in one place. Sapphire Broking keeps you informed with regulatory updates, compliance notices, trading guidelines, and important exchange announcements to help you make confident trading and investment decisions.",
+  keywords:
+    "exchange circulars India, NSE circulars, BSE circulars, MCX circulars, NCDEX circulars, stock market regulatory updates, trading compliance India, exchange announcements, market regulations India, SEBI updates, broker compliance circulars, financial market notices, stock exchange guidelines, regulatory framework trading, equity circulars, derivatives circulars, commodity trading regulations, forex trading updates India, investor awareness circulars",
+  openGraph: {
+    title: "Exchange Circulars | Sapphire Broking: Stay Updated with Market Regulations",
+    description:
+      "Get the latest exchange circulars from NSE, BSE, MCX, and NCDEX in one place. Stay informed about regulatory updates, compliance requirements, and trading guidelines to make well-informed market decisions with Sapphire Broking.",
+    url: "https://sapphirebroking.com/exchange-circulars",
+    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
+    type: "website",
+  },
+};
+
 
 interface Circular {
   name: string;
