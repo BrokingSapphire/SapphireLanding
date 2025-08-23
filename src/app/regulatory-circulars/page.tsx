@@ -1,24 +1,7 @@
 "use client";
 
-import { Metadata } from "next";
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Search, ArrowUpDown, ExternalLink, FileText, Loader2, RefreshCw, Home, ChevronRight, WifiOff, X, Check } from 'lucide-react';
-
-export const metadata: Metadata = {
-  title: "Regulatory Circulars | Sapphire Broking: Stay Updated with Market Regulations",
-  description:
-    "Access the latest exchange circulars from NSE, BSE, MCX, and NCDEX all in one place. Sapphire Broking keeps you informed with regulatory updates, compliance notices, trading guidelines, and important exchange announcements to help you make confident trading and investment decisions.",
-  keywords:
-    "exchange circulars India, NSE circulars, BSE circulars, MCX circulars, NCDEX circulars, stock market regulatory updates, trading compliance India, exchange announcements, market regulations India, SEBI updates, broker compliance circulars, financial market notices, stock exchange guidelines, regulatory framework trading, equity circulars, derivatives circulars, commodity trading regulations, forex trading updates India, investor awareness circulars",
-  openGraph: {
-    title: "Exchange Circulars | Sapphire Broking: Stay Updated with Market Regulations",
-    description:
-      "Get the latest exchange circulars from NSE, BSE, MCX, and NCDEX in one place. Stay informed about regulatory updates, compliance requirements, and trading guidelines to make well-informed market decisions with Sapphire Broking.",
-    url: "https://sapphirebroking.com/exchange-circulars",
-    images: [{ url: "https://www.sapphirebroking.com/logo-white.svg" }],
-    type: "website",
-  },
-};
+import { Search, ArrowUpDown, ExternalLink, FileText, Loader2, Home, ChevronRight, WifiOff, X, Check } from 'lucide-react';
 
 
 interface Circular {
@@ -256,14 +239,6 @@ const ComplianceCircularsDashboard: React.FC = () => {
     }
   };
 
-  // Refresh data
-  const refreshData = () => {
-    setCurrentPage(1);
-    setSearchTerm('');
-    setDebouncedSearchTerm('');
-    fetchCirculars(1);
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       day: 'numeric',
@@ -291,42 +266,6 @@ const ComplianceCircularsDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Navigation */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-teal-600 rounded text-white flex items-center justify-center font-bold text-lg">
-                  C
-                </div>
-                <span className="text-xl font-semibold text-gray-900">ComplianceSutra</span>
-              </div>
-              <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
-                <a href="#" className="hover:text-gray-900">ABOUT</a>
-                <a href="#" className="hover:text-gray-900">PRODUCT</a>
-                <a href="#" className="hover:text-gray-900">PRICING</a>
-                <a href="#" className="hover:text-gray-900">CONTACT</a>
-              </nav>
-            </div>
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={refreshData}
-                disabled={loading}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
-              >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              </button>
-              <button className="px-4 py-2 text-sm text-teal-600 border border-teal-600 rounded-md hover:bg-teal-50 transition-colors duration-200">
-                Login
-              </button>
-              <button className="px-4 py-2 text-sm text-white bg-teal-600 rounded-md hover:bg-teal-700 transition-colors duration-200">
-                Signup
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto px-6 py-4">
@@ -347,18 +286,6 @@ const ComplianceCircularsDashboard: React.FC = () => {
           <h1 className="text-4xl font-bold text-teal-800 mb-4">REGULATORY CIRCULARS</h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Complete guide for regulatory compliance, notifications, and industry updates from SEBI, exchanges, and depositories.
-          </p>
-        </div>
-
-        {/* Description */}
-        <div className="bg-white rounded-lg p-8 mb-8 shadow-sm">
-          <p className="text-gray-700 leading-relaxed mb-4">
-            Stay updated with the latest regulatory circulars from Indian financial market authorities. Our comprehensive database covers 
-            circulars from SEBI, NSE, BSE, MCX, NCDEX, and other regulatory bodies to ensure compliance with current regulations.
-          </p>
-          <p className="text-gray-700 leading-relaxed">
-            We provide multiple search and filter options to help you find relevant circulars quickly, making your compliance 
-            management seamless and hassle-free.
           </p>
         </div>
 
