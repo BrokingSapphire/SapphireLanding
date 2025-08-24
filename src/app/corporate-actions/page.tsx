@@ -1,633 +1,697 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { format, addMonths, subMonths } from 'date-fns';
-import { FiCalendar, FiSearch } from 'react-icons/fi';
-import Image from 'next/image';
+import { FiCalendar, FiSearch, FiFilter, FiInfo, FiBell, FiRefreshCw, FiExternalLink } from 'react-icons/fi';
 
-// Set default date range to 1 June - 1 July of the current year
 const currentYear = new Date().getFullYear();
 const defaultFrom = new Date(currentYear, 5, 1); // 1 June
 const defaultTo = new Date(currentYear, 6, 1);   // 1 July
 
-// Event data as shown in the screenshot
-const eventData = [
-  // Events for default date range (1 June - 1 July)
-  {
-    date: `Jun 5, ${currentYear}, Wednesday`,
-    events: [
-      { symbol: 'INFY', company: 'Infosys Limited', purpose: 'Dividend - Rs 10 Per Share' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-      { symbol: 'TCS', company: 'Tata Consultancy Services Limited', purpose: 'Board Meeting' },
-    ],
-  },
-  {
-    date: `Jun 15, ${currentYear}, Saturday`,
-    events: [
-      { symbol: 'HDFCBANK', company: 'HDFC Bank Limited', purpose: 'Quarterly Results' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Bonus Issue' },
-    ],
-  },
-  {
-    date: `Jun 28, ${currentYear}, Friday`,
-    events: [
-      { symbol: 'ITC', company: 'ITC Limited', purpose: 'Dividend - Rs 5 Per Share' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'AGM' },
-    ],
-  },
-  {
-    date: 'Feb 19, 2025, Tuesday',
-    events: [
-      {
-        symbol: 'TCS',
-        company: 'Tata Consultancy Services Limited',
-        purpose: 'Interim Dividend - Rs 11 Per Share',
-        info: true,
-        bell: true,
-      },
-      {
-        symbol: 'TATATECH',
-        company: 'Tata Technologies Limited',
-        purpose: 'February 19, 2025, Wednesday',
-      },
-      {
-        symbol: 'CAPTRUST',
-        company: 'Capital Trust Limited',
-        purpose: 'Interim Dividend - Rs 11 Per Share',
-      },
-      {
-        symbol: 'RIIL',
-        company: 'Reliance Industrial Infrastructure Limited',
-        purpose: 'Interim Dividend - Rs 11 Per Share',
-        bell: true,
-      },
-      {
-        symbol: 'TEJASNET',
-        company: 'Tejas Networks Limited',
-        purpose: 'Interim Dividend - Rs 11 Per Share',
-      },
-      {
-        symbol: '67GS2029',
-        company: 'Government of India',
-        purpose: 'Interim Dividend - Rs 11 Per Share',
-      },
-    ],
-  },
-  {
-    date: 'Feb 20, 2025, Wednesday',
-    events: [
-      {
-        symbol: 'PNB',
-        company: 'Punjab National Bank',
-        purpose: 'Interim Dividend - Rs 11 Per Share',
-      },
-      {
-        symbol: 'VOLTAS',
-        company: 'Voltas Limited',
-        purpose: 'Interim Dividend - Rs 11 Per Share',
-      },
-    ],
-  },
-  // Additional groups for testing sticky header
-  {
-    date: 'Feb 21, 2025, Thursday',
-    events: [
-      { symbol: 'INFY', company: 'Infosys Limited', purpose: 'Board Meeting' },
-      { symbol: 'HDFCBANK', company: 'HDFC Bank Limited', purpose: 'Quarterly Results' },
-      { symbol: 'SBIN', company: 'State Bank of India', purpose: 'Dividend - Rs 5 Per Share' },
-      { symbol: 'ITC', company: 'ITC Limited', purpose: 'Bonus Issue' },
-      { symbol: 'RELIANCE', company: 'Reliance Industries Limited', purpose: 'Buyback' },
-      { symbol: 'ONGC', company: 'Oil and Natural Gas Corporation', purpose: 'AGM' },
-    ],
-  },
-  {
-    date: 'Feb 22, 2025, Friday',
-    events: [
-      { symbol: 'TATAMOTORS', company: 'Tata Motors Limited', purpose: 'Dividend - Rs 2 Per Share' },
-      { symbol: 'BAJAJ-AUTO', company: 'Bajaj Auto Limited', purpose: 'Quarterly Results' },
-      { symbol: 'MARUTI', company: 'Maruti Suzuki India Limited', purpose: 'Board Meeting' },
-      { symbol: 'AXISBANK', company: 'Axis Bank Limited', purpose: 'Dividend - Rs 3 Per Share' },
-      { symbol: 'ICICIBANK', company: 'ICICI Bank Limited', purpose: 'Bonus Issue' },
-      { symbol: 'LT', company: 'Larsen & Toubro Limited', purpose: 'AGM' },
-    ],
-  },
-  {
-    date: 'Feb 23, 2025, Saturday',
-    events: [
-      { symbol: 'SUNPHARMA', company: 'Sun Pharmaceutical Industries', purpose: 'Dividend - Rs 1 Per Share' },
-      { symbol: 'DRREDDY', company: 'Dr. Reddy’s Laboratories', purpose: 'Quarterly Results' },
-      { symbol: 'CIPLA', company: 'Cipla Limited', purpose: 'Board Meeting' },
-      { symbol: 'DIVISLAB', company: 'Divi’s Laboratories', purpose: 'Dividend - Rs 4 Per Share' },
-      { symbol: 'ULTRACEMCO', company: 'UltraTech Cement', purpose: 'Bonus Issue' },
-      { symbol: 'GRASIM', company: 'Grasim Industries', purpose: 'AGM' },
-    ],
-  },
-];
-
-// Remove filterTags and related state
-// const filterTags = ['Dividend', 'Bonus', 'Large Cap'];
-// const [activeTags, setActiveTags] = useState(filterTags);
-// const [appliedTags, setAppliedTags] = useState(filterTags);
-
 export default function EventCalendarPage() {
-  // Filter option states (not applied yet)
-  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: defaultFrom, to: defaultTo });
+  const [eventData, setEventData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [dateRange, setDateRange] = useState({ from: defaultFrom, to: defaultTo });
   const [search, setSearch] = useState('');
-  // New: filter checkbox states
-  const [showEventsFrom, setShowEventsFrom] = useState<{ watchlist: boolean; holdings: boolean }>({ watchlist: false, holdings: false });
-  const [typeOfEvents, setTypeOfEvents] = useState<{
-    dividend: boolean;
-    bonus: boolean;
-    split: boolean;
-    reverseSplit: boolean;
-    rights: boolean;
-    merger: boolean;
-    demerger: boolean;
-    results: boolean;
-    buyback: boolean;
-    reductionOfCapital: boolean;
-  }>({
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
+  
+  const [typeOfEvents, setTypeOfEvents] = useState({
     dividend: false,
     bonus: false,
     split: false,
-    reverseSplit: false,
     rights: false,
     merger: false,
-    demerger: false,
-    results: false,
-    buyback: false,
-    reductionOfCapital: false,
+    agm: false,
+    boardMeeting: false,
   });
-  const [marketCap, setMarketCap] = useState<{ large: boolean; mid: boolean; small: boolean }>({ large: false, mid: false, small: false });
-  // Applied filter states
-  const [appliedDateRange, setAppliedDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: defaultFrom, to: defaultTo });
-  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
+  
+  const [marketCap, setMarketCap] = useState({
+    large: false,
+    mid: false,
+    small: false
+  });
 
-  // Add state for applied filters
-  const [appliedTypeOfEvents, setAppliedTypeOfEvents] = useState<typeof typeOfEvents>(typeOfEvents);
-  const [appliedShowEventsFrom, setAppliedShowEventsFrom] = useState<typeof showEventsFrom>(showEventsFrom);
-  const [appliedMarketCap, setAppliedMarketCap] = useState<typeof marketCap>(marketCap);
-
-  // Handler for calendar date range selection
-  function shiftDateRange(direction: 'back' | 'forward') {
-    if (!dateRange.from || !dateRange.to) return;
-    let newFrom, newTo;
-    if (direction === 'back') {
-      newFrom = subMonths(dateRange.from, 1);
-      newTo = subMonths(dateRange.to, 1);
-    } else {
-      newFrom = addMonths(dateRange.from, 1);
-      newTo = addMonths(dateRange.to, 1);
+  // Helper function to format date
+  const formatEventDate = (dateStr) => {
+    try {
+      if (!dateStr) return 'Date not available';
+      
+      let date;
+      if (dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+          date = new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+      } else if (dateStr.includes('-')) {
+        date = new Date(dateStr);
+      } else {
+        date = new Date(dateStr);
+      }
+      
+      if (isNaN(date.getTime())) {
+        return dateStr;
+      }
+      
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      });
+    } catch (error) {
+      return dateStr || 'Date not available';
     }
-    setDateRange({ from: newFrom, to: newTo });
-    setAppliedDateRange({ from: newFrom, to: newTo });
-  }
+  };
 
-  // Filtered events (only when filters are applied)
-  const filteredEventData = eventData.map(group => {
-    // Only filter by typeOfEvents (purpose) for now
-    const activeTypes = Object.entries(appliedTypeOfEvents).filter(([, v]) => v).map(([k]) => k.toLowerCase());
-    return {
-      ...group,
-      events: group.events.filter(event => {
-        // If no type filters selected, show all
-        if (activeTypes.length === 0) return true;
-        // Match if any type is in the purpose string
-        return activeTypes.some(type => event.purpose.toLowerCase().includes(type));
-      })
-    };
+  // Helper function to determine purpose
+  const determinePurpose = (event) => {
+    const eventType = event.eventType?.toLowerCase() || '';
+    const purpose = event.purpose?.toLowerCase() || '';
+    const remarks = event.remarks || '';
+    
+    if (event.dividend && event.dividend !== '-') {
+      return `Dividend - Rs ${event.dividend} Per Share`;
+    }
+    
+    if (eventType.includes('dividend')) {
+      return 'Dividend Declaration';
+    }
+    
+    if (eventType.includes('agm')) {
+      return 'Annual General Meeting';
+    }
+    
+    if (eventType.includes('egm')) {
+      return 'Extraordinary General Meeting';
+    }
+    
+    if (eventType.includes('board meeting')) {
+      return remarks ? `Board Meeting - ${remarks}` : 'Board Meeting';
+    }
+    
+    if (eventType.includes('bonus')) {
+      return event.ratio && event.ratio !== '-' ? `Bonus Issue - ${event.ratio}` : 'Bonus Issue';
+    }
+    
+    if (eventType.includes('split')) {
+      return event.ratio && event.ratio !== '-' ? `Stock Split - ${event.ratio}` : 'Stock Split';
+    }
+    
+    if (purpose === 'pom') {
+      return 'Postal Ballot/Meeting';
+    }
+    
+    if (remarks && remarks !== '') {
+      return remarks;
+    }
+    
+    return eventType ? eventType.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Corporate Action';
+  };
+
+  // Transform API data
+  const transformApiData = (apiData) => {
+    if (!apiData?.data?.list) return [];
+
+    const groupedEvents = [];
+    
+    Object.keys(apiData.data.list).forEach(dateKey => {
+      const events = apiData.data.list[dateKey];
+      
+      if (!Array.isArray(events)) return;
+      
+      const transformedEvents = events.map(event => ({
+        symbol: event.scId || event.stockName?.replace(/\s+/g, '').toUpperCase() || 'N/A',
+        company: event.stockName || 'Unknown Company',
+        purpose: determinePurpose(event),
+        eventType: event.eventType || 'Unknown',
+        announcementDate: event.announcementDate,
+        exDate: event.exDate,
+        dividend: event.dividend !== '-' ? event.dividend : null,
+        lastValue: event.lastValue,
+        perChange: event.perChange,
+        marketCap: event.marketCap || 0,
+        url: event.url,
+        source: event.source,
+        ratio: event.ratio !== '-' ? event.ratio : null,
+        rawEvent: event
+      }));
+
+      const formattedDate = formatEventDate(events[0]?.disp_date || events[0]?.exDate || dateKey);
+      
+      groupedEvents.push({
+        date: formattedDate,
+        events: transformedEvents
+      });
+    });
+
+    return groupedEvents;
+  };
+
+  // Fetch events data
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const apiUrl = 'https://api.moneycontrol.com/mcapi/v1/ecalendar/corporate-action?indexId=All&page=1&event=All&apiVersion=161&orderBy=asc&deviceType=W&duration=UP';
+      const CORS_PROXY = 'https://api.allorigins.win/get?url=';
+      const proxyUrl = CORS_PROXY + encodeURIComponent(apiUrl);
+      
+      const response = await fetch(proxyUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const proxyData = await response.json();
+      const apiData = JSON.parse(proxyData.contents);
+      const transformedData = transformApiData(apiData);
+      
+      setEventData(transformedData);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching events:', err);
+      setError(`API Error: ${err.message}. Please try again.`);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  // Filter data
+  const filteredData = eventData.map(group => {
+    let filteredEvents = group.events;
+    
+    if (search) {
+      filteredEvents = filteredEvents.filter(event => 
+        event.symbol.toLowerCase().includes(search.toLowerCase()) ||
+        event.company.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    
+    const activeTypes = Object.entries(typeOfEvents).filter(([, v]) => v).map(([k]) => k.toLowerCase());
+    if (activeTypes.length > 0) {
+      filteredEvents = filteredEvents.filter(event => {
+        const purpose = event.purpose.toLowerCase();
+        const eventType = event.eventType?.toLowerCase() || '';
+        
+        return activeTypes.some(type => {
+          if (type === 'boardmeeting') return eventType.includes('board meeting');
+          if (type === 'agm') return eventType.includes('agm') || eventType.includes('egm');
+          return purpose.includes(type) || eventType.includes(type);
+        });
+      });
+    }
+    
+    const activeMarketCaps = Object.entries(marketCap).filter(([, v]) => v).map(([k]) => k);
+    if (activeMarketCaps.length > 0) {
+      filteredEvents = filteredEvents.filter(event => {
+        const cap = event.marketCap || 0;
+        if (activeMarketCaps.includes('large') && cap >= 20000000000) return true;
+        if (activeMarketCaps.includes('mid') && cap >= 5000000000 && cap < 20000000000) return true;
+        if (activeMarketCaps.includes('small') && cap < 5000000000) return true;
+        return false;
+      });
+    }
+
+    return { ...group, events: filteredEvents };
   }).filter(group => group.events.length > 0);
 
-  // Show all events if no filters are applied
-  const showAll = !appliedDateRange.from && !appliedDateRange.to && search === '' && appliedTypeOfEvents.dividend === false && appliedTypeOfEvents.bonus === false && appliedTypeOfEvents.split === false && appliedTypeOfEvents.reverseSplit === false && appliedTypeOfEvents.rights === false && appliedTypeOfEvents.merger === false && appliedTypeOfEvents.demerger === false && appliedTypeOfEvents.results === false && appliedTypeOfEvents.buyback === false && appliedTypeOfEvents.reductionOfCapital === false && marketCap.large === false && marketCap.mid === false && marketCap.small === false;
-  const displayData = showAll ? eventData : filteredEventData;
+  const displayData = filteredData;
 
-  // Calculate event counts for each type for the popover
-  const eventTypeCounts: Record<string, number> = {
+  // Calculate event counts
+  const eventTypeCounts = {
     dividend: 0,
     bonus: 0,
     split: 0,
-    reverseSplit: 0,
     rights: 0,
     merger: 0,
-    demerger: 0,
-    results: 0,
-    buyback: 0,
-    reductionOfCapital: 0,
+    agm: 0,
+    boardMeeting: 0,
   };
+
   eventData.forEach(group => {
     group.events.forEach(event => {
-      Object.keys(eventTypeCounts).forEach(type => {
-        // Match type in purpose string
-        if (event.purpose.toLowerCase().includes(type.toLowerCase())) {
-          eventTypeCounts[type]++;
-        }
-      });
+      const purpose = event.purpose.toLowerCase();
+      const eventType = event.eventType?.toLowerCase() || '';
+      
+      if (purpose.includes('dividend')) eventTypeCounts.dividend++;
+      if (purpose.includes('bonus')) eventTypeCounts.bonus++;
+      if (purpose.includes('split')) eventTypeCounts.split++;
+      if (purpose.includes('rights')) eventTypeCounts.rights++;
+      if (purpose.includes('merger')) eventTypeCounts.merger++;
+      if (eventType.includes('agm') || eventType.includes('egm')) eventTypeCounts.agm++;
+      if (eventType.includes('board meeting')) eventTypeCounts.boardMeeting++;
     });
   });
 
-  // Helper to get active filter tags
-  const getActiveFilterTags = () => {
-    const tags: { label: string; type: 'type' | 'from' | 'cap'; key: string }[] = [];
-    // Show events from
-    if (appliedShowEventsFrom.watchlist) tags.push({ label: 'Watchlist', type: 'from', key: 'watchlist' });
-    if (appliedShowEventsFrom.holdings) tags.push({ label: 'Holdings', type: 'from', key: 'holdings' });
-    // Type of events
-    Object.entries(appliedTypeOfEvents).forEach(([k, v]) => {
-      if (v) tags.push({ label: k.charAt(0).toUpperCase() + k.slice(1).replace(/([A-Z])/g, ' $1'), type: 'type', key: k });
-    });
-    // Market Cap
-    if (appliedMarketCap.large) tags.push({ label: 'Large Cap', type: 'cap', key: 'large' });
-    if (appliedMarketCap.mid) tags.push({ label: 'Mid Cap', type: 'cap', key: 'mid' });
-    if (appliedMarketCap.small) tags.push({ label: 'Small Cap', type: 'cap', key: 'small' });
-    return tags;
-  };
-  const activeFilterTags = getActiveFilterTags();
+  // Get active filter tags
+  const activeFilterTags = [];
+  Object.entries(typeOfEvents).forEach(([k, v]) => {
+    if (v) {
+      let label = k.charAt(0).toUpperCase() + k.slice(1).replace(/([A-Z])/g, ' $1');
+      if (k === 'boardMeeting') label = 'Board Meeting';
+      if (k === 'agm') label = 'AGM';
+      activeFilterTags.push({ label, type: 'type', key: k });
+    }
+  });
 
-  // Handler to remove a tag
-  function removeFilterTag(tag: { label: string; type: 'type' | 'from' | 'cap'; key: string }) {
-    if (tag.type === 'from') {
-      setShowEventsFrom(s => ({ ...s, [tag.key]: false }));
-      setAppliedShowEventsFrom(s => ({ ...s, [tag.key]: false }));
-    } else if (tag.type === 'type') {
+  Object.entries(marketCap).forEach(([k, v]) => {
+    if (v) {
+      activeFilterTags.push({ 
+        label: k.charAt(0).toUpperCase() + k.slice(1) + ' Cap', 
+        type: 'cap', 
+        key: k 
+      });
+    }
+  });
+
+  // Remove filter tag
+  const removeFilterTag = (tag) => {
+    if (tag.type === 'type') {
       setTypeOfEvents(s => ({ ...s, [tag.key]: false }));
-      setAppliedTypeOfEvents(s => ({ ...s, [tag.key]: false }));
     } else if (tag.type === 'cap') {
       setMarketCap(s => ({ ...s, [tag.key]: false }));
-      setAppliedMarketCap(s => ({ ...s, [tag.key]: false }));
     }
-  }
+  };
 
-  return (
-    <div className="w-full pl-4 pb-12 pt-5 mt-20">
-      {/* Replace the two-row layout with a single flex row with wrap for tags and controls */}
-      <div className="w-full px-20">
-        <h1 className="text-[36px] font-medium font-lexend mb-[4px]">Event Calendar</h1>
-        <p className="text-gray-500 mb-8 text-[20px] text-regular font-poppins">
-          Your one-stop calendar for all key stock market events and holidays in India.
-        </p>
-        {/* Tags and Controls in a single flex row with wrap */}
-        <div className="flex flex-wrap w-full gap-y-2 mb-6">
-          {/* Tags section: flex-1 so it takes available space, min-w-0 for wrapping */}
-          <div className="flex-1 flex flex-wrap gap-3 gap-y-2 items-center min-w-0">
-            {activeFilterTags.map(tag => (
-              <span
-                key={tag.label}
-                className="flex items-center px-3 py-2 rounded-sm text-sm font-medium border bg-gray-100 text-gray-700 border-gray-200 mr-2 mb-2"
-              >
-                {tag.label}
-                <button
-                  className="ml-2 text-gray-400 hover:text-gray-600 focus:outline-none text-xl font-bold leading-none"
-                  onClick={e => { e.stopPropagation(); removeFilterTag(tag); }}
-                >
-                  &times;
-                </button>
-              </span>
-            ))}
-          </div>
-          {/* Controls section: flex-shrink-0 so it stays at the end of the first line */}
-          <div className="flex-shrink-0 flex items-top h-10 gap-3">
-            {/* Date Range Display with Arrows (no popover, no calendar) */}
-            <div className="flex items-center border rounded px-4 py-2 bg-white text-gray-700 text-sm gap-2 min-w-[180px]" style={{ borderColor: '#EBEBEB' }}>
-              <FiCalendar className="text-lg text-[#717171]" />
-              <span className="font-poppins text-[#717171] text-[14px] font-medium">
-                {dateRange.from && dateRange.to
-                  ? `${format(dateRange.from, 'd MMMM')} - ${format(dateRange.to, 'd MMMM')}`
-                  : 'Pick a date range'}
-              </span>
-              <button
-                className="ml-2 text-[#717171]  focus:outline-none text-xl font-medium leading-none"
-                onClick={() => shiftDateRange('back')}
-                type="button"
-              >
-                &#60;
-              </button>
-              <button
-                className="text-[#717171] focus:outline-none text-xl font- leading-none"
-                onClick={() => shiftDateRange('forward')}
-                type="button"
-              >
-                &#62;
-              </button>
+  // Date range handlers
+  const shiftDateRange = (direction) => {
+    if (!dateRange.from || !dateRange.to) return;
+    const newFrom = direction === 'back' ? subMonths(dateRange.from, 1) : addMonths(dateRange.from, 1);
+    const newTo = direction === 'back' ? subMonths(dateRange.to, 1) : addMonths(dateRange.to, 1);
+    setDateRange({ from: newFrom, to: newTo });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                Event Calendar
+              </h1>
+              <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+                Your one-stop calendar for all key stock market events and holidays in India.
+              </p>
             </div>
-            {/* Filter Button Popover */}
-            <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2 px-4 py-2 text-gray-700 text-sm border bg-white hover:bg-white hover:text-gray-700 focus:bg-white focus:text-gray-700 active:bg-white active:text-gray-700" style={{ borderColor: '#EBEBEB' }}>
-                  <Image src="/event-calendar/filter.svg" alt="Filter" width={16} height={16} />
-                  <span className='text-[14px] font-medium font-poppins text-[#717171]'>Apply Filter</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-64 p-4" align="end">
-                {/* Show events from */}
-                <div className="mb-4">
-                  <div className="text-xs font-semibold text-gray-700 mb-3">Show events from</div>
-                  <div className="flex flex-col gap-2">
-                    {/* For 'Show events from' options: */}
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={showEventsFrom.watchlist} onChange={e => { setShowEventsFrom(s => { const n = { ...s, watchlist: e.target.checked }; setAppliedShowEventsFrom(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {showEventsFrom.watchlist && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Watchlist</span>
-                      </span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={showEventsFrom.holdings} onChange={e => { setShowEventsFrom(s => { const n = { ...s, holdings: e.target.checked }; setAppliedShowEventsFrom(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {showEventsFrom.holdings && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Holdings</span>
-                      </span>
-                    </label>
-                  </div>
+            
+            <div className="flex items-center justify-center py-20">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <FiCalendar className="h-6 w-6 text-blue-600" />
                 </div>
-                {/* Type of events */}
-                <div className="mb-4">
-                  <div className="text-xs font-semibold text-gray-700 mb-3">Type of events</div>
-                  <div className="flex flex-col gap-2">
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.dividend} onChange={e => { setTypeOfEvents(s => { const n = { ...s, dividend: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.dividend && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Dividend</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.dividend} events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.bonus} onChange={e => { setTypeOfEvents(s => { const n = { ...s, bonus: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.bonus && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Bonus</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.bonus} events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.split} onChange={e => { setTypeOfEvents(s => { const n = { ...s, split: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.split && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Split</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.split} events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.reverseSplit} onChange={e => { setTypeOfEvents(s => { const n = { ...s, reverseSplit: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.reverseSplit && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Reverse Split</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.reverseSplit} events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.rights} onChange={e => { setTypeOfEvents(s => { const n = { ...s, rights: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.rights && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Rights</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.rights} events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.merger} onChange={e => { setTypeOfEvents(s => { const n = { ...s, merger: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.merger && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Merger</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.merger} events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.demerger} onChange={e => { setTypeOfEvents(s => { const n = { ...s, demerger: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.demerger && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Demerger</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.demerger} events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.results} onChange={e => { setTypeOfEvents(s => { const n = { ...s, results: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.results && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Results</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.results} events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.buyback} onChange={e => { setTypeOfEvents(s => { const n = { ...s, buyback: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.buyback && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Buyback</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.buyback} events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={typeOfEvents.reductionOfCapital} onChange={e => { setTypeOfEvents(s => { const n = { ...s, reductionOfCapital: e.target.checked }; setAppliedTypeOfEvents(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {typeOfEvents.reductionOfCapital && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Reduction of capital</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">{eventTypeCounts.reductionOfCapital} events</span>
-                    </label>
-                  </div>
-                </div>
-                {/* Market Cap */}
-                <div className="mb-2">
-                  <div className="text-xs font-semibold text-gray-700 mb-3">Market Cap</div>
-                  <div className="flex flex-col gap-2">
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={marketCap.large} onChange={e => { setMarketCap(s => { const n = { ...s, large: e.target.checked }; setAppliedMarketCap(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {marketCap.large && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Large Cap</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">0 events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={marketCap.mid} onChange={e => { setMarketCap(s => { const n = { ...s, mid: e.target.checked }; setAppliedMarketCap(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {marketCap.mid && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Mid Cap</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">0 events</span>
-                    </label>
-                    <label className="flex w-full items-center cursor-pointer select-none mb-1">
-                      <span className="flex items-center gap-2">
-                        <input type="checkbox" checked={marketCap.small} onChange={e => { setMarketCap(s => { const n = { ...s, small: e.target.checked }; setAppliedMarketCap(n); return n; }); }} className="hidden peer" />
-                        <span className="w-4 h-4 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-[#064d51] peer-checked:border-[#064d51] transition-colors">
-                          {marketCap.small && (
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                          )}
-                        </span>
-                        <span className="text-sm">Small Cap</span>
-                      </span>
-                      <span className="text-xs text-gray-400 ml-auto">0 events</span>
-                    </label>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-            {/* Search Input */}
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <FiSearch />
-              </span>
-              <input
-                type="text"
-                placeholder="Search Stocks..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-10 pr-3 py-2 border rounded text-sm w-[254px] focus:outline-none"
-              />
+              </div>
+              <span className="ml-4 text-lg text-gray-600">Loading events...</span>
             </div>
           </div>
         </div>
-        {/* Event Table */}
-        <div className="bg-white rounded shadow w-full max-h-[500px] overflow-y-auto">
-          {/* Show filtered count */}
-          {/* <div className="px-4 pt-4 pb-2 text-gray-600 text-sm font-medium">
-            Showing {totalFilteredEvents} event{totalFilteredEvents !== 1 ? 's' : ''}
-          </div> */}
-          <table className="w-full text-left">
-            <thead className="sticky top-0 z-20 bg-white">
-              <tr className="bg-white text-[#000000] border-b border-[#ebebeb] font-lexend text-regular text-[16px] ">
-                <th className="px-4 pr-20 py-3 ">Symbol</th>
-                <th className="pl-40 py-3 ">Company Name</th>
-                <th className="px-4 py-3 ">Purpose</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayData.length === 0 && (
-                <tr><td colSpan={3} className="text-center py-8 text-gray-400">No events found.</td></tr>
-              )}
-              {displayData.map((group) => (
-                <React.Fragment key={group.date}>
-                  <tr className="bg-white border-b border-[#ebebeb] text-regular font-poppins text-[14px] sticky top-[48px] z-10" style={{ background: 'white' }}>
-                    <td colSpan={3} className="px-4 py-2 border-b">{group.date}</td>
-                  </tr>
-                  {group.events.map((event, idx) => (
-                    <tr key={event.symbol + idx} className="border-b text-[#636363] last:border-b-0 hover:bg-[#f5f7fa] group">
-                      <td className="pl-4 pr-20 text-regular font-poppins ml-5 text-[14px] py-2 whitespace-nowrap">{event.symbol}</td>
-                      <td className="pl-40 text-regular font-poppins text-[14px] py-2 whitespace-nowrap">{event.company}</td>
-                      <td className="pl-4 pr-6 text-regular font-poppins text-[14px] py-2">
-                        <div className="flex items-center justify-between w-full min-w-[220px]">
-                          <span className="flex items-center gap-2">
-                            {event.purpose}
-                            <span className="relative group/info">
-                              <Image
-                                src="/event-calendar/info.svg"
-                                alt="Info"
-                                width={20}
-                                height={20}
-                                className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer align-middle"
-                              />
-                              {/* Tooltip on hover */}
-                              <div className="absolute left-1/2 -translate-x-1/2 mt-2 z-30 min-w-[260px] bg-white border border-gray-200 rounded-lg shadow-lg px-4 py-3 text-gray-700 text-sm font-normal whitespace-pre-line opacity-0 group-hover/info:opacity-100 pointer-events-none transition-opacity duration-200" style={{top: '100%'}}>
-                                For each share you hold, you will receive ₹12.00
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8 lg:mb-12">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+              Event Calendar
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+              Your one-stop calendar for all key stock market events and holidays in India.
+            </p>
+          </div>
+
+          {/* Error indicator */}
+          {error && (
+            <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <FiInfo className="h-5 w-5 text-amber-600 mr-3" />
+                  <span className="text-amber-800 text-sm font-medium">{error}</span>
+                </div>
+                <button 
+                  onClick={fetchEvents}
+                  className="ml-4 inline-flex items-center px-3 py-1.5 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition-colors duration-200"
+                >
+                  <FiRefreshCw className="h-4 w-4 mr-1" />
+                  Retry
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Filter Controls */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
+            {/* Active Filter Tags */}
+            {activeFilterTags.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Active Filters</h3>
+                <div className="flex flex-wrap gap-2">
+                  {activeFilterTags.map(tag => (
+                    <span
+                      key={tag.label}
+                      className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 text-sm font-medium rounded-full border border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-colors"
+                    >
+                      {tag.label}
+                      <button
+                        className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none"
+                        onClick={() => removeFilterTag(tag)}
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Control Row */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              {/* Date Range Selector */}
+              <div className="flex items-center bg-gray-50 rounded-xl p-3 border border-gray-200">
+                <FiCalendar className="h-5 w-5 text-gray-500 mr-3" />
+                <span className="text-gray-700 font-medium mr-4">
+                  {dateRange.from && dateRange.to
+                    ? `${format(dateRange.from, 'd MMM')} - ${format(dateRange.to, 'd MMM')}`
+                    : 'Select date range'}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+                    onClick={() => shiftDateRange('back')}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+                    onClick={() => shiftDateRange('forward')}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Controls */}
+              <div className="flex items-center space-x-4">
+                {/* Filter Popover */}
+                <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+                    >
+                      <FiFilter className="h-4 w-4 mr-2" />
+                      <span className="text-sm font-medium">Filter</span>
+                      {activeFilterTags.length > 0 && (
+                        <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-blue-600 rounded-full">
+                          {activeFilterTags.length}
+                        </span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0 bg-white rounded-xl shadow-xl border border-gray-200" align="end">
+                    <div className="p-6">
+                      {/* Type of events */}
+                      <div className="mb-6">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Type of events</h4>
+                        <div className="space-y-2 max-h-48 overflow-y-auto">
+                          {Object.entries(eventTypeCounts).map(([key, count]) => {
+                            let label = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+                            if (key === 'boardMeeting') label = 'Board Meeting';
+                            if (key === 'agm') label = 'AGM';
+                            
+                            return (
+                              <label key={key} className="flex items-center justify-between cursor-pointer group py-1">
+                                <div className="flex items-center">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={typeOfEvents[key]} 
+                                    onChange={e => setTypeOfEvents(s => ({ ...s, [key]: e.target.checked }))}
+                                    className="hidden" 
+                                  />
+                                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                                    typeOfEvents[key] 
+                                      ? 'bg-blue-600 border-blue-600' 
+                                      : 'border-gray-300 group-hover:border-gray-400'
+                                  }`}>
+                                    {typeOfEvents[key] && (
+                                      <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                      </svg>
+                                    )}
+                                  </div>
+                                  <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">{label}</span>
+                                </div>
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
+                                  {count}
+                                </span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Market Cap */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Market Cap</h4>
+                        <div className="space-y-3">
+                          {[
+                            { key: 'large', label: 'Large Cap', count: eventData.reduce((acc, group) => acc + group.events.filter(e => e.marketCap >= 20000000000).length, 0) },
+                            { key: 'mid', label: 'Mid Cap', count: eventData.reduce((acc, group) => acc + group.events.filter(e => e.marketCap >= 5000000000 && e.marketCap < 20000000000).length, 0) },
+                            { key: 'small', label: 'Small Cap', count: eventData.reduce((acc, group) => acc + group.events.filter(e => e.marketCap < 5000000000).length, 0) }
+                          ].map(({ key, label, count }) => (
+                            <label key={key} className="flex items-center justify-between cursor-pointer group">
+                              <div className="flex items-center">
+                                <input 
+                                  type="checkbox" 
+                                  checked={marketCap[key]} 
+                                  onChange={e => setMarketCap(s => ({ ...s, [key]: e.target.checked }))}
+                                  className="hidden" 
+                                />
+                                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                                  marketCap[key] 
+                                    ? 'bg-blue-600 border-blue-600' 
+                                    : 'border-gray-300 group-hover:border-gray-400'
+                                }`}>
+                                  {marketCap[key] && (
+                                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">{label}</span>
                               </div>
-                            </span>
-                          </span>
-                          <span className="flex-shrink-0 ml-4">
-                            <Image
-                              src="/event-calendar/bell.svg"
-                              alt="Notification"
-                              width={20}
-                              height={20}
-                              className="w-5 h-5 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer align-middle"
-                              style={{ display: 'block' }}
-                            />
-                          </span>
+                              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
+                                {count}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {/* Search Input */}
+                <div className="relative">
+                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search stocks..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="pl-10 pr-4 py-2 w-64 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Events Table */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+            {/* Table Header */}
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Corporate Events</h3>
+                <span className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full border">
+                  {displayData.reduce((total, group) => total + group.events.length, 0)} events
+                </span>
+              </div>
+            </div>
+
+            {/* Table Content */}
+            <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+              <table className="w-full">
+                <thead className="sticky top-0 z-10 bg-white border-b border-gray-200">
+                  <tr>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-900">Symbol</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-900">Company Name</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-900">Purpose</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-900">Price Info</th>
+                    <th className="text-left py-4 px-6 text-sm font-semibold text-gray-900">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {displayData.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-12">
+                        <div className="flex flex-col items-center justify-center">
+                          <FiCalendar className="h-12 w-12 text-gray-300 mb-4" />
+                          <p className="text-gray-500 text-lg font-medium">No events found</p>
+                          <p className="text-gray-400 text-sm mt-1">Try adjusting your filters or search terms</p>
                         </div>
                       </td>
                     </tr>
-                  ))}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
+                  ) : (
+                    displayData.map((group, groupIdx) => (
+                      <React.Fragment key={group.date}>
+                        {/* Date Header */}
+                        <tr className="bg-gradient-to-r from-blue-50 to-indigo-50 sticky top-[57px] z-10">
+                          <td colSpan={5} className="px-6 py-3 border-b border-gray-200">
+                            <div className="flex items-center">
+                              <FiCalendar className="h-4 w-4 text-blue-600 mr-2" />
+                              <span className="text-sm font-semibold text-blue-900">{group.date}</span>
+                              <span className="ml-3 text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                                {group.events.length} events
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                        
+                        {/* Events */}
+                        {group.events.map((event, idx) => (
+                          <tr 
+                            key={`${event.symbol}-${idx}`} 
+                            className="hover:bg-gray-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0 group"
+                          >
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col space-y-1">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 w-fit">
+                                  {event.symbol}
+                                </span>
+                                {event.announcementDate && (
+                                  <span className="text-xs text-gray-500">
+                                    Announced: {event.announcementDate}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col">
+                                <div className="text-sm font-medium text-gray-900 truncate max-w-xs" title={event.company}>
+                                  {event.company}
+                                </div>
+                                {event.source && event.source !== '-' && (
+                                  <span className="text-xs text-gray-500 mt-1">
+                                    Source: {event.source}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col space-y-1">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-sm text-gray-700">{event.purpose}</span>
+                                  <div className="relative group/tooltip">
+                                    <FiInfo className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-help" />
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-20 max-w-xs">
+                                      <div className="text-center">
+                                        {event.dividend && <div>Dividend: Rs {event.dividend}</div>}
+                                        {event.ratio && <div>Ratio: {event.ratio}</div>}
+                                        {(!event.dividend && !event.ratio) && 'More details about this corporate action'}
+                                      </div>
+                                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Event Type Badge */}
+                                <div className="flex items-center space-x-2">
+                                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                    event.eventType.includes('AGM') || event.eventType.includes('EGM') 
+                                      ? 'bg-green-100 text-green-800'
+                                      : event.eventType.includes('Dividend')
+                                      ? 'bg-purple-100 text-purple-800' 
+                                      : event.eventType.includes('Board')
+                                      ? 'bg-orange-100 text-orange-800'
+                                      : event.eventType.includes('Bonus')
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    {event.eventType}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                            
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col space-y-1 text-sm">
+                                {event.lastValue && (
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-gray-600">₹{event.lastValue}</span>
+                                    {event.perChange && (
+                                      <span className={`text-xs font-medium ${
+                                        parseFloat(event.perChange) >= 0 
+                                          ? 'text-green-600' 
+                                          : 'text-red-600'
+                                      }`}>
+                                        {parseFloat(event.perChange) >= 0 ? '+' : ''}{event.perChange}%
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                                {event.marketCap && (
+                                  <span className="text-xs text-gray-500">
+                                    MCap: ₹{(event.marketCap / 10000000).toFixed(1)}Cr
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            
+                            <td className="px-6 py-4">
+                              <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200" title="Set Alert">
+                                  <FiBell className="h-4 w-4" />
+                                </button>
+                                {event.url && (
+                                  <a 
+                                    href={event.url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-200"
+                                    title="View Details"
+                                  >
+                                    <FiExternalLink className="h-4 w-4" />
+                                  </a>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
