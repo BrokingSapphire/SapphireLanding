@@ -1,27 +1,9 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { Metadata } from "next";
+"use client"
 
-export const metadata: Metadata = {
-  title: "Holiday Calendar | Sapphire Broking: NSE, BSE, MCX & NCDEX Market Holidays",
-  description:
-    "Check the latest stock market holiday calendar with Sapphire Broking. Stay updated on NSE, BSE, MCX, and NCDEX trading holidays for equities, derivatives, commodities, and currency markets to plan your trades better.",
-  keywords:
-    "market holiday calendar, NSE holidays, BSE holidays, MCX trading holidays, NCDEX market holidays, stock market holiday list India, trading holidays 2025, equity market holidays, commodity market holidays, forex trading holidays India, derivatives market holidays, stock exchange holiday calendar, financial market holidays India, trading day schedule, Indian stock market holidays, investment planning holidays",
-  openGraph: {
-    title: "Holiday Calendar | Sapphire Broking: NSE, BSE, MCX & NCDEX Market Holidays",
-    description:
-      "Stay updated with Sapphire Broking’s holiday calendar for NSE, BSE, MCX, and NCDEX. Find trading holidays for equities, derivatives, commodities, and currency markets to plan your investments effectively.",
-    url: "https://www.sapphirebroking.com/holiday-calendar",
-    images: [
-      {
-        url: "https://www.sapphirebroking.com/logo-white.svg",
-        alt: "Sapphire Broking Logo",
-      },
-    ],
-    type: "website",
-  },
-};
+import React, { useState, useEffect } from "react";
+
+
+
 
 // Segment colors mapping
 const segmentColors = {
@@ -39,7 +21,20 @@ const segmentColors = {
 
 // Function to format date
 const formatDate = (dateStr: string | number | Date) => {
-  const date = new Date(dateStr);
+  // Handle DD-MMM-YYYY format from API
+  let date;
+  if (typeof dateStr === 'string' && dateStr.includes('-')) {
+    // Convert "26-Jan-2025" to "Jan 26, 2025"
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      date = new Date(`${parts[1]} ${parts[0]}, ${parts[2]}`);
+    } else {
+      date = new Date(dateStr);
+    }
+  } else {
+    date = new Date(dateStr);
+  }
+  
   const options: Intl.DateTimeFormatOptions = { 
     year: 'numeric', 
     month: 'long', 
@@ -54,11 +49,17 @@ const getSegmentColor = (segment: string | number) => {
   return segmentColors[segment as keyof typeof segmentColors] || "text-gray-600 bg-gray-100";
 };
 
+interface Holiday {
+  date: string;
+  holiday: string;
+  segments: string[];
+}
+
 export default function HolidayCalendarPage() {
-  const [marketHolidays, setMarketHolidays] = useState([]);
-  const [clearingHolidays, setClearingHolidays] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [marketHolidays, setMarketHolidays] = useState<Holiday[]>([]);
+  const [clearingHolidays, setClearingHolidays] = useState<Holiday[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch holidays data
   useEffect(() => {
@@ -79,8 +80,8 @@ export default function HolidayCalendarPage() {
 
         // Fetch both market and clearing holidays with timeout
         const [marketResponse, clearingResponse] = await Promise.all([
-          fetchWithTimeout('https://www.nseindia.com/api/holiday-master?type=trading'),
-          fetchWithTimeout('https://www.nseindia.com/api/holiday-master?type=clearing')
+          fetchWithTimeout('http://localhost:3000/api/v1/proxy/nse/holidays/trading'),
+          fetchWithTimeout('http://localhost:3000/api/v1/proxy/nse/holidays/clearing')
         ]);
 
         if (!marketResponse.ok || !clearingResponse.ok) {
@@ -90,21 +91,25 @@ export default function HolidayCalendarPage() {
         const marketData = await marketResponse.json();
         const clearingData = await clearingResponse.json();
 
+        console.log('Market Data:', marketData);
+        console.log('Clearing Data:', clearingData);
+
         // Process market holidays
-        if (marketData && marketData.FO) {
-          const processedMarketHolidays = marketData.FO.map((holiday: { tradingDate: string | number | Date; description: unknown; Sr_no: string; }) => ({
+        if (marketData && marketData.data && marketData.data.CM) {
+          console.log('Processing market holidays:', marketData.data.CM);
+          const processedMarketHolidays = marketData.data.CM.map((holiday: HolidayApiData) => ({
             date: formatDate(holiday.tradingDate),
             holiday: holiday.description,
-            segments: holiday.Sr_no ? holiday.Sr_no.split(',').map(s => s.trim()) : ['Market']
+            segments: holiday.Sr_no ? [holiday.Sr_no.toString()] : ['CM']
           }));
           setMarketHolidays(processedMarketHolidays);
         } else {
-          throw new Error('Invalid market data structure');
+          console.log('No market data found or invalid structure');
+          setMarketHolidays([]);
         }
-
         // Process clearing holidays
-        if (clearingData && clearingData.FO) {
-          const processedClearingHolidays = clearingData.FO.map((holiday: { clearingDate: string | number | Date; tradingDate: string | number | Date; description: unknown; }) => ({
+        if (clearingData && clearingData.data && clearingData.data.CM) {
+          const processedClearingHolidays = clearingData.data.CM.map((holiday: HolidayApiData) => ({
             date: formatDate(holiday.clearingDate || holiday.tradingDate),
             holiday: holiday.description,
             segments: ['Clearing']
@@ -117,6 +122,8 @@ export default function HolidayCalendarPage() {
         setLoading(false);
       } catch (err) {
         console.error('Error fetching holidays from API:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load holiday data';
+        setError(errorMessage);
         setLoading(false);
       }
     };
@@ -178,12 +185,6 @@ export default function HolidayCalendarPage() {
     );
   }
 
-  interface Holiday {
-    date: string;
-    holiday: string;
-    segments: string[];
-  }
-  
   // Render holiday table
     const renderHolidayTable = (holidays: Holiday[], title: React.ReactNode) => (
     <div className="mb-8">
@@ -249,4 +250,16 @@ export default function HolidayCalendarPage() {
       </div>
     </div>
   );
+}
+
+
+// Add this interface near the top of your file, after the existing interfaces
+interface HolidayApiData {
+  tradingDate: string;
+  description: string;
+  Sr_no: number;
+  weekDay?: string;
+  morning_session?: string | null;
+  evening_session?: string | null;
+  clearingDate?: string;
 }

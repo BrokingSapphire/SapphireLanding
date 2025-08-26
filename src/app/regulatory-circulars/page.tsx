@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Search, ArrowUpDown, ExternalLink, FileText, Loader2, Home, ChevronRight, WifiOff, X, Check } from 'lucide-react';
 
-
 interface Circular {
   name: string;
   title: string;
@@ -17,15 +16,73 @@ interface Circular {
   topic: string[];
 }
 
-interface ApiResponse {
-  data: {
-    circular_total_count: number;
-    circular: Circular[];
-  };
-}
+
+// Move fallback data outside component to prevent infinite re-renders
+const FALLBACK_DATA: Circular[] = [
+  {
+    name: "Circular-5110",
+    title: "Mock Trading",
+    issuer: "MCX",
+    dateIssued: "2025-08-21",
+    circularNumber: "MCXCCL/TECH/176/2025",
+    circularLink: "#",
+    Applicable: 0,
+    industry: ["MCX"],
+    license: ["MCX"],
+    topic: ["Mock Trading"]
+  },
+  {
+    name: "Circular-5111",
+    title: "Notification of PF, TF and Money Laundering risks to private sector entities",
+    issuer: "SEBI",
+    dateIssued: "2025-08-21",
+    circularNumber: "SEBI/HO/MIRSD/2025/118",
+    circularLink: "#",
+    Applicable: 0,
+    industry: ["All Intermediaries"],
+    license: ["SEBI"],
+    topic: ["Prevention of Money-Laundering"]
+  },
+  {
+    name: "Circular-5112",
+    title: "System Testing Mock on August 23, 2025",
+    issuer: "NSE",
+    dateIssued: "2025-08-21",
+    circularNumber: "NSE/CMTR/69782",
+    circularLink: "#",
+    Applicable: 0,
+    industry: ["NSE"],
+    license: ["NSE"],
+    topic: ["Mock Trading", "System Testing"]
+  },
+  {
+    name: "Circular-5113",
+    title: "Extension of timeline for implementation of margin obligations",
+    issuer: "BSE",
+    dateIssued: "2025-08-20",
+    circularNumber: "BSE/20250820-15",
+    circularLink: "#",
+    Applicable: 0,
+    industry: ["BSE", "Stock Broking"],
+    license: ["BSE"],
+    topic: ["Margin obligation", "Timeline Extension"]
+  },
+  {
+    name: "Circular-5114",
+    title: "Consultation paper on Review of Stock Brokers Regulations",
+    issuer: "SEBI",
+    dateIssued: "2025-08-19",
+    circularNumber: "SEBI/HO/MIRSD/2025/119",
+    circularLink: "#",
+    Applicable: 0,
+    industry: ["Stock Broking", "All Exchanges"],
+    license: ["SEBI"],
+    topic: ["Stock Brokers", "Consultation Paper"]
+  }
+];
 
 const ComplianceCircularsDashboard: React.FC = () => {
-  // State for API data
+  // State for API data - ensure proper initialization
   const [circulars, setCirculars] = useState<Circular[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -40,71 +97,6 @@ const ComplianceCircularsDashboard: React.FC = () => {
 
   // Debounced search term
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-
-  // Mock fallback data
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fallbackData: Circular[] = [
-    {
-      name: "Circular-5110",
-      title: "Mock Trading",
-      issuer: "MCX",
-      dateIssued: "2025-08-21",
-      circularNumber: "MCXCCL/TECH/176/2025",
-      circularLink: "#",
-      Applicable: 0,
-      industry: ["MCX"],
-      license: ["MCX"],
-      topic: ["Mock Trading"]
-    },
-    {
-      name: "Circular-5111",
-      title: "Notification of PF, TF and Money Laundering risks to private sector entities",
-      issuer: "SEBI",
-      dateIssued: "2025-08-21",
-      circularNumber: "SEBI/HO/MIRSD/2025/118",
-      circularLink: "#",
-      Applicable: 0,
-      industry: ["All Intermediaries"],
-      license: ["SEBI"],
-      topic: ["Prevention of Money-Laundering"]
-    },
-    {
-      name: "Circular-5112",
-      title: "System Testing Mock on August 23, 2025",
-      issuer: "NSE",
-      dateIssued: "2025-08-21",
-      circularNumber: "NSE/CMTR/69782",
-      circularLink: "#",
-      Applicable: 0,
-      industry: ["NSE"],
-      license: ["NSE"],
-      topic: ["Mock Trading", "System Testing"]
-    },
-    {
-      name: "Circular-5113",
-      title: "Extension of timeline for implementation of margin obligations",
-      issuer: "BSE",
-      dateIssued: "2025-08-20",
-      circularNumber: "BSE/20250820-15",
-      circularLink: "#",
-      Applicable: 0,
-      industry: ["BSE", "Stock Broking"],
-      license: ["BSE"],
-      topic: ["Margin obligation", "Timeline Extension"]
-    },
-    {
-      name: "Circular-5114",
-      title: "Consultation paper on Review of Stock Brokers Regulations",
-      issuer: "SEBI",
-      dateIssued: "2025-08-19",
-      circularNumber: "SEBI/HO/MIRSD/2025/119",
-      circularLink: "#",
-      Applicable: 0,
-      industry: ["Stock Broking", "All Exchanges"],
-      license: ["SEBI"],
-      topic: ["Stock Brokers", "Consultation Paper"]
-    }
-  ];
 
   // Sort options
   const sortOptions = [
@@ -137,80 +129,81 @@ const ComplianceCircularsDashboard: React.FC = () => {
     }
   }, [showSortPopup]);
 
-  // Fetch data from API with fallback
+  // Fetch data from API with fallback - FIXED
   const fetchCirculars = useCallback(async (page: number = 1, search: string = '') => {
+    if (loading) return; // Keep the guard, but don't depend on loading
+    
     setLoading(true);
     setError(null);
 
     try {
       const offset = (page - 1) * limit;
-      interface RequestBody {
-        limit: number;
-        offset: number;
-        search?: string;
-      }
-
-      const requestBody: RequestBody = {
+      const requestBody = {
         limit,
-        offset
+        offset,
+        ...(search.trim() && { search: search.trim() })
       };
-
-      if (search.trim()) {
-        requestBody.search = search.trim();
-      }
-
-      const response = await fetch('https://prd.compliancesutra.com/api/method/compliance.compliance.apis.regulation.regulations', {
+  
+      const response = await fetch('http://localhost:3000/api/v1/proxy/compliance/regulations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody)
       });
-
+  
       if (!response.ok) {
         throw new Error(`API Error: ${response.status}`);
       }
-
-      const data: ApiResponse = await response.json();
+  
+      const apiResponse = await response.json();
+      const data = apiResponse.data?.data;
       
-      if (page === 1) {
-        setCirculars(data.data.circular);
-      } else {
-        setCirculars(prev => [...prev, ...data.data.circular]);
+      if (!data || !Array.isArray(data.circular)) {
+        throw new Error('Invalid API response structure');
       }
       
-      setTotalCount(data.data.circular_total_count);
+      const newCirculars = data.circular;
+      
+      if (page === 1) {
+        setCirculars(newCirculars);
+      } else {
+        setCirculars(prev => Array.isArray(prev) ? [...prev, ...newCirculars] : newCirculars);
+      }
+      
+      setTotalCount(data.circular_total_count || 0);
+      
     } catch (err) {
       console.error('API Error, using fallback data:', err);
       setError('Unable to connect to server. Showing sample data.');
       
-      // Use fallback data
       if (page === 1) {
-        setCirculars(fallbackData);
-        setTotalCount(fallbackData.length);
+        setCirculars(FALLBACK_DATA);
+        setTotalCount(FALLBACK_DATA.length);
       }
     } finally {
       setLoading(false);
     }
-  }, [limit, fallbackData]);
+  }, [limit]); // ✅ Remove 'loading' dependency
 
   // Initial load
   useEffect(() => {
     fetchCirculars(1);
   }, [fetchCirculars]);
 
-  // Handle search
+  // Handle search - FIXED
   useEffect(() => {
-    if (debouncedSearchTerm !== searchTerm && debouncedSearchTerm !== '') {
-      return; // Still debouncing
-    }
-    
     setCurrentPage(1);
     fetchCirculars(1, debouncedSearchTerm);
-  }, [debouncedSearchTerm, fetchCirculars, searchTerm]);
+  }, [debouncedSearchTerm, fetchCirculars]); // Removed searchTerm dependency
 
-  // Filter and sort circulars
+  // Filter and sort circulars - FIXED
   const filteredCirculars = useMemo(() => {
+    // Safety check: ensure circulars is an array
+    if (!Array.isArray(circulars)) {
+      return [];
+    }
+    
     const filtered = [...circulars];
 
     // Sort
@@ -232,7 +225,7 @@ const ComplianceCircularsDashboard: React.FC = () => {
 
   // Load more data
   const loadMore = () => {
-    if (!error) { // Only load more if not using fallback data
+    if (!error && Array.isArray(circulars)) { // Add safety check
       const nextPage = currentPage + 1;
       setCurrentPage(nextPage);
       fetchCirculars(nextPage, debouncedSearchTerm);
@@ -262,7 +255,8 @@ const ComplianceCircularsDashboard: React.FC = () => {
     return colors[issuer] || 'bg-gray-50 text-gray-700 border-gray-200';
   };
 
-  const hasMoreData = !error && circulars.length < totalCount;
+  // FIXED: Add safety check for hasMoreData
+  const hasMoreData = !error && Array.isArray(circulars) && circulars.length < totalCount;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -366,8 +360,8 @@ const ComplianceCircularsDashboard: React.FC = () => {
 
           <div className="flex items-center justify-between text-sm text-gray-600 mt-4">
             <span>
-              Showing {filteredCirculars.length} of {circulars.length} loaded
-              {totalCount > circulars.length && ` (${totalCount.toLocaleString()} total)`}
+              Showing {filteredCirculars.length} of {circulars?.length || 0} loaded
+              {totalCount > (circulars?.length || 0) && ` (${totalCount.toLocaleString()} total)`}
             </span>
             {searchTerm && (
               <button

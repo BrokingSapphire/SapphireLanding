@@ -9,10 +9,52 @@ const currentYear = new Date().getFullYear();
 const defaultFrom = new Date(currentYear, 5, 1); // 1 June
 const defaultTo = new Date(currentYear, 6, 1);   // 1 July
 
+// API function for MoneyControl corporate actions
+const getMoneyControlCorporateActions = async (params: any = {}) => {
+  const queryParams = new URLSearchParams({
+    indexId: params.indexId || 'All',
+    page: params.page || '1',
+    event: params.event || 'All',
+    orderBy: params.orderBy || 'asc',
+    duration: params.duration || 'UP'
+  });
+  
+  try {
+    const response = await fetch(`http://localhost:3000/api/v1/proxy/moneycontrol/corporate-actions?${queryParams}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+};
+
+interface CorporateEvent {
+  symbol: string;
+  company: string;
+  purpose: string;
+  eventType: string;
+  announcementDate?: string;
+  exDate?: string;
+  dividend?: string | null;
+  lastValue?: string;
+  perChange?: string;
+  marketCap?: number;
+  url?: string;
+  source?: string;
+  ratio?: string | null;
+  rawEvent: any;
+}
+
+interface EventGroup {
+  date: string;
+  events: CorporateEvent[];
+}
+
 export default function EventCalendarPage() {
-  const [eventData, setEventData] = useState([]);
+  const [eventData, setEventData] = useState<EventGroup[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState({ from: defaultFrom, to: defaultTo });
   const [search, setSearch] = useState('');
   const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
@@ -34,7 +76,7 @@ export default function EventCalendarPage() {
   });
 
   // Helper function to format date
-  const formatEventDate = (dateStr) => {
+  const formatEventDate = (dateStr: any) => {
     try {
       if (!dateStr) return 'Date not available';
       
@@ -60,13 +102,13 @@ export default function EventCalendarPage() {
         day: 'numeric',
         weekday: 'long'
       });
-    } catch (error) {
+    } catch {
       return dateStr || 'Date not available';
     }
   };
 
   // Helper function to determine purpose
-  const determinePurpose = (event) => {
+  const determinePurpose = (event: any) => {
     const eventType = event.eventType?.toLowerCase() || '';
     const purpose = event.purpose?.toLowerCase() || '';
     const remarks = event.remarks || '';
@@ -107,21 +149,23 @@ export default function EventCalendarPage() {
       return remarks;
     }
     
-    return eventType ? eventType.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Corporate Action';
+    return eventType ? eventType.replace(/[-_]/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) : 'Corporate Action';
   };
 
   // Transform API data
-  const transformApiData = (apiData) => {
-    if (!apiData?.data?.list) return [];
-
-    const groupedEvents = [];
+  const transformApiData = (apiData: any): EventGroup[] => {
+    // Fix: Access the correct nested data structure
+    if (!apiData?.data?.data?.list) return [];
+  
+    const groupedEvents: EventGroup[] = [];
     
-    Object.keys(apiData.data.list).forEach(dateKey => {
-      const events = apiData.data.list[dateKey];
+    // Access the correct path: apiData.data.data.list
+    Object.keys(apiData.data.data.list).forEach(dateKey => {
+      const events = apiData.data.data.list[dateKey];
       
       if (!Array.isArray(events)) return;
       
-      const transformedEvents = events.map(event => ({
+      const transformedEvents: CorporateEvent[] = events.map((event: any) => ({
         symbol: event.scId || event.stockName?.replace(/\s+/g, '').toUpperCase() || 'N/A',
         company: event.stockName || 'Unknown Company',
         purpose: determinePurpose(event),
@@ -137,7 +181,7 @@ export default function EventCalendarPage() {
         ratio: event.ratio !== '-' ? event.ratio : null,
         rawEvent: event
       }));
-
+  
       const formattedDate = formatEventDate(events[0]?.disp_date || events[0]?.exDate || dateKey);
       
       groupedEvents.push({
@@ -145,33 +189,33 @@ export default function EventCalendarPage() {
         events: transformedEvents
       });
     });
-
+  
     return groupedEvents;
   };
 
-  // Fetch events data
+  // Fetch events data using the new API
   const fetchEvents = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const apiUrl = 'https://api.moneycontrol.com/mcapi/v1/ecalendar/corporate-action?indexId=All&page=1&event=All&apiVersion=161&orderBy=asc&deviceType=W&duration=UP';
-      const CORS_PROXY = 'https://api.allorigins.win/get?url=';
-      const proxyUrl = CORS_PROXY + encodeURIComponent(apiUrl);
+      // Use the new API function
+      const apiResponse = await getMoneyControlCorporateActions({
+        indexId: 'All',
+        page: '1',
+        event: 'All',
+        orderBy: 'asc',
+        duration: 'UP'
+      });
       
-      const response = await fetch(proxyUrl);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!apiResponse.success) {
+        throw new Error('API returned unsuccessful response');
       }
       
-      const proxyData = await response.json();
-      const apiData = JSON.parse(proxyData.contents);
-      const transformedData = transformApiData(apiData);
-      
+      const transformedData = transformApiData(apiResponse);
       setEventData(transformedData);
       setLoading(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching events:', err);
       setError(`API Error: ${err.message}. Please try again.`);
       setLoading(false);
@@ -250,7 +294,7 @@ export default function EventCalendarPage() {
   });
 
   // Get active filter tags
-  const activeFilterTags = [];
+  const activeFilterTags: Array<{label: string, type: string, key: string}> = [];
   Object.entries(typeOfEvents).forEach(([k, v]) => {
     if (v) {
       let label = k.charAt(0).toUpperCase() + k.slice(1).replace(/([A-Z])/g, ' $1');
@@ -271,7 +315,7 @@ export default function EventCalendarPage() {
   });
 
   // Remove filter tag
-  const removeFilterTag = (tag) => {
+  const removeFilterTag = (tag: {label: string, type: string, key: string}) => {
     if (tag.type === 'type') {
       setTypeOfEvents(s => ({ ...s, [tag.key]: false }));
     } else if (tag.type === 'cap') {
@@ -280,7 +324,7 @@ export default function EventCalendarPage() {
   };
 
   // Date range handlers
-  const shiftDateRange = (direction) => {
+  const shiftDateRange = (direction: 'back' | 'forward') => {
     if (!dateRange.from || !dateRange.to) return;
     const newFrom = direction === 'back' ? subMonths(dateRange.from, 1) : addMonths(dateRange.from, 1);
     const newTo = direction === 'back' ? subMonths(dateRange.to, 1) : addMonths(dateRange.to, 1);
